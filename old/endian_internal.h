@@ -57,11 +57,11 @@ struct endian_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
-    OBJ_IUNKNOWN    *pSuperVtbl;      // Needed for Inheritance
+    OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
     ERESULT         eRc;
-    bool            fLittle;    // true == Little Endian
+    bool            fLittle;        // true == Little Endian, otherwise Big Endian
 
 };
 #pragma pack(pop)

@@ -191,12 +191,12 @@ extern "C" {
         OBJ_IDENT_BLOCK32_CLASS,
         OBJ_IDENT_BLOCKS,               // A list of Data Blocks and Records
         OBJ_IDENT_BLOCKS_CLASS,
-        OBJ_IDENT_BPT32IDX,             // B-Plus 32-Bit Tree Index Node
-        OBJ_IDENT_BPT32IDX_CLASS,
-        OBJ_IDENT_BPT32LF,              // B-Plus 32-Bit Tree Leaf Node
-        OBJ_IDENT_BPT32LF_CLASS,
         OBJ_IDENT_BPT32,                // B-Plus 32-Bit Tree
         OBJ_IDENT_BPT32_CLASS,
+        OBJ_IDENT_BPT32IDX,             // B-Plus 32-Bit Tree Index Node
+        OBJ_IDENT_BPT32IDX_CLASS,
+        OBJ_IDENT_BPT32LEAF,            // B-Plus 32-Bit Tree Leaf Node
+        OBJ_IDENT_BPT32LEAF_CLASS,
         OBJ_IDENT_BTP,                  /* Binary Search Tree */
         OBJ_IDENT_BTP_CLASS,
         OBJ_IDENT_CB,                   /* Generic Circular Buffer */

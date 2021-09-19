@@ -203,6 +203,17 @@ extern "C" {
     );
 
 
+    ERESULT         Test_ForFail (
+        TEST_DATA       *this,
+        ERESULT         eRc2,
+        const
+        char            *pErrorA,
+        const
+        char            *pFilePathA,
+        size_t          iLine
+    );
+
+
     ERESULT         Test_ForFalse (
         TEST_DATA       *this,
         bool            fValue,

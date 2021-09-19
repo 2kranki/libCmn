@@ -1,9 +1,12 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Block of Variable-sized Records (BlkdRcds16) Header
+//      Block of Variable-Length Records (BlkdRcds16) Header
 //****************************************************************
 /*
+ * Program
+ *          Block of Variable-Length Records (BlkdRcds16)
+ * Purpose
  *          These subroutines provide a general purpose set of
  *          routines to build and manipulate a block of variable
  *          length data records. The block size is restricted to
@@ -17,9 +20,9 @@
  *          any use. Just specify the amount at open time.
  *
  * Remarks
- *    1.    Records are numbered starting with 1.  If zero is
- *          returned for a record index, it should be considered
- *          an error.
+ *    1.    Records are numbered starting with 1.
+ *          If zero is returned for a record index, it should be
+ *          considered an error.
  *
  * References:
  *  *      "Data Structures and Algorithms", Alfred V. Aho et al,
@@ -30,8 +33,10 @@
  *          John Wiley & Sons, 1987
  *  *      "VSAM: Architecture, Theory and Applications", Larry Brumbaugh,
  *          McGraw-Hill, 1993
+ *
  * History
- *	12/22/2019 Regenerated
+ *  12/22/2019 Regenerated
+ *  09/18/2021 Regenerated
  */
 
 
@@ -74,14 +79,15 @@
 #define         BLKDRCDS16_H
 
 
-//#define   BLKDRCDS16_JSON_SUPPORT 1
-//#define   BLKDRCDS16_SINGLETON    1
+//#define   BLKDRCDS16_IS_IMMUTABLE     1
+//#define   BLKDRCDS16_JSON_SUPPORT     1
+//#define   BLKDRCDS16_SINGLETON        1
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -91,10 +97,10 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct BlkdRcds16_data_s	BLKDRCDS16_DATA;            // Inherits from OBJ
+    typedef struct BlkdRcds16_data_s  BLKDRCDS16_DATA;            // Inherits from OBJ
     typedef struct BlkdRcds16_class_data_s BLKDRCDS16_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct BlkdRcds16_vtbl_s	{
+    typedef struct BlkdRcds16_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in BlkdRcds16_object.c.
@@ -103,7 +109,7 @@ extern "C" {
         //bool        (*pIsEnabled)(BLKDRCDS16_DATA *);
     } BLKDRCDS16_VTBL;
 
-    typedef struct BlkdRcds16_class_vtbl_s	{
+    typedef struct BlkdRcds16_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in BlkdRcds16_object.c.
@@ -116,7 +122,7 @@ extern "C" {
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
     ****************************************************************/
 
 
@@ -129,7 +135,7 @@ extern "C" {
         void
     );
 
-    bool            BlkdRcds16_SharedReset (
+    void            BlkdRcds16_SharedReset (
         void
     );
 #endif
@@ -151,9 +157,9 @@ extern "C" {
         uint16_t        numRecords,
         uint16_t        recordSize              // Average Record Size
     );
-    
-    
-    uint16_t        BlkdRcds16_CalcFromBlockSize(
+
+
+    uint16_t        BlkdRcds16_CalcUseableSizeFromBlockSize(
         uint16_t        blockSize,
         uint16_t        rsvdSize
     );
@@ -167,50 +173,33 @@ extern "C" {
     BLKDRCDS16_DATA * BlkdRcds16_New (
         void
     );
-    
+
     BLKDRCDS16_DATA * BlkdRcds16_NewWithBlockSize (
         uint16_t        blockSize,
         uint16_t        rsvdSize
     );
-    
+
+
+#ifdef  BLKDRCDS16_JSON_SUPPORT
+    BLKDRCDS16_DATA * BlkdRcds16_NewFromJsonString (
+        ASTR_DATA       *pString
+    );
+
+    BLKDRCDS16_DATA * BlkdRcds16_NewFromJsonStringA (
+        const
+        char            *pStringA
+    );
+#endif
+
 
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    /*!
-        Property: Begin
-        The beginning record number within the dataset for the first
-        record of this block.
-     */
-    uint32_t        BlkdRcds16_getBegin(
-        BLKDRCDS16_DATA *this
-    );
-
-    bool            BlkdRcds16_setBegin (
-        BLKDRCDS16_DATA *this,
-        uint32_t        value
-    );
-
 
     uint8_t *       BlkdRcds16_getData (
         BLKDRCDS16_DATA *this
-    );
-
-
-    /*!
-        Property: Next
-        The optional record number for the block following this
-        one.
-     */
-    uint32_t        BlkdRcds16_getBegin(
-        BLKDRCDS16_DATA *this
-    );
-
-    bool            BlkdRcds16_setBegin (
-        BLKDRCDS16_DATA *this,
-        uint32_t        value
     );
 
 
@@ -224,8 +213,6 @@ extern "C" {
     );
 
 
-
-
     
     //---------------------------------------------------------------
     //                      *** Methods ***
@@ -236,52 +223,66 @@ extern "C" {
     );
 
 
+    /*!
+    Copy a record from the block into a supplied area.
+    @param     this         object pointer
+    @param     dataSize     size of the supplied data area
+    @param     pData        Optional pointer to the data area. If NULL, no data
+                            is copied.
+    @param     pIndex       optional returned record number (relative to 1)
+    @return    If successful, ERESULT_SUCCESS. An ERESULT_* error code.
+    */
     ERESULT         BlkdRcds16_RecordAppend (
        BLKDRCDS16_DATA *this,
-       uint16_t        size,
+       uint16_t        dataSize,
        void            *pData,
-       uint16_t        *pIndex             // (Optional) Returned Output Index
+       uint32_t        *pIndex             // (Optional) Returned Output Index
     );
 
 
     ERESULT         BlkdRcds16_RecordDelete (
        BLKDRCDS16_DATA *this,
-       uint16_t        index
+       uint32_t        index
     );
 
 
     /*!
     Copy a record from the block into a supplied area.
-    @param     this        BLKDRCDS16 object pointer
-    @param     index       record number (relative to 1)
-    @param     dataSize    size of the supplied data area
-    @param     pData       Optional pointer to the data area. If NULL, no data
-                           is copied.
-    @param     pSizeUsed   Optional pointer to a size to be returned. The size
-                           used will be the record size if it fits in the area
-                           provided or the truncated size of the area provided.
-                           If NULL, no size is returned.
+    @param     this         object pointer
+    @param     index        record number (relative to 1)
+    @param     dataSize     size of the supplied data area
+    @param     pData        Optional pointer to the data area. If NULL, no data
+                            is copied.
+    @param     pSizeUsed    Optional pointer to a size to be returned. The size
+                            used will be the record size if it fits in the area
+                            provided or the truncated size of the area provided.
+                            If NULL, no size is returned.
     @return    If successful, ERESULT_SUCCESS. An ERESULT_* error code.
     */
     ERESULT         BlkdRcds16_RecordGet (
        BLKDRCDS16_DATA *this,
-       uint16_t        index,
+       uint32_t        index,
        uint16_t        dataSize,
        void            *pData,             // Optional
        uint16_t        *pSizeUsed          // Optional
     );
 
 
-    ERESULT         BlkdRcds16_RecordGetSize (
+    /*!
+    Return the size of the record relative to property: Begin.
+    @param     this         object pointer
+    @param     index        record number (relative to 1)
+    @return    If successful, record size in bytes. Otherwise, 0.
+    */
+    uint16_t        BlkdRcds16_RecordGetSize (
        BLKDRCDS16_DATA *this,
-       uint16_t        index,
-       uint16_t        *pSize
+       uint32_t        index
     );
 
 
     ERESULT         BlkdRcds16_RecordUpdate (
        BLKDRCDS16_DATA *this,
-       uint16_t        index,
+       uint32_t        index,
        uint16_t        dataSize,
        void            *pData
     );
@@ -306,6 +307,25 @@ extern "C" {
     );
 
 
+#ifdef  BLKDRCDS16_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = BlkdRcds16_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     BlkdRcds16_ToJson (
+        BLKDRCDS16_DATA *this
+    );
+#endif
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -318,7 +338,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    BlkdRcds16_ToDebugString (
+    ASTR_DATA *     BlkdRcds16_ToDebugString (
         BLKDRCDS16_DATA *this,
         int             indent
     );
@@ -326,9 +346,9 @@ extern "C" {
     
 
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* BLKDRCDS16_H */
+#endif  /* BLKDRCDS16_H */
 

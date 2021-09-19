@@ -1,32 +1,75 @@
 // vi:nu:et:sts=4 ts=4 sw=4
+//****************************************************************
+//                      Test Object Program
+//****************************************************************
 /*
- *	Generated 12/22/2019 10:06:17
+ * Program
+ *          Test Object Program
+ * Purpose
+ *          This program tests a particular object given certain
+ *          parameters.
+ *
+ * Remarks
+ *  1.      This relies on the fact that we can add to the Test
+ *          Object by simply coding methods that use the Test
+ *          Object.
+ *
+ * History
+ *  08/29/2021 Generated
+ */
+
+
+/*
+ This is free and unencumbered software released into the public domain.
+ 
+ Anyone is free to copy, modify, publish, use, compile, sell, or
+ distribute this software, either in source code form or as a compiled
+ binary, for any purpose, commercial or non-commercial, and by any
+ means.
+ 
+ In jurisdictions that recognize copyright laws, the author or authors
+ of this software dedicate any and all copyright interest in the
+ software to the public domain. We make this dedication for the benefit
+ of the public at large and to the detriment of our heirs and
+ successors. We intend this dedication to be an overt act of
+ relinquishment in perpetuity of all present and future rights to this
+ software under copyright law.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+ 
+ For more information, please refer to <http://unlicense.org/>
+ */
+
+
+
+
+/*
+ TestForFail(error_sttring)         <= Tests eRc for failure
+ TestForFalse(test, error_sttring)
+ TestForNotNull(test, error)
+ TestForNull(test, error)
+ TestForSuccess(error)              <= Tests eRc for success
+ TestForTrue(test, error)
  */
 
 
 
 
 
-// All code under test must be linked into the Unit Test bundle
-// Test Macros:
-//      TINYTEST_ASSERT(condition)
-//      TINYTEST_ASSERT_MSG(condition,msg)
-//      TINYTEST_EQUAL(expected, actual)
-//      TINYTEST_EQUAL_MSG(expected, actual, msg)
-//      TINYTEST_FALSE_MSG(condition,msg)
-//      TINYTEST_FALSE(condition)
-//      TINYTEST_TRUE_MSG(pointer,msg)
-//      TINYTEST_TRUE(condition)
-
-
-
-
-
-#include    <tinytest.h>
-#include    <cmn_defs.h>
-#include    <JsonIn.h>
+#include    <test_defs.h>
+#include    <Test_internal.h>
 #include    <trace.h>
 #include    <BlkdRcds16_internal.h>
+#include    <JsonIn.h>
+#include    <SrcErrors.h>
+#include    <szTbl.h>
+
 
 
 static
@@ -67,245 +110,405 @@ char    *pWord6h = "OPQRST";
 
 
 
-int             setUp(
-    const
-    char            *pTestName
-)
-{
-    mem_Init( );
-    trace_Shared( ); 
-    // Put setup code here. This method is called before the invocation of each
-    // test method in the class.
-    
-    return 1; 
-}
 
 
-int             tearDown(
-    const
-    char            *pTestName
-)
-{
-    // Put teardown code here. This method is called after the invocation of each
-    // test method in the class.
-
-    
-    JsonIn_RegisterReset();
-    trace_SharedReset( ); 
-    if (mem_Dump( ) ) {
-        fprintf(
-                stderr,
-                "\x1b[1m"
-                "\x1b[31m"
-                "ERROR: "
-                "\x1b[0m"
-                "Leaked memory areas were found!\n"
-        );
-        exitCode = 4;
-        return 0;
-    }
-    mem_Release( );
-    
-    return 1; 
-}
-
-
-
-
-
-
-int             test_BlkdRcds16_OpenClose(
+ERESULT         Test_BlkdRcds16_OpenClose (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    BLKDRCDS16_DATA	*pObj = OBJ_NIL;
+    BLKDRCDS16_DATA *pObj = OBJ_NIL;
     bool            fRc;
-   
+    uint16_t        size = 0;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = BlkdRcds16_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Alloc() object");
     pObj = BlkdRcds16_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Init() object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_BLKDRCDS16);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         
         // Test something.
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("test failed");
+
+        size = BlkdRcds16_CalcFromRecordSize(10, 8, 64);
+        fprintf(stderr, "\tSize = %d\n", size);
+        TestForTrue((562 == size),  "Blocksize miscalculation");
+
+        size = BlkdRcds16_CalcUseableSizeFromBlockSize(1024, 0);
+        fprintf(stderr, "\tSize = %d\n", size);
+        TestForTrue((1016 == size), "Useable space miscalculation");
+
+        eRc = BlkdRcds16_SetupWithBlockSize(pObj, 1024, 0, NULL);
+        TestForSuccess("Setup failed");
+        TestForTrue((1024 == pObj->pBlock->cbSize), "blocksize - bad setup");
+        TestForTrue((0    == pObj->pBlock->rsvdSize), "reserved size - bad setup");
+        TestForTrue((1016 == pObj->pBlock->unusedSize), "Useable space - bad setup");
+        TestForTrue((0    == pObj->pBlock->numRecords), "number of records - bad setup");
+
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int         test_BlkdRcds16_Test01(
+ERESULT         Test_BlkdRcds16_Copy01 (
+    TEST_DATA       *this,
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    BLKDRCDS16_DATA *pObj = OBJ_NIL;
-    uint16_t        size = 0;
-    uint16_t        index = 0;
-    ERESULT         eRc;
-    ASTR_DATA       *pStr;
-    char            data[16];
+    ERESULT         eRc = ERESULT_SUCCESS;
+    BLKDRCDS16_DATA       *pObj1 = OBJ_NIL;
+    BLKDRCDS16_DATA       *pObj2 = OBJ_NIL;
+    bool            fRc;
+#if defined(BLKDRCDS16_JSON_SUPPORT) && defined(XYZZY)
+    ASTR_DATA       *pStr = OBJ_NIL;
+#endif
+    //int             iRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj1 = BlkdRcds16_New( );
+    TestForNotNull(pObj1, "Missing Test object");
+    if (pObj1) {
+
+        //obj_TraceSet(pObj1, true);       
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_BLKDRCDS16);
+        TestForTrue(fRc, "Failed Ident Test");
+        
+        // Test assign.
+        pObj2 = BlkdRcds16_New();
+        TestForNotNull(pObj2, "Missing copied object");
+        eRc = BlkdRcds16_Assign(pObj1, pObj2);
+        TestForFalse((ERESULT_FAILED(eRc)), "Assignment failed");
+
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_BLKDRCDS16);
+        TestForTrue(fRc, "Failed Ident Test");
+        //iRc = BlkdRcds16_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
+        //TODO: Add More tests here!
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        // Test copy.
+        pObj2 = BlkdRcds16_Copy(pObj1);
+        TestForNotNull(pObj2, "Missing copied object");
+
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_BLKDRCDS16);
+        TestForTrue(fRc, "Failed Ident Test");
+        //iRc = BlkdRcds16_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
+        //TODO: Add More tests here!
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        // Test json support.
+#if defined(BLKDRCDS16_JSON_SUPPORT) && defined(XYZZY)
+        pStr = BlkdRcds16_ToJson(pObj1);
+        TestForNotNull(pStr, "Missing JSON output");
+        fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
+        pObj2 = BlkdRcds16_NewFromJsonString(pStr);
+        TestForNotNull(pObj2, "Missing JSON created object");
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_BLKDRCDS16);
+        TestForTrue(fRc, "Failed Ident Test");
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        //iRc = BlkdRcds16_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+#endif
+
+        obj_Release(pObj1);
+        pObj1 = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_BlkdRcds16_Test01 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    BLKDRCDS16_DATA *pObj = OBJ_NIL;
+    bool            fRc;
+    uint16_t        size = 0;
+    uint16_t        used = 0;
+    uint16_t        rcdSize = 0;
+    uint32_t        index = 0;
+    char            data[16];
+    const
+    char            *pData;
+    ASTR_DATA       *pStr;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
     pObj = BlkdRcds16_NewWithBlockSize(40, 0);
-    XCTAssertFalse( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
-        
-        size = BlkdRcds16_getNumRecords(pObj);
-        XCTAssertTrue( (0 == size) );
-        
-        fprintf(stderr, "*** Just after Initialization ***\n");
-        pStr = BlkdRcds16_ToDebugString(pObj, 4);
-        fprintf(stderr, "%s\n", AStr_getData(pStr));
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
 
-        eRc = BlkdRcds16_RecordAppend(pObj, 6, (void *)pWord6, &index);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (1 == index) );
-        fprintf(stderr, "*** Just after Add Record 1 ***\n");
-        pStr = BlkdRcds16_ToDebugString(pObj, 4);
-        fprintf(stderr, "%s\n", AStr_getData(pStr));
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        
-        size = BlkdRcds16_getNumRecords(pObj);
-        XCTAssertTrue( (1 == size) );
-        eRc = BlkdRcds16_RecordGetSize(pObj, 1, &size);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (6 == size) );
-        eRc = BlkdRcds16_RecordGet(pObj, 1, 0, NULL, &size);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (0 == size) );
-        eRc = BlkdRcds16_RecordGet(pObj, 1, 16, data, &size);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (6 == size) );
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_BLKDRCDS16);
+        TestForTrue(fRc, "Failed Ident Test");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "After New(): %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        TestForTrue((40 == pObj->pBlock->cbSize), "blocksize - bad setup");
+        TestForTrue((0  == pObj->pBlock->rsvdSize), "reserved size - bad setup");
+        TestForTrue((32 == pObj->pBlock->unusedSize), "Useable space - bad setup");
+        TestForTrue((0  == pObj->pBlock->numRecords), "number of records - bad setup");
 
-        eRc = BlkdRcds16_RecordAppend(pObj, 4, (void *)pWord4, &index);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (2 == index) );
-        fprintf(stderr, "*** Just after Add Record 2 ***\n");
-        pStr = BlkdRcds16_ToDebugString(pObj, 4);
-        fprintf(stderr, "%s\n", AStr_getData(pStr));
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        
         size = BlkdRcds16_getNumRecords(pObj);
-        XCTAssertTrue( (2 == size) );
-        eRc = BlkdRcds16_RecordGetSize(pObj, index, &size);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (4 == size) );
-        eRc = BlkdRcds16_RecordGet(pObj, index, 0, NULL, &size);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (0 == size) );
-        size = BlkdRcds16_getUnused(pObj);
-        XCTAssertTrue( (6 == size) );
-        eRc = BlkdRcds16_RecordGet(pObj, index, 16, data, &size);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (4 == size) );
-        XCTAssertTrue( (0 == strncmp(data, pWord4, size)) );
+        TestForTrue((0 == size), "Invalid number of records");
 
-        eRc = BlkdRcds16_RecordAppend(pObj, 2, (void *)pWord2, &index);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (3 == index) );
-        fprintf(stderr, "*** Just after Add Record 3 ***\n");
-        pStr = BlkdRcds16_ToDebugString(pObj, 4);
-        fprintf(stderr, "%s\n", AStr_getData(pStr));
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        
-        size = BlkdRcds16_getNumRecords(pObj);
-        XCTAssertTrue( (3 == size) );
-        eRc = BlkdRcds16_RecordGetSize(pObj, 3, &size);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (2 == size) );
-        eRc = BlkdRcds16_RecordGet(pObj, index, 0, NULL, &size);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (0 == size) );
-        size = BlkdRcds16_getUnused(pObj);
-        XCTAssertTrue( (0 == size) );
-        eRc = BlkdRcds16_RecordGet(pObj, index, 12, data, &size);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (2 == size) );
-        data[size] = 0;
-        XCTAssertTrue( (0 == strncmp(data, pWord2, size)) );
-        
-        eRc = BlkdRcds16_RecordGet(pObj, 2, 12, data, &size);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        XCTAssertTrue( (4 == size) );
-        data[size] = 0;
-        XCTAssertTrue( (0 == strcmp(data, pWord4)) );
-        
-        eRc = BlkdRcds16_RecordDelete(pObj, 3);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        size = BlkdRcds16_getUnused(pObj);
-        XCTAssertTrue( (6 == size) );
-        size = BlkdRcds16_getNumRecords(pObj);
-        XCTAssertTrue( (2 == size) );
-        
-        fprintf(stderr, "*** Just after Delete Record 3 ***\n");
-        pStr = BlkdRcds16_ToDebugString(pObj, 4);
-        fprintf(stderr, "%s\n", AStr_getData(pStr));
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        
+        fprintf(stderr, "\n\n\t*** Appending Word06 ***\n");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Before: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        size = strlen(pWord6) + 1;
+        pData = pWord6;
+        eRc = BlkdRcds16_RecordAppend(pObj, size, (void *)pData, &index);
+        TestForSuccess("Append failed");
+        TestForTrue((1 == index), "Invalid index number");
+        TestForTrue((size == BlkdRcds16_RecordGetSize(pObj, index)), "Invalid index number");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "After: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        TestForTrue((40 == pObj->pBlock->cbSize), "blocksize - bad setup");
+        TestForTrue((0  == pObj->pBlock->rsvdSize), "reserved size - bad setup");
+        TestForTrue((21 == pObj->pBlock->unusedSize), "Useable space - bad setup");
+        TestForTrue((1  == pObj->pBlock->numRecords), "number of records - bad setup");
+        eRc = BlkdRcds16_RecordGet(pObj, index, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
+        TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
+
+        fprintf(stderr, "\n\n\t*** Appending Word04 ***\n");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Before: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        size = strlen(pWord4) + 1;
+        pData = pWord4;
+        eRc = BlkdRcds16_RecordAppend(pObj, size, (void *)pData, &index);
+        TestForSuccess("Append failed");
+        TestForTrue((2 == index), "Invalid index number");
+        TestForTrue((size == BlkdRcds16_RecordGetSize(pObj, index)), "Invalid index number");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "After: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        TestForTrue((40 == pObj->pBlock->cbSize), "blocksize - bad setup");
+        TestForTrue((0  == pObj->pBlock->rsvdSize), "reserved size - bad setup");
+        TestForTrue((12 == pObj->pBlock->unusedSize), "Useable space - bad setup");
+        TestForTrue((2  == pObj->pBlock->numRecords), "number of records - bad setup");
+        eRc = BlkdRcds16_RecordGet(pObj, index, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
+        TestForTrue((strlen(pWord4) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 1, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord6, data)), "Get compare failed");
+        TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
+
+        fprintf(stderr, "\n\n\t*** Appending Word02 ***\n");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Before: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        size = strlen(pWord2) + 1;
+        pData = pWord2;
+        eRc = BlkdRcds16_RecordAppend(pObj, size, (void *)pData, &index);
+        TestForSuccess("Append failed");
+        TestForTrue((3 == index), "Invalid index number");
+        TestForTrue((size == BlkdRcds16_RecordGetSize(pObj, index)), "Invalid index number");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "After: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        TestForTrue((40 == pObj->pBlock->cbSize), "blocksize - bad setup");
+        TestForTrue((0  == pObj->pBlock->rsvdSize), "reserved size - bad setup");
+        TestForTrue((5  == pObj->pBlock->unusedSize), "Useable space - bad setup");
+        TestForTrue((3  == pObj->pBlock->numRecords), "number of records - bad setup");
+        eRc = BlkdRcds16_RecordGet(pObj, index, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
+        TestForTrue((strlen(pWord2) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 1, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord6, data)), "Get compare failed");
+        TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 2, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord4, data)), "Get compare failed");
+        TestForTrue((strlen(pWord4) + 1  == used), "Get used failed");
+
+        size = strlen(pWord2) + 1;
+        pData = pWord2;
+        eRc = BlkdRcds16_RecordAppend(pObj, size, (void *)pData, &index);
+        TestForFail("Append worked");
+        eRc = ERESULT_SUCCESS;
+
+        fprintf(stderr, "\n\n\t*** Deleting Record 2 ***\n");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Before: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        eRc = BlkdRcds16_RecordDelete(pObj, 2);
+        TestForSuccess("Delete failed");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "After: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        TestForTrue((40 == pObj->pBlock->cbSize), "blocksize - bad setup");
+        TestForTrue((0  == pObj->pBlock->rsvdSize), "reserved size - bad setup");
+        TestForTrue((14  == pObj->pBlock->unusedSize), "Useable space - bad setup");
+        TestForTrue((2  == pObj->pBlock->numRecords), "number of records - bad setup");
+        eRc = BlkdRcds16_RecordGet(pObj, 1, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord6, data)), "Get compare failed");
+        TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 2, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord2, data)), "Get compare failed");
+        TestForTrue((strlen(pWord2) + 1  == used), "Get used failed");
+
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int         test_BlkdRcds16_Calc(
+
+int     main (
+    int         cArgs,
     const
-    char        *pTestName
+    char        *ppArgs[],
+    const
+    char        *ppEnv[]
 )
 {
-    uint16_t        size = 0;
-    
-    fprintf(stderr, "Performing: %s\n", pTestName);
+    ERESULT     eRc;
+    TEST_DATA   test = {0};
+    TEST_DATA   *pTest = OBJ_NIL;
+    int         i;
+    const
+    char        *pTestNameA = NULL;
 
-    size = BlkdRcds16_CalcFromRecordSize(10, 8, 64);
-    fprintf(stderr, "\tSize = %d\n", size);
-    XCTAssertTrue( (570 == size) );
+    pTest = Test_Init(&test);
+    if (OBJ_NIL == pTest) {
+        fprintf(
+                stderr,
+                "\x1b[1m\x1b[31mFATAL\x1b[0m: Could not create Test object!\n\n\n"
+        );
+        exit(201);
+    }
 
-    size = BlkdRcds16_CalcFromBlockSize(1024, 0);
-    fprintf(stderr, "\tSize = %d\n", size);
-    XCTAssertTrue( (1008 == size) );
+    // Scan args.
+    for (i=0; i<cArgs; i++) {
+        if (0 == strcmp("--no_int3", ppArgs[i])) {
+            Test_setAllowInt3(pTest, false);
+        }
+    }
 
-    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    // Execute tests.
+    TestExec("OpenClose", Test_BlkdRcds16_OpenClose, NULL, NULL);
+    //TestExec("Copy01", Test_BlkdRcds16_Copy01, pTest, NULL, NULL);
+    TestExec("Test01", Test_BlkdRcds16_Test01, NULL, NULL);
+
+    obj_Release(pTest);
+    pTest = OBJ_NIL;
+
+    // Return to Operating System.
+    return 0;
 }
-
-
-
-
-TINYTEST_START_SUITE(test_BlkdRcds16);
-    TINYTEST_ADD_TEST(test_BlkdRcds16_Calc,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_BlkdRcds16_Test01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_BlkdRcds16_OpenClose,setUp,tearDown);
-TINYTEST_END_SUITE();
-
-TINYTEST_MAIN_SINGLE_SUITE(test_BlkdRcds16);
-
-
 
 
 

@@ -44,7 +44,7 @@
         /*
         {name:"bpt32",          desc:"32-Bit Index B-Plus Tree", deps:["bpt32idx.h","bpt32lf.h","rrds.h"]},
         {name:"bpt32idx",       desc:"32-Bit Index B-Plus Tree Index Block", test:false}, 
-        {name:"bpt32lf",        desc:"32-Bit Index B-Plus Tree Leaf Block"},
+        {name:"BPT32Leaf",      desc:"32-Bit Index B-Plus Tree Leaf Block"},
         */
 
         {name:"cb",             desc:"Generic Circular Buffer", 

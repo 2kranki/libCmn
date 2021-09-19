@@ -1,14 +1,31 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   BlkdRcds16.c
- *	Generated 12/22/2019 10:06:17
+ *  Generated 09/18/2021 09:48:13
  *
- * Notes:
- *  1.  We must store the actual blocksze within the block as the
- *      first field. So, that outside applications can look only
- *      at that to know its size.
  */
 
+/*
+ The record grows from the bottom up.  The index grows from the top
+ down. The unused space is the space in-between. To get the valid
+ offset to the next data record, we must add back in the size of
+ block header and the index.  The reserved area is beyond the index
+ and data areas. So, it does not affect these calculations.
+
+            +--------------------------+
+            |      Block Header        |
+            +--------------------------+
+            |          Index           |
+            | (Grows down toward Data) |
+            +--------------------------+
+            |      Unused Space        |
+            +--------------------------+
+            |      Data Records        |
+            | (Grows up toward Index)  |
+            +--------------------------+
+            |      Reserved Data       |
+            +--------------------------+
+ */
  
 /*
  This is free and unencumbered software released into the public domain.
@@ -46,28 +63,42 @@
 
 /* Header File Inclusion */
 #include        <BlkdRcds16_internal.h>
+#include        <JsonIn.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
 
     
+    //****************************************************************
+    // * * * * * * * * * * *    Internal Data    * * * * * * * * * * *
+    //****************************************************************
+
+    // Place constant internal data here. Generally, it should be
+    // 'static' so that it does not interfere with other objects.
 
 
  
+    /****************************************************************
+    * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
+    ****************************************************************/
+
+
+
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
     static
-    void            BlkdRcds16_FreeBlock (
+    void            BlkdRcds16_BlockFree (
         BLKDRCDS16_DATA *this
     )
     {
@@ -79,10 +110,86 @@ extern "C" {
     }
 
 
+    //---------------------------------------------------------------
+    //                      D a t a  S h i f t
+    //---------------------------------------------------------------
 
-    /****************************************************************
-    * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
-    ****************************************************************/
+    ERESULT         BlkdRcds16_DataShift (
+        BLKDRCDS16_DATA *this,
+        uint32_t        index,
+        uint32_t        amt
+    )
+    {
+        uint16_t        dataOffset;
+        uint16_t        dataSize;
+        uint16_t        numShiftRcds;
+        uint16_t        shiftSize;
+        uint8_t         *start;
+        uint8_t         *shiftTo;
+        int             i;
+
+        // Do initialization.
+
+        dataOffset = this->pBlock->index[index - 1].idxOffset;
+        dataSize = this->pBlock->index[index - 1].idxSize;
+        numShiftRcds = this->pBlock->numRecords - index;
+
+        if( numShiftRcds ) {
+            // Shift the data.
+            shiftSize = 0;
+            for( i=0; i<numShiftRcds; i++ ) {
+                shiftSize += this->pBlock->index[index+i].idxSize;
+            }
+            if( shiftSize ) {
+                start = (uint8_t *)this->pBlock
+                        + this->pBlock->index[this->pBlock->numRecords - 1].idxOffset;
+                shiftTo = start + dataSize;
+                memmove(shiftTo, start, shiftSize);
+            }
+            // Shift the index.
+            shiftSize = sizeof(INDEX_RECORD) * numShiftRcds;
+            if( shiftSize ) {
+                start = (uint8_t *)&this->pBlock->index[index];
+                shiftTo = (uint8_t *)&this->pBlock->index[index-1];
+                memmove( shiftTo, start, shiftSize );
+                // Adjust the index for new offsets.
+                for( i=0; i<numShiftRcds; i++ ) {
+                    this->pBlock->index[index-1+i].idxOffset += dataSize;
+                }
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    void *          BlkdRcds16_RecordPoint (
+        BLKDRCDS16_DATA *this,
+        uint32_t        index,
+        uint16_t        *pReturnedSize
+    )
+    {
+        INDEX_RECORD    *pIndex;
+        uint16_t        size;
+        uint8_t         *pBlockData;
+
+        if (index >= this->pBlock->numRecords)
+            return NULL;
+
+        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index - 1]);
+        size = pIndex->idxSize;
+        pBlockData = (((uint8_t *)this->pBlock) + pIndex->idxOffset);
+
+        // Return to caller.
+        if (pReturnedSize) {
+            *pReturnedSize = size;
+        }
+        return pBlockData;
+    }
+
+
 
 
     //===============================================================
@@ -114,56 +221,56 @@ extern "C" {
     {
         uint32_t        cbSize;
         uint32_t        dataSize;
-        
+
         // Do initialization.
         dataSize  = recordSize + sizeof(INDEX_RECORD);
         dataSize *= numRecords;
-        if (dataSize && (dataSize < 32768)) {
-        }
+        if (dataSize && (dataSize < DATA_BLOCK_MAX_SIZE))
+            ;
         else {
             return 0;
         }
-        
+
         cbSize  = sizeof(DATA_BLOCK);
         cbSize += rsvdSize;
         cbSize += dataSize;
-        
-        if( cbSize > 32768 ) {
+
+        if (cbSize > DATA_BLOCK_MAX_SIZE) {
             cbSize = 0;                 // TOO Big!
         }
-        
+
         // Return to caller.
         return cbSize;
     }
-    
-    
-    
-    uint16_t        BlkdRcds16_CalcFromBlockSize(
+
+
+
+    uint16_t        BlkdRcds16_CalcUseableSizeFromBlockSize(
         uint16_t        blockSize,
         uint16_t        rsvdSize
     )
     {
         uint32_t        cbSize;
-        
+
         // Do initialization.
         cbSize = sizeof(DATA_BLOCK) + rsvdSize;
-        if (cbSize > 32768) {
+        if (cbSize > DATA_BLOCK_MAX_SIZE) {
             return 0;
         }
         if (blockSize < cbSize) {
             return 0;
         }
-        
+
         cbSize  = blockSize;
         cbSize -= sizeof(DATA_BLOCK);
         cbSize -= rsvdSize;
-        
+
         // Return to caller.
         return cbSize;
     }
 
-    
-    
+
+
     BLKDRCDS16_DATA *     BlkdRcds16_New (
         void
     )
@@ -185,7 +292,7 @@ extern "C" {
     {
         BLKDRCDS16_DATA *this;
         ERESULT         eRc;
-        
+
         this = BlkdRcds16_New( );
         if (this) {
             eRc = BlkdRcds16_SetupWithBlockSize(this, blockSize, rsvdSize, NULL);
@@ -198,7 +305,6 @@ extern "C" {
     }
 
 
-
     
 
     //===============================================================
@@ -206,55 +312,9 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //               B e g i n n i n g  R e c o r d
-    //---------------------------------------------------------------
-
-    uint32_t        BlkdRcds16_getBegin(
-        BLKDRCDS16_DATA *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !BlkdRcds16_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-        if (this->pBlock) {
-        }
-        else {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return this->pBlock->begin;
-    }
-
-
-    bool            BlkdRcds16_setBegin (
-        BLKDRCDS16_DATA *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!BlkdRcds16_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        this->pBlock->begin = value;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                       D a t a
     //---------------------------------------------------------------
-    
+
     uint8_t *       BlkdRcds16_getData(
         BLKDRCDS16_DATA *this
     )
@@ -266,11 +326,11 @@ extern "C" {
             return NULL;
         }
 #endif
-        
+
         return (uint8_t *)this->pBlock;
     }
-    
-    
+
+
     bool            BlkdRcds16_setData(
         BLKDRCDS16_DATA *this,
         uint8_t         *pValue
@@ -283,54 +343,8 @@ extern "C" {
             return false;
         }
 #endif
-        
+
         this->pBlock = (DATA_BLOCK *)pValue;
-        
-        return true;
-    }
-    
-        
-
-    //---------------------------------------------------------------
-    //                      N e x t  B l o c k
-    //---------------------------------------------------------------
-
-    uint32_t        BlkdRcds16_getNext(
-        BLKDRCDS16_DATA *this
-    )
-    {
-#ifdef NDEBUG
-#else
-        if( !BlkdRcds16_Validate(this) ) {
-            DEBUG_BREAK();
-            return 0;
-        }
-        if (this->pBlock) {
-        }
-        else {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return this->pBlock->next;
-    }
-
-
-    bool            BlkdRcds16_setNext (
-        BLKDRCDS16_DATA *this,
-        uint32_t        value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!BlkdRcds16_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        this->pBlock->next = value;
 
         return true;
     }
@@ -340,7 +354,7 @@ extern "C" {
     //---------------------------------------------------------------
     //                N u m b e r  o f  R e c o r d s
     //---------------------------------------------------------------
-    
+
     uint16_t        BlkdRcds16_getNumRecords(
         BLKDRCDS16_DATA *this
     )
@@ -354,17 +368,15 @@ extern "C" {
         if (this->pBlock) {
         }
         else {
-            DEBUG_BREAK();
             return 0;
         }
 #endif
-        
+
         return this->pBlock->numRecords;
     }
-        
-        
-        
-    //---------------------------------------------------------------
+
+
+     //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -463,12 +475,10 @@ extern "C" {
         }
 #endif
 
-#ifdef  PROPERTY_STR_OWNED
         obj_Retain(pValue);
         if (this->pStr) {
             obj_Release(this->pStr);
         }
-#endif
         this->pStr = pValue;
         
         return true;
@@ -503,7 +513,7 @@ extern "C" {
     //---------------------------------------------------------------
     //                         U n u s e d
     //---------------------------------------------------------------
-    
+
     uint16_t        BlkdRcds16_getUnused(
         BLKDRCDS16_DATA *this
     )
@@ -521,12 +531,11 @@ extern "C" {
             return 0;
         }
 #endif
-        
+
         return this->pBlock->unusedSize;
     }
-        
-        
-        
+
+
 
 
     //===============================================================
@@ -552,7 +561,7 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         BlkdRcds16_Assign (
-        BLKDRCDS16_DATA		*this,
+        BLKDRCDS16_DATA       *this,
         BLKDRCDS16_DATA     *pOther
     )
     {
@@ -570,6 +579,16 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
+
+        // Assign any Super(s).
+        if (this->pSuperVtbl && (this->pSuperVtbl->pWhoAmI() != OBJ_IDENT_OBJ)) {
+            if (this->pSuperVtbl->pAssign) {
+                eRc = this->pSuperVtbl->pAssign(this, pOther);
+                if (ERESULT_FAILED(eRc)) {
+                    return eRc;
+                }
+            }
+        }
 
         // Release objects and areas in other object.
 #ifdef  XYZZY
@@ -594,8 +613,7 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
-        
-        //goto eom;
+        //pOther->x     = this->x; 
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
@@ -618,12 +636,18 @@ extern "C" {
                 >0 if this > other
      */
     int             BlkdRcds16_Compare (
-        BLKDRCDS16_DATA *this,
-        BLKDRCDS16_DATA *pOther
+        BLKDRCDS16_DATA     *this,
+        BLKDRCDS16_DATA     *pOther
     )
     {
-        int             iRc = 0;
-
+        int             iRc = -1;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
 #ifdef NDEBUG
 #else
         if (!BlkdRcds16_Validate(this)) {
@@ -638,51 +662,13 @@ extern "C" {
         }
 #endif
 
-#ifdef  xyzzy
-        if (this->token == pOther->token) {
-            return iRc;
-        }
-        iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
-#endif
-
+        //TODO: iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+     
         return iRc;
     }
-
+    
    
  
-    //---------------------------------------------------------------
-    //                     C o m p r e s s
-    //---------------------------------------------------------------
-
-    /*!
-     Compress the block, moving all records which have gaps between
-     them so that free space is maximized.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         BlkdRcds16_Compress (
-        BLKDRCDS16_DATA *this
-    )
-    {
-        //ERESULT         eRc;
-
-        // Do initialization.
-    #ifdef NDEBUG
-    #else
-        if (!BlkdRcds16_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-    #endif
-
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-
-
-
     //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
@@ -714,6 +700,10 @@ extern "C" {
         }
 #endif
         
+#ifdef BLKDRCDS16_IS_IMMUTABLE
+        obj_Retain(this);
+        pOther = this;
+#else
         pOther = BlkdRcds16_New( );
         if (pOther) {
             eRc = BlkdRcds16_Assign(this, pOther);
@@ -722,9 +712,9 @@ extern "C" {
                 pOther = OBJ_NIL;
             }
         }
+#endif
         
         // Return to caller.
-        //obj_Release(pOther);
         return pOther;
     }
     
@@ -739,6 +729,7 @@ extern "C" {
     )
     {
         BLKDRCDS16_DATA   *this = objId;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -759,7 +750,7 @@ extern "C" {
 #endif
 
         BlkdRcds16_setStr(this, OBJ_NIL);
-        BlkdRcds16_FreeBlock(this);
+        BlkdRcds16_BlockFree(this);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -773,6 +764,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         D e e p  C o p y
+    //---------------------------------------------------------------
+    
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code 
+        BlkdRcds16      *pDeepCopy = BlkdRcds16_Copy(this);
+     @endcode 
+     @param     this    object pointer
+     @return    If successful, a BLKDRCDS16 object which must be 
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    BLKDRCDS16_DATA *     BlkdRcds16_DeepCopy (
+        BLKDRCDS16_DATA       *this
+    )
+    {
+        BLKDRCDS16_DATA       *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BlkdRcds16_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        pOther = BlkdRcds16_New( );
+        if (pOther) {
+            eRc = BlkdRcds16_Assign(this, pOther);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                obj_Release(pOther);
+                pOther = OBJ_NIL;
+            }
+        }
+        
+        // Return to caller.
+        return pOther;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -783,26 +820,28 @@ extern "C" {
                 error code.
      */
     ERESULT         BlkdRcds16_Disable (
-        BLKDRCDS16_DATA		*this
+        BLKDRCDS16_DATA       *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
         if (!BlkdRcds16_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
 
         // Put code here...
 
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
         obj_Disable(this);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -818,26 +857,28 @@ extern "C" {
                 error code.
      */
     ERESULT         BlkdRcds16_Enable (
-        BLKDRCDS16_DATA		*this
+        BLKDRCDS16_DATA       *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-    #ifdef NDEBUG
-    #else
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
         if (!BlkdRcds16_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-    #endif
+#endif
         
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -867,16 +908,21 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);    // Needed for Inheritance
+        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        // If you use inheritance, remember to change the obj_ClassObj reference 
+        // in the OBJ_INFO at the end of BlkdRcds16_object.c
         this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_BLKDRCDS16);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //obj_setSize(this, cbSize);                        // Needed for Inheritance
+        obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&BlkdRcds16_Vtbl);
+#ifdef  BLKDRCDS16_JSON_SUPPORT
+        JsonIn_RegisterClass(BlkdRcds16_Class());
+#endif
         
         /*
         this->pArray = ObjArray_New( );
@@ -887,18 +933,23 @@ extern "C" {
         }
         */
 
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
         if (!BlkdRcds16_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-#ifdef __APPLE__
-        //fprintf(stderr, "BlkdRcds16::sizeof(BLKDRCDS16_DATA) = %lu\n", sizeof(BLKDRCDS16_DATA));
+#if defined(__APPLE__) && defined(XYZZY)
+//#if defined(__APPLE__)
+        fprintf(
+                stderr, 
+                "BlkdRcds16::sizeof(BLKDRCDS16_DATA) = %lu\n", 
+                sizeof(BLKDRCDS16_DATA)
+        );
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(BLKDRCDS16_DATA));
-    #endif
+#endif
 
         return this;
     }
@@ -906,11 +957,11 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
     ERESULT         BlkdRcds16_IsEnabled (
-        BLKDRCDS16_DATA		*this
+        BLKDRCDS16_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -934,21 +985,6 @@ extern "C" {
     
     
     
-    //---------------------------------------------------------------
-    //                P a r s e  J s o n  O b j e c t
-    //---------------------------------------------------------------
-    
-#ifdef  BLKDRCDS16_JSON_SUPPORT
-     BLKDRCDS16_DATA * BlkdRcds16_ParseJsonObject (
-         JSONIN_DATA     *pParser
-    )
-    {
-        return OBJ_NIL;
-    }
-#endif
-        
-        
-        
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -998,33 +1034,29 @@ extern "C" {
         
         switch (type) {
                 
-        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(BLKDRCDS16_DATA);
-            break;
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(BLKDRCDS16_DATA);
+                break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
                 return (void *)BlkdRcds16_Class();
                 break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+                              
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -1043,11 +1075,25 @@ extern "C" {
                         }
                         break;
 
+                    case 'P':
+#ifdef  BLKDRCDS16_JSON_SUPPORT
+                        if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                            return BlkdRcds16_ParseJsonFields;
+                        }
+                        if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                            return BlkdRcds16_ParseJsonObject;
+                        }
+#endif
+                        break;
+
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
                             return BlkdRcds16_ToDebugString;
                         }
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  BLKDRCDS16_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return BlkdRcds16_ToJsonFields;
+                        }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
                             return BlkdRcds16_ToJson;
                         }
@@ -1062,7 +1108,7 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_PTR:
                 if (pData == BlkdRcds16_ToDebugString)
                     return "ToDebugString";
-#ifdef  SRCREF_JSON_SUPPORT
+#ifdef  BLKDRCDS16_JSON_SUPPORT
                 if (pData == BlkdRcds16_ToJson)
                     return "ToJson";
 #endif
@@ -1080,17 +1126,17 @@ extern "C" {
     //---------------------------------------------------------------
     //                  R e c o r d  A p p e n d
     //---------------------------------------------------------------
-    
+
     ERESULT         BlkdRcds16_RecordAppend (
         BLKDRCDS16_DATA *this,
         uint16_t        rcdSize,
         void            *pData,
-        uint16_t        *pIndex             // Optional Output Index
+        uint32_t        *pIndex             // Optional Output Index
     )
     {
         uint16_t        offset = 0;
         uint8_t         *pBlockData;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1098,21 +1144,19 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (this->pBlock) {
-        }
-        else {
+        if (NULL == this->pBlock) {
             return ERESULT_GENERAL_FAILURE;
         }
-        if ((rcdSize == 0) || (rcdSize >= 32768)) {
+        if ((rcdSize == 0) || (rcdSize >= DATA_BLOCK_MAX_SIZE)) {
             return ERESULT_DATA_SIZE;
         }
+#endif
         if ((rcdSize + sizeof(INDEX_RECORD)) > this->pBlock->unusedSize) {
             return ERESULT_DATA_TOO_BIG;
         }
-#endif
-        
+
         offset = sizeof(DATA_BLOCK);
-        offset += (this->pBlock->numRecords * sizeof(INDEX_RECORD));
+        offset += (this->pBlock->numRecords * sizeof(INDEX_RECORD)); // Record Index
         offset += this->pBlock->unusedSize;
         offset -= rcdSize;
         pBlockData = (((uint8_t *)this->pBlock) + offset);
@@ -1121,23 +1165,23 @@ extern "C" {
         this->pBlock->index[this->pBlock->numRecords].idxOffset = offset;
         this->pBlock->index[this->pBlock->numRecords].idxSize = rcdSize;
         ++this->pBlock->numRecords;
-        
+
         // Return to caller.
         if (pIndex) {
             *pIndex = this->pBlock->numRecords;
         }
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                  R e c o r d  D e l e t e
     //---------------------------------------------------------------
-    
+
     ERESULT         BlkdRcds16_RecordDelete (
-        BLKDRCDS16_DATA    *this,
-        uint16_t        index
+        BLKDRCDS16_DATA *this,
+        uint32_t        index
     )
     {
         uint16_t        dataOffset;
@@ -1147,7 +1191,7 @@ extern "C" {
         uint8_t         *start;
         uint8_t         *shiftTo;
         int             i;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1155,31 +1199,29 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (this->pBlock) {
-        }
-        else {
+        if (NULL == this->pBlock) {
             return ERESULT_GENERAL_FAILURE;
         }
         if ((index == 0) || (index > this->pBlock->numRecords)) {
             return ERESULT_OUT_OF_RANGE;
         }
 #endif
-        
-        dataOffset = this->pBlock->index[index-1].idxOffset;
-        dataSize = this->pBlock->index[index-1].idxSize;
+
+        dataOffset = this->pBlock->index[index - 1].idxOffset;
+        dataSize = this->pBlock->index[index - 1].idxSize;
         numShiftRcds = this->pBlock->numRecords - index;
-        
+
         if( numShiftRcds ) {
             // Shift the data.
             shiftSize = 0;
-            for( i=0; i<numShiftRcds; ++i ) {
+            for( i=0; i<numShiftRcds; i++ ) {
                 shiftSize += this->pBlock->index[index+i].idxSize;
             }
             if( shiftSize ) {
                 start = (uint8_t *)this->pBlock
                         + this->pBlock->index[this->pBlock->numRecords - 1].idxOffset;
                 shiftTo = start + dataSize;
-                memmove( shiftTo, start, shiftSize );
+                memmove(shiftTo, start, shiftSize);
             }
             // Shift the index.
             shiftSize = sizeof(INDEX_RECORD) * numShiftRcds;
@@ -1188,31 +1230,31 @@ extern "C" {
                 shiftTo = (uint8_t *)&this->pBlock->index[index-1];
                 memmove( shiftTo, start, shiftSize );
                 // Adjust the index for new offsets.
-                for( i=0; i<numShiftRcds; ++i ) {
+                for( i=0; i<numShiftRcds; i++ ) {
                     this->pBlock->index[index-1+i].idxOffset += dataSize;
                 }
             }
         }
-        
+
         // Give the record space back.
         this->pBlock->unusedSize += (dataSize + sizeof(INDEX_RECORD));
         --this->pBlock->numRecords;
         this->pBlock->index[this->pBlock->numRecords].idxOffset = 0;
         this->pBlock->index[this->pBlock->numRecords].idxSize = 0;
-        
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                  R e c o r d  G e t
     //---------------------------------------------------------------
-    
+
     ERESULT         BlkdRcds16_RecordGet (
-        BLKDRCDS16_DATA    *this,
-        uint16_t        index,
+        BLKDRCDS16_DATA *this,
+        uint32_t        index,
         uint16_t        dataSize,
         void            *pData,
         uint16_t        *pReturnedSize
@@ -1221,7 +1263,7 @@ extern "C" {
         INDEX_RECORD    *pIndex;
         uint16_t        size;
         uint8_t         *pBlockData;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1229,47 +1271,129 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (this->pBlock) {
-        }
-        else {
+        if (NULL == this->pBlock) {
             return ERESULT_GENERAL_FAILURE;
         }
         if ((index == 0) || (index > this->pBlock->numRecords)) {
             return ERESULT_OUT_OF_RANGE;
         }
 #endif
-        
-        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index-1]);
+
+        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index - 1]);
         size = pIndex->idxSize;
         pBlockData = (((uint8_t *)this->pBlock) + pIndex->idxOffset);
-        
+
         size = size < dataSize ? size : dataSize;
         if (pData && size) {
             memmove(pData, pBlockData, size);
         }
-        
+
         // Return to caller.
         if (pReturnedSize) {
             *pReturnedSize = size;
         }
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
-    //                  R e c o r d  G e t  S i z e
+    //                  R e c o r d  G e t  O f f s e t
     //---------------------------------------------------------------
-    
-    ERESULT         BlkdRcds16_RecordGetSize (
+
+    uint16_t        BlkdRcds16_RecordGetOffset (
         BLKDRCDS16_DATA *this,
-        uint16_t        index,
-        uint16_t        *pSize
+        uint16_t        index
     )
     {
         INDEX_RECORD    *pIndex;
-        uint16_t        size;
-        
+        uint16_t        size = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !BlkdRcds16_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return size;
+        }
+        if (NULL == this->pBlock) {
+            //return ERESULT_GENERAL_FAILURE;
+            return size;
+        }
+        if ((index == 0) || (index > this->pBlock->numRecords)) {
+            return ERESULT_OUT_OF_RANGE;
+        }
+#endif
+
+        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index - 1]);
+        size = pIndex->idxOffset;
+
+        // Return to caller.
+        return size;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  R e c o r d  G e t  S i z e
+    //---------------------------------------------------------------
+
+    uint16_t        BlkdRcds16_RecordGetSize (
+        BLKDRCDS16_DATA *this,
+        uint32_t        index
+    )
+    {
+        INDEX_RECORD    *pIndex;
+        uint16_t        size = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !BlkdRcds16_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return size;
+        }
+        if (NULL == this->pBlock) {
+            //return ERESULT_GENERAL_FAILURE;
+            return size;
+        }
+        if ((index == 0) || (index > this->pBlock->numRecords)) {
+            return ERESULT_OUT_OF_RANGE;
+        }
+#endif
+
+        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index - 1]);
+        size = pIndex->idxSize;
+
+        // Return to caller.
+        return size;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  R e c o r d  I n s e r t
+    //---------------------------------------------------------------
+
+    ERESULT         BlkdRcds16_RecordInsert (
+        BLKDRCDS16_DATA *this,
+        uint32_t        index,
+        uint16_t        rcdSize,
+        void            *pRecord
+    )
+    {
+        INDEX_RECORD    *pIndex;
+        uint16_t        dataShiftAmt = 0;
+        uint16_t        dataShiftOff = 0;
+        uint32_t        shiftFirstRcd;          // Relative to 1
+        uint32_t        shiftLastRcd;           // Relative to 1
+        uint32_t        shiftAmt;
+        uint8_t         *start;
+        uint8_t         *shiftTo;
+        int             i;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1277,35 +1401,49 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (this->pBlock) {
-        }
-        else {
+        if (NULL == this->pBlock) {
             return ERESULT_GENERAL_FAILURE;
         }
-        if ((index == 0) || (index > this->pBlock->numRecords)) {
+        if (index > this->pBlock->numRecords) {
             return ERESULT_OUT_OF_RANGE;
         }
-#endif
-        
-        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index-1]);
-        size = pIndex->idxSize;
-        
-        // Return to caller.
-        if (pSize) {
-            *pSize = size;
+        if ((rcdSize == 0) || (rcdSize >= DATA_BLOCK_MAX_SIZE)) {
+            return ERESULT_DATA_SIZE;
         }
+#endif
+        if ((rcdSize + sizeof(INDEX_RECORD)) > this->pBlock->unusedSize) {
+            return ERESULT_DATA_TOO_BIG;
+        }
+
+        shiftFirstRcd = index + 1;
+        shiftLastRcd = this->pBlock->numRecords;
+        pIndex = (INDEX_RECORD *)(&this->pBlock->index[shiftFirstRcd - 1]);
+
+        // Expand the index.
+        start = (uint8_t *)pIndex;
+        shiftTo = (uint8_t *)(pIndex + 1);
+        shiftAmt = (shiftLastRcd - shiftFirstRcd) * sizeof(INDEX_RECORD);
+        if (shiftAmt)
+            memmove(shiftTo, start, shiftAmt);
+
+        // Now add the record.
+        pIndex->idxSize = rcdSize;
+        start = (uint8_t *)this->pBlock + pIndex->idxOffset;
+        memmove(start, pRecord, rcdSize);
+
+        // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                  R e c o r d  U p d a t e
     //---------------------------------------------------------------
-    
+
     ERESULT         BlkdRcds16_RecordUpdate (
         BLKDRCDS16_DATA *this,
-        uint16_t        index,
+        uint32_t        index,
         uint16_t        dataSize,
         void            *pData
     )
@@ -1318,7 +1456,7 @@ extern "C" {
         uint8_t         *start;
         uint8_t         *shiftTo;
         int             i;
-        
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1326,23 +1464,21 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (this->pBlock) {
-        }
-        else {
+        if (NULL == this->pBlock) {
             return ERESULT_GENERAL_FAILURE;
         }
         if ((index == 0) || (index > this->pBlock->numRecords)) {
             return ERESULT_OUT_OF_RANGE;
         }
+#endif
         if (dataSize > (this->pBlock->unusedSize + this->pBlock->index[index-1].idxSize)) {
             return ERESULT_DATA_TOO_BIG;
         }
-#endif
-        
-        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index-1]);
+
+        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index - 1]);
         shiftFirstRcd = index + 1;
         shiftLastRcd = this->pBlock->numRecords;
-        
+
         if( dataSize == pIndex->idxSize )
             ;
         else {
@@ -1391,21 +1527,20 @@ extern "C" {
             this->pBlock->unusedSize += pIndex->idxSize;
             this->pBlock->unusedSize -= dataSize;
         }
-        
+
         pIndex->idxSize = dataSize;
         start = (uint8_t *)this->pBlock + pIndex->idxOffset;
-        memmove( start, pData, dataSize);
-       
+        memmove(start, pData, dataSize);
+
         // Return to caller.
         return ERESULT_SUCCESS;
     }
-    
-        
-        
+
+
     //---------------------------------------------------------------
     //             S e t u p  W i t h  B l o c k  S i z e
     //---------------------------------------------------------------
-    
+
     ERESULT         BlkdRcds16_SetupWithBlockSize (
         BLKDRCDS16_DATA *this,
         uint16_t        blockSize,
@@ -1414,7 +1549,7 @@ extern "C" {
     )
     {
         uint16_t        minSize;
-        
+
         #ifdef NDEBUG
         #else
                 if (!BlkdRcds16_Validate(this)) {
@@ -1422,18 +1557,18 @@ extern "C" {
                     return ERESULT_INVALID_OBJECT;
                 }
         #endif
-        
-        BlkdRcds16_FreeBlock(this);
-        
+
+        BlkdRcds16_BlockFree(this);
+
         this->blockSize = blockSize;
         this->rsvdSize = rsvdSize;
         if (0 == blockSize) {
             return ERESULT_SUCCESS;
         }
-        
+
         minSize = sizeof(DATA_BLOCK) + sizeof(INDEX_RECORD)
                 + rsvdSize + 1;
-        if ((blockSize < minSize) || (blockSize > 32768)) {
+        if ((blockSize < minSize) || (blockSize > DATA_BLOCK_MAX_SIZE)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
@@ -1453,7 +1588,7 @@ extern "C" {
             obj_Release(this);
             return ERESULT_OUT_OF_MEMORY;
         }
-        this->pBlock->cbSize = blockSize - sizeof(DATA_BLOCK);
+        this->pBlock->cbSize = blockSize;
         // Warning: The above limits the cbSize to less than 32768 which leaves
         //          the high order bit of cbSize available.
         this->pBlock->unusedSize = blockSize - sizeof(DATA_BLOCK) - rsvdSize;
@@ -1463,7 +1598,7 @@ extern "C" {
         return ERESULT_SUCCESS;
     }
 
-     
+
 
     //---------------------------------------------------------------
     //                          S p l i t
@@ -1471,97 +1606,91 @@ extern "C" {
 
     ERESULT         BlkdRcds16_Split (
         BLKDRCDS16_DATA *this,
-        BLKDRCDS16_DATA **ppLower,
         BLKDRCDS16_DATA **ppUpper
     )
     {
-        ERESULT         eRc;
-        uint32_t        minSize;
-        uint32_t        i;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        INDEX_RECORD    *pIndex;
+        uint16_t        size;
         uint32_t        amt = 0;
-        BLKDRCDS16_DATA *pLower = OBJ_NIL;
+        uint32_t        half;           // Half of the unused space
+        uint32_t        i;
+        uint32_t        j;
+        uint32_t        jMax;
+        uint8_t         *pBlockData;
         BLKDRCDS16_DATA *pUpper = OBJ_NIL;
-        uint16_t        rcdSize;
-        uint16_t        cRcds;
 
-        #ifdef NDEBUG
-        #else
-                if (!BlkdRcds16_Validate(this)) {
-                    DEBUG_BREAK();
-                    return ERESULT_INVALID_OBJECT;
-                }
-        #endif
-
-        minSize = this->blockSize / 2;
-        for (i=0; i<this->pBlock->numRecords; i++) {
-            rcdSize = 0;
-            eRc = BlkdRcds16_RecordGetSize(this, i+1, &rcdSize);
-            if (ERESULT_OK(eRc)) {
-                if ((amt + rcdSize) > minSize)
-                    break;
-                amt += rcdSize;
-            }
-        }
-        cRcds = i + 1;
-
-        if (amt) {
-
-        }
-
-        if (ppLower)
-            *ppLower = pLower;
-        else
-            obj_Release(pLower);
-        if (ppUpper)
-            *ppUpper = pUpper;
-        else
-            obj_Release(pUpper);
-        return ERESULT_SUCCESS;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-#ifdef  BLKDRCDS16_JSON_SUPPORT
-     ASTR_DATA *     BlkdRcds16_ToJson (
-        BLKDRCDS16_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
+        // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!BlkdRcds16_Validate(this)) {
+        if( !BlkdRcds16_Validate(this) ) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == this->pBlock) {
+            return ERESULT_GENERAL_FAILURE;
+        }
+        if (NULL == ppUpper) {
+            return ERESULT_GENERAL_FAILURE;
         }
 #endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
+
+        half = this->pBlock->cbSize - sizeof(DATA_BLOCK) - this->pBlock->rsvdSize;
+        half -= this->pBlock->numRecords * sizeof(INDEX_RECORD);
+        half /= 2;
+        if (half >= this->pBlock->unusedSize) {
+            // No, reason to split since we have lots of space left.
+            goto exit00;
         }
-        
-        return pStr;
+
+        for (i=0; i<this->pBlock->numRecords; i++) {
+            pIndex = (INDEX_RECORD *)(&this->pBlock->index[i]);
+            if ((amt + pIndex->idxSize) < half)
+                amt += pIndex->idxSize;
+            else
+                break;
+        }
+        // i gives the record close to the middle.
+
+        pUpper = BlkdRcds16_NewWithBlockSize(this->pBlock->cbSize, this->pBlock->rsvdSize);
+        if (OBJ_NIL == pUpper) {
+            eRc = ERESULT_OUT_OF_MEMORY;
+        }
+
+        jMax = this->pBlock->numRecords;
+        i++;
+        for (j=i; j<jMax; j++) {
+            uint16_t            rcdSize = 0;
+            pBlockData = BlkdRcds16_RecordPoint(this, i, &rcdSize);
+            if (pBlockData && rcdSize) {
+                eRc = BlkdRcds16_RecordAppend(pUpper, rcdSize, pBlockData, NULL);
+                if (ERESULT_OK(eRc)) {
+                    eRc = BlkdRcds16_RecordDelete(pUpper, i);
+                    if (ERESULT_FAILED(eRc)) {
+                        obj_Release(pUpper);
+                        pUpper = OBJ_NIL;
+                        eRc = ERESULT_GENERAL_FAILURE;
+                        goto exit00;
+                    }
+                } else {
+                    obj_Release(pUpper);
+                    pUpper = OBJ_NIL;
+                    eRc = ERESULT_GENERAL_FAILURE;
+                    goto exit00;
+                }
+            }
+        }
+
+        // Return to caller.
+    exit00:
+        if (ppUpper) {
+            *ppUpper = pUpper;
+        }
+        return eRc;
     }
-#endif
-    
-    
-    
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
@@ -1584,11 +1713,12 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        //int             j;
         ASTR_DATA       *pStr;
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
+        uint32_t        i;
+        //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1611,22 +1741,56 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d retain=%d\n",
+                    "{%p(%s) size=%d retain=%d  blockOverhead: %d  recordOverhead: %d\n",
                     this,
                     pInfo->pClassName,
                     BlkdRcds16_getSize(this),
-                    obj_getRetainCount(this)
+                    obj_getRetainCount(this),
+                    sizeof(DATA_BLOCK),
+                    sizeof(INDEX_RECORD)
             );
 
-#ifdef  XYZZY        
+        if (this->pBlock) {
+            if (indent) {
+                AStr_AppendCharRepeatA(pStr, indent, ' ');
+            }
+            eRc = AStr_AppendPrint(
+                        pStr,
+                        "\tBlocksize: %d  Reserved: %d  Unused: %d  NumRecords: %d\n",
+                        this->pBlock->cbSize,
+                        this->pBlock->rsvdSize,
+                        this->pBlock->unusedSize,
+                        this->pBlock->numRecords
+                );
+            for (i=0; i<this->pBlock->numRecords; i++) {
+                uint16_t        size;
+                uint16_t        offset;
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, indent, ' ');
+                }
+                offset = BlkdRcds16_RecordGetOffset(this, i+1);
+                size   = BlkdRcds16_RecordGetSize(this, i+1);
+                eRc = AStr_AppendPrint(
+                            pStr,
+                            "\t\tRecord: %d  Size: %d  Offset: %d\n",
+                            i+1,
+                            size,
+                            offset
+                    );
+            }
+        }
+
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -1650,8 +1814,8 @@ extern "C" {
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
-    #ifdef NDEBUG
-    #else
+#ifdef NDEBUG
+#else
     bool            BlkdRcds16_Validate (
         BLKDRCDS16_DATA      *this
     )
@@ -1683,13 +1847,13 @@ extern "C" {
         // Return to caller.
         return true;
     }
-    #endif
+#endif
 
 
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

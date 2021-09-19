@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   BlkdRcds16_internal.h
- *  Generated 09/18/2021 09:48:13
+ * File:   BPT32Leaf_internal.h
+ *  Generated 09/18/2021 16:00:38
  *
  * Notes:
  *  --  N/A
@@ -39,12 +39,12 @@
 
 
 
-#include        <BlkdRcds16.h>
+#include        <BPT32Leaf.h>
 #include        <JsonIn.h>
 
 
-#ifndef BLKDRCDS16_INTERNAL_H
-#define BLKDRCDS16_INTERNAL_H
+#ifndef BPT32LEAF_INTERNAL_H
+#define BPT32LEAF_INTERNAL_H
 
 
 
@@ -55,41 +55,34 @@ extern "C" {
 #endif
 
 
-
-
-#pragma pack(push, 1)
-    typedef struct index_record_s {
-        uint16_t        idxSize;        // Size of Data including this header
-        //              Bit 0x8000 of idxSize is available.
-        uint16_t        idxOffset;      // Offset of DATA_RECORD within block
-        //              Bit 0x8000 of idxOffset is available.
-    } INDEX_RECORD;
-#pragma pack(pop)
-
-
-
-    //                      Main Control Block
-    /* This control block resides at the beginning of block and is
-     * the information necessary to access the block data. The block
-     * size is limited to 32,768.
-     * The block index immediately follows the DATA_BLOCK and builds towards
-     * the data. The data is added at the top of the block towards the
-     * index. The reserved area is just above the data or at the end of block.
-     * WARNING -- Only use offsets, NO pointers/addresses within the block!
+    /*      Node Descriptor
      */
+    #pragma pack(push, 1)
+    typedef struct  BPT32Leaf_Node_s {
+        //uint32_t        prev;         // Previous Leaf Node Index
+        //uint32_t        next;         // Next Leaf Node Index
+        uint32_t        key;
+        uint16_t        cData;          // Data Length
+        uint8_t         data[0];
+    } BPT32LEAF_NODE;
+    #pragma pack(pop)
 
-#pragma pack(push, 1)
-    typedef struct data_block_s {
-        uint16_t        cbSize;         // Total Size of BLock including this header
-#define DATA_BLOCK_MAX_SIZE 0xFFFF
-        uint16_t        unusedSize;     // Amount of Data Unused between Index and
-        //                              // data records
-        uint16_t        rsvdSize;       // Reserved amount at Top of Block
-        uint16_t        numRecords;
-        uint16_t        keyLen;         // Optional key length (0 == no key)
-        INDEX_RECORD    index[0];       // Index
-    } DATA_BLOCK;
-#pragma pack(pop)
+
+    #pragma pack(push, 1)
+    typedef struct  BPT32Leaf_block_s {
+        uint16_t        blockType;      // BPT32LF_DATA
+        uint16_t        rsvd16;
+        uint16_t        dataSize;
+        uint16_t        actualSize;     // Actual Data Size rounded up
+        uint16_t        max;            // Maximum Number of nodes
+        uint16_t        used;           // Number of nodes in use
+        uint32_t        prev;           // Previous Leaf Node Index
+        uint32_t        next;           // Next Leaf Node Index
+        BPT32LEAF_NODE  nodes[0];
+    } BPT32LEAF_BLOCK;
+    #pragma pack(pop)
+
+
 
 
 
@@ -98,7 +91,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct BlkdRcds16_data_s  {
+struct BPT32Leaf_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -106,21 +99,18 @@ struct BlkdRcds16_data_s  {
 
     // Common Data
     ASTR_DATA       *pStr;
-    uint16_t        blockSize;
-    uint16_t        rsvdSize;
-    DATA_BLOCK      *pBlock;
-    uint8_t         fAlloc;
-    uint8_t         rsvd8[3];
+    uint16_t        size;           // maximum number of elements
+    uint16_t        rsvd16;
 
 };
 #pragma pack(pop)
 
     extern
-    struct BlkdRcds16_class_data_s  BlkdRcds16_ClassObj;
+    struct BPT32Leaf_class_data_s  BPT32Leaf_ClassObj;
 
     extern
     const
-    BLKDRCDS16_VTBL         BlkdRcds16_Vtbl;
+    BPT32LEAF_VTBL         BPT32Leaf_Vtbl;
 
 
 
@@ -128,13 +118,13 @@ struct BlkdRcds16_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  BLKDRCDS16_SINGLETON
-    BLKDRCDS16_DATA * BlkdRcds16_getSingleton (
+#ifdef  BPT32LEAF_SINGLETON
+    BPT32LEAF_DATA *     BPT32Leaf_getSingleton (
         void
     );
 
-    bool            BlkdRcds16_setSingleton (
-     BLKDRCDS16_DATA       *pValue
+    bool            BPT32Leaf_setSingleton (
+     BPT32LEAF_DATA       *pValue
 );
 #endif
 
@@ -144,40 +134,40 @@ struct BlkdRcds16_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  BlkdRcds16_getSuperVtbl (
-        BLKDRCDS16_DATA *this
+    OBJ_IUNKNOWN *  BPT32Leaf_getSuperVtbl (
+        BPT32LEAF_DATA     *this
     );
 
 
-    ERESULT         BlkdRcds16_Assign (
-        BLKDRCDS16_DATA *this,
-        BLKDRCDS16_DATA *pOther
+    ERESULT         BPT32Leaf_Assign (
+        BPT32LEAF_DATA    *this,
+        BPT32LEAF_DATA    *pOther
     );
 
 
-    BLKDRCDS16_DATA * BlkdRcds16_Copy (
-        BLKDRCDS16_DATA *this
+    BPT32LEAF_DATA *       BPT32Leaf_Copy (
+        BPT32LEAF_DATA     *this
     );
 
 
-    void            BlkdRcds16_Dealloc (
+    void            BPT32Leaf_Dealloc (
         OBJ_ID          objId
     );
 
 
-    BLKDRCDS16_DATA *     BlkdRcds16_DeepCopy (
-        BLKDRCDS16_DATA       *this
+    BPT32LEAF_DATA *     BPT32Leaf_DeepCopy (
+        BPT32LEAF_DATA       *this
     );
 
 
-#ifdef  BLKDRCDS16_JSON_SUPPORT
+#ifdef  BPT32LEAF_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    BLKDRCDS16_DATA *       BlkdRcds16_ParseJsonObject (
+    BPT32LEAF_DATA *       BPT32Leaf_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -191,41 +181,35 @@ struct BlkdRcds16_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         BlkdRcds16_ParseJsonFields (
+    ERESULT         BPT32Leaf_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        BLKDRCDS16_DATA     *pObject
+        BPT32LEAF_DATA     *pObject
     );
 #endif
 
 
-    void *          BlkdRcds16_QueryInfo (
+    void *          BPT32Leaf_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    uint16_t        BlkdRcds16_RecordGetOffset (
-        BLKDRCDS16_DATA *this,
-        uint16_t        index
-    );
-
-
-#ifdef  BLKDRCDS16_JSON_SUPPORT
+#ifdef  BPT32LEAF_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = BlkdRcds16_ToJson(this);
+     ASTR_DATA      *pDesc = BPT32Leaf_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     BlkdRcds16_ToJson (
-        BLKDRCDS16_DATA      *this
+    ASTR_DATA *     BPT32Leaf_ToJson (
+        BPT32LEAF_DATA      *this
     );
 
 
@@ -238,8 +222,8 @@ struct BlkdRcds16_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         BlkdRcds16_ToJsonFields (
-        BLKDRCDS16_DATA     *this,
+    ERESULT         BPT32Leaf_ToJsonFields (
+        BPT32LEAF_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -249,8 +233,8 @@ struct BlkdRcds16_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            BlkdRcds16_Validate (
-        BLKDRCDS16_DATA       *this
+    bool            BPT32Leaf_Validate (
+        BPT32LEAF_DATA       *this
     );
 #endif
 
@@ -260,5 +244,5 @@ struct BlkdRcds16_data_s  {
 }
 #endif
 
-#endif  /* BLKDRCDS16_INTERNAL_H */
+#endif  /* BPT32LEAF_INTERNAL_H */
 

@@ -445,7 +445,7 @@ extern "C" {
         uint8_t         *pValue
     )
     {
-        uint16_t        value = 0;
+        uint16_t        value;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -456,8 +456,8 @@ extern "C" {
         }
 #endif
         
-        value |= ((*pValue++ & 0xFF) << 8);
-        value |= (*pValue++ & 0xFF);
+        value  = ((*pValue++ & 0xFF) << 8);
+        value |= (*pValue & 0xFF);
         
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
@@ -470,7 +470,7 @@ extern "C" {
         uint8_t         *pValue
     )
     {
-        uint16_t        value = 0;
+        uint16_t        value;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -481,8 +481,8 @@ extern "C" {
         }
 #endif
         
-        value |= (*pValue++ & 0xFF);
-        value |= ((*pValue++ & 0xFF) << 8);
+        value  = (*pValue++ & 0xFF);
+        value |= ((*pValue & 0xFF) << 8);
         
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
@@ -500,7 +500,7 @@ extern "C" {
         uint8_t         *pValue
     )
     {
-        uint32_t        value = 0;
+        uint32_t        value;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -511,9 +511,9 @@ extern "C" {
         }
 #endif
         
-        value |= ((*pValue++ & 0xFF) << 16);
+        value  = ((*pValue++ & 0xFF) << 16);
         value |= ((*pValue++ & 0xFF) << 8);
-        value |= (*pValue++ & 0xFF);
+        value |= (*pValue & 0xFF);
         
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
@@ -526,7 +526,7 @@ extern "C" {
         uint8_t         *pValue
     )
     {
-        uint32_t        value = 0;
+        uint32_t        value;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -537,9 +537,9 @@ extern "C" {
         }
 #endif
         
-        value |= (*pValue++ & 0xFF);
+        value  = (*pValue++ & 0xFF);
         value |= ((*pValue++ & 0xFF) << 8);
-        value |= ((*pValue++ & 0xFF) << 16);
+        value |= ((*pValue & 0xFF) << 16);
         
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
@@ -557,7 +557,7 @@ extern "C" {
         uint8_t         *pValue
     )
     {
-        uint32_t        value = 0;
+        uint32_t        value;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -568,10 +568,10 @@ extern "C" {
         }
 #endif
         
-        value |= ((*pValue++ & 0xFF) << 24);
+        value  = ((*pValue++ & 0xFF) << 24);
         value |= ((*pValue++ & 0xFF) << 16);
         value |= ((*pValue++ & 0xFF) << 8);
-        value |= (*pValue++ & 0xFF);
+        value |= (*pValue & 0xFF);
         
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
@@ -584,7 +584,7 @@ extern "C" {
         uint8_t         *pValue
     )
     {
-        uint32_t        value = 0;
+        uint32_t        value;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -595,10 +595,10 @@ extern "C" {
         }
 #endif
         
-        value |= (*pValue++ & 0xFF);
+        value  = (*pValue++ & 0xFF);
         value |= ((*pValue++ & 0xFF) << 8);
         value |= ((*pValue++ & 0xFF) << 16);
-        value |= ((*pValue++ & 0xFF) << 24);
+        value |= ((*pValue & 0xFF) << 24);
         
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
@@ -616,7 +616,7 @@ extern "C" {
         uint8_t         *pValue
     )
     {
-        uint64_t        value = 0;
+        uint64_t        value;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -627,14 +627,14 @@ extern "C" {
         }
 #endif
         
-        value |= ((uint64_t)(*pValue++ & 0xFF) << 56);
+        value  = ((uint64_t)(*pValue++ & 0xFF) << 56);
         value |= ((uint64_t)(*pValue++ & 0xFF) << 48);
         value |= ((uint64_t)(*pValue++ & 0xFF) << 40);
         value |= ((uint64_t)(*pValue++ & 0xFF) << 32);
         value |= ((*pValue++ & 0xFF) << 24);
         value |= ((*pValue++ & 0xFF) << 16);
         value |= ((*pValue++ & 0xFF) << 8);
-        value |= (*pValue++ & 0xFF);
+        value |= (*pValue & 0xFF);
         
         // Return to caller.
         this->eRc = ERESULT_SUCCESS;
@@ -647,7 +647,7 @@ extern "C" {
         uint8_t         *pValue
     )
     {
-        uint64_t        value = 0;
+        uint64_t        value;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -658,7 +658,7 @@ extern "C" {
         }
 #endif
         
-        value |= (*pValue++ & 0xFF);
+        value  = (*pValue++ & 0xFF);
         value |= ((*pValue++ & 0xFF) << 8);
         value |= ((*pValue++ & 0xFF) << 16);
         value |= ((*pValue++ & 0xFF) << 24);
