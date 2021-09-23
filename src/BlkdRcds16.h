@@ -23,6 +23,7 @@
  *    1.    Records are numbered starting with 1.
  *          If zero is returned for a record index, it should be
  *          considered an error.
+ *    2.    All internal values are stored in Big Endian format.
  *
  * References:
  *  *      "Data Structures and Algorithms", Alfred V. Aho et al,
@@ -269,22 +270,49 @@ extern "C" {
 
 
     /*!
+    Insert a record into the block after the record identified by the index.
+    @param     this         object pointer
+    @param     index        record number (relative to 1) to be inserted after
+                            (0 is allowed to insert at the beginning of the block)
+    @param     rcdSize      size of the supplied record to be inserted
+    @param     pRecord      pointer to the record to be inserted.
+    @return    If successful, ERESULT_SUCCESS. An ERESULT_* error code.
+    */
+    ERESULT         BlkdRcds16_RecordInsert (
+        BLKDRCDS16_DATA *this,
+        uint32_t        index,
+        uint16_t        rcdSize,
+        void            *pRecord
+    );
+
+
+    /*!
     Return the size of the record relative to property: Begin.
     @param     this         object pointer
     @param     index        record number (relative to 1)
     @return    If successful, record size in bytes. Otherwise, 0.
     */
-    uint16_t        BlkdRcds16_RecordGetSize (
+    uint16_t        BlkdRcds16_RecordSize (
        BLKDRCDS16_DATA *this,
        uint32_t        index
     );
 
 
+    /*!
+     Update a record's data if possible. The data size may be changed as well
+     as long as it still fits in the block.
+    @param     this         object pointer
+    @param     index        record number (relative to 1) to be updated
+                            (The record must already exist.)
+    @param     rcdSize      size of the supplied record to be inserted
+    @param     pRecord      pointer to the record to be inserted.
+    @return    If successful, ERESULT_SUCCESS. An ERESULT_* error code.
+    */
     ERESULT         BlkdRcds16_RecordUpdate (
        BLKDRCDS16_DATA *this,
        uint32_t        index,
-       uint16_t        dataSize,
-       void            *pData
+       uint16_t        rcdSize,
+       void            *pRecord
     );
 
 

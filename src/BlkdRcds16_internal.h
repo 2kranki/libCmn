@@ -60,9 +60,6 @@ extern "C" {
 #pragma pack(push, 1)
     typedef struct index_record_s {
         uint16_t        idxSize;        // Size of Data including this header
-        //              Bit 0x8000 of idxSize is available.
-        uint16_t        idxOffset;      // Offset of DATA_RECORD within block
-        //              Bit 0x8000 of idxOffset is available.
     } INDEX_RECORD;
 #pragma pack(pop)
 
@@ -86,7 +83,6 @@ extern "C" {
         //                              // data records
         uint16_t        rsvdSize;       // Reserved amount at Top of Block
         uint16_t        numRecords;
-        uint16_t        keyLen;         // Optional key length (0 == no key)
         INDEX_RECORD    index[0];       // Index
     } DATA_BLOCK;
 #pragma pack(pop)
@@ -144,6 +140,46 @@ struct BlkdRcds16_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    uint16_t        BlkdRcds16_getBlockSize (
+        BLKDRCDS16_DATA *this
+    );
+
+    bool            BlkdRcds16_setBlockSize (
+        BLKDRCDS16_DATA *this,
+        uint16_t        value
+    );
+
+
+    uint16_t        BlkdRcds16_getNumRecords (
+        BLKDRCDS16_DATA *this
+    );
+
+    bool            BlkdRcds16_setNumRecords (
+        BLKDRCDS16_DATA *this,
+        uint16_t        value
+    );
+
+
+    uint16_t        BlkdRcds16_getReservedSize (
+        BLKDRCDS16_DATA *this
+    );
+
+    bool            BlkdRcds16_setReservedSize (
+        BLKDRCDS16_DATA *this,
+        uint16_t        value
+    );
+
+
+    uint16_t        BlkdRcds16_getUnused (
+        BLKDRCDS16_DATA *this
+    );
+
+    bool            BlkdRcds16_setUnused (
+        BLKDRCDS16_DATA *this,
+        uint16_t        value
+    );
+
+
     OBJ_IUNKNOWN *  BlkdRcds16_getSuperVtbl (
         BLKDRCDS16_DATA *this
     );
@@ -160,12 +196,45 @@ struct BlkdRcds16_data_s  {
     );
 
 
+    /*!
+     Point to a Data Record in the buffer.
+     @param     this    object pointer
+     @param     index   record index (relative to 1)
+     @return    If successful, data record address in block and optionally its size;
+                otherwise, NULL.
+     */
+    void *          BlkdRcds16_DataAddr (
+        BLKDRCDS16_DATA *this,
+        uint32_t        index
+    );
+
+
+    /*!
+     Get a Data Record's offset within the data area. Normally, you would
+     supply both the index (relative to 1) and the record size. However,
+     if you supply 0 for the index and a record size, then the offset returned
+     will be for a first record with that record size. If you supply 1 for
+     the index and 0 for the record size, you will get the offset for the
+     first record.
+     @param     this        object pointer
+     @param     index       record index (relative to 1), 0 assumes first record
+     @param     recordSize  optional record size for a new record
+     @return    If successful, data record address in block and optionally its size;
+                otherwise, NULL.
+     */
+    uint16_t        BlkdRcds16_DataOffset (
+        BLKDRCDS16_DATA *this,
+        uint16_t        index,
+        uint16_t        recordSize
+    );
+
+
     void            BlkdRcds16_Dealloc (
         OBJ_ID          objId
     );
 
 
-    BLKDRCDS16_DATA *     BlkdRcds16_DeepCopy (
+    BLKDRCDS16_DATA * BlkdRcds16_DeepCopy (
         BLKDRCDS16_DATA       *this
     );
 

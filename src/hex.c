@@ -97,10 +97,10 @@ extern "C" {
         
         //  Display the line.
         if (f64) {
-            len += hex_putU64Obj( this, offset, pObject, pPutChar );
+            len += hex_putU64Obj(this, offset, pObject, pPutChar);
         }
         else {
-            len += hex_putU32Obj( this, (uint32_t)offset, pObject, pPutChar );
+            len += hex_putU32Obj(this, (uint32_t)offset, pObject, pPutChar);
         }
         fRc = pPutChar(pObject, ' ');
         if (fRc) {
@@ -1030,7 +1030,7 @@ extern "C" {
         // Print the byte.
         this->pLen = pLen;
         this->ppBuffer = ppBuffer;
-        len = hex_putBytes16Obj(this, true, offset, cData, pData, this, (void *)hex_putChar );
+        len = hex_putBytes16Obj(this, true, offset, cData, pData, this, (void *)hex_putChar);
         
         // Return to caller.
         return len;

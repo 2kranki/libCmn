@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 9/14/2021 13:10:20.000)
+# ( 9/19/2021 16:40:17.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -321,6 +321,16 @@ $(OBJDIR)/Ebcdic.o: $(SRCDIR)/Ebcdic.c $(SRCDIR)/Ebcdic.h $(SRCDIR)/Ebcdic_inter
 OBJS += $(OBJDIR)/Ebcdic_object.o
 
 $(OBJDIR)/Ebcdic_object.o: $(SRCDIR)/Ebcdic_object.c $(SRCDIR)/Ebcdic.h $(SRCDIR)/Ebcdic_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Endian.o
+
+$(OBJDIR)/Endian.o: $(SRCDIR)/Endian.c $(SRCDIR)/Endian.h $(SRCDIR)/Endian_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Endian_object.o
+
+$(OBJDIR)/Endian_object.o: $(SRCDIR)/Endian_object.c $(SRCDIR)/Endian.h $(SRCDIR)/Endian_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/False.o
@@ -1578,36 +1588,6 @@ OBJS += $(OBJDIR)/block32_object.o
 $(OBJDIR)/block32_object.o: $(SRCDIR)/block32_object.c $(SRCDIR)/block32.h $(SRCDIR)/block32_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/bpt32.o
-
-$(OBJDIR)/bpt32.o: $(SRCDIR)/bpt32.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32lf.h $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bpt32_object.o
-
-$(OBJDIR)/bpt32_object.o: $(SRCDIR)/bpt32_object.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32lf.h $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bpt32idx.o
-
-$(OBJDIR)/bpt32idx.o: $(SRCDIR)/bpt32idx.c $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32idx_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bpt32idx_object.o
-
-$(OBJDIR)/bpt32idx_object.o: $(SRCDIR)/bpt32idx_object.c $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32idx_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bpt32lf.o
-
-$(OBJDIR)/bpt32lf.o: $(SRCDIR)/bpt32lf.c $(SRCDIR)/bpt32lf.h $(SRCDIR)/bpt32lf_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/bpt32lf_object.o
-
-$(OBJDIR)/bpt32lf_object.o: $(SRCDIR)/bpt32lf_object.c $(SRCDIR)/bpt32lf.h $(SRCDIR)/bpt32lf_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/cb.o
 
 $(OBJDIR)/cb.o: $(SRCDIR)/cb.c $(SRCDIR)/cb.h $(SRCDIR)/cb_internal.h $(SRCDIR)/cmn_defs.h 
@@ -1696,16 +1676,6 @@ $(OBJDIR)/eResult.o: $(SRCDIR)/eResult.c $(SRCDIR)/eResult.h $(SRCDIR)/eResult_i
 OBJS += $(OBJDIR)/eResult_object.o
 
 $(OBJDIR)/eResult_object.o: $(SRCDIR)/eResult_object.c $(SRCDIR)/eResult.h $(SRCDIR)/eResult_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/endian.o
-
-$(OBJDIR)/endian.o: $(SRCDIR)/endian.c $(SRCDIR)/endian.h $(SRCDIR)/endian_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/endian_object.o
-
-$(OBJDIR)/endian_object.o: $(SRCDIR)/endian_object.c $(SRCDIR)/endian.h $(SRCDIR)/endian_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/enum.o
@@ -2232,6 +2202,12 @@ Dir_test: $(TEST_SRC)/Dir_test.c $(SRCDIR)/Dir.h $(SRCDIR)/Dir_internal.h $(SRCD
 TESTS += Ebcdic_test
 
 Ebcdic_test: $(TEST_SRC)/Ebcdic_test.c $(SRCDIR)/Ebcdic.h $(SRCDIR)/Ebcdic_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += Endian_test
+
+Endian_test: $(TEST_SRC)/Endian_test.c $(SRCDIR)/Endian.h $(SRCDIR)/Endian_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
@@ -2823,18 +2799,6 @@ block32_test: $(TEST_SRC)/block32_test.c $(SRCDIR)/block32.h $(SRCDIR)/block32_i
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
-TESTS += bpt32_test
-
-bpt32_test: $(TEST_SRC)/bpt32_test.c $(SRCDIR)/bpt32.h $(SRCDIR)/bpt32_internal.h $(SRCDIR)/bpt32idx.h $(SRCDIR)/bpt32lf.h $(SRCDIR)/rrds.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F) --no_int3
-
-TESTS += bpt32lf_test
-
-bpt32lf_test: $(TEST_SRC)/bpt32lf_test.c $(SRCDIR)/bpt32lf.h $(SRCDIR)/bpt32lf_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F) --no_int3
-
 TESTS += cb16_test
 
 cb16_test: $(TEST_SRC)/cb16_test.c $(SRCDIR)/cb16.h $(SRCDIR)/cb16_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2880,12 +2844,6 @@ dec_test: $(TEST_SRC)/dec_test.c $(SRCDIR)/dec.h $(SRCDIR)/dec_internal.h $(SRCD
 TESTS += eResult_test
 
 eResult_test: $(TEST_SRC)/eResult_test.c $(SRCDIR)/eResult.h $(SRCDIR)/eResult_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F) --no_int3
-
-TESTS += endian_test
-
-endian_test: $(TEST_SRC)/endian_test.c $(SRCDIR)/endian.h $(SRCDIR)/endian_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

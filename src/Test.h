@@ -193,6 +193,24 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Dump the given data area to stderr.
+     @param     this    object pointer
+     @param     size    number of bytes to dump
+     @param     pData   pointer to data to be dumped
+     @param     pTitle  Optional Title pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Test_Dump (
+        TEST_DATA       *this,
+        uint32_t        size,
+        void            *pData,
+        const
+        char            *pTitle
+    );
+
+
     ERESULT         Test_Exec (
         TEST_DATA       *this,
         const

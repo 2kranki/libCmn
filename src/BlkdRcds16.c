@@ -6,25 +6,37 @@
  */
 
 /*
- The record grows from the bottom up.  The index grows from the top
- down. The unused space is the space in-between. To get the valid
- offset to the next data record, we must add back in the size of
- block header and the index.  The reserved area is beyond the index
- and data areas. So, it does not affect these calculations.
 
-            +--------------------------+
-            |      Block Header        |
-            +--------------------------+
-            |          Index           |
-            | (Grows down toward Data) |
-            +--------------------------+
-            |      Unused Space        |
-            +--------------------------+
-            |      Data Records        |
-            | (Grows up toward Index)  |
-            +--------------------------+
-            |      Reserved Data       |
-            +--------------------------+
+        The record grows from the bottom up.  The index grows from the top
+        down. The unused space is the space in-between. To get the valid
+        offset to the next data record, we must add back in the size of
+        block header and the index.  The reserved area is beyond the index
+        and data areas. So, it does not affect these calculations.
+
+    Offset
+      0                                     +==========================+
+                                            |      Block Header        |
+                                            +==========================+
+ sizeof(DATA_BLOCK)                         |          Index           |
+                                            | (Grows down toward Data) |
+                                            +--------------------------+
+                                            |   Index 1 - 20 bytes     |
+                                            +--------------------------+
+ sizeof(DATA_BLOCK) + sizeof(INDEX_RECORD)  |   Index 2 - 30 bytes     |
+                                            +==========================+
+                                            |                          |
+                                            |      Unused Space        |
+                                            |                          |
+                                            +==========================+
+                                            |      Data Records        |
+                                            | (Grows up toward Index)  |
+                                            +--------------------------+
+  blockSize - reserved_size - 20            | Data Record 2 - 30 bytes |
+                                            +--------------------------+
+  blockSize - reserved_size                 | Data Record 1 - 20 bytes |
+                                            +==========================+
+                                            |      Reserved Data       |
+                                            +==========================+
  */
  
 /*
@@ -63,13 +75,16 @@
 
 /* Header File Inclusion */
 #include        <BlkdRcds16_internal.h>
+#include        <Endian.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
 
 
 
-
+// Address of Index Entry for x'th entry (x relative to 0)
+#define IndexPtr(x)\
+        (INDEX_RECORD *)(((uint8_t *)this->pBlock)+sizeof(DATA_BLOCK)+(x * sizeof(INDEX_RECORD)))
 
 
 #ifdef  __cplusplus
@@ -110,13 +125,41 @@ extern "C" {
     }
 
 
+
+    /*!
+     Point to a Data Record in the buffer.
+     @param     this    object pointer
+     @param     index   record index (relative to 1)
+     @return    If successful, data record address in block and optionally its size;
+                otherwise, NULL.
+     */
+    void *          BlkdRcds16_DataAddr (
+        BLKDRCDS16_DATA *this,
+        uint32_t        index
+    )
+    {
+        uint8_t         *pBlockData;
+        int32_t         offset = 0;
+
+        offset = BlkdRcds16_DataOffset(this, index, 0);
+        if (0 == offset)
+            return NULL;
+
+        pBlockData = (((uint8_t *)this->pBlock) + offset);
+
+        // Return to caller.
+        return pBlockData;
+    }
+
+
+
     //---------------------------------------------------------------
-    //                      D a t a  S h i f t
+    //                      D a t a  E x p a n d
     //---------------------------------------------------------------
 
-    ERESULT         BlkdRcds16_DataShift (
+    ERESULT         BlkdRcds16_DataExpand (
         BLKDRCDS16_DATA *this,
-        uint32_t        index,
+        uint32_t        index,              // Relative to 0
         uint32_t        amt
     )
     {
@@ -130,7 +173,6 @@ extern "C" {
 
         // Do initialization.
 
-        dataOffset = this->pBlock->index[index - 1].idxOffset;
         dataSize = this->pBlock->index[index - 1].idxSize;
         numShiftRcds = this->pBlock->numRecords - index;
 
@@ -140,6 +182,7 @@ extern "C" {
             for( i=0; i<numShiftRcds; i++ ) {
                 shiftSize += this->pBlock->index[index+i].idxSize;
             }
+#ifdef IMPLEMENT
             if( shiftSize ) {
                 start = (uint8_t *)this->pBlock
                         + this->pBlock->index[this->pBlock->numRecords - 1].idxOffset;
@@ -157,6 +200,7 @@ extern "C" {
                     this->pBlock->index[index-1+i].idxOffset += dataSize;
                 }
             }
+#endif
         }
 
         // Return to caller.
@@ -165,28 +209,70 @@ extern "C" {
 
 
 
-    void *          BlkdRcds16_RecordPoint (
+    /*!
+     Get a Data Record's offset within the data area. Normally, you would
+     supply both the index (relative to 1) and the record size. However,
+     if you supply 0 for the index and a record size, then the offset returned
+     will be for a first record with that record size. If you supply 1 for
+     the index and 0 for the record size, you will get the offset for the
+     first record.
+     @param     this        object pointer
+     @param     index       record index (relative to 1), 0 assumes first record
+     @param     recordSize  optional record size for a new record
+     @return    If successful, data record address in block and optionally its size;
+                otherwise, NULL.
+     */
+    uint16_t        BlkdRcds16_DataOffset (
         BLKDRCDS16_DATA *this,
-        uint32_t        index,
-        uint16_t        *pReturnedSize
+        uint16_t        index,
+        uint16_t        recordSize
     )
     {
         INDEX_RECORD    *pIndex;
-        uint16_t        size;
-        uint8_t         *pBlockData;
+        int32_t         offset = 0;
+        int             i;
 
-        if (index >= this->pBlock->numRecords)
-            return NULL;
+        // Do initialization.
+        if (index > this->pBlock->numRecords)
+            return 0;
 
-        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index - 1]);
-        size = pIndex->idxSize;
-        pBlockData = (((uint8_t *)this->pBlock) + pIndex->idxOffset);
+        offset += BlkdRcds16_getBlockSize(this) - BlkdRcds16_getReservedSize(this);
+        if (index) {
+            for (i=0; i<=(index-1); i++) {
+                pIndex = IndexPtr(i);
+                offset -= Endian_GetU16Big(&pIndex->idxSize);
+            }
+        }
+        offset -= recordSize;
 
         // Return to caller.
-        if (pReturnedSize) {
-            *pReturnedSize = size;
+        return (uint16_t)(offset & 0xFFFF);
+    }
+
+
+
+    ERESULT         BlkdRcds16_DataSizeSet (
+        BLKDRCDS16_DATA *this,
+        uint16_t        index,
+        uint16_t        rcdSize
+    )
+    {
+        INDEX_RECORD    *pIndex;
+        int32_t         offset;
+
+        // Do initialization.
+        if (index == 0) {
+            return ERESULT_OUT_OF_RANGE;
         }
-        return pBlockData;
+
+        // Set index with record size.
+        offset = sizeof(DATA_BLOCK);
+        offset += (index - 1) * sizeof(INDEX_RECORD);
+        pIndex = (INDEX_RECORD *)(((uint8_t *)this->pBlock) + offset);
+        Endian_PutU16Big(&pIndex->idxSize, rcdSize);
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
 
 
@@ -312,6 +398,50 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                   B l o c k   S i z e
+    //---------------------------------------------------------------
+
+    uint16_t        BlkdRcds16_getBlockSize (
+        BLKDRCDS16_DATA *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!BlkdRcds16_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        if (NULL == this->pBlock)
+            return 0;
+
+        return Endian_GetU16Big(&this->pBlock->cbSize);
+    }
+
+
+    bool            BlkdRcds16_setBlockSize (
+        BLKDRCDS16_DATA *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!BlkdRcds16_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        if (NULL == this->pBlock)
+            return false;
+
+        Endian_PutU16Big(&this->pBlock->cbSize, value);
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       D a t a
     //---------------------------------------------------------------
 
@@ -355,7 +485,7 @@ extern "C" {
     //                N u m b e r  o f  R e c o r d s
     //---------------------------------------------------------------
 
-    uint16_t        BlkdRcds16_getNumRecords(
+    uint16_t        BlkdRcds16_getNumRecords (
         BLKDRCDS16_DATA *this
     )
     {
@@ -365,18 +495,36 @@ extern "C" {
             DEBUG_BREAK();
             return 0;
         }
-        if (this->pBlock) {
-        }
-        else {
+#endif
+        if (NULL == this->pBlock) {
             return 0;
         }
-#endif
 
-        return this->pBlock->numRecords;
+        return Endian_GetU16Big(&this->pBlock->numRecords);
     }
 
 
-     //---------------------------------------------------------------
+
+
+    bool            BlkdRcds16_setNumRecords (
+        BLKDRCDS16_DATA *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!BlkdRcds16_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Endian_PutU16Big(&this->pBlock->numRecords, value);
+
+        return true;
+    }
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -413,6 +561,50 @@ extern "C" {
 #endif
 
         //this->priority = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                   R e s e r v e d   S i z e
+    //---------------------------------------------------------------
+
+    uint16_t        BlkdRcds16_getReservedSize (
+        BLKDRCDS16_DATA *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!BlkdRcds16_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        if (NULL == this->pBlock)
+            return 0;
+
+        return Endian_GetU16Big(&this->pBlock->rsvdSize);
+    }
+
+
+    bool            BlkdRcds16_setReservedSize (
+        BLKDRCDS16_DATA *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!BlkdRcds16_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        if (NULL == this->pBlock)
+            return false;
+
+        Endian_PutU16Big(&this->pBlock->rsvdSize, value);
 
         return true;
     }
@@ -524,15 +716,34 @@ extern "C" {
             DEBUG_BREAK();
             return 0;
         }
-        if (this->pBlock) {
-        }
-        else {
+#endif
+        if (NULL == this->pBlock) {
             DEBUG_BREAK();
             return 0;
         }
-#endif
 
-        return this->pBlock->unusedSize;
+        return Endian_GetU16Big(&this->pBlock->unusedSize);
+    }
+
+
+    bool            BlkdRcds16_setUnused (
+        BLKDRCDS16_DATA *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!BlkdRcds16_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        if (NULL == this->pBlock)
+            return false;
+
+        Endian_PutU16Big(&this->pBlock->unusedSize, value);
+
+        return true;
     }
 
 
@@ -1131,9 +1342,12 @@ extern "C" {
         BLKDRCDS16_DATA *this,
         uint16_t        rcdSize,
         void            *pData,
-        uint32_t        *pIndex             // Optional Output Index
+        uint32_t        *pRcdNum                // OUT - Optional Record Number
     )
     {
+        ERESULT         eRc;
+        uint16_t        amt;
+        uint16_t        rcdNum;
         uint16_t        offset = 0;
         uint8_t         *pBlockData;
 
@@ -1151,24 +1365,30 @@ extern "C" {
             return ERESULT_DATA_SIZE;
         }
 #endif
-        if ((rcdSize + sizeof(INDEX_RECORD)) > this->pBlock->unusedSize) {
+        if ((rcdSize + sizeof(INDEX_RECORD)) > BlkdRcds16_getUnused(this)) {
             return ERESULT_DATA_TOO_BIG;
         }
 
-        offset = sizeof(DATA_BLOCK);
-        offset += (this->pBlock->numRecords * sizeof(INDEX_RECORD)); // Record Index
-        offset += this->pBlock->unusedSize;
-        offset -= rcdSize;
+        offset = BlkdRcds16_DataOffset(this, BlkdRcds16_getNumRecords(this), rcdSize);
         pBlockData = (((uint8_t *)this->pBlock) + offset);
         memmove(pBlockData, pData, rcdSize);
-        this->pBlock->unusedSize -= rcdSize + sizeof(INDEX_RECORD);
-        this->pBlock->index[this->pBlock->numRecords].idxOffset = offset;
-        this->pBlock->index[this->pBlock->numRecords].idxSize = rcdSize;
-        ++this->pBlock->numRecords;
+
+        // Update Number of Records.
+        rcdNum = BlkdRcds16_getNumRecords(this);
+        rcdNum++;
+        BlkdRcds16_setNumRecords(this, rcdNum);
+
+        // Set index with record size.
+        eRc = BlkdRcds16_DataSizeSet(this, rcdNum, rcdSize);
+
+        // Remove used record space from unused.
+        amt = BlkdRcds16_getUnused(this);
+        amt -= rcdSize + sizeof(INDEX_RECORD);
+        BlkdRcds16_setUnused(this, amt);
 
         // Return to caller.
-        if (pIndex) {
-            *pIndex = this->pBlock->numRecords;
+        if (pRcdNum) {
+            *pRcdNum = rcdNum;
         }
         return ERESULT_SUCCESS;
     }
@@ -1184,12 +1404,13 @@ extern "C" {
         uint32_t        index
     )
     {
-        uint16_t        dataOffset;
-        uint16_t        dataSize;
+        uint16_t        rcdSize;
+        uint16_t        rcdNum;
+        int32_t         amt;
         uint16_t        numShiftRcds;
         uint16_t        shiftSize;
-        uint8_t         *start;
-        uint8_t         *shiftTo;
+        uint8_t         *pStart;
+        uint8_t         *pShiftTo;
         int             i;
 
         // Do initialization.
@@ -1202,45 +1423,58 @@ extern "C" {
         if (NULL == this->pBlock) {
             return ERESULT_GENERAL_FAILURE;
         }
-        if ((index == 0) || (index > this->pBlock->numRecords)) {
+        if ((index == 0) || (index > BlkdRcds16_getNumRecords(this))) {
             return ERESULT_OUT_OF_RANGE;
         }
 #endif
+        rcdSize = BlkdRcds16_RecordSize(this, index);
+        BREAK_ZERO(rcdSize);
 
-        dataOffset = this->pBlock->index[index - 1].idxOffset;
-        dataSize = this->pBlock->index[index - 1].idxSize;
-        numShiftRcds = this->pBlock->numRecords - index;
-
-        if( numShiftRcds ) {
-            // Shift the data.
+        // Remove the record.
+        if (index == BlkdRcds16_getNumRecords(this)) {
+            // If it is the highest record, we only need to
+            // adjust the record count and the unused amount.
+        }
+        else {
+            numShiftRcds = BlkdRcds16_getNumRecords(this) - index;
+            // Shift the data above the record down.
             shiftSize = 0;
             for( i=0; i<numShiftRcds; i++ ) {
-                shiftSize += this->pBlock->index[index+i].idxSize;
+                shiftSize += BlkdRcds16_RecordSize(this, index+i+1);
             }
             if( shiftSize ) {
-                start = (uint8_t *)this->pBlock
-                        + this->pBlock->index[this->pBlock->numRecords - 1].idxOffset;
-                shiftTo = start + dataSize;
-                memmove(shiftTo, start, shiftSize);
+                // Shift the rcords down.
+                pStart = BlkdRcds16_DataAddr(this, BlkdRcds16_getNumRecords(this));
+                pShiftTo = pStart + rcdSize;
+                memmove(pShiftTo, pStart, shiftSize);
+#ifdef NDEBUG
+#else
+                memset(pStart, 0, rcdSize);
+#endif
             }
-            // Shift the index.
+            // Shift the index up.
             shiftSize = sizeof(INDEX_RECORD) * numShiftRcds;
-            if( shiftSize ) {
-                start = (uint8_t *)&this->pBlock->index[index];
-                shiftTo = (uint8_t *)&this->pBlock->index[index-1];
-                memmove( shiftTo, start, shiftSize );
-                // Adjust the index for new offsets.
-                for( i=0; i<numShiftRcds; i++ ) {
-                    this->pBlock->index[index-1+i].idxOffset += dataSize;
-                }
+            if (shiftSize) {
+                pStart = (uint8_t *)&this->pBlock->index[index];
+                pShiftTo = pStart - sizeof(INDEX_RECORD);
+                memmove(pShiftTo, pStart, shiftSize);
+#ifdef NDEBUG
+#else
+                pStart = (uint8_t *)&this->pBlock->index[BlkdRcds16_getNumRecords(this)-1];
+                memset(pStart, 0, sizeof(INDEX_RECORD));
+#endif
             }
         }
 
-        // Give the record space back.
-        this->pBlock->unusedSize += (dataSize + sizeof(INDEX_RECORD));
-        --this->pBlock->numRecords;
-        this->pBlock->index[this->pBlock->numRecords].idxOffset = 0;
-        this->pBlock->index[this->pBlock->numRecords].idxSize = 0;
+        // Update Number of Records.
+        rcdNum = BlkdRcds16_getNumRecords(this);
+        rcdNum--;
+        BlkdRcds16_setNumRecords(this, rcdNum);
+
+        // Add used record space back to unused.
+        amt = BlkdRcds16_getUnused(this);
+        amt += rcdSize + sizeof(INDEX_RECORD);
+        BlkdRcds16_setUnused(this, amt);
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1260,8 +1494,8 @@ extern "C" {
         uint16_t        *pReturnedSize
     )
     {
-        INDEX_RECORD    *pIndex;
-        uint16_t        size;
+        uint16_t        rcdSize;
+        uint16_t        offset = 0;
         uint8_t         *pBlockData;
 
         // Do initialization.
@@ -1274,23 +1508,19 @@ extern "C" {
         if (NULL == this->pBlock) {
             return ERESULT_GENERAL_FAILURE;
         }
-        if ((index == 0) || (index > this->pBlock->numRecords)) {
+        if ((index == 0) || (index > BlkdRcds16_getNumRecords(this))) {
             return ERESULT_OUT_OF_RANGE;
         }
 #endif
 
-        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index - 1]);
-        size = pIndex->idxSize;
-        pBlockData = (((uint8_t *)this->pBlock) + pIndex->idxOffset);
-
-        size = size < dataSize ? size : dataSize;
-        if (pData && size) {
-            memmove(pData, pBlockData, size);
-        }
+        rcdSize = BlkdRcds16_RecordSize(this, index);
+        offset = BlkdRcds16_DataOffset(this, index, 0);
+        pBlockData = (((uint8_t *)this->pBlock) + offset);
+        memmove(pData, pBlockData, rcdSize);
 
         // Return to caller.
         if (pReturnedSize) {
-            *pReturnedSize = size;
+            *pReturnedSize = rcdSize;
         }
         return ERESULT_SUCCESS;
     }
@@ -1298,53 +1528,16 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                  R e c o r d  G e t  O f f s e t
+    //                  R e c o r d  S i z e
     //---------------------------------------------------------------
 
-    uint16_t        BlkdRcds16_RecordGetOffset (
-        BLKDRCDS16_DATA *this,
-        uint16_t        index
-    )
-    {
-        INDEX_RECORD    *pIndex;
-        uint16_t        size = 0;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if( !BlkdRcds16_Validate(this) ) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return size;
-        }
-        if (NULL == this->pBlock) {
-            //return ERESULT_GENERAL_FAILURE;
-            return size;
-        }
-        if ((index == 0) || (index > this->pBlock->numRecords)) {
-            return ERESULT_OUT_OF_RANGE;
-        }
-#endif
-
-        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index - 1]);
-        size = pIndex->idxOffset;
-
-        // Return to caller.
-        return size;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                  R e c o r d  G e t  S i z e
-    //---------------------------------------------------------------
-
-    uint16_t        BlkdRcds16_RecordGetSize (
+    uint16_t        BlkdRcds16_RecordSize (
         BLKDRCDS16_DATA *this,
         uint32_t        index
     )
     {
         INDEX_RECORD    *pIndex;
+        int32_t         offset;
         uint16_t        size = 0;
 
         // Do initialization.
@@ -1359,13 +1552,16 @@ extern "C" {
             //return ERESULT_GENERAL_FAILURE;
             return size;
         }
-        if ((index == 0) || (index > this->pBlock->numRecords)) {
-            return ERESULT_OUT_OF_RANGE;
+        if ((index == 0) || (index > BlkdRcds16_getNumRecords(this))) {
+            //return ERESULT_OUT_OF_RANGE;
+            return size;
         }
 #endif
 
-        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index - 1]);
-        size = pIndex->idxSize;
+        offset = sizeof(DATA_BLOCK);
+        offset += (index - 1) * sizeof(INDEX_RECORD);
+        pIndex = (INDEX_RECORD *)(((uint8_t *)this->pBlock) + offset);
+        size = Endian_GetU16Big(&pIndex->idxSize);
 
         // Return to caller.
         return size;
@@ -1384,15 +1580,16 @@ extern "C" {
         void            *pRecord
     )
     {
-        INDEX_RECORD    *pIndex;
-        uint16_t        dataShiftAmt = 0;
-        uint16_t        dataShiftOff = 0;
+        ERESULT         eRc;
+        int32_t         shiftAmt = 0;
         uint32_t        shiftFirstRcd;          // Relative to 1
         uint32_t        shiftLastRcd;           // Relative to 1
-        uint32_t        shiftAmt;
-        uint8_t         *start;
-        uint8_t         *shiftTo;
+        uint16_t        rcdNum;
         int             i;
+        uint16_t        numShiftRcds;
+        uint16_t        shiftSize;
+        uint8_t         *pStart;
+        uint8_t         *pShiftTo;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1404,32 +1601,60 @@ extern "C" {
         if (NULL == this->pBlock) {
             return ERESULT_GENERAL_FAILURE;
         }
-        if (index > this->pBlock->numRecords) {
+        if (index > BlkdRcds16_getNumRecords(this)) {
             return ERESULT_OUT_OF_RANGE;
         }
         if ((rcdSize == 0) || (rcdSize >= DATA_BLOCK_MAX_SIZE)) {
             return ERESULT_DATA_SIZE;
         }
 #endif
-        if ((rcdSize + sizeof(INDEX_RECORD)) > this->pBlock->unusedSize) {
+        if ((rcdSize + sizeof(INDEX_RECORD)) > BlkdRcds16_getUnused(this)) {
             return ERESULT_DATA_TOO_BIG;
         }
 
         shiftFirstRcd = index + 1;
-        shiftLastRcd = this->pBlock->numRecords;
-        pIndex = (INDEX_RECORD *)(&this->pBlock->index[shiftFirstRcd - 1]);
+        shiftLastRcd = BlkdRcds16_getNumRecords(this);
+        shiftSize = 0;
+        if (index == BlkdRcds16_getUnused(this)) {      // *** Append ***
+            numShiftRcds = 0;
+            pStart = BlkdRcds16_DataAddr(this, shiftLastRcd) - rcdSize;
+            memmove(pStart, pRecord, rcdSize);
+            eRc = BlkdRcds16_DataSizeSet(this, shiftLastRcd+1, rcdSize);
+        } else {                                        // *** Insert ***
+            numShiftRcds = shiftLastRcd - shiftFirstRcd + 1;
+            for( i=0; i<numShiftRcds; i++ ) {
+                shiftSize += BlkdRcds16_RecordSize(this, index+i+1);
+            }
+            // Now we shift the records up making a hole for the
+            // new record.
+            pStart = BlkdRcds16_DataAddr(this, shiftLastRcd);
+            pShiftTo = pStart - rcdSize;
+            memmove(pShiftTo, pStart, shiftSize);
+            // Add the record.
+            pStart = BlkdRcds16_DataAddr(this, shiftFirstRcd);
+            pStart += BlkdRcds16_RecordSize(this, shiftFirstRcd);
+            pStart -= rcdSize;
+            memmove(pStart, pRecord, rcdSize);
 
-        // Expand the index.
-        start = (uint8_t *)pIndex;
-        shiftTo = (uint8_t *)(pIndex + 1);
-        shiftAmt = (shiftLastRcd - shiftFirstRcd) * sizeof(INDEX_RECORD);
-        if (shiftAmt)
-            memmove(shiftTo, start, shiftAmt);
+            // Shift the index down making room for the new entry.
+            shiftSize = sizeof(INDEX_RECORD) * numShiftRcds;
+            if (shiftSize) {
+                pStart = (uint8_t *)&this->pBlock->index[shiftFirstRcd-1];
+                pShiftTo = pStart + sizeof(INDEX_RECORD);
+                memmove(pShiftTo, pStart, shiftSize);
+            }
+            eRc = BlkdRcds16_DataSizeSet(this, shiftFirstRcd, rcdSize);
+        }
 
-        // Now add the record.
-        pIndex->idxSize = rcdSize;
-        start = (uint8_t *)this->pBlock + pIndex->idxOffset;
-        memmove(start, pRecord, rcdSize);
+        // Update Number of Records.
+        rcdNum = BlkdRcds16_getNumRecords(this);
+        rcdNum++;
+        BlkdRcds16_setNumRecords(this, rcdNum);
+
+        // Add used record space back to unused.
+        shiftAmt = BlkdRcds16_getUnused(this);
+        shiftAmt -= rcdSize + sizeof(INDEX_RECORD);
+        BlkdRcds16_setUnused(this, shiftAmt);
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1444,18 +1669,21 @@ extern "C" {
     ERESULT         BlkdRcds16_RecordUpdate (
         BLKDRCDS16_DATA *this,
         uint32_t        index,
-        uint16_t        dataSize,
-        void            *pData
+        uint16_t        rcdSize,
+        void            *pRecord
     )
     {
-        INDEX_RECORD    *pIndex;
-        uint16_t        dataShiftAmt = 0;
-        uint16_t        dataShiftOff = 0;
+        ERESULT         eRc;
         uint16_t        shiftFirstRcd;          // Relative to 1
         uint16_t        shiftLastRcd;           // Relative to 1
-        uint8_t         *start;
-        uint8_t         *shiftTo;
         int             i;
+        uint16_t        numShiftRcds;
+        uint16_t        shiftSize;
+        uint8_t         *pStart;
+        uint8_t         *pShiftTo;
+        uint8_t         *pOldRecord;
+        uint16_t        oldRcdSize;
+        int32_t         rcdDiff;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1467,70 +1695,46 @@ extern "C" {
         if (NULL == this->pBlock) {
             return ERESULT_GENERAL_FAILURE;
         }
-        if ((index == 0) || (index > this->pBlock->numRecords)) {
+        if ((index == 0) || (index > BlkdRcds16_getNumRecords(this))) {
             return ERESULT_OUT_OF_RANGE;
         }
 #endif
-        if (dataSize > (this->pBlock->unusedSize + this->pBlock->index[index-1].idxSize)) {
+        oldRcdSize = BlkdRcds16_RecordSize(this, index);
+        pOldRecord = BlkdRcds16_DataAddr(this, index);
+        shiftFirstRcd = index + 1;
+        shiftLastRcd = BlkdRcds16_getNumRecords(this);
+        shiftSize = 0;
+        rcdDiff = rcdSize - oldRcdSize;
+        if ((rcdDiff > 0) && (rcdDiff > BlkdRcds16_getUnused(this))) {
             return ERESULT_DATA_TOO_BIG;
         }
-
-        pIndex = (INDEX_RECORD *)(&this->pBlock->index[index - 1]);
-        shiftFirstRcd = index + 1;
-        shiftLastRcd = this->pBlock->numRecords;
-
-        if( dataSize == pIndex->idxSize )
-            ;
-        else {
-            if (dataSize < pIndex->idxSize) {
-                dataShiftOff = pIndex->idxSize - dataSize;
-                if( (index < this->pBlock->numRecords) && dataShiftOff ) {
-                    // Shift the data towards the end of the block closing the hole.
-                    dataShiftAmt = 0;
-                    for( i=shiftFirstRcd; i<=shiftLastRcd; ++i ) {
-                        dataShiftAmt += this->pBlock->index[i-1].idxSize;
-                    }
-                    if( dataShiftAmt ) {
-                        start = (uint8_t *)this->pBlock
-                                + this->pBlock->index[shiftLastRcd-1].idxOffset;
-                        shiftTo = start + dataShiftOff;
-                        memmove( shiftTo, start, dataShiftAmt );
-                    }
-                    // Adjust the index for new offsets.
-                    for( i=shiftFirstRcd; i<=shiftLastRcd; ++i ) {
-                        this->pBlock->index[i-1].idxOffset += dataShiftOff;
-                    }
-                }
-                pIndex->idxOffset += dataShiftOff;
-            }
-            else {
-                dataShiftOff = dataSize - pIndex->idxSize;
-                if( (index < this->pBlock->numRecords) && dataShiftOff ) {
-                    // Shift the data towards the beginning of the block to make more room.
-                    dataShiftAmt = 0;
-                    for( i=shiftFirstRcd; i<=shiftLastRcd; ++i ) {
-                        dataShiftAmt += this->pBlock->index[i-1].idxSize;
-                    }
-                    if( dataShiftAmt ) {
-                        start = (uint8_t *)this->pBlock
-                                + this->pBlock->index[shiftLastRcd-1].idxOffset;
-                        shiftTo = start - dataShiftOff;
-                        memmove( shiftTo, start, dataShiftAmt );
-                    }
-                    // Adjust the index for new offsets.
-                    for( i=shiftFirstRcd; i<=shiftLastRcd; ++i ) {
-                        this->pBlock->index[i-1].idxOffset -= dataShiftOff;
-                    }
-                }
-                pIndex->idxOffset -= dataShiftOff;
-            }
-            this->pBlock->unusedSize += pIndex->idxSize;
-            this->pBlock->unusedSize -= dataSize;
+        if ((rcdDiff < 0) && ((rcdDiff + oldRcdSize) <= 0)) {
+            return ERESULT_DATA_TOO_SMALL;
         }
 
-        pIndex->idxSize = dataSize;
-        start = (uint8_t *)this->pBlock + pIndex->idxOffset;
-        memmove(start, pData, dataSize);
+        if (0 == rcdDiff) {
+            pStart = BlkdRcds16_DataAddr(this, index);
+            memmove(pStart, pRecord, rcdSize);
+        } else {        // Greater than zero
+            numShiftRcds = shiftLastRcd - shiftFirstRcd + 1;
+            for( i=0; i<numShiftRcds; i++ ) {
+                shiftSize += BlkdRcds16_RecordSize(this, index+i+1);
+            }
+            // Now we shift the records up/down making a hole
+            // for the new record.
+            pStart = BlkdRcds16_DataAddr(this, shiftLastRcd);
+            pShiftTo = pStart - rcdDiff;
+            memmove(pShiftTo, pStart, shiftSize);
+            // Update the record.
+            pStart = pOldRecord;
+            pStart -= rcdDiff;
+            memmove(pStart, pRecord, rcdSize);
+            eRc = BlkdRcds16_DataSizeSet(this, index, rcdSize);
+            // Add used record space back to unused.
+            shiftSize = BlkdRcds16_getUnused(this);
+            shiftSize -= rcdDiff;
+            BlkdRcds16_setUnused(this, shiftSize);
+        }
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1550,21 +1754,21 @@ extern "C" {
     {
         uint16_t        minSize;
 
-        #ifdef NDEBUG
-        #else
-                if (!BlkdRcds16_Validate(this)) {
-                    DEBUG_BREAK();
-                    return ERESULT_INVALID_OBJECT;
-                }
-        #endif
+#ifdef NDEBUG
+#else
+        if (!BlkdRcds16_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        if (0 == blockSize) {
+            return ERESULT_INVALID_PARAMETER;
+        }
 
         BlkdRcds16_BlockFree(this);
 
         this->blockSize = blockSize;
         this->rsvdSize = rsvdSize;
-        if (0 == blockSize) {
-            return ERESULT_SUCCESS;
-        }
 
         minSize = sizeof(DATA_BLOCK) + sizeof(INDEX_RECORD)
                 + rsvdSize + 1;
@@ -1588,12 +1792,12 @@ extern "C" {
             obj_Release(this);
             return ERESULT_OUT_OF_MEMORY;
         }
-        this->pBlock->cbSize = blockSize;
+        BlkdRcds16_setBlockSize(this, blockSize);
         // Warning: The above limits the cbSize to less than 32768 which leaves
         //          the high order bit of cbSize available.
-        this->pBlock->unusedSize = blockSize - sizeof(DATA_BLOCK) - rsvdSize;
-        this->pBlock->rsvdSize = rsvdSize;
-        this->pBlock->numRecords = 0;
+        BlkdRcds16_setUnused(this, (blockSize - sizeof(DATA_BLOCK) - rsvdSize));
+        BlkdRcds16_setReservedSize(this, rsvdSize);
+        BlkdRcds16_setNumRecords(this, 0);
 
         return ERESULT_SUCCESS;
     }
@@ -1634,6 +1838,7 @@ extern "C" {
             return ERESULT_GENERAL_FAILURE;
         }
 #endif
+        return ERESULT_NOT_IMPLEMENTED;
 
         half = this->pBlock->cbSize - sizeof(DATA_BLOCK) - this->pBlock->rsvdSize;
         half -= this->pBlock->numRecords * sizeof(INDEX_RECORD);
@@ -1661,7 +1866,7 @@ extern "C" {
         i++;
         for (j=i; j<jMax; j++) {
             uint16_t            rcdSize = 0;
-            pBlockData = BlkdRcds16_RecordPoint(this, i, &rcdSize);
+            //FIXME: pBlockData = BlkdRcds16_RecordPoint(this, i, &rcdSize);
             if (pBlockData && rcdSize) {
                 eRc = BlkdRcds16_RecordAppend(pUpper, rcdSize, pBlockData, NULL);
                 if (ERESULT_OK(eRc)) {
@@ -1757,25 +1962,22 @@ extern "C" {
             eRc = AStr_AppendPrint(
                         pStr,
                         "\tBlocksize: %d  Reserved: %d  Unused: %d  NumRecords: %d\n",
-                        this->pBlock->cbSize,
-                        this->pBlock->rsvdSize,
-                        this->pBlock->unusedSize,
-                        this->pBlock->numRecords
+                        BlkdRcds16_getBlockSize(this),
+                        BlkdRcds16_getReservedSize(this),
+                        BlkdRcds16_getUnused(this),
+                        BlkdRcds16_getNumRecords(this)
                 );
-            for (i=0; i<this->pBlock->numRecords; i++) {
+            for (i=0; i<BlkdRcds16_getNumRecords(this); i++) {
                 uint16_t        size;
-                uint16_t        offset;
                 if (indent) {
                     AStr_AppendCharRepeatA(pStr, indent, ' ');
                 }
-                offset = BlkdRcds16_RecordGetOffset(this, i+1);
-                size   = BlkdRcds16_RecordGetSize(this, i+1);
+                size   = BlkdRcds16_RecordSize(this, i+1);
                 eRc = AStr_AppendPrint(
                             pStr,
-                            "\t\tRecord: %d  Size: %d  Offset: %d\n",
+                            "\t\tRecord: %d  Size: %d\n",
                             i+1,
-                            size,
-                            offset
+                            size
                     );
             }
         }

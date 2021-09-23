@@ -66,6 +66,7 @@
 #include    <Test_internal.h>
 #include    <trace.h>
 #include    <BlkdRcds16_internal.h>
+#include    <hex.h>
 #include    <JsonIn.h>
 #include    <SrcErrors.h>
 #include    <szTbl.h>
@@ -140,7 +141,7 @@ ERESULT         Test_BlkdRcds16_OpenClose (
 
         size = BlkdRcds16_CalcFromRecordSize(10, 8, 64);
         fprintf(stderr, "\tSize = %d\n", size);
-        TestForTrue((562 == size),  "Blocksize miscalculation");
+        TestForTrue((546 == size),  "Blocksize miscalculation");
 
         size = BlkdRcds16_CalcUseableSizeFromBlockSize(1024, 0);
         fprintf(stderr, "\tSize = %d\n", size);
@@ -148,10 +149,10 @@ ERESULT         Test_BlkdRcds16_OpenClose (
 
         eRc = BlkdRcds16_SetupWithBlockSize(pObj, 1024, 0, NULL);
         TestForSuccess("Setup failed");
-        TestForTrue((1024 == pObj->pBlock->cbSize), "blocksize - bad setup");
-        TestForTrue((0    == pObj->pBlock->rsvdSize), "reserved size - bad setup");
-        TestForTrue((1016 == pObj->pBlock->unusedSize), "Useable space - bad setup");
-        TestForTrue((0    == pObj->pBlock->numRecords), "number of records - bad setup");
+        TestForTrue((1024 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0    == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((1016 == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((0    == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");
 
         {
             ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
@@ -289,10 +290,10 @@ ERESULT         Test_BlkdRcds16_Test01 (
             }
         }
         TestForNotNull(pObj->pBlock, "Missing Block");
-        TestForTrue((40 == pObj->pBlock->cbSize), "blocksize - bad setup");
-        TestForTrue((0  == pObj->pBlock->rsvdSize), "reserved size - bad setup");
-        TestForTrue((32 == pObj->pBlock->unusedSize), "Useable space - bad setup");
-        TestForTrue((0  == pObj->pBlock->numRecords), "number of records - bad setup");
+        TestForTrue((40 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0  == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((32 == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((0  == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");
 
         size = BlkdRcds16_getNumRecords(pObj);
         TestForTrue((0 == size), "Invalid number of records");
@@ -311,7 +312,10 @@ ERESULT         Test_BlkdRcds16_Test01 (
         eRc = BlkdRcds16_RecordAppend(pObj, size, (void *)pData, &index);
         TestForSuccess("Append failed");
         TestForTrue((1 == index), "Invalid index number");
-        TestForTrue((size == BlkdRcds16_RecordGetSize(pObj, index)), "Invalid index number");
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        rcdSize = BlkdRcds16_RecordSize(pObj, index);
+        fprintf(stderr, "\trcdSize: %d\n", rcdSize);
+        TestForTrue((size == rcdSize), "Invalid index size");
         {
             ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
             if (pStr) {
@@ -320,15 +324,15 @@ ERESULT         Test_BlkdRcds16_Test01 (
                 pStr = OBJ_NIL;
             }
         }
-        TestForNotNull(pObj->pBlock, "Missing Block");
-        TestForTrue((40 == pObj->pBlock->cbSize), "blocksize - bad setup");
-        TestForTrue((0  == pObj->pBlock->rsvdSize), "reserved size - bad setup");
-        TestForTrue((21 == pObj->pBlock->unusedSize), "Useable space - bad setup");
-        TestForTrue((1  == pObj->pBlock->numRecords), "number of records - bad setup");
+        Test_Dump(this, 40, pObj->pBlock, "After add of Word6");
+        TestForTrue((40 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0  == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((23 == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((1  == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");
         eRc = BlkdRcds16_RecordGet(pObj, index, sizeof(data), (void *)data, &used);
         TestForSuccess("Get failed");
-        TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
         TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
+        TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
 
         fprintf(stderr, "\n\n\t*** Appending Word04 ***\n");
         {
@@ -344,7 +348,7 @@ ERESULT         Test_BlkdRcds16_Test01 (
         eRc = BlkdRcds16_RecordAppend(pObj, size, (void *)pData, &index);
         TestForSuccess("Append failed");
         TestForTrue((2 == index), "Invalid index number");
-        TestForTrue((size == BlkdRcds16_RecordGetSize(pObj, index)), "Invalid index number");
+        TestForTrue((size == BlkdRcds16_RecordSize(pObj, index)), "Invalid index number");
         {
             ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
             if (pStr) {
@@ -354,10 +358,10 @@ ERESULT         Test_BlkdRcds16_Test01 (
             }
         }
         TestForNotNull(pObj->pBlock, "Missing Block");
-        TestForTrue((40 == pObj->pBlock->cbSize), "blocksize - bad setup");
-        TestForTrue((0  == pObj->pBlock->rsvdSize), "reserved size - bad setup");
-        TestForTrue((12 == pObj->pBlock->unusedSize), "Useable space - bad setup");
-        TestForTrue((2  == pObj->pBlock->numRecords), "number of records - bad setup");
+        TestForTrue((40 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0  == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((16 == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((2  == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");
         eRc = BlkdRcds16_RecordGet(pObj, index, sizeof(data), (void *)data, &used);
         TestForSuccess("Get failed");
         TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
@@ -381,7 +385,7 @@ ERESULT         Test_BlkdRcds16_Test01 (
         eRc = BlkdRcds16_RecordAppend(pObj, size, (void *)pData, &index);
         TestForSuccess("Append failed");
         TestForTrue((3 == index), "Invalid index number");
-        TestForTrue((size == BlkdRcds16_RecordGetSize(pObj, index)), "Invalid index number");
+        TestForTrue((size == BlkdRcds16_RecordSize(pObj, index)), "Invalid index number");
         {
             ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
             if (pStr) {
@@ -391,11 +395,10 @@ ERESULT         Test_BlkdRcds16_Test01 (
             }
         }
         TestForNotNull(pObj->pBlock, "Missing Block");
-        TestForTrue((40 == pObj->pBlock->cbSize), "blocksize - bad setup");
-        TestForTrue((0  == pObj->pBlock->rsvdSize), "reserved size - bad setup");
-        TestForTrue((5  == pObj->pBlock->unusedSize), "Useable space - bad setup");
-        TestForTrue((3  == pObj->pBlock->numRecords), "number of records - bad setup");
-        eRc = BlkdRcds16_RecordGet(pObj, index, sizeof(data), (void *)data, &used);
+        TestForTrue((40 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0  == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((11 == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((3  == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");        eRc = BlkdRcds16_RecordGet(pObj, index, sizeof(data), (void *)data, &used);
         TestForSuccess("Get failed");
         TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
         TestForTrue((strlen(pWord2) + 1  == used), "Get used failed");
@@ -408,8 +411,44 @@ ERESULT         Test_BlkdRcds16_Test01 (
         TestForTrue((0  == strcmp(pWord4, data)), "Get compare failed");
         TestForTrue((strlen(pWord4) + 1  == used), "Get used failed");
 
-        size = strlen(pWord2) + 1;
-        pData = pWord2;
+        fprintf(stderr, "\n\n\t*** Appending Word06 ***\n");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Before: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        size = strlen(pWord6) + 1;
+        pData = pWord6;
+        eRc = BlkdRcds16_RecordAppend(pObj, size, (void *)pData, &index);
+        TestForSuccess("Append failed");
+        TestForTrue((4 == index), "Invalid index number");
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        rcdSize = BlkdRcds16_RecordSize(pObj, index);
+        fprintf(stderr, "\trcdSize: %d\n", rcdSize);
+        TestForTrue((size == rcdSize), "Invalid index size");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "After: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        Test_Dump(this, 40, pObj->pBlock, "After add of Word6");
+        TestForTrue((40 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0  == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((2  == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((4  == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");
+        eRc = BlkdRcds16_RecordGet(pObj, index, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
+        TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
+
+        size = strlen(pWord6) + 1;
+        pData = pWord6;
         eRc = BlkdRcds16_RecordAppend(pObj, size, (void *)pData, &index);
         TestForFail("Append worked");
         eRc = ERESULT_SUCCESS;
@@ -423,8 +462,10 @@ ERESULT         Test_BlkdRcds16_Test01 (
                 pStr = OBJ_NIL;
             }
         }
+        Test_Dump(this, 40, pObj->pBlock, "Before delete");
         eRc = BlkdRcds16_RecordDelete(pObj, 2);
         TestForSuccess("Delete failed");
+        Test_Dump(this, 40, pObj->pBlock, "After delete");
         {
             ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
             if (pStr) {
@@ -434,10 +475,10 @@ ERESULT         Test_BlkdRcds16_Test01 (
             }
         }
         TestForNotNull(pObj->pBlock, "Missing Block");
-        TestForTrue((40 == pObj->pBlock->cbSize), "blocksize - bad setup");
-        TestForTrue((0  == pObj->pBlock->rsvdSize), "reserved size - bad setup");
-        TestForTrue((14  == pObj->pBlock->unusedSize), "Useable space - bad setup");
-        TestForTrue((2  == pObj->pBlock->numRecords), "number of records - bad setup");
+        TestForTrue((40 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0  == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((9  == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((3  == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");
         eRc = BlkdRcds16_RecordGet(pObj, 1, sizeof(data), (void *)data, &used);
         TestForSuccess("Get failed");
         TestForTrue((0  == strcmp(pWord6, data)), "Get compare failed");
@@ -446,15 +487,266 @@ ERESULT         Test_BlkdRcds16_Test01 (
         TestForSuccess("Get failed");
         TestForTrue((0  == strcmp(pWord2, data)), "Get compare failed");
         TestForTrue((strlen(pWord2) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 3, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord6, data)), "Get compare failed");
+        TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
 
+        fprintf(stderr, "\n\n\t*** Deleting Record 1 ***\n");
         {
             ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
             if (pStr) {
-                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                fprintf(stderr, "Before: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
         }
+        Test_Dump(this, 40, pObj->pBlock, "Before delete");
+        eRc = BlkdRcds16_RecordDelete(pObj, 1);
+        TestForSuccess("Delete failed");
+        Test_Dump(this, 40, pObj->pBlock, "After delete");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "After: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        TestForTrue((40 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0  == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((18 == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((2  == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");
+        eRc = BlkdRcds16_RecordGet(pObj, 1, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord2, data)), "Get compare failed");
+        TestForTrue((strlen(pWord2) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 2, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord6, data)), "Get compare failed");
+        TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
+
+        fprintf(stderr, "\n\n\t*** Inserting Word02 ***\n");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Before: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        Test_Dump(this, 40, pObj->pBlock, "Before Insert 0");
+        size = strlen(pWord4) + 1;
+        pData = pWord4;
+        eRc = BlkdRcds16_RecordInsert(pObj, 0, size, (void *)pData);
+        TestForSuccess("Insert failed");
+        Test_Dump(this, 40, pObj->pBlock, "After Insert 0");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "After: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        TestForTrue((40 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0  == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((11 == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((3  == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");
+        eRc = BlkdRcds16_RecordGet(pObj, 1, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
+        TestForTrue((size  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 2, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord2, data)), "Get compare failed");
+        TestForTrue((strlen(pWord2) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 3, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord6, data)), "Get compare failed");
+        TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
+
+        fprintf(stderr, "\n\n\t*** Inserting Word02 Last ***\n");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Before: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        Test_Dump(this, 40, pObj->pBlock, "Before Insert Last");
+        size = strlen(pWord4) + 1;
+        pData = pWord4;
+        eRc = BlkdRcds16_RecordInsert(pObj, 3, size, (void *)pData);
+        TestForSuccess("Insert failed");
+        Test_Dump(this, 40, pObj->pBlock, "After Insert Last");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "After: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        TestForTrue((40 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0  == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((4  == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((4  == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");
+        eRc = BlkdRcds16_RecordGet(pObj, 1, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
+        TestForTrue((size  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 2, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord2, data)), "Get compare failed");
+        TestForTrue((strlen(pWord2) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 3, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord6, data)), "Get compare failed");
+        TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 4, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
+        TestForTrue((size  == used), "Get used failed");
+
+        fprintf(stderr, "\n\n\t*** Updating 2 ***\n");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Before: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        Test_Dump(this, 40, pObj->pBlock, "Before Update");
+        size = 3;
+        pData = "cd";
+        eRc = BlkdRcds16_RecordUpdate(pObj, 2, size, (void *)pData);
+        TestForSuccess("Insert failed");
+        Test_Dump(this, 40, pObj->pBlock, "After Update");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "After: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        TestForTrue((40 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0  == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((4  == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((4  == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");
+        eRc = BlkdRcds16_RecordGet(pObj, 2, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
+        TestForTrue((size  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 1, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord4, data)), "Get compare failed");
+        TestForTrue((strlen(pWord4) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 3, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord6, data)), "Get compare failed");
+        TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 4, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord4, data)), "Get compare failed");
+        TestForTrue((strlen(pWord4) + 1  == used), "Get used failed");
+
+        fprintf(stderr, "\n\n\t*** Updating 2 ***\n");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Before: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        Test_Dump(this, 40, pObj->pBlock, "Before Update");
+        size = 4;
+        pData = "efg";
+        eRc = BlkdRcds16_RecordUpdate(pObj, 2, size, (void *)pData);
+        TestForSuccess("Insert failed");
+        Test_Dump(this, 40, pObj->pBlock, "After Update");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "After: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        TestForTrue((40 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0  == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((3  == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((4  == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");
+        eRc = BlkdRcds16_RecordGet(pObj, 2, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
+        TestForTrue((size  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 1, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord4, data)), "Get compare failed");
+        TestForTrue((strlen(pWord4) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 3, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord6, data)), "Get compare failed");
+        TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 4, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord4, data)), "Get compare failed");
+        TestForTrue((strlen(pWord4) + 1  == used), "Get used failed");
+
+        fprintf(stderr, "\n\n\t*** Updating 2 ***\n");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Before: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        Test_Dump(this, 40, pObj->pBlock, "Before Update");
+        size = 3;
+        pData = "cd";
+        eRc = BlkdRcds16_RecordUpdate(pObj, 2, size, (void *)pData);
+        TestForSuccess("Insert failed");
+        Test_Dump(this, 40, pObj->pBlock, "After Update");
+        {
+            ASTR_DATA       *pStr = BlkdRcds16_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "After: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        TestForNotNull(pObj->pBlock, "Missing Block");
+        TestForTrue((40 == BlkdRcds16_getBlockSize(pObj)), "blocksize - bad setup");
+        TestForTrue((0  == BlkdRcds16_getReservedSize(pObj)), "reserved size - bad setup");
+        TestForTrue((4  == BlkdRcds16_getUnused(pObj)), "Useable space - bad setup");
+        TestForTrue((4  == BlkdRcds16_getNumRecords(pObj)), "number of records - bad setup");
+        eRc = BlkdRcds16_RecordGet(pObj, 2, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pData, data)), "Get compare failed");
+        TestForTrue((size  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 1, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord4, data)), "Get compare failed");
+        TestForTrue((strlen(pWord4) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 3, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord6, data)), "Get compare failed");
+        TestForTrue((strlen(pWord6) + 1  == used), "Get used failed");
+        eRc = BlkdRcds16_RecordGet(pObj, 4, sizeof(data), (void *)data, &used);
+        TestForSuccess("Get failed");
+        TestForTrue((0  == strcmp(pWord4, data)), "Get compare failed");
+        TestForTrue((strlen(pWord4) + 1  == used), "Get used failed");
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
