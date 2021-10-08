@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# ( 9/19/2021 16:40:17.000)
+# (10/ 8/2021 15:48:48.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -143,6 +143,26 @@ OBJS += $(OBJDIR)/AudioWAV_object.o
 $(OBJDIR)/AudioWAV_object.o: $(SRCDIR)/AudioWAV_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AudioWAV.h $(SRCDIR)/AudioWAV_internal.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/BPT32Index.o
+
+$(OBJDIR)/BPT32Index.o: $(SRCDIR)/BPT32Index.c $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BPT32Index.h $(SRCDIR)/BPT32Index_internal.h $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BPT32Index_object.o
+
+$(OBJDIR)/BPT32Index_object.o: $(SRCDIR)/BPT32Index_object.c $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BPT32Index.h $(SRCDIR)/BPT32Index_internal.h $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BPT32Leaf.o
+
+$(OBJDIR)/BPT32Leaf.o: $(SRCDIR)/BPT32Leaf.c $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BPT32Leaf.h $(SRCDIR)/BPT32Leaf_internal.h $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BPT32Leaf_object.o
+
+$(OBJDIR)/BPT32Leaf_object.o: $(SRCDIR)/BPT32Leaf_object.c $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BPT32Leaf.h $(SRCDIR)/BPT32Leaf_internal.h $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/Base64.o
 
 $(OBJDIR)/Base64.o: $(SRCDIR)/Base64.c $(SRCDIR)/Base64.h $(SRCDIR)/Base64_internal.h $(SRCDIR)/cmn_defs.h 
@@ -180,12 +200,12 @@ $(OBJDIR)/BitSet_object.o: $(SRCDIR)/BitSet_object.c $(SRCDIR)/BitSet.h $(SRCDIR
 
 OBJS += $(OBJDIR)/BlkdRcds16.o
 
-$(OBJDIR)/BlkdRcds16.o: $(SRCDIR)/BlkdRcds16.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/BlkdRcds16.o: $(SRCDIR)/BlkdRcds16.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/Endian.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/BlkdRcds16_object.o
 
-$(OBJDIR)/BlkdRcds16_object.o: $(SRCDIR)/BlkdRcds16_object.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/BlkdRcds16_object.o: $(SRCDIR)/BlkdRcds16_object.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/Endian.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Blocks.o
@@ -2115,6 +2135,18 @@ AudioWAV_test: $(TEST_SRC)/AudioWAV_test.c $(SRCDIR)/AudioWAV.h $(SRCDIR)/AudioW
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
+TESTS += BPT32Index_test
+
+BPT32Index_test: $(TEST_SRC)/BPT32Index_test.c $(SRCDIR)/BPT32Index.h $(SRCDIR)/BPT32Index_internal.h $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += BPT32Leaf_test
+
+BPT32Leaf_test: $(TEST_SRC)/BPT32Leaf_test.c $(SRCDIR)/BPT32Leaf.h $(SRCDIR)/BPT32Leaf_internal.h $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
 TESTS += Base64_test
 
 Base64_test: $(TEST_SRC)/Base64_test.c $(SRCDIR)/Base64.h $(SRCDIR)/Base64_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2135,7 +2167,7 @@ BitSet_test: $(TEST_SRC)/BitSet_test.c $(SRCDIR)/BitSet.h $(SRCDIR)/BitSet_inter
 
 TESTS += BlkdRcds16_test
 
-BlkdRcds16_test: $(TEST_SRC)/BlkdRcds16_test.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/cmn_defs.h 
+BlkdRcds16_test: $(TEST_SRC)/BlkdRcds16_test.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/Endian.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

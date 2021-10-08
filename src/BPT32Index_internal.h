@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   BPT32Leaf_internal.h
- *  Generated 09/23/2021 12:52:17
+ * File:   BPT32Index_internal.h
+ *  Generated 09/25/2021 10:00:36
  *
  * Notes:
  *  --  N/A
@@ -39,14 +39,14 @@
 
 
 
-#include        <BPT32Leaf.h>
+#include        <BPT32Index.h>
 #include        <BPT32_Request.h>
 #include        <BlkdRcds16_internal.h>
 #include        <JsonIn.h>
 
 
-#ifndef BPT32LEAF_INTERNAL_H
-#define BPT32LEAF_INTERNAL_H
+#ifndef BPT32INDEX_INTERNAL_H
+#define BPT32INDEX_INTERNAL_H
 
 
 
@@ -59,31 +59,27 @@ extern "C" {
 
     /*      Node Descriptor
      */
-#pragma pack(push, 1)
-    typedef struct  BPT32Leaf_Node_s {
-        uint16_t        rcdLen;         // Record Length
-        uint8_t         data[0];
-    } BPT32LEAF_NODE;
-#pragma pack(pop)
-    
-    
-     
-    // BlkdRcds16 Reserved Area
-#pragma pack(push, 1)
-    typedef struct  BPT32Leaf_rsvd_s {
+    #pragma pack(push, 1)
+    typedef struct  BPT32Index_Node_s {
+        uint32_t        lbn;                // Index/Leaf LBN
+        uint8_t         key[0];             // Fixed Length Key
+    } BPT32INDEX_NODE;
+    #pragma pack(pop)
+
+
+    #pragma pack(push, 1)
+    typedef struct  BPT32Index_rsvd_s {
         uint16_t        keyLen;
         uint16_t        keyOff;
-        uint32_t        prevLbn;        // Previous Leaf Logical Block Number
-        uint32_t        nextLbn;        // Next Leaf Node Logical Block Number
         uint8_t         rsvd8;
         // Warning: blockType must be the last field within
         // the reserved area since it is accessed by other
         // routines using blockSize - 1 addressing.
         uint8_t         blockType;          // 'I' for index, 'L' for leaf
-    } BPT32LEAF_RSVD;
-#pragma pack(pop)
-    
-    
+    } BPT32INDEX_RSVD;
+    #pragma pack(pop)
+
+
 
 
     //---------------------------------------------------------------
@@ -91,16 +87,15 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct BPT32Leaf_data_s  {
+struct BPT32Index_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     BLKDRCDS16_DATA super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    ASTR_DATA       *pStr;
     uint32_t        lbn;            // Logical Block Number
-    uint32_t        lastRcd;        // Last Key Record Number
-    uint32_t        lastLBN;        // Last Key Logical Block Number
 
     OBJ_ID          *pMgr;          // Block Manager
     P_ERESULT_EXIT5 pReq;           // Block Manager Request Method
@@ -108,11 +103,11 @@ struct BPT32Leaf_data_s  {
 #pragma pack(pop)
 
     extern
-    struct BPT32Leaf_class_data_s  BPT32Leaf_ClassObj;
+    struct BPT32Index_class_data_s  BPT32Index_ClassObj;
 
     extern
     const
-    BPT32LEAF_VTBL         BPT32Leaf_Vtbl;
+    BPT32INDEX_VTBL         BPT32Index_Vtbl;
 
 
 
@@ -120,13 +115,13 @@ struct BPT32Leaf_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  BPT32LEAF_SINGLETON
-    BPT32LEAF_DATA * BPT32Leaf_getSingleton (
+#ifdef  BPT32INDEX_SINGLETON
+    BPT32INDEX_DATA * BPT32Index_getSingleton (
         void
     );
 
-    bool            BPT32Leaf_setSingleton (
-     BPT32LEAF_DATA       *pValue
+    bool            BPT32Index_setSingleton (
+     BPT32INDEX_DATA       *pValue
 );
 #endif
 
@@ -136,75 +131,103 @@ struct BPT32Leaf_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    uint8_t *       BPT32Leaf_getData (
-        BPT32LEAF_DATA  *this
+    uint8_t *       BPT32Index_getBlock (
+        BPT32INDEX_DATA *this
     );
 
 
-    bool            BPT32Leaf_setKeyLen (
-        BPT32LEAF_DATA  *this,
+    uint16_t        BPT32Index_getKeyLen (
+        BPT32INDEX_DATA *this
+    );
+
+    bool            BPT32Index_setKeyLen (
+        BPT32INDEX_DATA *this,
         uint16_t        value
     );
 
 
-    bool            BPT32Leaf_setKeyOff (
-        BPT32LEAF_DATA  *this,
+    uint16_t        BPT32Index_getKeyOff (
+        BPT32INDEX_DATA *this
+    );
+
+    bool            BPT32Index_setKeyOff (
+        BPT32INDEX_DATA *this,
         uint16_t        value
     );
 
 
-    bool            BPT32Leaf_setManager(
-        BPT32LEAF_DATA  *this,
-        OBJ_ID          *pMgr           // Block Manager
+    bool            BPT32Index_setManager(
+        BPT32INDEX_DATA  *this,
+        OBJ_ID           *pMgr          // Block Manager
     );
 
 
-    OBJ_IUNKNOWN *  BPT32Leaf_getSuperVtbl (
-        BPT32LEAF_DATA     *this
+    uint16_t        BPT32Index_getNumRecords (
+        BPT32INDEX_DATA *this
     );
 
 
-    ERESULT         BPT32Leaf_Assign (
-        BPT32LEAF_DATA    *this,
-        BPT32LEAF_DATA    *pOther
+    OBJ_IUNKNOWN *  BPT32Index_getSuperVtbl (
+        BPT32INDEX_DATA     *this
     );
 
 
-    BPT32LEAF_DATA * BPT32Leaf_Copy (
-        BPT32LEAF_DATA     *this
+    ERESULT         BPT32Index_Assign (
+        BPT32INDEX_DATA    *this,
+        BPT32INDEX_DATA    *pOther
     );
 
 
-    void            BPT32Leaf_Dealloc (
+    BPT32INDEX_DATA * BPT32Index_Copy (
+        BPT32INDEX_DATA     *this
+    );
+
+
+    void            BPT32Index_Dealloc (
         OBJ_ID          objId
     );
 
 
-    BPT32LEAF_DATA * BPT32Leaf_DeepCopy (
-        BPT32LEAF_DATA       *this
+    BPT32INDEX_DATA * BPT32Index_DeepCopy (
+        BPT32INDEX_DATA       *this
     );
 
 
-    void            BPT32Leaf_LruAttach (
-        BPT32LEAF_DATA  *this,
+    /*!
+     Get the index'th record from the block.
+     @param     this    object pointer
+     @param     index   reecord number within block relative to 1
+     @param     pLen    optional returned record size
+     @return    if successful, record which must be freed using mem_Free().  Otherwise,
+                NULL.
+     @warning   Remember to release the returned record.
+     */
+    uint8_t *       BPT32Index_GetNum (
+        BPT32INDEX_DATA *this,
+        uint32_t        index,          // Relative to 1
+        uint16_t        *pLen           // Optional record length
+    );
+
+
+    void            BPT32Index_LruAttach (
+        BPT32INDEX_DATA *this,
         void            *pData,
-        uint32_t        lbn
+        uint32_t        lsn
+    );
+
+    void            BPT32Index_LruDetach (
+        BPT32INDEX_DATA *this
     );
 
 
-    void            BPT32Leaf_LruDetach (
-        BPT32LEAF_DATA  *this
-    );
-
-
-#ifdef  BPT32LEAF_JSON_SUPPORT
+#ifdef  BPT32INDEX_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    BPT32LEAF_DATA *       BPT32Leaf_ParseJsonObject (
+    BPT32INDEX_DATA *       BPT32Index_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -218,35 +241,35 @@ struct BPT32Leaf_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         BPT32Leaf_ParseJsonFields (
+    ERESULT         BPT32Index_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        BPT32LEAF_DATA     *pObject
+        BPT32INDEX_DATA     *pObject
     );
 #endif
 
 
-    void *          BPT32Leaf_QueryInfo (
+    void *          BPT32Index_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  BPT32LEAF_JSON_SUPPORT
+#ifdef  BPT32INDEX_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = BPT32Leaf_ToJson(this);
+     ASTR_DATA      *pDesc = BPT32Index_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     BPT32Leaf_ToJson (
-        BPT32LEAF_DATA      *this
+    ASTR_DATA *     BPT32Index_ToJson (
+        BPT32INDEX_DATA      *this
     );
 
 
@@ -259,17 +282,19 @@ struct BPT32Leaf_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         BPT32Leaf_ToJsonFields (
-        BPT32LEAF_DATA     *this,
+    ERESULT         BPT32Index_ToJsonFields (
+        BPT32INDEX_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
 
 
+
+
 #ifdef NDEBUG
 #else
-    bool            BPT32Leaf_Validate (
-        BPT32LEAF_DATA       *this
+    bool            BPT32Index_Validate (
+        BPT32INDEX_DATA       *this
     );
 #endif
 
@@ -279,5 +304,5 @@ struct BPT32Leaf_data_s  {
 }
 #endif
 
-#endif  /* BPT32LEAF_INTERNAL_H */
+#endif  /* BPT32INDEX_INTERNAL_H */
 

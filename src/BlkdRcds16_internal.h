@@ -99,14 +99,11 @@ struct BlkdRcds16_data_s  {
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
+#define BLOCK_ALLOC     OBJ_FLAG_USER1
 
     // Common Data
     ASTR_DATA       *pStr;
-    uint16_t        blockSize;
-    uint16_t        rsvdSize;
     DATA_BLOCK      *pBlock;
-    uint8_t         fAlloc;
-    uint8_t         rsvd8[3];
 
 };
 #pragma pack(pop)
@@ -188,6 +185,21 @@ struct BlkdRcds16_data_s  {
     ERESULT         BlkdRcds16_Assign (
         BLKDRCDS16_DATA *this,
         BLKDRCDS16_DATA *pOther
+    );
+
+
+    /*!
+    Initialize the supplied block.
+    @param     pBlock       block pointer
+    @param     blockSize    siae of data block required, 0 == Free current block and
+                            return without allocating a new one.
+    @param     rsvdSize     size of the supplied data area (can be 0)
+    @return    If successful, ERESULT_SUCCESS. An ERESULT_* error code.
+    */
+    ERESULT         BlkdRcds16_BlockInit (
+        uint8_t         *pBlock,
+        uint16_t        blockSize,
+        uint16_t        rsvdSize
     );
 
 

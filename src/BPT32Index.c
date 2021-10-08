@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Test.c
- *  Generated 08/29/2021 09:18:10
+ * File:   BPT32Index.c
+ *  Generated 09/25/2021 10:00:36
  *
  */
 
@@ -41,12 +41,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <Test_internal.h>
-#include        <hex.h>
+#include        <BPT32Index_internal.h>
 #include        <JsonIn.h>
-#include        <psxThread.h>
-#include        <SrcErrors.h>
-#include        <szTbl.h>
 #include        <trace.h>
 #include        <utf8.h>
 
@@ -82,11 +78,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            Test_task_body (
+    void            BPT32Index_task_body (
         void            *pData
     )
     {
-        //TEST_DATA  *this = pData;
+        //BPT32INDEX_DATA  *this = pData;
         
     }
 #endif
@@ -97,12 +93,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    TEST_DATA *     Test_Alloc (
+    BPT32INDEX_DATA *     BPT32Index_Alloc (
         void
     )
     {
-        TEST_DATA       *this;
-        uint32_t        cbSize = sizeof(TEST_DATA);
+        BPT32INDEX_DATA       *this;
+        uint32_t        cbSize = sizeof(BPT32INDEX_DATA);
         
         // Do initialization.
         
@@ -114,72 +110,43 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                      D u m p
-    //---------------------------------------------------------------
-
-    /*!
-     Dump the given data area to stderr.
-     @param     size    number of bytes to dump
-     @param     pData   pointer to data to be dumped
-     @param     pTitle  Optional Title pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Test_Dump (
-        uint32_t        size,
-        void            *pData,
-        const
-        char            *pTitle
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        char            buffer[2048];
-        char            *pBuffer = buffer;
-        uint32_t        cBuffer = 2048;
-        uint32_t        used = 0;
-        int64_t         amt = size;
-
-        // Do initialization.
-        if (pTitle) {
-            fprintf(stderr, "%-80s\n", pTitle);
-        }
-
-        while (amt > 0) {
-            pBuffer = buffer;
-            cBuffer = 2048;
-            used =  hex_put16Bytes_64(
-                                      hex_Shared(),
-                                      (uint64_t)pData,
-                                      (uint32_t)(amt & 0xFFFFFFFF),
-                                      pData,
-                                      &cBuffer,
-                                      &pBuffer
-                    );
-            *pBuffer = '\0';
-            fprintf(stderr, "%s\n", buffer);
-            pData = (uint8_t *)pData + 16;
-            amt -= 16;
-        }
-        fprintf(stderr, "\n");
-
-        // Return to caller.
-        hex_SharedReset();
-        return eRc;
-    }
-
-
-
-    TEST_DATA *     Test_New (
+    BPT32INDEX_DATA *     BPT32Index_New (
         void
     )
     {
-        TEST_DATA       *this;
+        BPT32INDEX_DATA       *this;
         
-        this = Test_Alloc( );
+        this = BPT32Index_Alloc( );
         if (this) {
-            this = Test_Init(this);
+            this = BPT32Index_Init(this);
         } 
+        return this;
+    }
+
+
+    BPT32INDEX_DATA * BPT32Index_NewWithSizes (
+        uint32_t        blockSize,
+        uint32_t        lbn,
+        uint16_t        keyLen,
+        uint16_t        keyOff,
+        OBJ_ID          pMgr
+    )
+    {
+        ERESULT         eRc;
+        BPT32INDEX_DATA *this = OBJ_NIL;
+
+        if (keyLen) {
+            this = BPT32Index_New( );
+            if (this) {
+                eRc = BPT32Index_Setup(this, blockSize, lbn, keyLen, keyOff);
+                if (ERESULT_OK(eRc)) {
+                    BPT32Index_setManager(this, pMgr);
+                } else {
+                    obj_Release(this);
+                    this = OBJ_NIL;
+                }
+            }
+        }
         return this;
     }
 
@@ -192,43 +159,223 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                  A l l o w  I n t 3
+    //                          B l o c k
     //---------------------------------------------------------------
 
-    bool            Test_getAllowInt3 (
-        TEST_DATA       *this
+    uint8_t *       BPT32Index_getBlock (
+        BPT32INDEX_DATA *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return BlkdRcds16_getData((BLKDRCDS16_DATA *)this);
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        K e y  L e n g t h
+    //---------------------------------------------------------------
+
+    uint16_t        BPT32Index_getKeyLen (
+        BPT32INDEX_DATA *this
+    )
+    {
+        BPT32INDEX_RSVD *pRsvd;
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!BPT32Index_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        pRsvd = (BPT32INDEX_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+
+        return pRsvd->keyLen;
+    }
+
+
+    bool            BPT32Index_setKeyLen (
+        BPT32INDEX_DATA *this,
+        uint16_t        value
+    )
+    {
+        BPT32INDEX_RSVD *pRsvd;
+
+#ifdef NDEBUG
+#else
+        if (!BPT32Index_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        pRsvd = (BPT32INDEX_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+
+        pRsvd->keyLen = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        K e y  O f f s e t
+    //---------------------------------------------------------------
+
+    uint16_t        BPT32Index_getKeyOff (
+        BPT32INDEX_DATA *this
+    )
+    {
+        BPT32INDEX_RSVD *pRsvd;
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!BPT32Index_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        pRsvd = (BPT32INDEX_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+
+        return pRsvd->keyOff;
+    }
+
+
+    bool            BPT32Index_setKeyOff (
+        BPT32INDEX_DATA *this,
+        uint16_t        value
+    )
+    {
+        BPT32INDEX_RSVD *pRsvd;
+
+#ifdef NDEBUG
+#else
+        if (!BPT32Index_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        pRsvd = (BPT32INDEX_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+
+        pRsvd->keyOff = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //             L o g i c a l  B l o c k  N u m b e r
+    //---------------------------------------------------------------
+
+    uint32_t        BPT32Index_getLBN (
+        BPT32INDEX_DATA *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return this->fAllowInt3;
+        return this->lbn;
     }
 
 
-    bool            Test_setAllowInt3 (
-        TEST_DATA       *this,
-        bool            fValue
+    bool            BPT32Index_setLBN (
+        BPT32INDEX_DATA *this,
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        this->fAllowInt3 = fValue;
+        this->lbn = value;
 
         return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      M a n a g e r
+    //---------------------------------------------------------------
+
+    bool            BPT32Index_setManager(
+        BPT32INDEX_DATA  *this,
+        OBJ_ID           *pMgr          // Block Manager
+    )
+    {
+        OBJ_IUNKNOWN    *pVtbl;
+
+#ifdef NDEBUG
+#else
+        if( !BPT32Index_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pMgr = pMgr;
+        if (pMgr) {
+            pVtbl = obj_getVtbl(pMgr);
+            this->pReq =    pVtbl->pQueryInfo(
+                                            pMgr,
+                                            OBJ_QUERYINFO_TYPE_METHOD,
+                                            "BlockRequest"
+                            );
+            if (NULL == this->pReq) {
+                this->pMgr = OBJ_NIL;
+                return false;
+            }
+        }
+        else
+            this->pReq = NULL;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //               N u m b e r  O f  R e c o r d s
+    //---------------------------------------------------------------
+
+    uint16_t        BPT32Index_getNumRecords (
+        BPT32INDEX_DATA *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!BPT32Index_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return BlkdRcds16_getNumRecords((BLKDRCDS16_DATA *)this);
     }
 
 
@@ -237,15 +384,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        Test_getPriority (
-        TEST_DATA     *this
+    uint16_t        BPT32Index_getPriority (
+        BPT32INDEX_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -256,14 +403,14 @@ extern "C" {
     }
 
 
-    bool            Test_setPriority (
-        TEST_DATA     *this,
+    bool            BPT32Index_setPriority (
+        BPT32INDEX_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -280,13 +427,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        Test_getSize (
-        TEST_DATA       *this
+    uint32_t        BPT32Index_getSize (
+        BPT32INDEX_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -301,15 +448,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * Test_getStr (
-        TEST_DATA     *this
+    ASTR_DATA * BPT32Index_getStr (
+        BPT32INDEX_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -319,14 +466,14 @@ extern "C" {
     }
     
     
-    bool        Test_setStr (
-        TEST_DATA     *this,
+    bool        BPT32Index_setStr (
+        BPT32INDEX_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -347,15 +494,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  Test_getSuperVtbl (
-        TEST_DATA     *this
+    OBJ_IUNKNOWN *  BPT32Index_getSuperVtbl (
+        BPT32INDEX_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -375,6 +522,70 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          A d d
+    //---------------------------------------------------------------
+
+    ERESULT         BPT32Index_Add (
+        BPT32INDEX_DATA *this,
+        uint32_t        lbn,
+        void            *pKey
+    )
+    {
+        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
+        int             iRc;
+        uint32_t        i = 0;
+        uint32_t        iMax;
+        uint8_t         rcd[sizeof(uint32_t)+256];
+        BPT32INDEX_NODE *pNode = (BPT32INDEX_NODE *)rcd;
+        uint16_t        nodeLen;
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BPT32Index_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pKey) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        // Build the record.
+        pNode->lbn = lbn;
+        memmove(pNode->key, pKey, BPT32Index_getKeyLen(this));
+        nodeLen = sizeof(uint32_t) + BPT32Index_getKeyLen(this);
+
+        // Search the keys already in the block.
+        iMax = BlkdRcds16_getNumRecords((BLKDRCDS16_DATA *)this);
+        if (iMax) {
+            for (i=0; i<iMax; i++) {
+                BPT32INDEX_NODE *pRcd = BlkdRcds16_DataAddr((BLKDRCDS16_DATA *)this, i+1);
+                if (pRcd) {
+                    iRc =   memcmp(
+                                   pKey,
+                                   pRcd->key,
+                                   BPT32Index_getKeyLen(this)
+                            );
+                    if (0 == iRc) {
+                        return ERESULT_DATA_ALREADY_EXISTS;
+                    }
+                    if (iRc < 0)
+                        break;
+                }
+            }
+        }
+        // i will be insert point
+
+        eRc = BlkdRcds16_RecordInsert((BLKDRCDS16_DATA *)this, i, nodeLen, pNode);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -384,16 +595,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = Test_Assign(this,pOther);
+        ERESULT eRc = BPT32Index_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another TEST object
+     @param     pOther  a pointer to another BPT32INDEX object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         Test_Assign (
-        TEST_DATA       *this,
-        TEST_DATA     *pOther
+    ERESULT         BPT32Index_Assign (
+        BPT32INDEX_DATA       *this,
+        BPT32INDEX_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -401,11 +612,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Test_Validate(pOther)) {
+        if (!BPT32Index_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -466,9 +677,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             Test_Compare (
-        TEST_DATA     *this,
-        TEST_DATA     *pOther
+    int             BPT32Index_Compare (
+        BPT32INDEX_DATA     *this,
+        BPT32INDEX_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -481,12 +692,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!Test_Validate(pOther)) {
+        if (!BPT32Index_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -508,36 +719,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Test      *pCopy = Test_Copy(this);
+        BPT32Index      *pCopy = BPT32Index_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a TEST object which must be 
+     @return    If successful, a BPT32INDEX object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    TEST_DATA *     Test_Copy (
-        TEST_DATA       *this
+    BPT32INDEX_DATA *     BPT32Index_Copy (
+        BPT32INDEX_DATA       *this
     )
     {
-        TEST_DATA       *pOther = OBJ_NIL;
+        BPT32INDEX_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef TEST_IS_IMMUTABLE
+#ifdef BPT32INDEX_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = Test_New( );
+        pOther = BPT32Index_New( );
         if (pOther) {
-            eRc = Test_Assign(this, pOther);
+            eRc = BPT32Index_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -555,13 +766,12 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            Test_Dealloc (
+    void            BPT32Index_Dealloc (
         OBJ_ID          objId
     )
     {
-        TEST_DATA       *this = objId;
+        BPT32INDEX_DATA   *this = objId;
         //ERESULT         eRc;
-        int             iExitCode;
 
         // Do initialization.
         if (NULL == this) {
@@ -569,20 +779,19 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
 #endif
-        iExitCode = this->iExitCode;
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((TEST_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((BPT32INDEX_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        Test_setStr(this, OBJ_NIL);
+        BPT32Index_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -591,8 +800,6 @@ extern "C" {
         this = OBJ_NIL;
 
         // Return to caller.
-        if (iExitCode)
-            exit(iExitCode);
     }
 
 
@@ -605,32 +812,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Test      *pDeepCopy = Test_Copy(this);
+        BPT32Index      *pDeepCopy = BPT32Index_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a TEST object which must be 
+     @return    If successful, a BPT32INDEX object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    TEST_DATA *     Test_DeepCopy (
-        TEST_DATA       *this
+    BPT32INDEX_DATA *     BPT32Index_DeepCopy (
+        BPT32INDEX_DATA       *this
     )
     {
-        TEST_DATA       *pOther = OBJ_NIL;
+        BPT32INDEX_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = Test_New( );
+        pOther = BPT32Index_New( );
         if (pOther) {
-            eRc = Test_Assign(this, pOther);
+            eRc = BPT32Index_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -653,8 +860,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Test_Disable (
-        TEST_DATA       *this
+    ERESULT         BPT32Index_Disable (
+        BPT32INDEX_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -663,7 +870,7 @@ extern "C" {
         TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -690,8 +897,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Test_Enable (
-        TEST_DATA       *this
+    ERESULT         BPT32Index_Enable (
+        BPT32INDEX_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -700,7 +907,7 @@ extern "C" {
         TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -718,368 +925,54 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                          E x e c
+    //                              G e t
     //---------------------------------------------------------------
 
-    /*!
-     Enable operation of this object.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Test_Exec (
-        TEST_DATA       *this,
-        const
-        char            *pNameA,
-        ERESULT         (*pExec)(TEST_DATA *, const char *),
-        ERESULT         (*pSetup)(TEST_DATA *),
-        ERESULT         (*pTearDown)(TEST_DATA *)
+    uint8_t *       BPT32Index_GetNum (
+        BPT32INDEX_DATA *this,
+        uint32_t        index,          // Relative to 1
+        uint16_t        *pLen
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        ERESULT         eRc;
+        uint16_t        size;
+        uint8_t         *pData = NULL;
+        uint16_t        used = 0;
 
         // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
+        if (pLen)
+            *pLen = 0;
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            //return ERESULT_INVALID_OBJECT;
+            return NULL;
         }
-        if (NULL == pExec) {
-            this->iExitCode = 12;
-            exit(this->iExitCode);
+        if ((0 == index) || !((index - 1) < BPT32Index_getNumRecords(this))) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return NULL;
         }
 #endif
 
-        if (pSetup) {
-            eRc = pSetup(this);
-        } else {
-            eRc = Test_Setup(this);
-        }
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(
-                    stderr,
-                    "\x1b[1m\x1b[31mFATAL\x1b[0m: Setup failed for %s!\n\n\n",
-                    pNameA ? pNameA : "Unknown"
-            );
-            exit(4);
-        }
-
-        eRc = pExec(this, pNameA);
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(
-                    stderr,
-                    "\x1b[1m\x1b[31mFATAL\x1b[0m: Exec failed for %s!\n\n\n",
-                    pNameA ? pNameA : "Unknown"
-            );
-            exit(4);
-        }
-
-        if (pTearDown) {
-            eRc = pTearDown(this);
-        } else {
-            eRc = Test_TearDown(this);
-        }
-        if (ERESULT_FAILED(eRc)) {
-            fprintf(
-                    stderr,
-                    "\x1b[1m\x1b[31mFATAL\x1b[0m: TearDown failed for %s!\n\n\n",
-                    pNameA ? pNameA : "Unknown"
-            );
-            exit(4);
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                       F o r  C o n d i t i o n
-    //---------------------------------------------------------------
-
-    ERESULT         Test_ForFail (
-        TEST_DATA       *this,
-        ERESULT         eRc2,
-        const
-        char            *pErrorA,
-        const
-        char            *pFilePathA,
-        size_t          iLine
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        int             iRc = 1;
-
-        // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
-#ifdef NDEBUG
-#else
-        if (!Test_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        if (ERESULT_OK(eRc2)) {
-            fprintf(
-                    stderr,
-                    "\x1b[1m\x1b[31mERROR\x1b[0m: Failure failed: %s file: %s line: %ld\n\n",
-                    pErrorA ? pErrorA : "",
-                    pFilePathA,
-                    iLine
-            );
-            this->iExitCode = 8;
-            if (this->pFatalExit) {
-                iRc = this->pFatalExit(this->pFatalObject, this);
-            }
-            if (iRc) {
-                if (cmn_AmIBeingDebugged() && Test_getAllowInt3(this)) {
-                    __asm__("int $3\n" : : );
-                }
-                exit(this->iExitCode);
+        size = BlkdRcds16_RecordSize((BLKDRCDS16_DATA *)this, index);
+        pData = mem_Malloc(size+1);
+        if (pData) {
+            eRc = BlkdRcds16_RecordGet((BLKDRCDS16_DATA *)this, index, size+1, pData, &used);
+            if (ERESULT_FAILED(eRc)) {
+                mem_Free(pData);
+                pData = NULL;
+            } else {
+                *(pData+size) = '\0';
             }
         }
 
         // Return to caller.
-        return eRc;
-    }
-
-
-    ERESULT         Test_ForFalse (
-        TEST_DATA       *this,
-        bool            fValue,
-        const
-        char            *pErrorA,
-        const
-        char            *pFilePathA,
-        size_t          iLine
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        int             iRc = 1;
-
-        // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
-#ifdef NDEBUG
-#else
-        if (!Test_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+        if (pLen) {
+            *pLen = size;
         }
-#endif
-        if (fValue) {
-            fprintf(
-                    stderr,
-                    "\x1b[1m\x1b[31mERROR\x1b[0m: False failed: %s file: %s line: %ld\n\n",
-                    pErrorA ? pErrorA : "",
-                    pFilePathA,
-                    iLine
-            );
-            this->iExitCode = 8;
-            if (this->pFatalExit) {
-                iRc = this->pFatalExit(this->pFatalObject, this);
-            }
-            if (iRc) {
-                if (cmn_AmIBeingDebugged() && Test_getAllowInt3(this)) {
-                    __asm__("int $3\n" : : );
-                }
-                exit(this->iExitCode);
-            }
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-    ERESULT         Test_ForNotNull (
-        TEST_DATA       *this,
-        void            *pValue,
-        const
-        char            *pErrorA,
-        const
-        char            *pFilePathA,
-        size_t          iLine
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        int             iRc = 1;
-
-        // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
-#ifdef NDEBUG
-#else
-        if (!Test_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        if (NULL == pValue) {
-            fprintf(
-                    stderr,
-                    "\x1b[1m\x1b[31mERROR\x1b[0m: NULL failed: %s file: %s line: %ld\n\n",
-                    pErrorA ? pErrorA : "",
-                    pFilePathA,
-                    iLine
-            );
-            this->iExitCode = 8;
-            if (this->pFatalExit) {
-                iRc = this->pFatalExit(this->pFatalObject, this);
-            }
-            if (iRc) {
-                if (cmn_AmIBeingDebugged() && Test_getAllowInt3(this)) {
-                    __asm__("int $3\n" : : );
-                }
-                exit(this->iExitCode);
-            }
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-    ERESULT         Test_ForNull (
-        TEST_DATA       *this,
-        void            *pValue,
-        const
-        char            *pErrorA,
-        const
-        char            *pFilePathA,
-        size_t          iLine
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        int             iRc = 1;
-
-        // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
-#ifdef NDEBUG
-#else
-        if (!Test_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        if (pValue) {
-            fprintf(
-                    stderr,
-                    "\x1b[1m\x1b[31mERROR\x1b[0m: NULL failed: %s file: %s line: %ld\n\n",
-                    pErrorA ? pErrorA : "",
-                    pFilePathA,
-                    iLine
-            );
-            this->iExitCode = 8;
-            if (this->pFatalExit) {
-                iRc = this->pFatalExit(this->pFatalObject, this);
-            }
-            if (iRc) {
-                if (cmn_AmIBeingDebugged() && Test_getAllowInt3(this)) {
-                    __asm__("int $3\n" : : );
-                }
-                exit(this->iExitCode);
-            }
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-    ERESULT         Test_ForSucess (
-        TEST_DATA       *this,
-        ERESULT         eRc2,
-        const
-        char            *pErrorA,
-        const
-        char            *pFilePathA,
-        size_t          iLine
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        int             iRc = 1;
-
-        // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
-#ifdef NDEBUG
-#else
-        if (!Test_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        if (ERESULT_FAILED(eRc2)) {
-            fprintf(
-                    stderr,
-                    "\x1b[1m\x1b[31mERROR\x1b[0m: Success failed: %s file: %s line: %ld\n\n",
-                    pErrorA ? pErrorA : "",
-                    pFilePathA,
-                    iLine
-            );
-            this->iExitCode = 8;
-            if (this->pFatalExit) {
-                iRc = this->pFatalExit(this->pFatalObject, this);
-            }
-            if (iRc) {
-                if (cmn_AmIBeingDebugged() && Test_getAllowInt3(this)) {
-                    __asm__("int $3\n" : : );
-                }
-                exit(this->iExitCode);
-            }
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-    ERESULT         Test_ForTrue (
-        TEST_DATA       *this,
-        bool            fValue,
-        const
-        char            *pErrorA,
-        const
-        char            *pFilePathA,
-        size_t          iLine
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        int             iRc = 1;
-
-        // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
-#ifdef NDEBUG
-#else
-        if (!Test_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        if (!fValue) {
-            fprintf(
-                    stderr,
-                    "\x1b[1m\x1b[31mERROR\x1b[0m: True failed: %s file: %s line: %ld\n\n",
-                    pErrorA ? pErrorA : "",
-                    pFilePathA,
-                    iLine
-            );
-            this->iExitCode = 8;
-            if (this->pFatalExit) {
-                iRc = this->pFatalExit(this->pFatalObject, this);
-            }
-            if (iRc) {
-                if (cmn_AmIBeingDebugged() && Test_getAllowInt3(this)) {
-                    __asm__("int $3\n" : : );
-                }
-                exit(8);
-            }
-        }
-
-        // Return to caller.
-        return eRc;
+        return pData;
     }
 
 
@@ -1088,11 +981,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    TEST_DATA *   Test_Init (
-        TEST_DATA       *this
+    BPT32INDEX_DATA *   BPT32Index_Init (
+        BPT32INDEX_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(TEST_DATA);
+        uint32_t        cbSize = sizeof(BPT32INDEX_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -1109,10 +1002,10 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        this = (OBJ_ID)BlkdRcds16_Init((BLKDRCDS16_DATA *)this); // Needed for Inheritance
         // If you use inheritance, remember to change the obj_ClassObj reference 
-        // in the OBJ_INFO at the end of Test_object.c
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_TEST);
+        // in the OBJ_INFO at the end of BPT32Index_object.c
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_BPT32INDEX);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1120,13 +1013,11 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Test_Vtbl);
-#ifdef  TEST_JSON_SUPPORT
-        JsonIn_RegisterClass(Test_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&BPT32Index_Vtbl);
+#ifdef  BPT32INDEX_JSON_SUPPORT
+        JsonIn_RegisterClass(BPT32Index_Class());
 #endif
-
-        this->fAllowInt3 = true;
-
+        
         /*
         this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {
@@ -1138,7 +1029,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -1147,11 +1038,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "Test::sizeof(TEST_DATA) = %lu\n", 
-                sizeof(TEST_DATA)
+                "BPT32Index::sizeof(BPT32INDEX_DATA) = %lu\n", 
+                sizeof(BPT32INDEX_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(TEST_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(BPT32INDEX_DATA));
 #endif
 
         return this;
@@ -1163,8 +1054,8 @@ extern "C" {
     //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         Test_IsEnabled (
-        TEST_DATA       *this
+    ERESULT         BPT32Index_IsEnabled (
+        BPT32INDEX_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -1172,7 +1063,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1189,6 +1080,69 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          L R U
+    //---------------------------------------------------------------
+
+    void            BPT32Index_LruAttach (
+        BPT32INDEX_DATA *this,
+        void            *pData,
+        uint32_t        lsn
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BPT32Index_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+
+        //FIXME: update below
+#ifdef NOT_IMPLEMENTED
+        if (obj_Flag(this, BPT32IDX_BLOCK_ALLOC)) {
+            mem_Free(this->pBlock);
+            obj_FlagOff(this, BPT32IDX_BLOCK_ALLOC);
+        }
+        this->pBlock = pData;
+        this->index = lsn;
+#endif
+
+        // Return to caller.
+    }
+
+
+    void            BPT32Index_LruDetach (
+        BPT32INDEX_DATA *this
+    )
+    {
+        //ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BPT32Index_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+
+        //FIXME: update below
+#ifdef NOT_IMPLEMENTED
+        this->pBlock = NULL;
+        this->index = 0;
+#endif
+
+        // Return to caller.
+    }
+
+
+
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -1199,14 +1153,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = Test_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = BPT32Index_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "Test", prefix,
+                        the object name, "BPT32Index", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1214,13 +1168,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          Test_QueryInfo (
+    void *          BPT32Index_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        TEST_DATA     *this = objId;
+        BPT32INDEX_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1229,7 +1183,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1238,11 +1192,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(TEST_DATA);
+                return (void *)sizeof(BPT32INDEX_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)Test_Class();
+                return (void *)BPT32Index_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -1268,37 +1222,45 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return Test_Disable;
+                            return BPT32Index_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return Test_Enable;
+                            return BPT32Index_Enable;
                         }
                         break;
 
-                    case 'P':
-#ifdef  TEST_JSON_SUPPORT
+                    case 'L':
+                        if (str_Compare("LRU_Attach", (char *)pStr) == 0) {
+                            return BPT32Index_LruAttach;
+                        }
+                        if (str_Compare("LRU_Detach", (char *)pStr) == 0) {
+                            return BPT32Index_LruDetach;
+                        }
+                        break;
+                                            case 'P':
+#ifdef  BPT32INDEX_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return Test_ParseJsonFields;
+                            return BPT32Index_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return Test_ParseJsonObject;
+                            return BPT32Index_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return Test_ToDebugString;
+                            return BPT32Index_ToDebugString;
                         }
-#ifdef  TEST_JSON_SUPPORT
+#ifdef  BPT32INDEX_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return Test_ToJsonFields;
+                            return BPT32Index_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return Test_ToJson;
+                            return BPT32Index_ToJson;
                         }
 #endif
                         break;
@@ -1309,10 +1271,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == Test_ToDebugString)
+                if (pData == BPT32Index_ToDebugString)
                     return "ToDebugString";
-#ifdef  TEST_JSON_SUPPORT
-                if (pData == Test_ToJson)
+#ifdef  BPT32INDEX_JSON_SUPPORT
+                if (pData == BPT32Index_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1326,72 +1288,55 @@ extern "C" {
     
     
     
-    //---------------------------------------------------------------
-    //                        S e t u p
-    //---------------------------------------------------------------
+    //----------------------------------------------------------
+    //                      S e t u p
+    //----------------------------------------------------------
 
-    ERESULT         Test_Setup (
-        TEST_DATA       *this
+    ERESULT         BPT32Index_Setup(
+        BPT32INDEX_DATA *this,
+        uint32_t        blockSize,
+        uint32_t        lbn,
+        uint16_t        keyLen,
+        uint16_t        keyOff                  // relative to zero
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
+        BPT32INDEX_RSVD *pRsvd;
 
         // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-#endif
-
-        mem_Init( );
-        trace_Shared( );
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                   T e a r  D o w n
-    //---------------------------------------------------------------
-
-    ERESULT         Test_TearDown (
-        TEST_DATA       *this
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-
-        // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
-#ifdef NDEBUG
-#else
-        if (!Test_Validate(this)) {
+        if (blockSize > 0)
+            ;
+        else {
             DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (keyLen <= 255)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
-        szTbl_SharedReset( );
-        SrcErrors_SharedReset( );
-        JsonIn_RegisterReset();
-        trace_SharedReset( );
-        if (mem_Dump( ) ) {
-            fprintf(
-                    stderr,
-                    "\x1b[1m"
-                    "\x1b[31m"
-                    "ERROR: "
-                    "\x1b[0m"
-                    "Leaked memory areas were found!\n\n\n\n\n"
-            );
-            this->iExitCode = 4;
-            return 0;
+        eRc =   BlkdRcds16_SetupWithBlockSize(
+                                    (BLKDRCDS16_DATA *)this,
+                                    blockSize,
+                                    sizeof(BPT32INDEX_RSVD),
+                                    NULL
+                );
+        if (ERESULT_OK(eRc)) {
+            pRsvd = (BPT32INDEX_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+            pRsvd->blockType = 'I';
+            pRsvd->keyLen = keyLen;
+            pRsvd->keyOff = keyOff;
+            this->lbn = lbn;
         }
-        mem_Release( );
 
         // Return to caller.
         return eRc;
@@ -1407,7 +1352,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Test_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = BPT32Index_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1415,8 +1360,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Test_ToDebugString (
-        TEST_DATA      *this,
+    ASTR_DATA *     BPT32Index_ToDebugString (
+        BPT32INDEX_DATA      *this,
         int             indent
     )
     {
@@ -1431,7 +1376,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1452,7 +1397,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    Test_getSize(this),
+                    BPT32Index_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1492,15 +1437,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            Test_Validate (
-        TEST_DATA      *this
+    bool            BPT32Index_Validate (
+        BPT32INDEX_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_TEST))
+            if (obj_IsKindOf(this, OBJ_IDENT_BPT32INDEX))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1516,7 +1461,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(TEST_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(BPT32INDEX_DATA))) {
             return false;
         }
 
@@ -1527,39 +1472,97 @@ extern "C" {
 
 
     
+    
     //---------------------------------------------------------------
-    //                          W a i t
+    //                       V e r i f y
     //---------------------------------------------------------------
 
-    ERESULT         Test_Wait (
-        TEST_DATA       *this,
-        uint32_t        msWait
+    /*!
+     Verify as much of this object as we can.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         BPT32Index_Verify (
+        BPT32INDEX_DATA *this
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
+        //ERESULT         eRc;
+        int             iRc;
+        uint32_t        key = 0;
+        uint32_t        i;
+        uint32_t        iMax;
+        //FIXME: BPT32LF_NODE    *pNode = NULL;
+        uint8_t         *pData1;
+        uint8_t         *pData2;
+        uint16_t        rcdLen;
 
         // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!Test_Validate(this)) {
+        if (!BPT32Index_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        if (Test_getAllowInt3(this)) {
-            psxThread_Wait(msWait);
+        if (BlkdRcds16_Verify((BLKDRCDS16_DATA *)this))
+            ;
+        else
+            return ERESULT_GENERAL_FAILURE;
+
+        // Verify marker.
+        pData1 = BPT32Index_getBlock(this);
+        pData1 += BlkdRcds16_getBlockSize((BLKDRCDS16_DATA *)this) - 1;
+        if ('L' == *pData1)
+            ;
+        else {
+            return false;
+        }
+
+        // Verify Key Order.
+        if (BPT32Index_getKeyLen(this))
+            ;
+        else
+            return false;
+
+        iMax = BlkdRcds16_getNumRecords((BLKDRCDS16_DATA *)this);
+        pData1 = BPT32Index_GetNum(this, 1, NULL);
+        if (NULL == pData1)
+            return false;
+        rcdLen = BlkdRcds16_RecordSize((BLKDRCDS16_DATA *)this, 1);
+        if (rcdLen < BPT32Index_getKeyLen(this))
+            return false;
+        if (pData1) {
+            for (i=1; i<iMax; ++i) {
+                pData2 = BPT32Index_GetNum(this, i+1, NULL);
+                if (NULL == pData2)
+                    return false;
+                rcdLen = BlkdRcds16_RecordSize((BLKDRCDS16_DATA *)this, i+1);
+                if (rcdLen < BPT32Index_getKeyLen(this))
+                    return false;
+                iRc =   memcmp(
+                               pData1+BPT32Index_getKeyOff(this),
+                               pData2+BPT32Index_getKeyOff(this),
+                               BPT32Index_getKeyLen(this)
+                        );
+                if (0 == iRc)
+                    ;
+                else
+                    return false;
+                mem_Free(pData1);
+                pData1 = pData2;
+            }
+            mem_Free(pData1);
         }
 
         // Return to caller.
-        return eRc;
+        return true;
     }
 
 
 
 
-    
 #ifdef  __cplusplus
 }
 #endif

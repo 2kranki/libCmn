@@ -64,8 +64,9 @@ extern "C" {
     typedef struct  bpt32lf_Node_s {
         //uint32_t        prev;         // Previous Leaf Node Index
         //uint32_t        next;         // Next Leaf Node Index
-        uint32_t        key;
+        uint16_t        cKey;           // Key Length
         uint16_t        cData;          // Data Length
+        uint8_t         key[0];
         uint8_t         data[0];
     } BPT32LF_NODE;
 #pragma pack(pop)

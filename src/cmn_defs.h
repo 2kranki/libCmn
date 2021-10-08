@@ -193,9 +193,9 @@ extern "C" {
         OBJ_IDENT_BLOCKS_CLASS,
         OBJ_IDENT_BPT32,                // B-Plus 32-Bit Tree
         OBJ_IDENT_BPT32_CLASS,
-        OBJ_IDENT_BPT32IDX,             // B-Plus 32-Bit Tree Index Node
-        OBJ_IDENT_BPT32IDX_CLASS,
-        OBJ_IDENT_BPT32LEAF,            // B-Plus 32-Bit Tree Leaf Node
+        OBJ_IDENT_BPT32INDEX,           // B-Plus 32-Bit Tree Index Block
+        OBJ_IDENT_BPT32INDEX_CLASS,
+        OBJ_IDENT_BPT32LEAF,            // B-Plus 32-Bit Tree Leaf Block
         OBJ_IDENT_BPT32LEAF_CLASS,
         OBJ_IDENT_BTP,                  /* Binary Search Tree */
         OBJ_IDENT_BTP_CLASS,
@@ -697,10 +697,13 @@ extern "C" {
     typedef bool        (*P_BOOL_EXIT1)(void *);
     typedef bool        (*P_BOOL_EXIT2)(void *, void *);
     typedef bool        (*P_BOOL_EXIT3)(void *, void *, void *);
+    typedef bool        (*P_BOOL_EXIT4)(void *, void *, void *, void *);
+    typedef bool        (*P_BOOL_EXIT4A)(void *, uint32_t, void *, void *);
     typedef ERESULT     (*P_ERESULT_EXIT1)(void *);
     typedef ERESULT     (*P_ERESULT_EXIT2)(void *, void *);
     typedef ERESULT     (*P_ERESULT_EXIT3)(void *, void *, void *);
     typedef ERESULT     (*P_ERESULT_EXIT4)(void *, void *, void *, void *);
+    typedef ERESULT     (*P_ERESULT_EXIT5)(void *, uint32_t, OBJ_ID, void *, void *, void *);
     typedef ERESULT     (*P_ERESULT_EXIT10)(void *, uint32_t, void *);
     typedef ERESULT     (*P_ERESULT_EXIT11)(void *, void *, uint32_t);
     typedef ERESULT     (*P_ERESULT_EXIT12)(void *, void *, uint32_t, uint32_t);

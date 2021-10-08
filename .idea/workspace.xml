@@ -4,21 +4,203 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
-    <generated />
+    <generated>
+      <config projectName="libCmn" targetName="TextIn_test" />
+      <config projectName="libCmn" targetName="objMatrix_test" />
+      <config projectName="libCmn" targetName="ObjBT_test" />
+      <config projectName="libCmn" targetName="SqlColData_test" />
+      <config projectName="libCmn" targetName="BPT32Leaf_test" />
+      <config projectName="libCmn" targetName="str_test" />
+      <config projectName="libCmn" targetName="Appl_test" />
+      <config projectName="libCmn" targetName="Sect_test" />
+      <config projectName="libCmn" targetName="CsvRcd_test" />
+      <config projectName="libCmn" targetName="Money64_test" />
+      <config projectName="libCmn" targetName="Opcodes_test" />
+      <config projectName="libCmn" targetName="trace_test" />
+      <config projectName="libCmn" targetName="W32StrC_test" />
+      <config projectName="libCmn" targetName="LexJ_test" />
+      <config projectName="libCmn" targetName="I16Array_test" />
+      <config projectName="libCmn" targetName="Scanner_test" />
+      <config projectName="libCmn" targetName="SrcFiles_test" />
+      <config projectName="libCmn" targetName="SQLiteStmt_test" />
+      <config projectName="libCmn" targetName="ObjMethod_test" />
+      <config projectName="libCmn" targetName="check" />
+      <config projectName="libCmn" targetName="prt_test" />
+      <config projectName="libCmn" targetName="consumer_test" />
+      <config projectName="libCmn" targetName="AStr_test" />
+      <config projectName="libCmn" targetName="ObjCb_test" />
+      <config projectName="libCmn" targetName="Cmd_test" />
+      <config projectName="libCmn" targetName="LineIndex_test" />
+      <config projectName="libCmn" targetName="Token_test" />
+      <config projectName="libCmn" targetName="create_dirs" />
+      <config projectName="libCmn" targetName="fbso_test" />
+      <config projectName="libCmn" targetName="Base64_test" />
+      <config projectName="libCmn" targetName="JsonOut_test" />
+      <config projectName="libCmn" targetName="ObjEnum_test" />
+      <config projectName="libCmn" targetName="listdl_test" />
+      <config projectName="libCmn" targetName="SQLiteCurs_test" />
+      <config projectName="libCmn" targetName="NetHTTPA_test" />
+      <config projectName="libCmn" targetName="ObjVLink_test" />
+      <config projectName="libCmn" targetName="Number_test" />
+      <config projectName="libCmn" targetName="I32Matrix_test" />
+      <config projectName="libCmn" targetName="NetHTTPR_test" />
+      <config projectName="libCmn" targetName="FileIO_test" />
+      <config projectName="libCmn" targetName="SrcLoc_test" />
+      <config projectName="libCmn" targetName="SymList_test" />
+      <config projectName="libCmn" targetName="u8Array_test" />
+      <config projectName="libCmn" targetName="BitMatrix_test" />
+      <config projectName="libCmn" targetName="rbt_tree_test" />
+      <config projectName="libCmn" targetName="Value_test" />
+      <config projectName="libCmn" targetName="enum_test" />
+      <config projectName="libCmn" targetName="NodeBT_test" />
+      <config projectName="libCmn" targetName="TextOut_test" />
+      <config projectName="libCmn" targetName="cb_test" />
+      <config projectName="libCmn" targetName="fbsi_test" />
+      <config projectName="libCmn" targetName="MsgData_test" />
+      <config projectName="libCmn" targetName="TRegex_test" />
+      <config projectName="libCmn" targetName="BlkdRcds16_test" />
+      <config projectName="libCmn" targetName="RpgBase_test" />
+      <config projectName="libCmn" targetName="W32Array_test" />
+      <config projectName="libCmn" targetName="SqlRowData_test" />
+      <config projectName="libCmn" targetName="msgBus_test" />
+      <config projectName="libCmn" targetName="AStrC_test" />
+      <config projectName="libCmn" targetName="NodeList_test" />
+      <config projectName="libCmn" targetName="psxExec_test" />
+      <config projectName="libCmn" targetName="File_test" />
+      <config projectName="libCmn" targetName="U32Index_test" />
+      <config projectName="libCmn" targetName="I32Array_test" />
+      <config projectName="libCmn" targetName="NetIO_test" />
+      <config projectName="libCmn" targetName="Path_test" />
+      <config projectName="libCmn" targetName="IntLock_test" />
+      <config projectName="libCmn" targetName="CsvFile_test" />
+      <config projectName="libCmn" targetName="szTbl_test" />
+      <config projectName="libCmn" targetName="True_test" />
+      <config projectName="libCmn" targetName="Visitor_test" />
+      <config projectName="libCmn" targetName="psxSem_test" />
+      <config projectName="libCmn" targetName="timer_test" />
+      <config projectName="libCmn" targetName="misc_test" />
+      <config projectName="libCmn" targetName="NodeHash_test" />
+      <config projectName="libCmn" targetName="NetHTTP_test" />
+      <config projectName="libCmn" targetName="RRDS_test" />
+      <config projectName="libCmn" targetName="szBT_test" />
+      <config projectName="libCmn" targetName="CmdProc_test" />
+      <config projectName="libCmn" targetName="install" />
+      <config projectName="libCmn" targetName="Parser_test" />
+      <config projectName="libCmn" targetName="Opcode_test" />
+      <config projectName="libCmn" targetName="eResult_test" />
+      <config projectName="libCmn" targetName="FileRef_test" />
+      <config projectName="libCmn" targetName="LexKW_test" />
+      <config projectName="libCmn" targetName="Syms_test" />
+      <config projectName="libCmn" targetName="genObj_test" />
+      <config projectName="libCmn" targetName="Blocks_test" />
+      <config projectName="libCmn" targetName="LexC_test" />
+      <config projectName="libCmn" targetName="JsonIn_test" />
+      <config projectName="libCmn" targetName="Endian_test" />
+      <config projectName="libCmn" targetName="HtmlOut_test" />
+      <config projectName="libCmn" targetName="TextIns_test" />
+      <config projectName="libCmn" targetName="cb32_test" />
+      <config projectName="libCmn" targetName="I16Matrix_test" />
+      <config projectName="libCmn" targetName="psxLock_test" />
+      <config projectName="libCmn" targetName="JsonPP_test" />
+      <config projectName="libCmn" targetName="Lex_test" />
+      <config projectName="libCmn" targetName="psxThread_test" />
+      <config projectName="libCmn" targetName="Test_test" />
+      <config projectName="libCmn" targetName="TRegex32_test" />
+      <config projectName="libCmn" targetName="greg_test" />
+      <config projectName="libCmn" targetName="Dir_test" />
+      <config projectName="libCmn" targetName="W32Str_test" />
+      <config projectName="libCmn" targetName="SrcErrors_test" />
+      <config projectName="libCmn" targetName="Ebcdic_test" />
+      <config projectName="libCmn" targetName="array_test" />
+      <config projectName="libCmn" targetName="AudioCW_test" />
+      <config projectName="libCmn" targetName="BitSet_test" />
+      <config projectName="libCmn" targetName="szData_test" />
+      <config projectName="libCmn" targetName="U16Matrix_test" />
+      <config projectName="libCmn" targetName="ValueArray_test" />
+      <config projectName="libCmn" targetName="SrcError_test" />
+      <config projectName="libCmn" targetName="Sym_test" />
+      <config projectName="libCmn" targetName="hjson_test" />
+      <config projectName="libCmn" targetName="NodeEnum_test" />
+      <config projectName="libCmn" targetName="NodeTree_test" />
+      <config projectName="libCmn" targetName="u32Array_test" />
+      <config projectName="libCmn" targetName="AStrCReader_test" />
+      <config projectName="libCmn" targetName="NodeLink_test" />
+      <config projectName="libCmn" targetName="build" />
+      <config projectName="libCmn" targetName="ascii_test" />
+      <config projectName="libCmn" targetName="False_test" />
+      <config projectName="libCmn" targetName="SqlTbl_test" />
+      <config projectName="libCmn" targetName="szHash_test" />
+      <config projectName="libCmn" targetName="AudioWAV_test" />
+      <config projectName="libCmn" targetName="RpgLvl_test" />
+      <config projectName="libCmn" targetName="cb16_test" />
+      <config projectName="libCmn" targetName="cfa_test" />
+      <config projectName="libCmn" targetName="ptrArray_test" />
+      <config projectName="libCmn" targetName="crc_test" />
+      <config projectName="libCmn" targetName="memMac64_test" />
+      <config projectName="libCmn" targetName="NodeArray_test" />
+      <config projectName="libCmn" targetName="Uri_test" />
+      <config projectName="libCmn" targetName="SqlRow_test" />
+      <config projectName="libCmn" targetName="block16_test" />
+      <config projectName="libCmn" targetName="NodeScan_test" />
+      <config projectName="libCmn" targetName="ObjList_test" />
+      <config projectName="libCmn" targetName="hex_test" />
+      <config projectName="libCmn" targetName="Net_test" />
+      <config projectName="libCmn" targetName="ObjArray_test" />
+      <config projectName="libCmn" targetName="Sects_test" />
+      <config projectName="libCmn" targetName="SrcFile_test" />
+      <config projectName="libCmn" targetName="all" />
+      <config projectName="libCmn" targetName="Name_test" />
+      <config projectName="libCmn" targetName="psxCond_test" />
+      <config projectName="libCmn" targetName="SQLite_test" />
+      <config projectName="libCmn" targetName="DateTime_test" />
+      <config projectName="libCmn" targetName="AStrCArray_test" />
+      <config projectName="libCmn" targetName="utf8_test" />
+      <config projectName="libCmn" targetName="SqlCol_test" />
+      <config projectName="libCmn" targetName="u12Array_test" />
+      <config projectName="libCmn" targetName="SrcDiff_test" />
+      <config projectName="libCmn" targetName="AStrArray_test" />
+      <config projectName="libCmn" targetName="LexTri_test" />
+      <config projectName="libCmn" targetName="ObjHash_test" />
+      <config projectName="libCmn" targetName="U16Array_test" />
+      <config projectName="libCmn" targetName="dec_test" />
+      <config projectName="libCmn" targetName="NetMIME_test" />
+      <config projectName="libCmn" targetName="DirEntry_test" />
+      <config projectName="libCmn" targetName="psxMutex_test" />
+      <config projectName="libCmn" targetName="lru_test" />
+      <config projectName="libCmn" targetName="Lex01_test" />
+      <config projectName="libCmn" targetName="TokenList_test" />
+      <config projectName="libCmn" targetName="Compiler_test" />
+      <config projectName="libCmn" targetName="Node_test" />
+      <config projectName="libCmn" targetName="Null_test" />
+      <config projectName="libCmn" targetName="test" />
+      <config projectName="libCmn" targetName="u32Matrix_test" />
+      <config projectName="libCmn" targetName="block32_test" />
+      <config projectName="libCmn" targetName="u8VlArray_test" />
+      <config projectName="libCmn" targetName="CmdUtl_test" />
+    </generated>
   </component>
   <component name="CMakeSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="410d5303-536c-4ab3-9b37-479cce564cb9" name="Default Changelist" comment="">
+    <list default="true" id="082d836c-5fdc-4c7c-832b-c0c0d6b5898e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libCmn.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ObjEnum.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/ObjEnum.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Parser.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Parser.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Parser_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Parser_internal.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Syms.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Syms.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/Lex_test.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Lex_test.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile.macos64.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile.macos64.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/objects.json.txt" beforeDir="false" afterPath="$PROJECT_DIR$/objects.json.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/old/bpt32lf_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/old/bpt32lf_internal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BPT32Leaf.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/BPT32Leaf.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BPT32Leaf.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/BPT32Leaf.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BPT32Leaf_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/BPT32Leaf_internal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BPT32Leaf_object.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/BPT32Leaf_object.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BlkdRcds16.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/BlkdRcds16.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BlkdRcds16.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/BlkdRcds16.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BlkdRcds16_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/BlkdRcds16_internal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Endian_test.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Endian_test.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xcode/testCmn/testCmn.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/xcode/testCmn/testCmn.xcodeproj/project.pbxproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -64,36 +246,1081 @@
       </map>
     </option>
   </component>
-  <component name="ProjectId" id="1j1rN7ylWXxHjra8GVR4dVsAkZJ" />
+  <component name="ProjectId" id="1yYnk6RwkuROwLRFwkl8Bg5mmaC" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="cf.first.check.clang-format" value="false" />
+    <property name="cidr.known.project.marker" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/Makefile" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
-    <property name="node.js.path.for.package.eslint" value="project" />
-    <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="MakefileSettings" />
+  </component>
+  <component name="RunManager" selected="Makefile Application.BPT32Leaf_test">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AStrArray_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="AStrArray_test" CONFIG_NAME="AStrArray_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AStrCArray_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="AStrCArray_test" CONFIG_NAME="AStrCArray_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AStrCReader_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="AStrCReader_test" CONFIG_NAME="AStrCReader_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AStrC_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="AStrC_test" CONFIG_NAME="AStrC_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AStr_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="AStr_test" CONFIG_NAME="AStr_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Appl_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Appl_test" CONFIG_NAME="Appl_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AudioCW_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="AudioCW_test" CONFIG_NAME="AudioCW_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AudioWAV_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="AudioWAV_test" CONFIG_NAME="AudioWAV_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BPT32Leaf_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="BPT32Leaf_test" CONFIG_NAME="BPT32Leaf_test" version="1" RUN_PATH="$(TEST_BIN)/$(BPT32Leaf_ttestt) --no_int3">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Base64_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Base64_test" CONFIG_NAME="Base64_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BitMatrix_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="BitMatrix_test" CONFIG_NAME="BitMatrix_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BitSet_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="BitSet_test" CONFIG_NAME="BitSet_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BlkdRcds16_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="BlkdRcds16_test" CONFIG_NAME="BlkdRcds16_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Blocks_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Blocks_test" CONFIG_NAME="Blocks_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CmdProc_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="CmdProc_test" CONFIG_NAME="CmdProc_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CmdUtl_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="CmdUtl_test" CONFIG_NAME="CmdUtl_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Cmd_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Cmd_test" CONFIG_NAME="Cmd_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Compiler_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Compiler_test" CONFIG_NAME="Compiler_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CsvFile_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="CsvFile_test" CONFIG_NAME="CsvFile_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CsvRcd_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="CsvRcd_test" CONFIG_NAME="CsvRcd_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DateTime_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="DateTime_test" CONFIG_NAME="DateTime_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DirEntry_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="DirEntry_test" CONFIG_NAME="DirEntry_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Dir_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Dir_test" CONFIG_NAME="Dir_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Ebcdic_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Ebcdic_test" CONFIG_NAME="Ebcdic_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Endian_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Endian_test" CONFIG_NAME="Endian_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="False_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="False_test" CONFIG_NAME="False_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FileIO_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="FileIO_test" CONFIG_NAME="FileIO_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FileRef_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="FileRef_test" CONFIG_NAME="FileRef_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="File_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="File_test" CONFIG_NAME="File_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="HtmlOut_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="HtmlOut_test" CONFIG_NAME="HtmlOut_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="I16Array_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="I16Array_test" CONFIG_NAME="I16Array_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="I16Matrix_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="I16Matrix_test" CONFIG_NAME="I16Matrix_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="I32Array_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="I32Array_test" CONFIG_NAME="I32Array_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="I32Matrix_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="I32Matrix_test" CONFIG_NAME="I32Matrix_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="IntLock_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="IntLock_test" CONFIG_NAME="IntLock_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="JsonIn_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="JsonIn_test" CONFIG_NAME="JsonIn_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="JsonOut_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="JsonOut_test" CONFIG_NAME="JsonOut_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="JsonPP_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="JsonPP_test" CONFIG_NAME="JsonPP_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Lex01_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Lex01_test" CONFIG_NAME="Lex01_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="LexC_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="LexC_test" CONFIG_NAME="LexC_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="LexJ_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="LexJ_test" CONFIG_NAME="LexJ_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="LexKW_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="LexKW_test" CONFIG_NAME="LexKW_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="LexTri_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="LexTri_test" CONFIG_NAME="LexTri_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Lex_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Lex_test" CONFIG_NAME="Lex_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="LineIndex_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="LineIndex_test" CONFIG_NAME="LineIndex_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Money64_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Money64_test" CONFIG_NAME="Money64_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MsgData_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="MsgData_test" CONFIG_NAME="MsgData_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Name_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Name_test" CONFIG_NAME="Name_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NetHTTPA_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NetHTTPA_test" CONFIG_NAME="NetHTTPA_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NetHTTPR_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NetHTTPR_test" CONFIG_NAME="NetHTTPR_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NetHTTP_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NetHTTP_test" CONFIG_NAME="NetHTTP_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NetIO_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NetIO_test" CONFIG_NAME="NetIO_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NetMIME_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NetMIME_test" CONFIG_NAME="NetMIME_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Net_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Net_test" CONFIG_NAME="Net_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NodeArray_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NodeArray_test" CONFIG_NAME="NodeArray_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NodeBT_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NodeBT_test" CONFIG_NAME="NodeBT_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NodeEnum_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NodeEnum_test" CONFIG_NAME="NodeEnum_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NodeHash_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NodeHash_test" CONFIG_NAME="NodeHash_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NodeLink_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NodeLink_test" CONFIG_NAME="NodeLink_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NodeList_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NodeList_test" CONFIG_NAME="NodeList_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NodeScan_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NodeScan_test" CONFIG_NAME="NodeScan_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NodeTree_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="NodeTree_test" CONFIG_NAME="NodeTree_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Node_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Node_test" CONFIG_NAME="Node_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Null_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Null_test" CONFIG_NAME="Null_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Number_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Number_test" CONFIG_NAME="Number_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ObjArray_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="ObjArray_test" CONFIG_NAME="ObjArray_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ObjBT_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="ObjBT_test" CONFIG_NAME="ObjBT_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ObjCb_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="ObjCb_test" CONFIG_NAME="ObjCb_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ObjEnum_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="ObjEnum_test" CONFIG_NAME="ObjEnum_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ObjHash_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="ObjHash_test" CONFIG_NAME="ObjHash_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ObjList_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="ObjList_test" CONFIG_NAME="ObjList_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ObjMethod_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="ObjMethod_test" CONFIG_NAME="ObjMethod_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ObjVLink_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="ObjVLink_test" CONFIG_NAME="ObjVLink_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Opcode_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Opcode_test" CONFIG_NAME="Opcode_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Opcodes_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Opcodes_test" CONFIG_NAME="Opcodes_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Parser_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Parser_test" CONFIG_NAME="Parser_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Path_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Path_test" CONFIG_NAME="Path_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RRDS_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="RRDS_test" CONFIG_NAME="RRDS_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RpgBase_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="RpgBase_test" CONFIG_NAME="RpgBase_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RpgLvl_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="RpgLvl_test" CONFIG_NAME="RpgLvl_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SQLiteCurs_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SQLiteCurs_test" CONFIG_NAME="SQLiteCurs_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SQLiteStmt_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SQLiteStmt_test" CONFIG_NAME="SQLiteStmt_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SQLite_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SQLite_test" CONFIG_NAME="SQLite_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Scanner_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Scanner_test" CONFIG_NAME="Scanner_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Sect_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Sect_test" CONFIG_NAME="Sect_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Sects_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Sects_test" CONFIG_NAME="Sects_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SqlColData_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SqlColData_test" CONFIG_NAME="SqlColData_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SqlCol_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SqlCol_test" CONFIG_NAME="SqlCol_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SqlRowData_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SqlRowData_test" CONFIG_NAME="SqlRowData_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SqlRow_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SqlRow_test" CONFIG_NAME="SqlRow_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SqlTbl_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SqlTbl_test" CONFIG_NAME="SqlTbl_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SrcDiff_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SrcDiff_test" CONFIG_NAME="SrcDiff_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SrcError_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SrcError_test" CONFIG_NAME="SrcError_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SrcErrors_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SrcErrors_test" CONFIG_NAME="SrcErrors_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SrcFile_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SrcFile_test" CONFIG_NAME="SrcFile_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SrcFiles_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SrcFiles_test" CONFIG_NAME="SrcFiles_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SrcLoc_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SrcLoc_test" CONFIG_NAME="SrcLoc_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SymList_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="SymList_test" CONFIG_NAME="SymList_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Sym_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Sym_test" CONFIG_NAME="Sym_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Syms_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Syms_test" CONFIG_NAME="Syms_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TRegex32_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="TRegex32_test" CONFIG_NAME="TRegex32_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TRegex_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="TRegex_test" CONFIG_NAME="TRegex_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Test_test" CONFIG_NAME="Test_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TextIn_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="TextIn_test" CONFIG_NAME="TextIn_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TextIns_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="TextIns_test" CONFIG_NAME="TextIns_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TextOut_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="TextOut_test" CONFIG_NAME="TextOut_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TokenList_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="TokenList_test" CONFIG_NAME="TokenList_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Token_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Token_test" CONFIG_NAME="Token_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="True_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="True_test" CONFIG_NAME="True_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="U16Array_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="U16Array_test" CONFIG_NAME="U16Array_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="U16Matrix_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="U16Matrix_test" CONFIG_NAME="U16Matrix_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="U32Index_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="U32Index_test" CONFIG_NAME="U32Index_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Uri_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Uri_test" CONFIG_NAME="Uri_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ValueArray_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="ValueArray_test" CONFIG_NAME="ValueArray_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Value_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Value_test" CONFIG_NAME="Value_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Visitor_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="Visitor_test" CONFIG_NAME="Visitor_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="W32Array_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="W32Array_test" CONFIG_NAME="W32Array_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="W32StrC_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="W32StrC_test" CONFIG_NAME="W32StrC_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="W32Str_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="W32Str_test" CONFIG_NAME="W32Str_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="all" CONFIG_NAME="all" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="array_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="array_test" CONFIG_NAME="array_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ascii_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="ascii_test" CONFIG_NAME="ascii_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="block16_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="block16_test" CONFIG_NAME="block16_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="block32_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="block32_test" CONFIG_NAME="block32_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="build" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="build" CONFIG_NAME="build" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="cb16_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="cb16_test" CONFIG_NAME="cb16_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="cb32_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="cb32_test" CONFIG_NAME="cb32_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="cb_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="cb_test" CONFIG_NAME="cb_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="cfa_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="cfa_test" CONFIG_NAME="cfa_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="check" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="check" CONFIG_NAME="check" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="consumer_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="consumer_test" CONFIG_NAME="consumer_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="crc_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="crc_test" CONFIG_NAME="crc_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="create_dirs" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="create_dirs" CONFIG_NAME="create_dirs" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="dec_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="dec_test" CONFIG_NAME="dec_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="eResult_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="eResult_test" CONFIG_NAME="eResult_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="enum_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="enum_test" CONFIG_NAME="enum_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="fbsi_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="fbsi_test" CONFIG_NAME="fbsi_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="fbso_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="fbso_test" CONFIG_NAME="fbso_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="genObj_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="genObj_test" CONFIG_NAME="genObj_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="greg_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="greg_test" CONFIG_NAME="greg_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="hex_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="hex_test" CONFIG_NAME="hex_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="hjson_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="hjson_test" CONFIG_NAME="hjson_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="install" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="install" CONFIG_NAME="install" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="listdl_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="listdl_test" CONFIG_NAME="listdl_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="lru_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="lru_test" CONFIG_NAME="lru_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="memMac64_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="memMac64_test" CONFIG_NAME="memMac64_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="misc_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="misc_test" CONFIG_NAME="misc_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="msgBus_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="msgBus_test" CONFIG_NAME="msgBus_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="objMatrix_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="objMatrix_test" CONFIG_NAME="objMatrix_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="prt_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="prt_test" CONFIG_NAME="prt_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="psxCond_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="psxCond_test" CONFIG_NAME="psxCond_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="psxExec_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="psxExec_test" CONFIG_NAME="psxExec_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="psxLock_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="psxLock_test" CONFIG_NAME="psxLock_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="psxMutex_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="psxMutex_test" CONFIG_NAME="psxMutex_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="psxSem_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="psxSem_test" CONFIG_NAME="psxSem_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="psxThread_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="psxThread_test" CONFIG_NAME="psxThread_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ptrArray_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="ptrArray_test" CONFIG_NAME="ptrArray_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="rbt_tree_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="rbt_tree_test" CONFIG_NAME="rbt_tree_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="str_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="str_test" CONFIG_NAME="str_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="szBT_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="szBT_test" CONFIG_NAME="szBT_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="szData_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="szData_test" CONFIG_NAME="szData_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="szHash_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="szHash_test" CONFIG_NAME="szHash_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="szTbl_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="szTbl_test" CONFIG_NAME="szTbl_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="test" CONFIG_NAME="test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="timer_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="timer_test" CONFIG_NAME="timer_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="trace_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="trace_test" CONFIG_NAME="trace_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="u12Array_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="u12Array_test" CONFIG_NAME="u12Array_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="u32Array_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="u32Array_test" CONFIG_NAME="u32Array_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="u32Matrix_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="u32Matrix_test" CONFIG_NAME="u32Matrix_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="u8Array_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="u8Array_test" CONFIG_NAME="u8Array_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="u8VlArray_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="u8VlArray_test" CONFIG_NAME="u8VlArray_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="utf8_test" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="libCmn" TARGET_NAME="utf8_test" CONFIG_NAME="utf8_test" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Makefile Application.all" />
+      <item itemvalue="Makefile Application.build" />
+      <item itemvalue="Makefile Application.check" />
+      <item itemvalue="Makefile Application.create_dirs" />
+      <item itemvalue="Makefile Application.install" />
+      <item itemvalue="Makefile Application.test" />
+      <item itemvalue="Makefile Application.Appl_test" />
+      <item itemvalue="Makefile Application.array_test" />
+      <item itemvalue="Makefile Application.ascii_test" />
+      <item itemvalue="Makefile Application.AStr_test" />
+      <item itemvalue="Makefile Application.AStrArray_test" />
+      <item itemvalue="Makefile Application.AStrC_test" />
+      <item itemvalue="Makefile Application.AStrCArray_test" />
+      <item itemvalue="Makefile Application.AStrCReader_test" />
+      <item itemvalue="Makefile Application.AudioCW_test" />
+      <item itemvalue="Makefile Application.AudioWAV_test" />
+      <item itemvalue="Makefile Application.Base64_test" />
+      <item itemvalue="Makefile Application.BitMatrix_test" />
+      <item itemvalue="Makefile Application.BitSet_test" />
+      <item itemvalue="Makefile Application.BlkdRcds16_test" />
+      <item itemvalue="Makefile Application.block16_test" />
+      <item itemvalue="Makefile Application.block32_test" />
+      <item itemvalue="Makefile Application.Blocks_test" />
+      <item itemvalue="Makefile Application.BPT32Leaf_test" />
+      <item itemvalue="Makefile Application.cb16_test" />
+      <item itemvalue="Makefile Application.cb32_test" />
+      <item itemvalue="Makefile Application.cb_test" />
+      <item itemvalue="Makefile Application.cfa_test" />
+      <item itemvalue="Makefile Application.Cmd_test" />
+      <item itemvalue="Makefile Application.CmdProc_test" />
+      <item itemvalue="Makefile Application.CmdUtl_test" />
+      <item itemvalue="Makefile Application.Compiler_test" />
+      <item itemvalue="Makefile Application.consumer_test" />
+      <item itemvalue="Makefile Application.crc_test" />
+      <item itemvalue="Makefile Application.CsvFile_test" />
+      <item itemvalue="Makefile Application.CsvRcd_test" />
+      <item itemvalue="Makefile Application.DateTime_test" />
+      <item itemvalue="Makefile Application.dec_test" />
+      <item itemvalue="Makefile Application.Dir_test" />
+      <item itemvalue="Makefile Application.DirEntry_test" />
+      <item itemvalue="Makefile Application.Ebcdic_test" />
+      <item itemvalue="Makefile Application.Endian_test" />
+      <item itemvalue="Makefile Application.enum_test" />
+      <item itemvalue="Makefile Application.eResult_test" />
+      <item itemvalue="Makefile Application.False_test" />
+      <item itemvalue="Makefile Application.fbsi_test" />
+      <item itemvalue="Makefile Application.fbso_test" />
+      <item itemvalue="Makefile Application.File_test" />
+      <item itemvalue="Makefile Application.FileIO_test" />
+      <item itemvalue="Makefile Application.FileRef_test" />
+      <item itemvalue="Makefile Application.genObj_test" />
+      <item itemvalue="Makefile Application.greg_test" />
+      <item itemvalue="Makefile Application.hex_test" />
+      <item itemvalue="Makefile Application.hjson_test" />
+      <item itemvalue="Makefile Application.HtmlOut_test" />
+      <item itemvalue="Makefile Application.I16Array_test" />
+      <item itemvalue="Makefile Application.I16Matrix_test" />
+      <item itemvalue="Makefile Application.I32Array_test" />
+      <item itemvalue="Makefile Application.I32Matrix_test" />
+      <item itemvalue="Makefile Application.IntLock_test" />
+      <item itemvalue="Makefile Application.JsonIn_test" />
+      <item itemvalue="Makefile Application.JsonOut_test" />
+      <item itemvalue="Makefile Application.JsonPP_test" />
+      <item itemvalue="Makefile Application.Lex01_test" />
+      <item itemvalue="Makefile Application.Lex_test" />
+      <item itemvalue="Makefile Application.LexC_test" />
+      <item itemvalue="Makefile Application.LexJ_test" />
+      <item itemvalue="Makefile Application.LexKW_test" />
+      <item itemvalue="Makefile Application.LexTri_test" />
+      <item itemvalue="Makefile Application.LineIndex_test" />
+      <item itemvalue="Makefile Application.listdl_test" />
+      <item itemvalue="Makefile Application.lru_test" />
+      <item itemvalue="Makefile Application.memMac64_test" />
+      <item itemvalue="Makefile Application.misc_test" />
+      <item itemvalue="Makefile Application.Money64_test" />
+      <item itemvalue="Makefile Application.msgBus_test" />
+      <item itemvalue="Makefile Application.MsgData_test" />
+      <item itemvalue="Makefile Application.Name_test" />
+      <item itemvalue="Makefile Application.Net_test" />
+      <item itemvalue="Makefile Application.NetHTTP_test" />
+      <item itemvalue="Makefile Application.NetHTTPA_test" />
+      <item itemvalue="Makefile Application.NetHTTPR_test" />
+      <item itemvalue="Makefile Application.NetIO_test" />
+      <item itemvalue="Makefile Application.NetMIME_test" />
+      <item itemvalue="Makefile Application.Node_test" />
+      <item itemvalue="Makefile Application.NodeArray_test" />
+      <item itemvalue="Makefile Application.NodeBT_test" />
+      <item itemvalue="Makefile Application.NodeEnum_test" />
+      <item itemvalue="Makefile Application.NodeHash_test" />
+      <item itemvalue="Makefile Application.NodeLink_test" />
+      <item itemvalue="Makefile Application.NodeList_test" />
+      <item itemvalue="Makefile Application.NodeScan_test" />
+      <item itemvalue="Makefile Application.NodeTree_test" />
+      <item itemvalue="Makefile Application.Null_test" />
+      <item itemvalue="Makefile Application.Number_test" />
+      <item itemvalue="Makefile Application.ObjArray_test" />
+      <item itemvalue="Makefile Application.ObjBT_test" />
+      <item itemvalue="Makefile Application.ObjCb_test" />
+      <item itemvalue="Makefile Application.ObjEnum_test" />
+      <item itemvalue="Makefile Application.ObjHash_test" />
+      <item itemvalue="Makefile Application.ObjList_test" />
+      <item itemvalue="Makefile Application.objMatrix_test" />
+      <item itemvalue="Makefile Application.ObjMethod_test" />
+      <item itemvalue="Makefile Application.ObjVLink_test" />
+      <item itemvalue="Makefile Application.Opcode_test" />
+      <item itemvalue="Makefile Application.Opcodes_test" />
+      <item itemvalue="Makefile Application.Parser_test" />
+      <item itemvalue="Makefile Application.Path_test" />
+      <item itemvalue="Makefile Application.prt_test" />
+      <item itemvalue="Makefile Application.psxCond_test" />
+      <item itemvalue="Makefile Application.psxExec_test" />
+      <item itemvalue="Makefile Application.psxLock_test" />
+      <item itemvalue="Makefile Application.psxMutex_test" />
+      <item itemvalue="Makefile Application.psxSem_test" />
+      <item itemvalue="Makefile Application.psxThread_test" />
+      <item itemvalue="Makefile Application.ptrArray_test" />
+      <item itemvalue="Makefile Application.rbt_tree_test" />
+      <item itemvalue="Makefile Application.RpgBase_test" />
+      <item itemvalue="Makefile Application.RpgLvl_test" />
+      <item itemvalue="Makefile Application.RRDS_test" />
+      <item itemvalue="Makefile Application.Scanner_test" />
+      <item itemvalue="Makefile Application.Sect_test" />
+      <item itemvalue="Makefile Application.Sects_test" />
+      <item itemvalue="Makefile Application.SqlCol_test" />
+      <item itemvalue="Makefile Application.SqlColData_test" />
+      <item itemvalue="Makefile Application.SQLite_test" />
+      <item itemvalue="Makefile Application.SQLiteCurs_test" />
+      <item itemvalue="Makefile Application.SQLiteStmt_test" />
+      <item itemvalue="Makefile Application.SqlRow_test" />
+      <item itemvalue="Makefile Application.SqlRowData_test" />
+      <item itemvalue="Makefile Application.SqlTbl_test" />
+      <item itemvalue="Makefile Application.SrcDiff_test" />
+      <item itemvalue="Makefile Application.SrcError_test" />
+      <item itemvalue="Makefile Application.SrcErrors_test" />
+      <item itemvalue="Makefile Application.SrcFile_test" />
+      <item itemvalue="Makefile Application.SrcFiles_test" />
+      <item itemvalue="Makefile Application.SrcLoc_test" />
+      <item itemvalue="Makefile Application.str_test" />
+      <item itemvalue="Makefile Application.Sym_test" />
+      <item itemvalue="Makefile Application.SymList_test" />
+      <item itemvalue="Makefile Application.Syms_test" />
+      <item itemvalue="Makefile Application.szBT_test" />
+      <item itemvalue="Makefile Application.szData_test" />
+      <item itemvalue="Makefile Application.szHash_test" />
+      <item itemvalue="Makefile Application.szTbl_test" />
+      <item itemvalue="Makefile Application.Test_test" />
+      <item itemvalue="Makefile Application.TextIn_test" />
+      <item itemvalue="Makefile Application.TextIns_test" />
+      <item itemvalue="Makefile Application.TextOut_test" />
+      <item itemvalue="Makefile Application.timer_test" />
+      <item itemvalue="Makefile Application.Token_test" />
+      <item itemvalue="Makefile Application.TokenList_test" />
+      <item itemvalue="Makefile Application.trace_test" />
+      <item itemvalue="Makefile Application.TRegex32_test" />
+      <item itemvalue="Makefile Application.TRegex_test" />
+      <item itemvalue="Makefile Application.True_test" />
+      <item itemvalue="Makefile Application.u8Array_test" />
+      <item itemvalue="Makefile Application.u8VlArray_test" />
+      <item itemvalue="Makefile Application.u12Array_test" />
+      <item itemvalue="Makefile Application.U16Array_test" />
+      <item itemvalue="Makefile Application.U16Matrix_test" />
+      <item itemvalue="Makefile Application.u32Array_test" />
+      <item itemvalue="Makefile Application.U32Index_test" />
+      <item itemvalue="Makefile Application.u32Matrix_test" />
+      <item itemvalue="Makefile Application.Uri_test" />
+      <item itemvalue="Makefile Application.utf8_test" />
+      <item itemvalue="Makefile Application.Value_test" />
+      <item itemvalue="Makefile Application.ValueArray_test" />
+      <item itemvalue="Makefile Application.Visitor_test" />
+      <item itemvalue="Makefile Application.W32Array_test" />
+      <item itemvalue="Makefile Application.W32Str_test" />
+      <item itemvalue="Makefile Application.W32StrC_test" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="410d5303-536c-4ab3-9b37-479cce564cb9" name="Default Changelist" comment="" />
-      <created>1602982396097</created>
+      <changelist id="082d836c-5fdc-4c7c-832b-c0c0d6b5898e" name="Changes" comment="" />
+      <created>1632437529525</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1602982396097</updated>
-      <workItem from="1602982397341" duration="2084000" />
-      <workItem from="1603220624877" duration="4867000" />
-      <workItem from="1604624017577" duration="1028000" />
+      <updated>1632437529525</updated>
+      <workItem from="1632437533146" duration="5530000" />
     </task>
     <servers />
   </component>

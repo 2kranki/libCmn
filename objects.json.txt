@@ -30,22 +30,25 @@
         {name:"Base64",         desc:"Base64 Encoding/Decoding, used mostly in MIME/HTTP support"},
         {name:"BitMatrix",      deps:["AStr.h","BitSet.h","u32Array.h"], "json":true},
         {name:"BitSet",         deps:["u32Array.h"]},
-        {name:"BlkdRcds16"},
+        {name:"BlkdRcds16",     desc:"Block of Variable-Length Records", deps:["Endian.h"]},
         //{name:"blks"},
         {name:"block16"},
         {name:"block32"},
         {name:"Blocks",         deps:["listdl.h"]},
 
-        /*  'bpt32', 'bpt32idx' and 'bpt32lf' provide a B-Plus Tree using a 32-bit
-            index, uint32_t. It is designed to use with 'rrds' and 'lru' to provide
-            fast indexed file system indexed by a number such as the record number.
+        /*  'BPT32', 'BPT32Index' and 'BPT32Leaf' provide a B-Plus Tree using a 32-bit
+            logical block number, uint32_t, and up to a 255 byte key. It is designed to 
+            use with 'rrds' and 'lru' to provide fast indexed file system indexed by a 
+            number such as the record number.
          */
         //TODO:    === TODO: Rewrite to new naming convention ===
         /*
         {name:"bpt32",          desc:"32-Bit Index B-Plus Tree", deps:["bpt32idx.h","bpt32lf.h","rrds.h"]},
-        {name:"bpt32idx",       desc:"32-Bit Index B-Plus Tree Index Block", test:false}, 
-        {name:"BPT32Leaf",      desc:"32-Bit Index B-Plus Tree Leaf Block"},
         */
+        {name:"BPT32Index",     desc:"B-Plus Tree 32-Bit Index Block", 
+                                deps:["BlkdRcds16.h","$(OBJDIR)/BlkdRcds16.o"]},
+        {name:"BPT32Leaf",      desc:"B-Plus Tree 32-Bit Leaf Block", 
+                                deps:["BlkdRcds16.h","$(OBJDIR)/BlkdRcds16.o"]},
 
         {name:"cb",             desc:"Generic Circular Buffer", 
                                 test:{srcs:["objTest.c", "objTest_object.c"]}},

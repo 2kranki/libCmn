@@ -24,6 +24,7 @@
  *          If zero is returned for a record index, it should be
  *          considered an error.
  *    2.    All internal values are stored in Big Endian format.
+ *    3.      This object uses OBJ_FLAG_USER1.
  *
  * References:
  *  *      "Data Structures and Algorithms", Alfred V. Aho et al,
@@ -83,6 +84,7 @@
 //#define   BLKDRCDS16_IS_IMMUTABLE     1
 //#define   BLKDRCDS16_JSON_SUPPORT     1
 //#define   BLKDRCDS16_SINGLETON        1
+#define   BLKDRCDS16_BIG_ENDIAN         1
 
 
 
@@ -209,7 +211,26 @@ extern "C" {
     );
 
 
+    uint8_t *       BlkdRcds16_getReserved(
+        BLKDRCDS16_DATA *this
+    );
+
+
     uint16_t        BlkdRcds16_getUnused (
+        BLKDRCDS16_DATA *this
+    );
+
+    /*!
+     @property MaxUnused provides the maximum unused space within
+     the block when no records are allocated.
+     @warning The block must be initialized to get this value.
+    */
+    uint16_t        BlkdRcds16_getMaxUnused (
+        BLKDRCDS16_DATA *this
+    );
+
+
+    uint16_t        BlkdRcds16_getUsed (
         BLKDRCDS16_DATA *this
     );
 
@@ -218,6 +239,21 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    /*!
+     Scan all the records in order by ascending record number.
+     @return    ERESULT_SUCCESS if successful completion.  Otherwise,
+                an ERESULT_* error code is returned.
+     */
+    ERESULT         BlkdRcds16_ForEach (
+        BLKDRCDS16_DATA *this,
+        P_BOOL_EXIT4A   pScan,              // Return false to stop scan
+        OBJ_ID          pObj,               // Used as first parameter of scan method
+        //                                  // second parameter is record length
+        //                                  // third parameter is recard address
+        void            *pArg4              // Used as fourth parameter of scan method
+    );
+
 
     BLKDRCDS16_DATA * BlkdRcds16_Init (
         BLKDRCDS16_DATA *this
@@ -335,6 +371,19 @@ extern "C" {
     );
 
 
+    /*!
+     Split this block in half if possible placing the upper half in
+     the provided block.
+    @param     this         object pointer
+    @param     pUpper       upper half object pointer
+    @return    If successful, ERESULT_SUCCESS. An ERESULT_* error code.
+    */
+    ERESULT         BlkdRcds16_Split (
+        BLKDRCDS16_DATA *this,
+        BLKDRCDS16_DATA *pUpper
+    );
+
+
 #ifdef  BLKDRCDS16_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
@@ -372,6 +421,15 @@ extern "C" {
     );
     
     
+    /*!
+     Verify as much of the object as possible.
+    @param     this         object pointer
+    @return    If successful, true. Otherwise, false.
+    */
+    bool            BlkdRcds16_Verify (
+        BLKDRCDS16_DATA *this
+    );
+
 
     
 #ifdef  __cplusplus
