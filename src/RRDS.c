@@ -1758,8 +1758,9 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        if (0 == this->cReserve)
-            return ERESULT_DATA_NOT_FOUND;
+        if (0 == this->cReserve) {
+            return ERESULT_SUCCESS;
+        }
 
         if (this->pReserve) {
             mem_Free(this->pReserve);
@@ -1821,6 +1822,9 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         }
 #endif
+        if (0 == this->cReserve) {
+            return ERESULT_SUCCESS;
+        }
 
         eRc = RRDS_ReserveAlloc(this);
         if (ERESULT_FAILED(eRc)) {
@@ -1859,6 +1863,9 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+        if (0 == this->cReserve) {
+            return ERESULT_SUCCESS;
+        }
         if (NULL == this->pReserve) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
@@ -1868,8 +1875,9 @@ extern "C" {
             return ERESULT_DATA_NOT_FOUND;
         }
 #endif
-        if (0 == this->cReserve)
-            return ERESULT_DATA_NOT_FOUND;
+        if (0 == this->cReserve) {
+            return ERESULT_SUCCESS;
+        }
 
         // Seek to the appropriate location within the file.
         seekOffset = FileIO_SeekBegin(this->pIO, fileOffset);

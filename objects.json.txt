@@ -41,6 +41,7 @@
             use with 'RRDS' and 'lru' to provide fast indexed file system indexed by a 
             number such as the record number.
          */
+/*** TEMPORARY ***
         {name:"BPT",            desc:"B-Plus Tree", 
                                 deps:[
                                         "BPTIndex.h", "$(OBJDIR)/BPTIndex.o",
@@ -57,12 +58,14 @@
                                 deps:["BlkdRcds16.h","$(OBJDIR)/BlkdRcds16.o"],
                                 status:"NOT working/NOT fully tested"
         },
+ *** TEMPORARY ***/
 
         /*  'BPT32', 'BPT32Index' and 'BPT32Leaf' provide a B-Plus Tree using a 32-bit
             logical block number, uint32_t, and a 32-bit binary key. It is designed to 
             use with 'RRDS' and 'lru' to provide fast indexed file system indexed by a 
             number such as the record number.
          */
+/*** TEMPORARY ***
         {name:"BPT32",          desc:"B-Plus Tree", 
                                 deps:[
                                         "BPT32Index.h", "$(OBJDIR)/BPT32Index.o",
@@ -79,6 +82,7 @@
                                 deps:["BlkdRcds16.h","$(OBJDIR)/BlkdRcds16.o"],
                                 status:"NOT working/NOT fully tested"
         },
+ *** TEMPORARY ***/
 
         {name:"cb",             desc:"Generic Circular Buffer", 
                                 test:{srcs:["objTest.c", "objTest_object.c"]}},
