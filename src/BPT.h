@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  B-Plus Tree (BPT32) Header
+//                  B-Plus Tree (BPT) Header
 //****************************************************************
 /*
  * Program
- *          B-Plus Tree (BPT32)
+ *          B-Plus Tree (BPT)
  * Purpose
  *          This object provides support for a B-Plus Tree which
  *          has fixed size keys embedded at a fixed location within
@@ -78,13 +78,13 @@
 #include        <RRDS.h>
 
 
-#ifndef         BPT32_H
-#define         BPT32_H
+#ifndef         BPT_H
+#define         BPT_H
 
 
-//#define   BPT32_IS_IMMUTABLE     1
-//#define   BPT32_JSON_SUPPORT     1
-//#define   BPT32_SINGLETON        1
+//#define   BPT_IS_IMMUTABLE     1
+//#define   BPT_JSON_SUPPORT     1
+//#define   BPT_SINGLETON        1
 
 
 
@@ -100,26 +100,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct BPT32_data_s  BPT32_DATA;            // Inherits from OBJ
-    typedef struct BPT32_class_data_s BPT32_CLASS_DATA;   // Inherits from OBJ
+    typedef struct BPT_data_s  BPT_DATA;            // Inherits from OBJ
+    typedef struct BPT_class_data_s BPT_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct BPT32_vtbl_s  {
+    typedef struct BPT_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in BPT32_object.c.
+        // method names to the vtbl definition in BPT_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(BPT32_DATA *);
-    } BPT32_VTBL;
+        //bool        (*pIsEnabled)(BPT_DATA *);
+    } BPT_VTBL;
 
-    typedef struct BPT32_class_vtbl_s    {
+    typedef struct BPT_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in BPT32_object.c.
+        // method names to the vtbl definition in BPT_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(BPT32_DATA *);
-    } BPT32_CLASS_VTBL;
+        //bool        (*pIsEnabled)(BPT_DATA *);
+    } BPT_CLASS_VTBL;
 
 
 
@@ -132,12 +132,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  BPT32_SINGLETON
-    BPT32_DATA *    BPT32_Shared (
+#ifdef  BPT_SINGLETON
+    BPT_DATA *    BPT_Shared (
         void
     );
 
-    void            BPT32_SharedReset (
+    void            BPT_SharedReset (
         void
     );
 #endif
@@ -147,36 +147,38 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to BPT32 object if successful, otherwise OBJ_NIL.
+     @return    pointer to BPT object if successful, otherwise OBJ_NIL.
      */
-    BPT32_DATA *    BPT32_Alloc (
+    BPT_DATA *    BPT_Alloc (
         void
     );
     
     
-    OBJ_ID          BPT32_Class (
+    OBJ_ID          BPT_Class (
         void
     );
     
     
-    BPT32_DATA *    BPT32_New (
+    BPT_DATA *    BPT_New (
         void
     );
     
     
-    BPT32_DATA *    BPT32_NewWithSizes (
+    BPT_DATA *    BPT_NewWithSizes (
         uint16_t        blockSize,
         uint16_t        keyLen,
-        uint16_t        keyOff
+        uint16_t        keyOff,
+        uint16_t        cLRU,
+        uint16_t        cHash
     );
 
 
-#ifdef  BPT32_JSON_SUPPORT
-    BPT32_DATA *   BPT32_NewFromJsonString (
+#ifdef  BPT_JSON_SUPPORT
+    BPT_DATA *   BPT_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    BPT32_DATA *   BPT32_NewFromJsonStringA (
+    BPT_DATA *   BPT_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -195,51 +197,134 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         BPT32_Add (
-        BPT32_DATA      *this,
+    /*!
+     Add the given record to the dataset if it does not already
+     exist.
+     @param     this    object pointer
+     @param     size    record size in bytes (must be >= keyLen property)
+     @param     pRecord record pointer
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         BPT_Add (
+        BPT_DATA        *this,
         uint16_t        size,
         void            *pRecord
     );
 
 
-    void *          BPT32_Delete (
-        BPT32_DATA      *this,
+    /*!
+     Close an open file from reading/writing.
+     @param     this    object pointer
+     @param     fDelete If true, delete the file after closing it.
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         BPT_Close (
+        BPT_DATA        *this,
+        bool            fDelete
+    );
+
+
+    /*!
+     Create a new file for reading/writing.
+     @param     this    object pointer
+     @param     pPath   path object pointer for dataset/file
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         BPT_Create (
+        BPT_DATA        *this,
+        PATH_DATA       *pPath
+    );
+
+
+    void *          BPT_Delete (
+        BPT_DATA        *this,
         void            *pKey
     );
 
    
-    void *          BPT32_Find (
-        BPT32_DATA      *this,
-        void            *pKey,
-        uint16_t        *pLen
+    /*!
+     Search the index for the specified key.  If found, return the data
+     component of the index associated with the key.
+     @param     this    object pointer
+     @param     pKey    [input] key (length is assumed to be same as defined at
+                        open/create)
+     @param     cData   [input] size of provided data area
+     @param     pData   [output] optional pointer to returned data record of size cData
+     @param     pUsed   [output] optional pointer to returned amount of pData used
+                        if pData is NULL and cData is a large number, then this will
+                        be the data record size.
+     @return    If successful, return ERESULT_SUCCESS and optionally copy the record to
+     the area given and optionally, return the length used. Otherwise, return an
+     ERESULT_* error code.
+     */
+    ERESULT         BPT_Find (
+        BPT_DATA        *this,
+        uint8_t         *pKey,
+        uint16_t        cData,
+        void            *pData,
+        uint16_t        *pUsed
     );
 
 
-    BPT32_DATA *    BPT32_Init (
-        BPT32_DATA      *this
+    /*!
+     Retrieve the first key/data pair in the index.
+     @param     this    object pointer
+     @param     pData   optional pointer to data area of cData size.
+     @return    If successful, ERESULT_SUCCESS; otherwise ERESULT_* error.
+     */
+    ERESULT         BPT_First (
+        BPT_DATA        *this,
+        uint16_t        cData,
+        void            *pData,
+        uint16_t        *pUsed
     );
 
 
-    ERESULT         BPT32_IsEnabled (
-        BPT32_DATA      *this
+    BPT_DATA *      BPT_Init (
+        BPT_DATA        *this
     );
-    
- 
-#ifdef  BPT32_JSON_SUPPORT
+
+
+    /*!
+     Set up the sizes needed to properly build the index dataset/file.  This
+     method should be called before a Create() or an Open().  For the Open(),
+     the blockSize and dataSize will be gotten from the file path given.  So,
+     use 64 and 4 respectively for that call.
+     @param     this        object pointer
+     @param     blockSize   size of the file block which must be greater than
+                            128
+     @param     keyLen      key length in bytes
+     @param     keyOff      key offset within the record relative to 0
+     @param     cLRU        number of LRU Buffers
+     @param     cHash       LRU Hash Size (Use prime number for this if possible.)
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         BPT_SetupSizes(
+        BPT_DATA        *this,
+        uint32_t        blockSize,
+        uint16_t        keyLen,
+        uint16_t        keyOff,
+        uint16_t        cLRU,
+        uint16_t        cHash
+    );
+
+
+#ifdef  BPT_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = BPT32_ToJson(this);
+     ASTR_DATA      *pDesc = BPT_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     BPT32_ToJson (
-        BPT32_DATA   *this
+    ASTR_DATA *     BPT_ToJson (
+        BPT_DATA   *this
     );
 #endif
 
@@ -248,7 +333,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = BPT32_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = BPT_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -256,14 +341,14 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     BPT32_ToDebugString (
-        BPT32_DATA     *this,
+    ASTR_DATA *     BPT_ToDebugString (
+        BPT_DATA     *this,
         int             indent
     );
     
     
-    ERESULT         BPT32_Update (
-        BPT32_DATA      *this,
+    ERESULT         BPT_Update (
+        BPT_DATA      *this,
         uint16_t        size,
         void            *pRecord
     );
@@ -275,5 +360,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* BPT32_H */
+#endif  /* BPT_H */
 

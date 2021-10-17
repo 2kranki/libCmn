@@ -65,7 +65,7 @@
 #include    <test_defs.h>
 #include    <Test_internal.h>
 #include    <trace.h>
-#include    <BPT32_internal.h>
+#include    <BPT_internal.h>
 #include    <JsonIn.h>
 #include    <SrcErrors.h>
 #include    <szTbl.h>
@@ -75,26 +75,26 @@
 
 
 
-ERESULT         Test_BPT32_OpenClose (
+ERESULT         Test_BPT_OpenClose (
     TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    BPT32_DATA       *pObj = OBJ_NIL;
+    BPT_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = BPT32_Alloc( );
+    pObj = BPT_Alloc( );
     TestForNotNull(pObj, "Missing Test Alloc() object");
-    pObj = BPT32_Init( pObj );
+    pObj = BPT_Init( pObj );
     TestForNotNull(pObj, "Missing Test Init() object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_BPT32);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_BPT);
         TestForTrue(fRc, "Failed Ident Test");
         
         // Test something.
@@ -110,40 +110,40 @@ ERESULT         Test_BPT32_OpenClose (
 
 
 
-ERESULT         Test_BPT32_Copy01 (
+ERESULT         Test_BPT_Copy01 (
     TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    BPT32_DATA       *pObj1 = OBJ_NIL;
-    BPT32_DATA       *pObj2 = OBJ_NIL;
+    BPT_DATA       *pObj1 = OBJ_NIL;
+    BPT_DATA       *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(BPT32_JSON_SUPPORT) && defined(XYZZY)
+#if defined(BPT_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA       *pStr = OBJ_NIL;
 #endif
     //int             iRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = BPT32_New( );
+    pObj1 = BPT_New( );
     TestForNotNull(pObj1, "Missing Test object");
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
-        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_BPT32);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_BPT);
         TestForTrue(fRc, "Failed Ident Test");
         
         // Test assign.
-        pObj2 = BPT32_New();
+        pObj2 = BPT_New();
         TestForNotNull(pObj2, "Missing copied object");
-        eRc = BPT32_Assign(pObj1, pObj2);
+        eRc = BPT_Assign(pObj1, pObj2);
         TestForFalse((ERESULT_FAILED(eRc)), "Assignment failed");
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_BPT32);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_BPT);
         TestForTrue(fRc, "Failed Ident Test");
-        //iRc = BPT32_Compare(pObj1, pObj2);
+        //iRc = BPT_Compare(pObj1, pObj2);
         //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
@@ -151,12 +151,12 @@ ERESULT         Test_BPT32_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = BPT32_Copy(pObj1);
+        pObj2 = BPT_Copy(pObj1);
         TestForNotNull(pObj2, "Missing copied object");
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_BPT32);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_BPT);
         TestForTrue(fRc, "Failed Ident Test");
-        //iRc = BPT32_Compare(pObj1, pObj2);
+        //iRc = BPT_Compare(pObj1, pObj2);
         //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
@@ -164,17 +164,17 @@ ERESULT         Test_BPT32_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(BPT32_JSON_SUPPORT) && defined(XYZZY)
-        pStr = BPT32_ToJson(pObj1);
+#if defined(BPT_JSON_SUPPORT) && defined(XYZZY)
+        pStr = BPT_ToJson(pObj1);
         TestForNotNull(pStr, "Missing JSON output");
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = BPT32_NewFromJsonString(pStr);
+        pObj2 = BPT_NewFromJsonString(pStr);
         TestForNotNull(pObj2, "Missing JSON created object");
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_BPT32);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_BPT);
         TestForTrue(fRc, "Failed Ident Test");
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //iRc = BPT32_Compare(pObj1, pObj2);
+        //iRc = BPT_Compare(pObj1, pObj2);
         //TestForTrue((0 == iRc), "Failed Compare");
 
         obj_Release(pObj2);
@@ -191,28 +191,31 @@ ERESULT         Test_BPT32_Copy01 (
 
 
 
-ERESULT         Test_BPT32_Test01 (
+ERESULT         Test_BPT_Test01 (
     TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    BPT32_DATA       *pObj = OBJ_NIL;
+    BPT_DATA      *pObj = OBJ_NIL;
     bool            fRc;
+    const
+    int             blockSize = 48;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = BPT32_New( );
+    pObj = BPT_NewWithSizes(blockSize, 4, 0, 3, 17);
     TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_BPT32);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_BPT);
         TestForTrue(fRc, "Failed Ident Test");
-        
+        //Test_Dump(blockSize, BlkdRcds16_getData((BLKDRCDS16_DATA *)pObj), "Before Adds");
+
         {
-            ASTR_DATA       *pStr = BPT32_ToDebugString(pObj, 4);
+            ASTR_DATA       *pStr = BPT_ToDebugString(pObj, 4);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -263,9 +266,9 @@ int     main (
     }
 
     // Execute tests.
-    TestExec("OpenClose", Test_BPT32_OpenClose, NULL, NULL);
-    //TestExec("Copy01", Test_BPT32_Copy01, pTest, NULL, NULL);
-    TestExec("Test01", Test_BPT32_Test01, NULL, NULL);
+    TestExec("OpenClose", Test_BPT_OpenClose, NULL, NULL);
+    //TestExec("Copy01", Test_BPT_Copy01, pTest, NULL, NULL);
+    TestExec("Test01", Test_BPT_Test01, NULL, NULL);
 
     obj_Release(pTest);
     pTest = OBJ_NIL;

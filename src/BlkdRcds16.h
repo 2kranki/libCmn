@@ -84,7 +84,7 @@
 //#define   BLKDRCDS16_IS_IMMUTABLE     1
 //#define   BLKDRCDS16_JSON_SUPPORT     1
 //#define   BLKDRCDS16_SINGLETON        1
-#define   BLKDRCDS16_BIG_ENDIAN         1
+#define   BLKDRCDS16_BIG_ENDIAN         1       //undef of this is untested
 
 
 
@@ -155,10 +155,17 @@ extern "C" {
     );
     
     
-    uint16_t        BlkdRcds16_CalcFromRecordSize(
+    uint16_t        BlkdRcds16_CalcBlockSizeFromRecordSize(
         uint16_t        rsvdSize,
         uint16_t        numRecords,
         uint16_t        recordSize              // Average Record Size
+    );
+
+
+    uint16_t        BlkdRcds16_CalcNumFixedRcds(
+        uint16_t        blockSize,
+        uint16_t        rsvdSize,
+        uint16_t        rcdSize
     );
 
 
@@ -200,9 +207,19 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-
+    /*! @property Data is the raw data block. If Setup() is used, the
+     block is allocated/freed by this object. If the setData() is used,
+     any prior data is freed if needed and the new data is setup for
+     usage.  However, once this is done, the new data will not be freed
+     upon object termination.
+     */
     uint8_t *       BlkdRcds16_getData (
         BLKDRCDS16_DATA *this
+    );
+
+    bool            BlkdRcds16_setData(
+        BLKDRCDS16_DATA *this,
+        uint8_t         *pValue
     );
 
 

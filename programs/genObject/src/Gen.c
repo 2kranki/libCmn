@@ -590,6 +590,9 @@ extern "C" {
     ERESULT         Gen_CreateObjectFiles (
         GEN_DATA        *this,
         NODECLASS_DATA  *pClass,
+        uint8_t         fJson,
+        uint8_t         fObj,
+        uint8_t         fTest,
         bool            fVerbose
     )
     {
@@ -605,25 +608,27 @@ extern "C" {
         }
 #endif
 
-        for (i=0; ModelFileNames[i].pFileNameA; i++) {
-            ASTR_DATA       *pStr = OBJ_NIL;
-            pStr = AStr_NewA(ModelFileNames[i].pFileNameA);
-            if (pStr) {
-                eRc =   Gen_ExpandFile(
-                                     this,
-                                     ModelFileNames[i].pSubDirA,
-                                     ModelFileNames[i].pSuffixA,
-                                     pStr,
-                                     fVerbose
-                        );
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-                if (ERESULT_FAILED(eRc))
-                    break;
+        if (fObj) {
+            for (i=0; ModelFileNames[i].pFileNameA; i++) {
+                ASTR_DATA       *pStr = OBJ_NIL;
+                pStr = AStr_NewA(ModelFileNames[i].pFileNameA);
+                if (pStr) {
+                    eRc =   Gen_ExpandFile(
+                                         this,
+                                         ModelFileNames[i].pSubDirA,
+                                         ModelFileNames[i].pSuffixA,
+                                         pStr,
+                                         fVerbose
+                            );
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                    if (ERESULT_FAILED(eRc))
+                        break;
+                }
             }
         }
 
-        if (ERESULT_OK(eRc)) {
+        if (ERESULT_OK(eRc) && fJson) {
             ASTR_DATA       *pStr = OBJ_NIL;
             if (NodeClass_getJson(pClass)) {
                 pStr = AStr_NewA(JsonFileName.pFileNameA);
@@ -641,7 +646,7 @@ extern "C" {
             }
         }
 
-        if (ERESULT_OK(eRc)) {
+        if (ERESULT_OK(eRc) && fTest) {
             ASTR_DATA       *pStr = OBJ_NIL;
             if (NodeClass_getTest(pClass)) {
                 pStr = AStr_NewA(TestFileName.pFileNameA);

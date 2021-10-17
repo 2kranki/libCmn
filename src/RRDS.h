@@ -26,6 +26,12 @@
  *          An associated LRU buffering mechanism is utilized in
  *          these routines if the dataset is defined as disk based.
  *
+ *          An optional area at the beginning of the file can be
+ *          reserved for control information if needed.  This
+ *          reserve size sets the size of the area and the offset
+ *          into the file of the first record.  This size must
+ *          be specified before an create() or open().
+ *
  * Remarks
  *    1.    If the default record size is used, the lines may be
  *          80-82 characters. When a dataset is opened, it will
@@ -205,6 +211,28 @@ extern "C" {
     );
 
 
+    void *          RRDS_getReserve (
+        RRDS_DATA       *this
+    );
+
+
+    /*!
+     The record offset property should be set before a dataset/file
+     is opened or created. This offset sets the beginning of the
+     records to start at it in the file allowing the beginning of
+     the file to be used for other purposes. The default for this
+     is zero.
+     */
+    uint16_t        RRDS_getReserveSize (
+        RRDS_DATA       *this
+    );
+
+    bool            RRDS_setReserveSize (
+        RRDS_DATA     *this,
+        uint16_t        value
+    );
+
+
     /*!
      The record size property should be set before a dataset/file
      is opened or created. This size does not include any record
@@ -248,10 +276,19 @@ extern "C" {
     );
 
 
-    /* Create() creates an instance of a new RRDS.    This
-     * routine or Open() must be called prior to using any other
-     * RRDS I/O calls.  Use Close() to flush buffers and close the
-     * file. Use Destroy() to close the file deleting it.
+    /*! Create a new Relative Record Data Set (RRDS). This method
+        or Open() must be called prior to using any other RRDS I/O
+        calls.  Use Close() to flush buffers and close the file.
+        Use Destroy() to close the file deleting it.
+     @param     this    object pointer
+     @param     pPath   path pointer
+     @param     fMem    true == create a memory based file rather
+                        than one on disk. This file will be deleted
+                        upon Close()/Destroy().
+                        false == create a disk file with all data
+                        being read/written there.
+     @Return    If file is open, ERESULT_SUCCESS; otherwise an
+                ERESULT_* error.
      */
     ERESULT         RRDS_Create (
         RRDS_DATA       *this,

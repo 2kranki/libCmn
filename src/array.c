@@ -356,6 +356,52 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          O t h e r
+    //---------------------------------------------------------------
+
+    OBJ_ID          array_getOther(
+        ARRAY_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pOther;
+    }
+
+
+    bool            array_setOther(
+        ARRAY_DATA      *this,
+        OBJ_ID          pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pOther) {
+            obj_Release(this->pOther);
+        }
+        this->pOther = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     

@@ -139,7 +139,7 @@ ERESULT         Test_BlkdRcds16_OpenClose (
         // Test something.
         TestForSuccess("test failed");
 
-        size = BlkdRcds16_CalcFromRecordSize(10, 8, 64);
+        size = BlkdRcds16_CalcBlockSizeFromRecordSize(10, 8, 64);
         fprintf(stderr, "\tSize = %d\n", size);
         TestForTrue((546 == size),  "Blocksize miscalculation");
 

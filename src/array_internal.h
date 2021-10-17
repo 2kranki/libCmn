@@ -72,6 +72,7 @@ struct array_data_s	{
     uint32_t        max;            // Number of Array Elements
     uint32_t        misc;           // Controlled by User
     uint8_t         *pArray;
+    OBJ_ID          pOther;
 
 };
 #pragma pack(pop)

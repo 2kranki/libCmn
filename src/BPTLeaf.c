@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   BPT32Index.c
- *  Generated 09/25/2021 10:00:36
+ * File:   BPTLeaf.c
+ *  Generated 09/23/2021 12:52:17
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <BPT32Index_internal.h>
+#include        <BPTLeaf_internal.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -76,16 +76,122 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            BPT32Index_task_body (
-        void            *pData
+    //---------------------------------------------------------------
+    //                      F i n d
+    //---------------------------------------------------------------
+
+    uint16_t        BPTLeaf_FindByKey (
+        BPTLEAF_DATA  *this,
+        void            *pKey,
+        uint16_t        *pInsert
     )
     {
-        //BPT32INDEX_DATA  *this = pData;
-        
-    }
+        //ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
+        int             iRc;
+        uint32_t        i = 0;
+        uint32_t        iMax;
+        uint8_t         *pRcd;
+        uint16_t        keyLen;
+        int             high = 0;
+        int             low = 0;
+        int             mid = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
 #endif
+        if (pInsert)
+            *pInsert = 0;
+        keyLen = BPTLeaf_getKeyLen(this);
+
+        iMax = BPTLeaf_getNumRecords(this);
+        if (iMax < 10) {            // *** Sequential Search ***
+            for (i=0; i<iMax; i++) {
+                pRcd = BlkdRcds16_DataAddr((BLKDRCDS16_DATA *)this, i+1);
+                if (pRcd) {
+                    iRc =   memcmp(
+                                   pKey,
+                                   (pRcd + BPTLeaf_getKeyOff(this)),
+                                   keyLen
+                            );
+                    if (0 == iRc) {
+                        return i+1;
+                        break;
+                    }
+                    if (iRc < 0)
+                        break;
+                }
+            }
+        } else {                    // *** Binary Search ***
+            // Do a binary search.
+            high = iMax - 1;
+            while (low < high) {
+                mid = (high + low) / 2;
+                i = mid + 1;
+                pRcd = BlkdRcds16_DataAddr((BLKDRCDS16_DATA *)this, mid+1);
+                if (pRcd) {
+                    iRc =   memcmp(
+                                   pKey,
+                                   (pRcd + BPTLeaf_getKeyOff(this)),
+                                   keyLen
+                            );
+                    if (iRc < 0)
+                        high = mid;
+                    else if (iRc == 0) {
+                        return i;
+                    }
+                    else
+                        low = mid + 1;
+                } else {                // *** Record Not Found ***
+                    // Warning: This will cause an infinitte loop. We need an
+                    // interrupt here.  On the other hand, this should never
+                    // happen!
+                }
+            }
+            if( high == low ) {
+                pRcd = BlkdRcds16_DataAddr((BLKDRCDS16_DATA *)this, low+1);
+                i = low;
+                iRc =   memcmp(
+                               pKey,
+                               (pRcd + BPTLeaf_getKeyOff(this)),
+                               keyLen
+                        );
+                if (iRc == 0)
+                    return i+1;
+                else if (iRc > 0)
+                    ++i;
+            }
+        }
+
+        // Return to caller.
+        if (pInsert)
+            *pInsert = i;
+        return 0;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      K e y  F i r s t
+    //---------------------------------------------------------------
+
+    void *          BPTLeaf_KeyFirst (
+        BPTLEAF_DATA  *this
+    )
+    {
+        uint8_t         *pRcd;
+
+        pRcd = BlkdRcds16_DataAddr((BLKDRCDS16_DATA *)this, 1);
+        if (pRcd) {
+            pRcd += BPTLeaf_getKeyOff(this);
+        }
+
+        return pRcd;
+    }
 
 
 
@@ -93,12 +199,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    BPT32INDEX_DATA *     BPT32Index_Alloc (
+    BPTLEAF_DATA * BPTLeaf_Alloc (
         void
     )
     {
-        BPT32INDEX_DATA       *this;
-        uint32_t        cbSize = sizeof(BPT32INDEX_DATA);
+        BPTLEAF_DATA  *this;
+        uint32_t        cbSize = sizeof(BPTLEAF_DATA);
         
         // Do initialization.
         
@@ -110,21 +216,21 @@ extern "C" {
 
 
 
-    BPT32INDEX_DATA *     BPT32Index_New (
+    BPTLEAF_DATA * BPTLeaf_New (
         void
     )
     {
-        BPT32INDEX_DATA       *this;
+        BPTLEAF_DATA  *this;
         
-        this = BPT32Index_Alloc( );
+        this = BPTLeaf_Alloc( );
         if (this) {
-            this = BPT32Index_Init(this);
+            this = BPTLeaf_Init(this);
         } 
         return this;
     }
 
 
-    BPT32INDEX_DATA * BPT32Index_NewWithSizes (
+    BPTLEAF_DATA * BPTLeaf_NewWithSizes (
         uint32_t        blockSize,
         uint32_t        lbn,
         uint16_t        keyLen,
@@ -133,14 +239,14 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        BPT32INDEX_DATA *this = OBJ_NIL;
+        BPTLEAF_DATA  *this = OBJ_NIL;
 
         if (keyLen) {
-            this = BPT32Index_New( );
+            this = BPTLeaf_New( );
             if (this) {
-                eRc = BPT32Index_Setup(this, blockSize, lbn, keyLen, keyOff);
+                eRc = BPTLeaf_Setup(this, blockSize, lbn, keyLen, keyOff);
                 if (ERESULT_OK(eRc)) {
-                    BPT32Index_setManager(this, pMgr);
+                    BPTLeaf_setManager(this, pMgr);
                 } else {
                     obj_Release(this);
                     this = OBJ_NIL;
@@ -149,8 +255,6 @@ extern "C" {
         }
         return this;
     }
-
-
 
     
 
@@ -161,22 +265,45 @@ extern "C" {
     //---------------------------------------------------------------
     //                          B l o c k
     //---------------------------------------------------------------
+    
+    uint8_t *       BPTLeaf_getBlock (
+        BPTLEAF_DATA  *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return BlkdRcds16_getData((BLKDRCDS16_DATA *)this);
+    }
+    
+    
 
-    uint8_t *       BPT32Index_getBlock (
-        BPT32INDEX_DATA *this
+    //---------------------------------------------------------------
+    //                          B l o c k  S i z e
+    //---------------------------------------------------------------
+
+    uint16_t        BPTLeaf_getBlockSize (
+        BPTLEAF_DATA  *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return 0;
         }
 #endif
 
-        return BlkdRcds16_getData((BLKDRCDS16_DATA *)this);
+        return BlkdRcds16_getBlockSize((BLKDRCDS16_DATA *)this);
     }
 
 
@@ -185,41 +312,41 @@ extern "C" {
     //                        K e y  L e n g t h
     //---------------------------------------------------------------
 
-    uint16_t        BPT32Index_getKeyLen (
-        BPT32INDEX_DATA *this
+    uint16_t        BPTLeaf_getKeyLen (
+        BPTLEAF_DATA  *this
     )
     {
-        BPT32INDEX_RSVD *pRsvd;
+        BPTLEAF_RSVD  *pRsvd;
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        pRsvd = (BPT32INDEX_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+        pRsvd = (BPTLEAF_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
 
         return pRsvd->keyLen;
     }
 
 
-    bool            BPT32Index_setKeyLen (
-        BPT32INDEX_DATA *this,
+    bool            BPTLeaf_setKeyLen (
+        BPTLEAF_DATA  *this,
         uint16_t        value
     )
     {
-        BPT32INDEX_RSVD *pRsvd;
+        BPTLEAF_RSVD  *pRsvd;
 
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        pRsvd = (BPT32INDEX_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+        pRsvd = (BPTLEAF_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
 
         pRsvd->keyLen = value;
 
@@ -232,41 +359,41 @@ extern "C" {
     //                        K e y  O f f s e t
     //---------------------------------------------------------------
 
-    uint16_t        BPT32Index_getKeyOff (
-        BPT32INDEX_DATA *this
+    uint16_t        BPTLeaf_getKeyOff (
+        BPTLEAF_DATA  *this
     )
     {
-        BPT32INDEX_RSVD *pRsvd;
+        BPTLEAF_RSVD  *pRsvd;
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
-        pRsvd = (BPT32INDEX_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+        pRsvd = (BPTLEAF_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
 
         return pRsvd->keyOff;
     }
 
 
-    bool            BPT32Index_setKeyOff (
-        BPT32INDEX_DATA *this,
+    bool            BPTLeaf_setKeyOff (
+        BPTLEAF_DATA  *this,
         uint16_t        value
     )
     {
-        BPT32INDEX_RSVD *pRsvd;
+        BPTLEAF_RSVD  *pRsvd;
 
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
-        pRsvd = (BPT32INDEX_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+        pRsvd = (BPTLEAF_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
 
         pRsvd->keyOff = value;
 
@@ -279,15 +406,15 @@ extern "C" {
     //             L o g i c a l  B l o c k  N u m b e r
     //---------------------------------------------------------------
 
-    uint32_t        BPT32Index_getLBN (
-        BPT32INDEX_DATA *this
+    uint32_t        BPTLeaf_getLBN (
+        BPTLEAF_DATA  *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -297,14 +424,14 @@ extern "C" {
     }
 
 
-    bool            BPT32Index_setLBN (
-        BPT32INDEX_DATA *this,
+    bool            BPTLeaf_setLBN (
+        BPTLEAF_DATA  *this,
         uint32_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -321,16 +448,16 @@ extern "C" {
     //                      M a n a g e r
     //---------------------------------------------------------------
 
-    bool            BPT32Index_setManager(
-        BPT32INDEX_DATA  *this,
-        OBJ_ID           *pMgr          // Block Manager
+    bool            BPTLeaf_setManager(
+        BPTLEAF_DATA    *this,
+        OBJ_ID          *pMgr           // Block Manager
     )
     {
         OBJ_IUNKNOWN    *pVtbl;
 
 #ifdef NDEBUG
 #else
-        if( !BPT32Index_Validate(this) ) {
+        if( !BPTLeaf_Validate(this) ) {
             DEBUG_BREAK();
             return false;
         }
@@ -358,18 +485,65 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //        N e x t  L o g i c a l  B l o c k  N u m b e r
+    //---------------------------------------------------------------
+
+    uint32_t        BPTLeaf_getNextLBN (
+        BPTLEAF_DATA  *this
+    )
+    {
+        BPTLEAF_RSVD  *pRsvd;
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        pRsvd = (BPTLEAF_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+
+        return pRsvd->nextLbn;
+    }
+
+
+    bool            BPTLeaf_setNextLBN (
+        BPTLEAF_DATA  *this,
+        uint32_t        value
+    )
+    {
+        BPTLEAF_RSVD  *pRsvd;
+
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        pRsvd = (BPTLEAF_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+
+        pRsvd->nextLbn = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //               N u m b e r  O f  R e c o r d s
     //---------------------------------------------------------------
 
-    uint16_t        BPT32Index_getNumRecords (
-        BPT32INDEX_DATA *this
+    uint16_t        BPTLeaf_getNumRecords (
+        BPTLEAF_DATA  *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -381,18 +555,65 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //    P r e v i o u s  L o g i c a l  B l o c k  N u m b e r
+    //---------------------------------------------------------------
+
+    uint32_t        BPTLeaf_getPrevLBN (
+        BPTLEAF_DATA  *this
+    )
+    {
+        BPTLEAF_RSVD  *pRsvd;
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+        pRsvd = (BPTLEAF_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+
+        return pRsvd->prevLbn;
+    }
+
+
+    bool            BPTLeaf_setPrevLBN (
+        BPTLEAF_DATA  *this,
+        uint32_t        value
+    )
+    {
+        BPTLEAF_RSVD  *pRsvd;
+
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+        pRsvd = (BPTLEAF_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+
+        pRsvd->prevLbn = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        BPT32Index_getPriority (
-        BPT32INDEX_DATA     *this
+    uint16_t        BPTLeaf_getPriority (
+        BPTLEAF_DATA  *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -403,14 +624,14 @@ extern "C" {
     }
 
 
-    bool            BPT32Index_setPriority (
-        BPT32INDEX_DATA     *this,
+    bool            BPTLeaf_setPriority (
+        BPTLEAF_DATA  *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -427,13 +648,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        BPT32Index_getSize (
-        BPT32INDEX_DATA       *this
+    uint32_t        BPTLeaf_getSize (
+        BPTLEAF_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -445,64 +666,18 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * BPT32Index_getStr (
-        BPT32INDEX_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!BPT32Index_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        BPT32Index_setStr (
-        BPT32INDEX_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!BPT32Index_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
-    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  BPT32Index_getSuperVtbl (
-        BPT32INDEX_DATA     *this
+    OBJ_IUNKNOWN *  BPTLeaf_getSuperVtbl (
+        BPTLEAF_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -525,47 +700,41 @@ extern "C" {
     //                          A d d
     //---------------------------------------------------------------
 
-    ERESULT         BPT32Index_Add (
-        BPT32INDEX_DATA *this,
-        uint32_t        lbn,
-        void            *pKey
+    ERESULT         BPTLeaf_Add (
+        BPTLEAF_DATA  *this,
+        uint16_t        rcdLen,
+        void            *pRecord
     )
     {
         ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
         int             iRc;
         uint32_t        i = 0;
         uint32_t        iMax;
-        uint8_t         rcd[sizeof(uint32_t)+256];
-        BPT32INDEX_NODE *pNode = (BPT32INDEX_NODE *)rcd;
-        uint16_t        nodeLen;
+        uint8_t         *pRcd;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (NULL == pKey) {
+        if ((rcdLen == 0) || (rcdLen < BPTLeaf_getKeyLen(this)) || (NULL == pRecord)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
-        // Build the record.
-        pNode->lbn = lbn;
-        memmove(pNode->key, pKey, BPT32Index_getKeyLen(this));
-        nodeLen = sizeof(uint32_t) + BPT32Index_getKeyLen(this);
-
         // Search the keys already in the block.
         iMax = BlkdRcds16_getNumRecords((BLKDRCDS16_DATA *)this);
         if (iMax) {
             for (i=0; i<iMax; i++) {
-                BPT32INDEX_NODE *pRcd = BlkdRcds16_DataAddr((BLKDRCDS16_DATA *)this, i+1);
+                pRcd = BlkdRcds16_DataAddr((BLKDRCDS16_DATA *)this, i+1);
                 if (pRcd) {
                     iRc =   memcmp(
-                                   pKey,
-                                   pRcd->key,
-                                   BPT32Index_getKeyLen(this)
+                                 pRecord+BPTLeaf_getKeyOff(this),
+                                 pRcd+BPTLeaf_getKeyOff(this),
+                                 BPTLeaf_getKeyLen(this)
                             );
                     if (0 == iRc) {
                         return ERESULT_DATA_ALREADY_EXISTS;
@@ -575,9 +744,8 @@ extern "C" {
                 }
             }
         }
-        // i will be insert point
 
-        eRc = BlkdRcds16_RecordInsert((BLKDRCDS16_DATA *)this, i, nodeLen, pNode);
+        eRc = BlkdRcds16_RecordInsert((BLKDRCDS16_DATA *)this, i, rcdLen, pRecord);
 
         // Return to caller.
         return eRc;
@@ -595,16 +763,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = BPT32Index_Assign(this,pOther);
+        ERESULT eRc = BPTLeaf_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another BPT32INDEX object
+     @param     pOther  a pointer to another BPTLEAF object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         BPT32Index_Assign (
-        BPT32INDEX_DATA       *this,
-        BPT32INDEX_DATA     *pOther
+    ERESULT         BPTLeaf_Assign (
+        BPTLEAF_DATA     *this,
+        BPTLEAF_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -612,11 +780,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!BPT32Index_Validate(pOther)) {
+        if (!BPTLeaf_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -677,9 +845,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             BPT32Index_Compare (
-        BPT32INDEX_DATA     *this,
-        BPT32INDEX_DATA     *pOther
+    int             BPTLeaf_Compare (
+        BPTLEAF_DATA     *this,
+        BPTLEAF_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -692,12 +860,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!BPT32Index_Validate(pOther)) {
+        if (!BPTLeaf_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -719,36 +887,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        BPT32Index      *pCopy = BPT32Index_Copy(this);
+        BPTLeaf      *pCopy = BPTLeaf_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a BPT32INDEX object which must be 
+     @return    If successful, a BPTLEAF object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    BPT32INDEX_DATA *     BPT32Index_Copy (
-        BPT32INDEX_DATA       *this
+    BPTLEAF_DATA *     BPTLeaf_Copy (
+        BPTLEAF_DATA       *this
     )
     {
-        BPT32INDEX_DATA       *pOther = OBJ_NIL;
+        BPTLEAF_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef BPT32INDEX_IS_IMMUTABLE
+#ifdef BPTLEAF_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = BPT32Index_New( );
+        pOther = BPTLeaf_New( );
         if (pOther) {
-            eRc = BPT32Index_Assign(this, pOther);
+            eRc = BPTLeaf_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -766,11 +934,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            BPT32Index_Dealloc (
+    void            BPTLeaf_Dealloc (
         OBJ_ID          objId
     )
     {
-        BPT32INDEX_DATA   *this = objId;
+        BPTLEAF_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -779,7 +947,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -787,11 +955,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((BPT32INDEX_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((BPTLEAF_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        BPT32Index_setStr(this, OBJ_NIL);
+        //BPTLeaf_setBlock(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -812,32 +980,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        BPT32Index      *pDeepCopy = BPT32Index_Copy(this);
+        BPTLeaf      *pDeepCopy = BPTLeaf_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a BPT32INDEX object which must be 
+     @return    If successful, a BPTLEAF object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    BPT32INDEX_DATA *     BPT32Index_DeepCopy (
-        BPT32INDEX_DATA       *this
+    BPTLEAF_DATA *     BPTLeaf_DeepCopy (
+        BPTLEAF_DATA       *this
     )
     {
-        BPT32INDEX_DATA       *pOther = OBJ_NIL;
+        BPTLEAF_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = BPT32Index_New( );
+        pOther = BPTLeaf_New( );
         if (pOther) {
-            eRc = BPT32Index_Assign(this, pOther);
+            eRc = BPTLeaf_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -851,6 +1019,58 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                        D e l e t e
+    //---------------------------------------------------------------
+
+    ERESULT         BPTLeaf_Delete (
+        BPTLEAF_DATA  *this,
+        void            *pKey
+    )
+    {
+        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
+        int             iRc;
+        uint32_t        i;
+        uint32_t        iMax;
+        uint8_t         *pRcd;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pKey) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        iMax = BPTLeaf_getNumRecords(this);
+        for (i=0; i<iMax; i++) {
+            pRcd = BlkdRcds16_DataAddr((BLKDRCDS16_DATA *)this, i+1);
+            if (pRcd) {
+                iRc =   memcmp(
+                               pKey,
+                               pRcd+BPTLeaf_getKeyOff(this),
+                               BPTLeaf_getKeyLen(this)
+                        );
+                if (0 == iRc) {
+                    eRc = BlkdRcds16_RecordDelete((BLKDRCDS16_DATA *)this, i+1);
+                    break;
+                }
+                if (iRc < 0)
+                    break;
+            }
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -860,8 +1080,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         BPT32Index_Disable (
-        BPT32INDEX_DATA       *this
+    ERESULT         BPTLeaf_Disable (
+        BPTLEAF_DATA  *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -870,7 +1090,7 @@ extern "C" {
         TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -897,8 +1117,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         BPT32Index_Enable (
-        BPT32INDEX_DATA       *this
+    ERESULT         BPTLeaf_Enable (
+        BPTLEAF_DATA  *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -907,7 +1127,7 @@ extern "C" {
         TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -925,11 +1145,155 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                              G e t
+    //                          F l u s h
     //---------------------------------------------------------------
 
-    uint8_t *       BPT32Index_GetNum (
-        BPT32INDEX_DATA *this,
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+     error code.
+     */
+    ERESULT         BPTLeaf_Flush (
+        BPTLEAF_DATA  *this
+    )
+    {
+        ERESULT         eRc = ERESULT_INVALID_REQUEST;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (this->lbn && this->pMgr)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_REQUEST;
+        }
+#endif
+
+        if (this->pMgr && this->pReq) {
+            eRc =   this->pReq(
+                             this->pMgr,
+                             BPT_REQUEST_WRITE,
+                             this,
+                             NULL,
+                             NULL,
+                             NULL
+                    );
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      F o r  E a c h
+    //---------------------------------------------------------------
+
+    ERESULT         BPTLeaf_ForEach (
+        BPTLEAF_DATA  *this,
+        P_BOOL_EXIT4A   pScan,              // Return false to stop scan
+        OBJ_ID          pObj,               // Used as first parameter of scan method
+        //                                  // second parameter is record length
+        //                                  // third parameter is recard address
+        void            *pArg4              // Used as fourth parameter of scan method
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = BlkdRcds16_ForEach((BLKDRCDS16_DATA *)this, pScan, pObj, pArg4);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                           G e t
+    //---------------------------------------------------------------
+
+    ERESULT         BPTLeaf_Get (
+        BPTLEAF_DATA  *this,
+        void            *pKey,
+        uint16_t        cData,
+        void            *pData,
+        uint16_t        *pUsed
+    )
+    {
+        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
+        int             iRc;
+        uint32_t        i = 0;
+        uint32_t        iMax;
+        uint32_t        size;
+        uint8_t         *pRcd;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pKey) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        // Search the keys in the block.
+        iMax = BlkdRcds16_getNumRecords((BLKDRCDS16_DATA *)this);
+        if (iMax) {
+            for (i=0; i<iMax; i++) {
+                pRcd = BlkdRcds16_DataAddr((BLKDRCDS16_DATA *)this, i+1);
+                if (pRcd) {
+                    iRc =   memcmp(
+                                   pKey,
+                                   pRcd+BPTLeaf_getKeyOff(this),
+                                   BPTLeaf_getKeyLen(this)
+                            );
+                    if (0 == iRc) {
+                        size = BlkdRcds16_RecordSize((BLKDRCDS16_DATA *)this, i+1);
+                        if (size > cData)
+                            size = cData;
+                        if (pData) {
+                            memmove(pData, pRcd, size);
+                        }
+                        if (pUsed) {
+                            *pUsed = size;
+                        }
+                        return ERESULT_SUCCESS;
+                    }
+                    if (iRc < 0)
+                        break;
+                }
+            }
+        }
+
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    uint8_t *       BPTLeaf_GetNum (
+        BPTLEAF_DATA  *this,
         uint32_t        index,          // Relative to 1
         uint16_t        *pLen
     )
@@ -944,12 +1308,12 @@ extern "C" {
             *pLen = 0;
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return NULL;
         }
-        if ((0 == index) || !((index - 1) < BPT32Index_getNumRecords(this))) {
+        if ((0 == index) || !((index - 1) < BPTLeaf_getNumRecords(this))) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return NULL;
@@ -981,11 +1345,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    BPT32INDEX_DATA *   BPT32Index_Init (
-        BPT32INDEX_DATA       *this
+    BPTLEAF_DATA *   BPTLeaf_Init (
+        BPTLEAF_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(BPT32INDEX_DATA);
+        uint32_t        cbSize = sizeof(BPTLEAF_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -1004,8 +1368,8 @@ extern "C" {
 
         this = (OBJ_ID)BlkdRcds16_Init((BLKDRCDS16_DATA *)this); // Needed for Inheritance
         // If you use inheritance, remember to change the obj_ClassObj reference 
-        // in the OBJ_INFO at the end of BPT32Index_object.c
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_BPT32INDEX);
+        // in the OBJ_INFO at the end of BPTLeaf_object.c
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_BPTLEAF);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -1013,9 +1377,9 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&BPT32Index_Vtbl);
-#ifdef  BPT32INDEX_JSON_SUPPORT
-        JsonIn_RegisterClass(BPT32Index_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&BPTLeaf_Vtbl);
+#ifdef  BPTLEAF_JSON_SUPPORT
+        JsonIn_RegisterClass(BPTLeaf_Class());
 #endif
         
         /*
@@ -1029,7 +1393,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -1038,11 +1402,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "BPT32Index::sizeof(BPT32INDEX_DATA) = %lu\n", 
-                sizeof(BPT32INDEX_DATA)
+                "BPTLeaf::sizeof(BPTLEAF_DATA) = %lu\n", 
+                sizeof(BPTLEAF_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(BPT32INDEX_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(BPTLEAF_DATA));
 #endif
 
         return this;
@@ -1054,8 +1418,8 @@ extern "C" {
     //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         BPT32Index_IsEnabled (
-        BPT32INDEX_DATA       *this
+    ERESULT         BPTLeaf_IsEnabled (
+        BPTLEAF_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -1063,7 +1427,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1083,10 +1447,10 @@ extern "C" {
     //                          L R U
     //---------------------------------------------------------------
 
-    void            BPT32Index_LruAttach (
-        BPT32INDEX_DATA *this,
+    void            BPTLeaf_LruAttach (
+        BPTLEAF_DATA  *this,
         void            *pData,
-        uint32_t        lsn
+        uint32_t        lbn
     )
     {
         //ERESULT         eRc;
@@ -1094,29 +1458,22 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return;
         }
 #endif
 
-        //FIXME: update below
-#ifdef NOT_IMPLEMENTED
-        if (obj_Flag(this, BPT32IDX_BLOCK_ALLOC)) {
-            mem_Free(this->pBlock);
-            obj_FlagOff(this, BPT32IDX_BLOCK_ALLOC);
-        }
-        this->pBlock = pData;
-        this->index = lsn;
-#endif
+        BlkdRcds16_setData((BLKDRCDS16_DATA *)this, pData);
+        this->lbn = lbn;
 
         // Return to caller.
     }
 
 
-    void            BPT32Index_LruDetach (
-        BPT32INDEX_DATA *this
+    void            BPTLeaf_LruDetach (
+        BPTLEAF_DATA  *this
     )
     {
         //ERESULT         eRc;
@@ -1124,18 +1481,15 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return;
         }
 #endif
 
-        //FIXME: update below
-#ifdef NOT_IMPLEMENTED
-        this->pBlock = NULL;
-        this->index = 0;
-#endif
+        BlkdRcds16_setData((BLKDRCDS16_DATA *)this, NULL);
+        this->lbn = 0;
 
         // Return to caller.
     }
@@ -1153,14 +1507,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = BPT32Index_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = BPTLeaf_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "BPT32Index", prefix,
+                        the object name, "BPTLeaf", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1168,13 +1522,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          BPT32Index_QueryInfo (
+    void *          BPTLeaf_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        BPT32INDEX_DATA     *this = objId;
+        BPTLEAF_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1183,7 +1537,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1192,11 +1546,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(BPT32INDEX_DATA);
+                return (void *)sizeof(BPTLEAF_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)BPT32Index_Class();
+                return (void *)BPTLeaf_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -1222,45 +1576,46 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return BPT32Index_Disable;
+                            return BPTLeaf_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return BPT32Index_Enable;
+                            return BPTLeaf_Enable;
                         }
                         break;
 
                     case 'L':
                         if (str_Compare("LRU_Attach", (char *)pStr) == 0) {
-                            return BPT32Index_LruAttach;
+                            return BPTLeaf_LruAttach;
                         }
                         if (str_Compare("LRU_Detach", (char *)pStr) == 0) {
-                            return BPT32Index_LruDetach;
+                            return BPTLeaf_LruDetach;
                         }
                         break;
-                                            case 'P':
-#ifdef  BPT32INDEX_JSON_SUPPORT
+
+                    case 'P':
+#ifdef  BPTLEAF_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return BPT32Index_ParseJsonFields;
+                            return BPTLeaf_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return BPT32Index_ParseJsonObject;
+                            return BPTLeaf_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return BPT32Index_ToDebugString;
+                            return BPTLeaf_ToDebugString;
                         }
-#ifdef  BPT32INDEX_JSON_SUPPORT
+#ifdef  BPTLEAF_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return BPT32Index_ToJsonFields;
+                            return BPTLeaf_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return BPT32Index_ToJson;
+                            return BPTLeaf_ToJson;
                         }
 #endif
                         break;
@@ -1271,10 +1626,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == BPT32Index_ToDebugString)
+                if (pData == BPTLeaf_ToDebugString)
                     return "ToDebugString";
-#ifdef  BPT32INDEX_JSON_SUPPORT
-                if (pData == BPT32Index_ToJson)
+#ifdef  BPTLEAF_JSON_SUPPORT
+                if (pData == BPTLeaf_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1288,25 +1643,66 @@ extern "C" {
     
     
     
-    //----------------------------------------------------------
-    //                      S e t u p
-    //----------------------------------------------------------
+    //---------------------------------------------------------------
+    //                          R e a d
+    //---------------------------------------------------------------
 
-    ERESULT         BPT32Index_Setup(
-        BPT32INDEX_DATA *this,
-        uint32_t        blockSize,
-        uint32_t        lbn,
-        uint16_t        keyLen,
-        uint16_t        keyOff                  // relative to zero
+    ERESULT         BPTLeaf_Read (
+        BPTLEAF_DATA  *this
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        BPT32INDEX_RSVD *pRsvd;
+        ERESULT         eRc = ERESULT_INVALID_REQUEST;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (this->lbn && this->pMgr)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_REQUEST;
+        }
+#endif
+
+        if (this->pMgr && this->pReq) {
+            eRc =   this->pReq(this->pMgr,
+                               BPT_REQUEST_READ,
+                               this,
+                               NULL,
+                               NULL,
+                               NULL
+                    );
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //----------------------------------------------------------
+    //                      S e t u p
+    //----------------------------------------------------------
+    
+    ERESULT         BPTLeaf_Setup(
+        BPTLEAF_DATA  *this,
+        uint32_t        blockSize,
+        uint32_t        lbn,
+        uint16_t        keyLen,
+        uint16_t        keyOff
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        BPTLEAF_RSVD  *pRsvd;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1323,20 +1719,63 @@ extern "C" {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
-
+        
         eRc =   BlkdRcds16_SetupWithBlockSize(
                                     (BLKDRCDS16_DATA *)this,
                                     blockSize,
-                                    sizeof(BPT32INDEX_RSVD),
+                                    sizeof(BPTLEAF_RSVD),
                                     NULL
                 );
         if (ERESULT_OK(eRc)) {
-            pRsvd = (BPT32INDEX_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
-            pRsvd->blockType = 'I';
+            pRsvd = (BPTLEAF_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+            pRsvd->blockType = 'L';
             pRsvd->keyLen = keyLen;
             pRsvd->keyOff = keyOff;
             this->lbn = lbn;
         }
+
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
+    //                          S p l i t
+    //---------------------------------------------------------------
+
+    /*!
+     Split the current block into two equal sized blocks.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         BPTLeaf_Split (
+        BPTLEAF_DATA  *this,
+        BPTLEAF_DATA  *pUpper
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pUpper) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (this->pReq)
+            ;
+        else
+            return ERESULT_INVALID_REQUEST;
+#endif
+
+        eRc = BlkdRcds16_Split((BLKDRCDS16_DATA *)this, (BLKDRCDS16_DATA *)pUpper);
 
         // Return to caller.
         return eRc;
@@ -1352,7 +1791,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = BPT32Index_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = BPTLeaf_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1360,8 +1799,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     BPT32Index_ToDebugString (
-        BPT32INDEX_DATA      *this,
+    ASTR_DATA *     BPTLeaf_ToDebugString (
+        BPTLEAF_DATA  *this,
         int             indent
     )
     {
@@ -1370,13 +1809,14 @@ extern "C" {
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        //uint32_t        i;
+        uint32_t        i;
+        uint32_t        iMax;
         //uint32_t        j;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1394,10 +1834,12 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d retain=%d\n",
+                    "{%p(%s)  KeyLen=%d  KeyOff=%d  LBN=%d  retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    BPT32Index_getSize(this),
+                    BPTLeaf_getKeyLen(this),
+                    BPTLeaf_getKeyOff(this),
+                    this->lbn,
                     obj_getRetainCount(this)
             );
 
@@ -1432,20 +1874,79 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          U p d a t e
+    //---------------------------------------------------------------
+
+    ERESULT         BPTLeaf_Update (
+        BPTLEAF_DATA  *this,
+        uint16_t        rcdLen,
+        void            *pRecord
+    )
+    {
+        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
+        int             iRc;
+        uint32_t        i;
+        uint32_t        iMax;
+        uint8_t         *pRcd;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!BPTLeaf_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if ((rcdLen == 0) || (rcdLen < BPTLeaf_getKeyLen(this)) || (NULL == pRecord)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        // Search the keys already in the block.
+        iMax = BPTLeaf_getNumRecords(this);
+        for (i=0; i<iMax; i++) {
+            pRcd = BlkdRcds16_DataAddr((BLKDRCDS16_DATA *)this, i+1);
+            if (pRcd) {
+                iRc =   memcmp(
+                               pRecord+BPTLeaf_getKeyOff(this),
+                               pRcd+BPTLeaf_getKeyOff(this),
+                               BPTLeaf_getKeyLen(this)
+                        );
+                if (0 == iRc) {
+                    eRc =   BlkdRcds16_RecordUpdate(
+                                                    (BLKDRCDS16_DATA *)this,
+                                                    i+1,
+                                                    rcdLen,
+                                                    pRecord
+                            );
+                    break;
+                }
+                if (iRc > 0)
+                    break;
+            }
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 
 #ifdef NDEBUG
 #else
-    bool            BPT32Index_Validate (
-        BPT32INDEX_DATA      *this
+    bool            BPTLeaf_Validate (
+        BPTLEAF_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_BPT32INDEX))
+            if (obj_IsKindOf(this, OBJ_IDENT_BPTLEAF))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1461,7 +1962,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(BPT32INDEX_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(BPTLEAF_DATA))) {
             return false;
         }
 
@@ -1471,7 +1972,6 @@ extern "C" {
 #endif
 
 
-    
     
     //---------------------------------------------------------------
     //                       V e r i f y
@@ -1483,24 +1983,23 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         BPT32Index_Verify (
-        BPT32INDEX_DATA *this
+    ERESULT         BPTLeaf_Verify (
+        BPTLEAF_DATA  *this
     )
     {
         //ERESULT         eRc;
         int             iRc;
-        uint32_t        key = 0;
         uint32_t        i;
         uint32_t        iMax;
-        //FIXME: BPT32LF_NODE    *pNode = NULL;
         uint8_t         *pData1;
         uint8_t         *pData2;
         uint16_t        rcdLen;
+        BPTLEAF_RSVD  *pRsvd;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!BPT32Index_Validate(this)) {
+        if (!BPTLeaf_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1511,8 +2010,15 @@ extern "C" {
         else
             return ERESULT_GENERAL_FAILURE;
 
+        // Verify block type.
+        pRsvd = (BPTLEAF_RSVD *)BlkdRcds16_getReserved((BLKDRCDS16_DATA *)this);
+        if (pRsvd->blockType == 'L')
+            ;
+        else
+            return false;
+
         // Verify marker.
-        pData1 = BPT32Index_getBlock(this);
+        pData1 = BPTLeaf_getBlock(this);
         pData1 += BlkdRcds16_getBlockSize((BLKDRCDS16_DATA *)this) - 1;
         if ('L' == *pData1)
             ;
@@ -1521,39 +2027,41 @@ extern "C" {
         }
 
         // Verify Key Order.
-        if (BPT32Index_getKeyLen(this))
+        if (BPTLeaf_getKeyLen(this))
             ;
         else
             return false;
 
         iMax = BlkdRcds16_getNumRecords((BLKDRCDS16_DATA *)this);
-        pData1 = BPT32Index_GetNum(this, 1, NULL);
-        if (NULL == pData1)
-            return false;
-        rcdLen = BlkdRcds16_RecordSize((BLKDRCDS16_DATA *)this, 1);
-        if (rcdLen < BPT32Index_getKeyLen(this))
-            return false;
-        if (pData1) {
-            for (i=1; i<iMax; ++i) {
-                pData2 = BPT32Index_GetNum(this, i+1, NULL);
-                if (NULL == pData2)
-                    return false;
-                rcdLen = BlkdRcds16_RecordSize((BLKDRCDS16_DATA *)this, i+1);
-                if (rcdLen < BPT32Index_getKeyLen(this))
-                    return false;
-                iRc =   memcmp(
-                               pData1+BPT32Index_getKeyOff(this),
-                               pData2+BPT32Index_getKeyOff(this),
-                               BPT32Index_getKeyLen(this)
-                        );
-                if (0 == iRc)
-                    ;
-                else
-                    return false;
+        if (iMax) {
+            pData1 = BPTLeaf_GetNum(this, 1, NULL);
+            if (NULL == pData1)
+                return false;
+            rcdLen = BlkdRcds16_RecordSize((BLKDRCDS16_DATA *)this, 1);
+            if (rcdLen < BPTLeaf_getKeyLen(this))
+                return false;
+            if (pData1) {
+                for (i=1; i<iMax; ++i) {
+                    pData2 = BPTLeaf_GetNum(this, i+1, NULL);
+                    if (NULL == pData2)
+                        return false;
+                    rcdLen = BlkdRcds16_RecordSize((BLKDRCDS16_DATA *)this, i+1);
+                    if (rcdLen < BPTLeaf_getKeyLen(this))
+                        return false;
+                    iRc =   memcmp(
+                                   pData1+BPTLeaf_getKeyOff(this),
+                                   pData2+BPTLeaf_getKeyOff(this),
+                                   BPTLeaf_getKeyLen(this)
+                            );
+                    if (0 > iRc)
+                        ;
+                    else
+                        return false;
+                    mem_Free(pData1);
+                    pData1 = pData2;
+                }
                 mem_Free(pData1);
-                pData1 = pData2;
             }
-            mem_Free(pData1);
         }
 
         // Return to caller.
@@ -1563,6 +2071,7 @@ extern "C" {
 
 
 
+    
 #ifdef  __cplusplus
 }
 #endif

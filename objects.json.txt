@@ -36,19 +36,49 @@
         {name:"block32"},
         {name:"Blocks",         deps:["listdl.h"]},
 
-        /*  'BPT32', 'BPT32Index' and 'BPT32Leaf' provide a B-Plus Tree using a 32-bit
+        /*  'BPT', 'BPTIndex' and 'BPTLeaf' provide a B-Plus Tree using a 32-bit
             logical block number, uint32_t, and up to a 255 byte key. It is designed to 
-            use with 'rrds' and 'lru' to provide fast indexed file system indexed by a 
+            use with 'RRDS' and 'lru' to provide fast indexed file system indexed by a 
             number such as the record number.
          */
-        //TODO:    === TODO: Rewrite to new naming convention ===
-        /*
-        {name:"bpt32",          desc:"32-Bit Index B-Plus Tree", deps:["bpt32idx.h","bpt32lf.h","rrds.h"]},
-        */
-        {name:"BPT32Index",     desc:"B-Plus Tree 32-Bit Index Block", 
-                                deps:["BlkdRcds16.h","$(OBJDIR)/BlkdRcds16.o"]},
+        {name:"BPT",            desc:"B-Plus Tree", 
+                                deps:[
+                                        "BPTIndex.h", "$(OBJDIR)/BPTIndex.o",
+                                        "BPTLeaf.h", "$(OBJDIR)/BPTLeaf.o",
+                                        "RRDS.h", "$(OBJDIR)/RRDS.o"
+                                ],
+                                status:"NOT working/NOT fully tested"
+        },
+        {name:"BPTIndex",       desc:"B-Plus Tree Index Block", 
+                                deps:["BlkdRcds16.h","$(OBJDIR)/BlkdRcds16.o"],
+                                status:"NOT working/NOT fully tested"
+        },
+        {name:"BPTLeaf",        desc:"B-Plus Tree 32-Bit Leaf Block", 
+                                deps:["BlkdRcds16.h","$(OBJDIR)/BlkdRcds16.o"],
+                                status:"NOT working/NOT fully tested"
+        },
+
+        /*  'BPT32', 'BPT32Index' and 'BPT32Leaf' provide a B-Plus Tree using a 32-bit
+            logical block number, uint32_t, and a 32-bit binary key. It is designed to 
+            use with 'RRDS' and 'lru' to provide fast indexed file system indexed by a 
+            number such as the record number.
+         */
+        {name:"BPT32",          desc:"B-Plus Tree", 
+                                deps:[
+                                        "BPT32Index.h", "$(OBJDIR)/BPT32Index.o",
+                                        "BPT32Leaf.h", "$(OBJDIR)/BPT32Leaf.o",
+                                        "RRDS.h", "$(OBJDIR)/RRDS.o"
+                                ],
+                                status:"NOT working/NOT fully tested"
+        },
+        {name:"BPT32Index",     desc:"B-Plus Tree Index Block", 
+                                deps:["BlkdRcds16.h","$(OBJDIR)/BlkdRcds16.o"],
+                                status:"NOT working/NOT fully tested"
+        },
         {name:"BPT32Leaf",      desc:"B-Plus Tree 32-Bit Leaf Block", 
-                                deps:["BlkdRcds16.h","$(OBJDIR)/BlkdRcds16.o"]},
+                                deps:["BlkdRcds16.h","$(OBJDIR)/BlkdRcds16.o"],
+                                status:"NOT working/NOT fully tested"
+        },
 
         {name:"cb",             desc:"Generic Circular Buffer", 
                                 test:{srcs:["objTest.c", "objTest_object.c"]}},
@@ -178,41 +208,42 @@
             various O/S's to simulate the Posix functionality.
          */
         {name:"psxCond"},
-        {name:"psxExec",    desc:"Execute Posix Shell Commands"},
+        {name:"psxExec",        desc:"Execute Posix Shell Commands"},
         {name:"psxLock"},
         {name:"psxMutex"},
         {name:"psxSem"},
-        {name:"psxThread",  deps:["psxMutex.h","psxSem.h"]},
+        {name:"psxThread",      deps:["psxMutex.h","psxSem.h"]},
 
-        {name:"ptrArray",   desc:"An Array of pointers"},
-        {name:"RpgBase",    desc:"Report Program Generator (RPG) Base", json:true},
-        {name:"RpgLvl",     desc:"Report Program Generator (RPG) Level handler", json:true},
-        {name:"RRDS",       desc:"Relative Record Dataset (ie Fixed size records indexed by record number)",
-                            deps:["FileIO.h","lru.h","Path.h"],},
-        {name:"Scanner",    desc:"String Scanner", json:true},
-        {name:"Sect",       desc:"Section/Segment Table Entry", json:true},
-        {name:"Sects",      desc:"Section/Segment Table", deps:["NodeBT.h","Sect.h"], json:true},
-        {name:"SqlCol",     json:true,  desc:"SQL Column Support"},
-        {name:"SqlColData", json:true,  desc:"SQL Column Data"},
-        {name:"SQLite",     desc:"SQLite Interface"},
-        {name:"SQLiteCurs", json:false, desc:"SQLite Cursor Interface"},
-        {name:"SQLiteStmt", json:false, desc:"SQLite Statement Interface"},
-        {name:"SqlRow",     json:true,  desc:"SQL Row Support"},
-        {name:"SqlRowData", json:true,  desc:"SQL Row Data"},
-        {name:"SqlTbl",     json:true,  desc:"SQL Table Support"},
-        {name:"SrcDiff",    json:false, desc:"Source Difference Finder"},
-        {name:"SrcError",   json:true,  desc:"", deps:["AStr.h","SrcLoc.h"]},
-        {name:"SrcErrors",  json:true,  desc:"", deps:["SrcError.h", "ObjArray.h"]},
-        {name:"SrcFile",    desc:"Tokenize a TextIn Stream with Look-ahead and Backup Recovery",
-                            deps:["ascii.h","TextIn.h","Path.h","Token.h","TokenList.h"]},
+        {name:"ptrArray",       desc:"An Array of pointers"},
+        {name:"RpgBase",        desc:"Report Program Generator (RPG) Base", json:true},
+        {name:"RpgLvl",         desc:"Report Program Generator (RPG) Level handler", json:true},
+        {name:"RRDS",           desc:"Relative Record Dataset (ie Fixed size records indexed by record number)",
+                                deps:["FileIO.h","lru.h","Path.h"],},
+        {name:"Scanner",        desc:"String Scanner", json:true},
+        {name:"Sect",           desc:"Section/Segment Table Entry", json:true},
+        {name:"Sects",          desc:"Section/Segment Table", deps:["NodeBT.h","Sect.h"], json:true},
+        {name:"SqlCol",         desc:"SQL Column Support", json:true},
+        {name:"SqlColData",     desc:"SQL Column Data", json:true},
+        {name:"SQLite",         desc:"SQLite Interface"},
+        {name:"SQLiteCurs",     desc:"SQLite Cursor Interface", json:false},
+        {name:"SQLiteStmt",     desc:"SQLite Statement Interface", json:false},
+        {name:"SqlRow",         desc:"SQL Row Support", json:true},
+        {name:"SqlRowData",     desc:"SQL Row Data", json:true},
+        {name:"SqlTbl",         desc:"SQL Table Support", json:true},
+        {name:"SrcDiff",        desc:"Source Difference Finder", json:false},
+        {name:"SrcError",       desc:"", deps:["AStr.h","SrcLoc.h"], json:true},
+        {name:"SrcErrors",      desc:"", deps:["SrcError.h", "ObjArray.h"], json:true},
+        {name:"SrcFile",        desc:"Tokenize a TextIn Stream with Look-ahead and Backup Recovery",
+                                deps:["ascii.h","TextIn.h","Path.h","Token.h","TokenList.h"]},
                         
-        {name:"SrcFiles",   deps:["ObjArray.h","Path.h","SrcFile.h", "Token.h"],
-                            desc:"Create a Stack of SrcFile(s)"},
-        {name:"SrcLoc",     desc:"Source File Location", json:true},
-        {name:"Sym",        desc:"Symbol Table Entry", json:true},
-        {name:"SymList",    desc:"List of Symbol Table Entries", json:true},
-        {name:"Syms",       desc:"Symbol Table", deps:["NodeBT.h","Sym.h"], json:true},
-        {name:"szBT",       desc:"Balanced Binary Tree for szkey and data ptrs."},
+        {name:"SrcFiles",       desc:"Create a Stack of SrcFile(s)", 
+                                deps:["ObjArray.h","Path.h","SrcFile.h", "Token.h"],
+        },
+        {name:"SrcLoc",         desc:"Source File Location", json:true},
+        {name:"Sym",            desc:"Symbol Table Entry", json:true},
+        {name:"SymList",        desc:"List of Symbol Table Entries", json:true},
+        {name:"Syms",           desc:"Symbol Table", deps:["NodeBT.h","Sym.h"], json:true},
+        {name:"szBT",           desc:"Balanced Binary Tree for szkey and data ptrs."},
         {name:"szData", json:true},
         {name:"szHash", deps:["listdl.h","szTbl.h"]},
         {name:"szTbl", deps:["ptrArray.h","szHash.h"], 

@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//             B-Plus Tree (BPT32) Request Header
+//             B-Plus Tree (BPT) Request Header
 //****************************************************************
 /*
  * Program
- *          B-Plus Tree Requests (BPT32)
+ *          B-Plus Tree Requests (BPT)
  * Purpose
  *          This object provides support for a B-Plus Tree which
  *          has fixed size keys embedded at a fixed location within
@@ -71,8 +71,8 @@
 
 
 
-#ifndef         BPT32_REQUEST_H
-#define         BPT32_REQUEST_H
+#ifndef         BPT_REQUEST_H
+#define         BPT_REQUEST_H
 
 
 
@@ -87,54 +87,59 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
+    typedef uint32_t        LBN_T;          // Logical Block Number Type
 
-    typedef struct BPT32_blk_vtbl_s    {
+    typedef struct BPT_blk_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in bpt32_object.c.
         // Properties:
         uint8_t *       (*pGetBlock) (OBJ_ID);
-        uint32_t        (*pGetLBN) (OBJ_ID);            // Get Logical Block Number
+        LBN_T           (*pGetLBN) (OBJ_ID);            // Get Logical Block Number
         //bool            (*pSetManager) (OBJ_ID, OBJ_ID);
         // Methods:
-        //ERESULT         (*pGet) (OBJ_ID, uint32_t, uint32_t *, void *);
+        //ERESULT         (*pGetNum) (OBJ_ID, uint32_t, uint32_t *, void *);
         //ERESULT         (*pInsert) (OBJ_ID, uint32_t, void *);
-    } BPT32_BLK_VTBL;
+    } BPT_BLK_VTBL;
 
 
     // Used internally for communication between this object and
-    typedef enum BPT32_request_e {
-        BPT32_REQUEST_UNKNOWN=0,
-        BPT32_REQUEST_NEW_LBN,              // Return a new Logical Block Number not
+    typedef enum BPT_request_e {
+        BPT_REQUEST_UNKNOWN=0,
+        BPT_REQUEST_NEW_LBN,              // Return a new Logical Block Number not
         //                                  // currently allocated.
         //                                  //  obj   - ignored
         //                                  //  parm1 - ignored
         //                                  //  parm2 - ignored
         //                                  //  parm3 - lbn return pointer (uint32_t *)
-        BPT32_REQUEST_NEW_INDEX,            // Return a new empty index block.
-        BPT32_REQUEST_NEW_LEAF,             // Return a new empty leaf block.
-        BPT32_REQUEST_PARENT,               // Get Parent after a search
-        BPT32_REQUEST_READ,                 // Read a buffer from disk
+        BPT_REQUEST_NEW_INDEX,            // Return a new empty index block.
+        BPT_REQUEST_NEW_LEAF,             // Return a new empty leaf block.
+        BPT_REQUEST_PARENT,               // Get Parent after a search
+        BPT_REQUEST_READ,                 // Read a buffer from disk
         //                                  //  obj   - object requesting write
         //                                  //        (lbn and block are gotten from vtbl)
         //                                  //  parm1 - ignored
         //                                  //  parm2 - ignored
         //                                  //  parm3 - ignored
-        BPT32_REQUEST_SPLIT,                // A Block Split occurred so
+        BPT_REQUEST_SPLIT,                // A Block Split occurred so
         //                                  // handle the index block update(s)
-        BPT32_REQUEST_SET_TAIL,             // Change Data Tail to given block.
+        //                                  //  obj   - Left Block  (index or leaf)
+        //                                  //  parm1 - Right Block (index or leaf)
+        //                                  //  parm2 - ignored
+        //                                  //  parm3 - ignored
+        BPT_REQUEST_SET_TAIL,             // Change Data Tail to given block.
         //                                  //  obj   - object requesting tail
         //                                  //        (lbn is gotten from vtbl)
         //                                  //  parm1 - ignored
         //                                  //  parm2 - ignored
         //                                  //  parm3 - ignored
-        BPT32_REQUEST_WRITE,                // Write a buffer to disk.
+        BPT_REQUEST_WRITE,                // Write a buffer to disk.
         //                                  //  obj   - object requesting write
         //                                  //        (lbn and block are gotten from vtbl)
         //                                  //  parm1 - ignored
         //                                  //  parm2 - ignored
         //                                  //  parm3 - ignored
-    } BPT32_REQUEST;
+    } BPT_REQUEST;
 
 
 
@@ -143,5 +148,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* BPT32_REQUEST_H */
+#endif  /* BPT_REQUEST_H */
 

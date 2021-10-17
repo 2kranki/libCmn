@@ -106,6 +106,9 @@ extern "C" {
         ERESULT         eRc;
 
         if (this->pIO && FileIO_IsOpen(this->pIO)) {
+            if (!fDelete && this->cReserve && this->pReserve) {
+                RRDS_ReserveWrite(this);
+            }
             // Close the file.
             eRc = FileIO_Close(this->pIO, fDelete);
             if (ERESULT_FAILED(eRc)) {
@@ -304,7 +307,7 @@ extern "C" {
     {
         size_t          fileOffset;
 
-        fileOffset = this->recordSize * (recordNum - 1);
+        fileOffset = (this->recordSize * (recordNum - 1)) + this->cReserve;
 
         // Return to Caller.
         return fileOffset;
@@ -644,6 +647,68 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      R e s e r v e
+    //---------------------------------------------------------------
+
+    void *          RRDS_getReserve (
+        RRDS_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!RRDS_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->pReserve;
+    }
+
+
+    uint16_t        RRDS_getReserveSize (
+        RRDS_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!RRDS_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->cReserve;
+    }
+
+
+    bool            RRDS_setReserveSize (
+        RRDS_DATA       *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!RRDS_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (OBJ_NIL == this->pIO) {
+            this->cReserve = value;
+        }
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -935,6 +1000,11 @@ extern "C" {
             return eRc;
         }
 
+        eRc = RRDS_ReserveAlloc(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
         // Create the file.
         eRc = FileIO_Create(this->pIO, pPath, fMem);
         if (ERESULT_FAILED(eRc)) {
@@ -947,6 +1017,12 @@ extern "C" {
         }
 
         eRc = FileIO_Open(this->pIO, pPath, fMem);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        // Insure that the actual file has that space allocated.
+        eRc = RRDS_ReserveWrite(this);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
@@ -990,6 +1066,7 @@ extern "C" {
         eRc = RRDS_FileClose(this, false);
         RRDS_setLRU(this, OBJ_NIL);
         RRDS_setFileIO(this, OBJ_NIL);
+        RRDS_ReserveFree(this);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1312,7 +1389,7 @@ extern "C" {
 
         // Records may or may not have \r\n or \n at the end of them. So,
         // record size can be 80-82 bytes.
-        offset = FileIO_SeekBegin(this->pIO, this->reqSize);
+        offset = FileIO_SeekBegin(this->pIO, (this->reqSize + this->cReserve));
         if (!(offset == this->reqSize)) {
             DEBUG_BREAK();
             return ERESULT_OPEN_ERROR;
@@ -1345,6 +1422,11 @@ extern "C" {
 
         fileSize = FileIO_Size(this->pIO);
         this->cRecords = (uint32_t)(fileSize / this->recordSize);
+
+        eRc = RRDS_ReserveRead(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1656,6 +1738,154 @@ extern "C" {
         return ERESULT_SUCCESS;
     }
 
+
+
+    //----------------------------------------------------------------
+    //                      R e s e r v e
+    //----------------------------------------------------------------
+
+    ERESULT         RRDS_ReserveAlloc (
+        RRDS_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ( !RRDS_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        if (0 == this->cReserve)
+            return ERESULT_DATA_NOT_FOUND;
+
+        if (this->pReserve) {
+            mem_Free(this->pReserve);
+            this->pReserve = NULL;
+        }
+
+        this->pReserve = mem_Calloc(this->cReserve, 1);
+        if (NULL == this->pReserve)
+            return ERESULT_OUT_OF_MEMORY;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         RRDS_ReserveFree (
+        RRDS_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ( !RRDS_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->pReserve) {
+            mem_Free(this->pReserve);
+            this->pReserve = NULL;
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         RRDS_ReserveRead (
+        RRDS_DATA       *this
+    )
+    {
+        ERESULT         eRc;
+        off_t           fileOffset = 0;
+        off_t           seekOffset;
+        uint32_t        amtRead = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ( !RRDS_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!FileIO_IsOpen(this->pIO)) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_NOT_FOUND;
+        }
+#endif
+
+        eRc = RRDS_ReserveAlloc(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        // Seek to the appropriate location within the file.
+        seekOffset = FileIO_SeekBegin(this->pIO, fileOffset);
+        if (seekOffset == fileOffset)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_SEEK_ERROR;
+        }
+
+        // Read the data.
+        eRc = FileIO_Read(this->pIO, this->cReserve, this->pReserve, &amtRead);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         RRDS_ReserveWrite (
+        RRDS_DATA       *this
+    )
+    {
+        ERESULT         eRc;
+        off_t           fileOffset = 0;
+        off_t           seekOffset;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if ( !RRDS_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == this->pReserve) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (!FileIO_IsOpen(this->pIO)) {
+            DEBUG_BREAK();
+            return ERESULT_DATA_NOT_FOUND;
+        }
+#endif
+        if (0 == this->cReserve)
+            return ERESULT_DATA_NOT_FOUND;
+
+        // Seek to the appropriate location within the file.
+        seekOffset = FileIO_SeekBegin(this->pIO, fileOffset);
+        if (seekOffset == fileOffset)
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_SEEK_ERROR;
+        }
+
+        // Read the data.
+        eRc = FileIO_Write(this->pIO, this->cReserve, this->pReserve);
+
+        // Return to caller.
+        return eRc;
+    }
 
 
 

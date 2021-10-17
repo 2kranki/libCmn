@@ -64,6 +64,7 @@ struct u8Array_data_s	{
     // Common Data
     uint32_t        misc;
     ARRAY_DATA      *pData;
+    OBJ_ID          *pOther;
 
 };
 #pragma pack(pop)

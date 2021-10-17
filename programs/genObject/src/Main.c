@@ -106,6 +106,11 @@ ERESULT         Main_SetOutputGraph(
     const
     char            *pStrA
 );
+ERESULT         Main_SetOutputJson(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
 ERESULT         Main_SetOutputLL1(
     MAIN_DATA       *this,
     const
@@ -131,12 +136,22 @@ ERESULT         Main_SetOutputTbl(
     const
     char            *pStrA
 );
+ERESULT         Main_SetOutputTest(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
 ERESULT         Main_SetOutputTrade(
     MAIN_DATA       *this,
     const
     char            *pStrA
 );
 ERESULT         Main_SetOutputVid(
+    MAIN_DATA       *this,
+    const
+    char            *pStrA
+);
+ERESULT         Main_SetOutputWork(
     MAIN_DATA       *this,
     const
     char            *pStrA
@@ -252,6 +267,16 @@ extern "C" {
             "Output to libGraph"
         },
         {
+            "json",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            0,
+            (void *)Main_SetOutputJson,
+            "Generate _json.c only"
+        },
+        {
             "ll1",
             '\0',
             CMDUTL_ARG_OPTION_OPTIONAL,
@@ -322,6 +347,16 @@ extern "C" {
             "Output to libTbl"
         },
         {
+            "test",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            0,
+            (void *)Main_SetOutputTest,
+            "Generate _test.c only"
+        },
+        {
             "trade",
             '\0',
             CMDUTL_ARG_OPTION_OPTIONAL,
@@ -340,6 +375,16 @@ extern "C" {
             0,
             (void *)Main_SetOutputVid,
             "Output to libVid"
+        },
+        {
+            "work",
+            '\0',
+            CMDUTL_ARG_OPTION_OPTIONAL,
+            CMDUTL_TYPE_EXEC,
+            0,
+            0,
+            (void *)Main_SetOutputWork,
+            "Output to libWork"
         },
         {0}
     };
@@ -522,6 +567,25 @@ extern "C" {
     }
 
 
+    ERESULT         Main_SetOutputJson(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        this->fJson = true;
+        this->fObj  = false;
+        this->fTest = false;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
     ERESULT         Main_SetOutputLL1(
         MAIN_DATA       *this,
         const
@@ -617,6 +681,25 @@ extern "C" {
     }
 
 
+    ERESULT         Main_SetOutputTest(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        this->fJson = false;
+        this->fObj  = false;
+        this->fTest = true;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
     ERESULT         Main_SetOutputTrade(
         MAIN_DATA       *this,
         const
@@ -649,6 +732,23 @@ extern "C" {
         Gen_setOutputDrvDirA(this->pGen, "~/git/libVid/");
 
         // Put code here...
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Main_SetOutputWork(
+        MAIN_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+
+        Gen_setOutputDrvDirA(this->pGen, "~/git/libWork/");
 
         // Return to caller.
         return eRc;
@@ -1427,7 +1527,11 @@ extern "C" {
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Main_Vtbl);
-        
+
+        this->fJson = true;
+        this->fObj = true;
+        this->fTest = true;
+
         this->pDict = Dict_New( );
         if (OBJ_NIL == this->pDict) {
             DEBUG_BREAK();
@@ -1528,6 +1632,9 @@ extern "C" {
         }
 #endif
 
+        Gen_setOutputDrvDirA(this->pGen, "./");
+
+
         // Return to caller.
         return eRc;
     }
@@ -1627,6 +1734,9 @@ extern "C" {
         eRc =   Gen_CreateObjectFiles(
                                     this->pGen,
                                     pClass,
+                                    this->fJson,
+                                    this->fObj,
+                                    this->fTest,
                                     !Appl_getQuiet((APPL_DATA *)this)
                 );
         Appl_ErrorFatalOnEresult(

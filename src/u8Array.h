@@ -159,6 +159,20 @@ extern "C" {
     );
     
     
+    /*!
+     @property other to be used to associate some other object to
+     this array as needed.
+     */
+    OBJ_ID          u8Array_getOther(
+        U8ARRAY_DATA    *this
+    );
+
+    bool            u8Array_setOther(
+        U8ARRAY_DATA    *this,
+        OBJ_ID          pValue
+    );
+
+
     uint32_t        u8Array_getSize(
         U8ARRAY_DATA    *this
     );

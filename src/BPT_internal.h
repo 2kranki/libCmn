@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   BPT32_internal.h
+ * File:   BPT_internal.h
  *  Generated 09/25/2021 10:01:15
  *
  * Notes:
@@ -39,17 +39,17 @@
 
 
 
-#include        <BPT32.h>
-#include        <BPT32Index_internal.h>
-#include        <BPT32Leaf_internal.h>
+#include        <BPT.h>
+#include        <BPTIndex_internal.h>
+#include        <BPTLeaf_internal.h>
 #include        <JsonIn.h>
 #include        <lru_internal.h>
 #include        <ObjArray.h>
 #include        <RRDS_internal.h>
 
 
-#ifndef BPT32_INTERNAL_H
-#define BPT32_INTERNAL_H
+#ifndef BPT_INTERNAL_H
+#define BPT_INTERNAL_H
 
 
 
@@ -62,28 +62,26 @@ extern "C" {
 
     //          Block Descriptor
     #pragma pack(push, 1)
-    typedef struct  BPT32_blkidx_s {
+    typedef struct  BPT_blkidx_s {
         OBJ_ID          pBlock;
-        uint32_t        blockLsn;       // Current Node Number in Work Block
-    } BPT32_BLKIDX;
+        uint32_t        blockLBN;       // Current Node Number in Work Block
+    } BPT_BLKIDX;
     #pragma pack(pop)
 
 
     //                      File Header
     // This header is saved in the 1st record of the file.
     #pragma pack(push, 1)
-    typedef struct  BPT32_header_s {
-        uint16_t        dataSize;       // Size of Data in node
-        uint16_t        actualSize;
+    typedef struct  BPT_header_s {
         uint16_t        keyLen;         // Key Length
         uint16_t        keyOff;         // Key Offset within Recorrd
         uint32_t        blockSize;
         uint32_t        cRecords;       // Number of Records in the File including header
-        uint32_t        root;           // Root Block Index
-        uint32_t        dataHead;       // Head of Leaf Chain
-        uint32_t        dataTail;       // End of Leaf Chain
-        uint32_t        deleteHead;     // Head of Free Block Chain
-    } BPT32_HEADER;
+        uint32_t        root;           // Root Block LBN
+        uint32_t        dataHead;       // Head of Leaf Chain LBN
+        uint32_t        dataTail;       // End of Leaf Chain LBN
+        uint32_t        deleteHead;     // Head of Free Block Chain LBN
+    } BPT_HEADER;
     #pragma pack(pop)
 
 
@@ -93,7 +91,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct BPT32_data_s  {
+struct BPT_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -106,13 +104,15 @@ struct BPT32_data_s  {
     uint16_t        rsvd16;
     uint16_t        cLRU;
     uint16_t        cHash;
-    uint16_t        dataSize;       // Size of Data in node
+    uint16_t        keyLen;
+    uint16_t        keyOff;
+    uint8_t         fMem;
+    uint8_t         rsvd8;
     uint32_t        blockSize;
-    //ASTR_DATA       *pStr;
     PATH_DATA       *pPath;
     OBJ_ID          pRoot;          // Root Record
-    BPT32_HEADER    *pHdr;
-    OBJARRAY_DATA   *pSrchStk;      // Search Block List
+    BPT_HEADER    *pHdr;
+    OBJARRAY_DATA   *pSrchStk;      // Block List Search Stack
 
     // Last Key for Sequential Access
     uint32_t        lastLBN;        // Last Logical Block Number
@@ -122,11 +122,11 @@ struct BPT32_data_s  {
 #pragma pack(pop)
 
     extern
-    struct BPT32_class_data_s  BPT32_ClassObj;
+    struct BPT_class_data_s  BPT_ClassObj;
 
     extern
     const
-    BPT32_VTBL         BPT32_Vtbl;
+    BPT_VTBL         BPT_Vtbl;
 
 
 
@@ -134,13 +134,13 @@ struct BPT32_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  BPT32_SINGLETON
-    BPT32_DATA *     BPT32_getSingleton (
+#ifdef  BPT_SINGLETON
+    BPT_DATA *    BPT_getSingleton (
         void
     );
 
-    bool            BPT32_setSingleton (
-     BPT32_DATA       *pValue
+    bool            BPT_setSingleton (
+     BPT_DATA       *pValue
 );
 #endif
 
@@ -150,19 +150,19 @@ struct BPT32_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  BPT32_getSuperVtbl (
-        BPT32_DATA     *this
+    OBJ_IUNKNOWN *  BPT_getSuperVtbl (
+        BPT_DATA     *this
     );
 
 
-    ERESULT         BPT32_Assign (
-        BPT32_DATA    *this,
-        BPT32_DATA    *pOther
+    ERESULT         BPT_Assign (
+        BPT_DATA    *this,
+        BPT_DATA    *pOther
     );
 
 
-    ERESULT         BPT32_BlockRequest(
-        BPT32_DATA      *this,
+    ERESULT         BPT_BlockRequest(
+        BPT_DATA      *this,
         uint32_t        request,
         OBJ_ID          pObj,
         void            *pParm1,
@@ -171,29 +171,60 @@ struct BPT32_data_s  {
     );
 
 
-    BPT32_DATA *       BPT32_Copy (
-        BPT32_DATA     *this
+    /*!
+     Search the blocks down to the leaf blocks for a specific key.  If found,
+     set up work block for the found key.  If not found, set up work block for
+     insertion point in block.  Also, the srchStk will contain all the blocks
+     searched to find the leaf block.  So, it can be used for figuring out
+     parent blocks.
+     @param     this        Object Pointer
+     @param     lbn         Block Number to start with
+     @param     pKey        [input] key to be looked for
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         BPT_BlockSearchByKey (
+        BPT_DATA      *this,
+        uint32_t        lbn,
+        uint8_t         *pKey
     );
 
 
-    void            BPT32_Dealloc (
+    BPT_DATA *     BPT_Copy (
+        BPT_DATA     *this
+    );
+
+
+    void            BPT_Dealloc (
         OBJ_ID          objId
     );
 
 
-    BPT32_DATA *     BPT32_DeepCopy (
-        BPT32_DATA       *this
+    BPT_DATA *     BPT_DeepCopy (
+        BPT_DATA       *this
     );
 
 
-#ifdef  BPT32_JSON_SUPPORT
+    ERESULT         BPT_HeaderRead(
+        BPT_DATA      *this,
+        PATH_DATA       *pPath
+    );
+
+
+    ERESULT         BPT_HeaderWrite(
+        BPT_DATA      *this,
+        PATH_DATA       *pPath
+    );
+
+
+#ifdef  BPT_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    BPT32_DATA *       BPT32_ParseJsonObject (
+    BPT_DATA *       BPT_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -207,35 +238,40 @@ struct BPT32_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         BPT32_ParseJsonFields (
+    ERESULT         BPT_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        BPT32_DATA     *pObject
+        BPT_DATA     *pObject
     );
 #endif
 
 
-    void *          BPT32_QueryInfo (
+    void *          BPT_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  BPT32_JSON_SUPPORT
+    ERESULT         BPT_SetupRRDS(
+        BPT_DATA      *this
+    );
+
+
+#ifdef  BPT_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = BPT32_ToJson(this);
+     ASTR_DATA      *pDesc = BPT_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     BPT32_ToJson (
-        BPT32_DATA      *this
+    ASTR_DATA *     BPT_ToJson (
+        BPT_DATA      *this
     );
 
 
@@ -248,8 +284,8 @@ struct BPT32_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         BPT32_ToJsonFields (
-        BPT32_DATA     *this,
+    ERESULT         BPT_ToJsonFields (
+        BPT_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -259,8 +295,8 @@ struct BPT32_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            BPT32_Validate (
-        BPT32_DATA       *this
+    bool            BPT_Validate (
+        BPT_DATA       *this
     );
 #endif
 
@@ -270,5 +306,5 @@ struct BPT32_data_s  {
 }
 #endif
 
-#endif  /* BPT32_INTERNAL_H */
+#endif  /* BPT_INTERNAL_H */
 

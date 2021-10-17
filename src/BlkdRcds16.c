@@ -3,6 +3,10 @@
  * File:   BlkdRcds16.c
  *  Generated 09/18/2021 09:48:13
  *
+ * Notes:
+ *  **  Record access could be sped up by adding the record offset to the
+ *      record index. However, this slows down insertion/deletion since
+ *      those offsets after the insertion/deletion point have to be adjusted.
  */
 
 /*
@@ -119,8 +123,8 @@ extern "C" {
         if ( obj_Flag(this, BLOCK_ALLOC) && this->pBlock) {
             mem_Free(this->pBlock);
             this->pBlock = NULL;
-            obj_FlagOff(this, BLOCK_ALLOC);
         }
+        obj_FlagOff(this, BLOCK_ALLOC);
     }
 
 
@@ -188,12 +192,9 @@ extern "C" {
         uint32_t        amt
     )
     {
-        uint16_t        dataOffset;
         uint16_t        dataSize;
         uint16_t        numShiftRcds;
         uint16_t        shiftSize;
-        uint8_t         *start;
-        uint8_t         *shiftTo;
         int             i;
 
         // Do initialization.
@@ -328,7 +329,7 @@ extern "C" {
 
 
 
-    uint16_t        BlkdRcds16_CalcFromRecordSize(
+    uint16_t        BlkdRcds16_CalcBlockSizeFromRecordSize(
         uint16_t        rsvdSize,
         uint16_t        numRecords,
         uint16_t        recordSize              // Average Record Size
@@ -353,6 +354,40 @@ extern "C" {
         if (cbSize > DATA_BLOCK_MAX_SIZE) {
             cbSize = 0;                 // TOO Big!
         }
+
+        // Return to caller.
+        return cbSize;
+    }
+
+
+
+    uint16_t        BlkdRcds16_CalcNumFixedRcds(
+        uint16_t        blockSize,
+        uint16_t        rsvdSize,
+        uint16_t        rcdSize
+    )
+    {
+        uint32_t        cbSize;
+        uint16_t        fullRcdSize;
+
+        // Do initialization.
+        cbSize = sizeof(DATA_BLOCK) + rsvdSize;
+        if (cbSize > DATA_BLOCK_MAX_SIZE) {
+            return 0;
+        }
+        if (blockSize < cbSize) {
+            return 0;
+        }
+        if (rcdSize == 0) {
+            return 0;
+        }
+
+        cbSize  = blockSize;
+        cbSize -= sizeof(DATA_BLOCK);
+        cbSize -= rsvdSize;
+
+        fullRcdSize = rcdSize + sizeof(INDEX_RECORD);
+        cbSize /= fullRcdSize;
 
         // Return to caller.
         return cbSize;
@@ -503,6 +538,7 @@ extern "C" {
         }
 #endif
 
+        BlkdRcds16_BlockFree(this);
         this->pBlock = (DATA_BLOCK *)pValue;
 
         return true;
@@ -690,52 +726,6 @@ extern "C" {
 
 
 
-    //---------------------------------------------------------------
-    //                              S t r
-    //---------------------------------------------------------------
-    
-    ASTR_DATA * BlkdRcds16_getStr (
-        BLKDRCDS16_DATA     *this
-    )
-    {
-        
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!BlkdRcds16_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        
-        return this->pStr;
-    }
-    
-    
-    bool        BlkdRcds16_setStr (
-        BLKDRCDS16_DATA     *this,
-        ASTR_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!BlkdRcds16_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pStr) {
-            obj_Release(this->pStr);
-        }
-        this->pStr = pValue;
-        
-        return true;
-    }
-    
-    
-    
     //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
@@ -1080,7 +1070,6 @@ extern "C" {
         }
 #endif
 
-        BlkdRcds16_setStr(this, OBJ_NIL);
         BlkdRcds16_BlockFree(this);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -1149,14 +1138,6 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        uint16_t        rcdSize;
-        uint16_t        rcdNum;
-        int32_t         amt;
-        uint16_t        numRcds;
-        uint16_t        shiftSize;
-        uint8_t         *pStart;
-        uint8_t         *pShiftTo;
-        int             i;
 
         // Do initialization.
 #ifdef NDEBUG

@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//  Class Object Metods and Tables for 'BPT32Leaf'
-//  Generated 09/23/2021 12:52:17
+//  Class Object Metods and Tables for 'BPTIndex'
+//  Generated 09/25/2021 10:00:36
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define         BPT32LEAF_OBJECT_C       1
-#include        <BPT32Leaf_internal.h>
-#ifdef  BPT32LEAF_SINGLETON
+#define         BPTINDEX_OBJECT_C       1
+#include        <BPTIndex_internal.h>
+#ifdef  BPTINDEX_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct BPT32Leaf_class_data_s    {
+struct BPTIndex_class_data_s    {
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  BPT32LEAF_SINGLETON
+#ifdef  BPTINDEX_SINGLETON
     volatile
-    BPT32LEAF_DATA       *pSingleton;
+    BPTINDEX_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct BPT32Leaf_class_data_s    {
 
 
 static
-void *          BPT32LeafClass_QueryInfo (
+void *          BPTIndexClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          BPT32LeafClass_QueryInfo (
 
 static
 const
-OBJ_INFO        BPT32Leaf_Info;            // Forward Reference
+OBJ_INFO        BPTIndex_Info;            // Forward Reference
 
 
 
 
 static
-bool            BPT32LeafClass_IsKindOf (
+bool            BPTIndexClass_IsKindOf (
     uint16_t        classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_BPT32LEAF_CLASS == classID) {
+    if (OBJ_IDENT_BPTINDEX_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(BPT32Leaf_Class())->pClassSuperObject;
+    pObj = obj_getInfo(BPTIndex_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            BPT32LeafClass_IsKindOf (
 
 
 static
-uint16_t        BPT32LeafClass_WhoAmI (
+uint16_t        BPTIndexClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_BPT32LEAF_CLASS;
+    return OBJ_IDENT_BPTINDEX_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t        BPT32LeafClass_WhoAmI (
 
 static
 const
-BPT32LEAF_CLASS_VTBL    class_Vtbl = {
+BPTINDEX_CLASS_VTBL    class_Vtbl = {
     {
-        &BPT32Leaf_Info,
-        BPT32LeafClass_IsKindOf,
+        &BPTIndex_Info,
+        BPTIndexClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        BPT32Leaf_Class,
-        BPT32LeafClass_WhoAmI,
-        (P_OBJ_QUERYINFO)BPT32LeafClass_QueryInfo,
-        NULL                        // BPT32LeafClass_ToDebugString
+        BPTIndex_Class,
+        BPTIndexClass_WhoAmI,
+        (P_OBJ_QUERYINFO)BPTIndexClass_QueryInfo,
+        NULL                        // BPTIndexClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ BPT32LEAF_CLASS_VTBL    class_Vtbl = {
 //                      Class Object
 //-----------------------------------------------------------
 
-BPT32LEAF_CLASS_DATA  BPT32Leaf_ClassObj = {
+BPTINDEX_CLASS_DATA  BPTIndex_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(BPT32LEAF_CLASS_DATA),                  // cbSize
+        sizeof(BPTINDEX_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,22 +162,22 @@ BPT32LEAF_CLASS_DATA  BPT32Leaf_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  BPT32LEAF_SINGLETON
+#ifdef  BPTINDEX_SINGLETON
 extern
 const
-BPT32LEAF_VTBL       BPT32Leaf_VtblShared;
+BPTINDEX_VTBL       BPTIndex_VtblShared;
 
 
-BPT32LEAF_DATA *     BPT32Leaf_getSingleton (
+BPTINDEX_DATA *     BPTIndex_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(BPT32Leaf_ClassObj.pSingleton);
+    return (OBJ_ID)(BPTIndex_ClassObj.pSingleton);
 }
 
 
-bool            BPT32Leaf_setSingleton (
-    BPT32LEAF_DATA       *pValue
+bool            BPTIndex_setSingleton (
+    BPTINDEX_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -197,10 +197,10 @@ bool            BPT32Leaf_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (BPT32Leaf_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(BPT32Leaf_ClassObj.pSingleton));
+    if (BPTIndex_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(BPTIndex_ClassObj.pSingleton));
     }
-    BPT32Leaf_ClassObj.pSingleton = pValue;
+    BPTIndex_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -210,18 +210,18 @@ bool            BPT32Leaf_setSingleton (
 
 
 
-BPT32LEAF_DATA *     BPT32Leaf_Shared (
+BPTINDEX_DATA *     BPTIndex_Shared (
     void
 )
 {
-    BPT32LEAF_DATA       *this = (OBJ_ID)(BPT32Leaf_ClassObj.pSingleton);
+    BPTINDEX_DATA       *this = (OBJ_ID)(BPTIndex_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = BPT32Leaf_New( );
-        obj_setVtbl(this, (void *)&BPT32Leaf_VtblShared);
-        BPT32Leaf_setSingleton(this);
+        this = BPTIndex_New( );
+        obj_setVtbl(this, (void *)&BPTIndex_VtblShared);
+        BPTIndex_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // BPT32Leaf_ClassObj.pSingleton = OBJ_NIL;
+        // BPTIndex_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -229,16 +229,16 @@ BPT32LEAF_DATA *     BPT32Leaf_Shared (
 
 
 
-void            BPT32Leaf_SharedReset (
+void            BPTIndex_SharedReset (
     void
 )
 {
-    BPT32LEAF_DATA       *this = (OBJ_ID)(BPT32Leaf_ClassObj.pSingleton);
+    BPTINDEX_DATA       *this = (OBJ_ID)(BPTIndex_ClassObj.pSingleton);
     
     if (this) {
-        obj_setVtbl(this, (void *)&BPT32Leaf_Vtbl);
+        obj_setVtbl(this, (void *)&BPTIndex_Vtbl);
         obj_Release(this);
-        BPT32Leaf_ClassObj.pSingleton = OBJ_NIL;
+        BPTIndex_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -254,13 +254,13 @@ void            BPT32Leaf_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          BPT32LeafClass_QueryInfo (
+void *          BPTIndexClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    BPT32LEAF_CLASS_DATA *this = objId;
+    BPTINDEX_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -271,7 +271,7 @@ void *          BPT32LeafClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(BPT32LEAF_DATA);
+            return (void *)sizeof(BPTINDEX_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -284,13 +284,13 @@ void *          BPT32LeafClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&BPT32Leaf_Info;
+                        return (void *)&BPTIndex_Info;
                     }
                     break;
                     
                 case 'S':
                     if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                        return (void *)&BPT32Leaf_Info.pClassSuperObject;
+                        return (void *)&BPTIndex_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -308,35 +308,35 @@ void *          BPT32LeafClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return BPT32Leaf_New;
+                        return BPTIndex_New;
                     }
                     break;
                     
                 case 'P':
-#ifdef  BPT32LEAF_JSON_SUPPORT
+#ifdef  BPTINDEX_JSON_SUPPORT
                     if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                        return BPT32Leaf_ParseJsonFields;
+                        return BPTIndex_ParseJsonFields;
                     }
                     if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                        return BPT32Leaf_ParseJsonObject;
+                        return BPTIndex_ParseJsonObject;
                     }
 #endif
                     break;
 
                 case 'T':
-#ifdef  BPT32LEAF_JSON_SUPPORT
+#ifdef  BPTINDEX_JSON_SUPPORT
                     if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                        return BPT32Leaf_ToJsonFields;
+                        return BPTIndex_ToJsonFields;
                     }
                     if (str_Compare("ToJson", (char *)pStr) == 0) {
-                        return BPT32Leaf_ToJson;
+                        return BPTIndex_ToJson;
                     }
 #endif
                     break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return BPT32LeafClass_WhoAmI;
+                        return BPTIndexClass_WhoAmI;
                     }
                     break;
                     
@@ -356,7 +356,7 @@ void *          BPT32LeafClass_QueryInfo (
 
 
 static
-bool            BPT32Leaf_IsKindOf (
+bool            BPTIndex_IsKindOf (
     uint16_t        classID
 )
 {
@@ -364,14 +364,14 @@ bool            BPT32Leaf_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_BPT32LEAF == classID) {
+    if (OBJ_IDENT_BPTINDEX == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(BPT32Leaf_Class())->pClassSuperObject;
+    pObj = obj_getInfo(BPTIndex_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -385,25 +385,25 @@ bool            BPT32Leaf_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            BPT32Leaf_Dealloc (
+void            BPTIndex_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          BPT32Leaf_Class (
+OBJ_ID          BPTIndex_Class (
     void
 )
 {
-    return (OBJ_ID)&BPT32Leaf_ClassObj;
+    return (OBJ_ID)&BPTIndex_ClassObj;
 }
 
 
 static
-uint16_t        BPT32Leaf_WhoAmI (
+uint16_t        BPTIndex_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_BPT32LEAF;
+    return OBJ_IDENT_BPTINDEX;
 }
 
 
@@ -414,35 +414,35 @@ uint16_t        BPT32Leaf_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
-#ifdef  BPT32LEAF_SINGLETON
+#ifdef  BPTINDEX_SINGLETON
 // A Shared object ignores Retain() and Release() except for
 // initialization and termination. So, there must be an
 // independent VTbl from the normal which does support Retain()
 // and Release().
 const
-BPT32LEAF_VTBL     BPT32Leaf_VtblShared = {
+BPTINDEX_VTBL     BPTIndex_VtblShared = {
     {
-        &BPT32Leaf_Info,
-        BPT32Leaf_IsKindOf,
+        &BPTIndex_Info,
+        BPTIndex_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        BPT32Leaf_Dealloc,
-        BPT32Leaf_Class,
-        BPT32Leaf_WhoAmI,
-        (P_OBJ_QUERYINFO)BPT32Leaf_QueryInfo,
-        (P_OBJ_TOSTRING)BPT32Leaf_ToDebugString,
-        NULL,           // BPT32Leaf_Enable,
-        NULL,           // BPT32Leaf_Disable,
-        NULL,           // (P_OBJ_ASSIGN)BPT32Leaf_Assign,
-        NULL,           // (P_OBJ_COMPARE)BPT32Leaf_Compare,
-        NULL,           // (P_OBJ_PTR)BPT32Leaf_Copy,
-        NULL,           // (P_OBJ_PTR)BPT32Leaf_DeepCopy,
-        NULL            // (P_OBJ_HASH)BPT32Leaf_Hash,
+        BPTIndex_Dealloc,
+        BPTIndex_Class,
+        BPTIndex_WhoAmI,
+        (P_OBJ_QUERYINFO)BPTIndex_QueryInfo,
+        (P_OBJ_TOSTRING)BPTIndex_ToDebugString,
+        NULL,           // BPTIndex_Enable,
+        NULL,           // BPTIndex_Disable,
+        NULL,           // (P_OBJ_ASSIGN)BPTIndex_Assign,
+        NULL,           // (P_OBJ_COMPARE)BPTIndex_Compare,
+        NULL,           // (P_OBJ_PTR)BPTIndex_Copy,
+        NULL,           // (P_OBJ_PTR)BPTIndex_DeepCopy,
+        NULL            // (P_OBJ_HASH)BPTIndex_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //BPT32Leaf_IsEnabled,
+    //BPTIndex_IsEnabled,
  
 };
 #endif
@@ -454,31 +454,31 @@ BPT32LEAF_VTBL     BPT32Leaf_VtblShared = {
 // just that they are deleted when their usage count
 // goes to zero.
 const
-BPT32LEAF_VTBL     BPT32Leaf_Vtbl = {
+BPTINDEX_VTBL     BPTIndex_Vtbl = {
     {
-        &BPT32Leaf_Info,
-        BPT32Leaf_IsKindOf,
+        &BPTIndex_Info,
+        BPTIndex_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        BPT32Leaf_Dealloc,
-        BPT32Leaf_Class,
-        BPT32Leaf_WhoAmI,
-        (P_OBJ_QUERYINFO)BPT32Leaf_QueryInfo,
-        (P_OBJ_TOSTRING)BPT32Leaf_ToDebugString,
-        NULL,           // BPT32Leaf_Enable,
-        NULL,           // BPT32Leaf_Disable,
-        NULL,           // (P_OBJ_ASSIGN)BPT32Leaf_Assign,
-        NULL,           // (P_OBJ_COMPARE)BPT32Leaf_Compare,
-        NULL,           // (P_OBJ_PTR)BPT32Leaf_Copy,
-        NULL,           // (P_OBJ_PTR)BPT32Leaf_DeepCopy,
-        NULL            // (P_OBJ_HASH)BPT32Leaf_Hash,
+        BPTIndex_Dealloc,
+        BPTIndex_Class,
+        BPTIndex_WhoAmI,
+        (P_OBJ_QUERYINFO)BPTIndex_QueryInfo,
+        (P_OBJ_TOSTRING)BPTIndex_ToDebugString,
+        NULL,           // BPTIndex_Enable,
+        NULL,           // BPTIndex_Disable,
+        NULL,           // (P_OBJ_ASSIGN)BPTIndex_Assign,
+        NULL,           // (P_OBJ_COMPARE)BPTIndex_Compare,
+        NULL,           // (P_OBJ_PTR)BPTIndex_Copy,
+        NULL,           // (P_OBJ_PTR)BPTIndex_DeepCopy,
+        NULL            // (P_OBJ_HASH)BPTIndex_Hash,
     },
     // Put other object method names below this.
     // Properties:
-    (void *)BPT32Leaf_getBlock,
-    (void *)BPT32Leaf_getLBN,
+    (void *)BPTIndex_getBlock,
+    (void *)BPTIndex_getLBN,
     // Methods:
-    //BPT32Leaf_IsEnabled,
+    //BPTIndex_IsEnabled,
  
 };
 
@@ -486,13 +486,13 @@ BPT32LEAF_VTBL     BPT32Leaf_Vtbl = {
 
 static
 const
-OBJ_INFO        BPT32Leaf_Info = {
-    "BPT32Leaf",
-    "B-Plus Tree Leaf",
-    (OBJ_DATA *)&BPT32Leaf_ClassObj,
+OBJ_INFO        BPTIndex_Info = {
+    "BPTIndex",
+    "B-Plus Tree Index Block",
+    (OBJ_DATA *)&BPTIndex_ClassObj,
     (OBJ_DATA *)&BlkdRcds16_ClassObj,
-    (OBJ_IUNKNOWN *)&BPT32Leaf_Vtbl,
-    sizeof(BPT32LEAF_DATA)
+    (OBJ_IUNKNOWN *)&BPTIndex_Vtbl,
+    sizeof(BPTINDEX_DATA)
 };
 
 

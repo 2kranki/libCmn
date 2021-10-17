@@ -191,6 +191,12 @@ extern "C" {
         OBJ_IDENT_BLOCK32_CLASS,
         OBJ_IDENT_BLOCKS,               // A list of Data Blocks and Records
         OBJ_IDENT_BLOCKS_CLASS,
+        OBJ_IDENT_BPT,                  // B-Plus Tree
+        OBJ_IDENT_BPT_CLASS,
+        OBJ_IDENT_BPTINDEX,             // B-Plus Tree Index Block
+        OBJ_IDENT_BPTINDEX_CLASS,
+        OBJ_IDENT_BPTLEAF,              // B-Plus Tree Leaf Block
+        OBJ_IDENT_BPTLEAF_CLASS,
         OBJ_IDENT_BPT32,                // B-Plus 32-Bit Tree
         OBJ_IDENT_BPT32_CLASS,
         OBJ_IDENT_BPT32INDEX,           // B-Plus 32-Bit Tree Index Block

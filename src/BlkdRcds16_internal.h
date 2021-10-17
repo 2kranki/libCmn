@@ -102,7 +102,9 @@ struct BlkdRcds16_data_s  {
 #define BLOCK_ALLOC     OBJ_FLAG_USER1
 
     // Common Data
-    ASTR_DATA       *pStr;
+    // NOTE: All variables should be kept within the block so that
+    //      the block can be read from disk and simply set into this
+    //      object.
     DATA_BLOCK      *pBlock;
 
 };

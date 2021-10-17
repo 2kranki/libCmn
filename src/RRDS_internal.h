@@ -80,8 +80,9 @@ struct RRDS_data_s  {
     uint16_t        cHash;
     uint8_t         recordTerm;     // Record Terminator (see enum RRDS_rcd_trm_e)
     uint8_t         fillChar;
-    uint8_t         rsvd8[2];
+    uint16_t        cReserve;       // Offset in file for beginning of records
     uint32_t        cRecords;
+    void            *pReserve;
 
 };
 #pragma pack(pop)
@@ -179,6 +180,23 @@ struct RRDS_data_s  {
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
+    );
+
+
+    ERESULT         RRDS_ReserveAlloc (
+        RRDS_DATA       *this
+    );
+
+    ERESULT         RRDS_ReserveFree (
+        RRDS_DATA       *this
+    );
+
+    ERESULT         RRDS_ReserveRead (
+        RRDS_DATA       *this
+    );
+
+    ERESULT         RRDS_ReserveWrite (
+        RRDS_DATA       *this
     );
 
 

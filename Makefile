@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (10/ 8/2021 15:48:48.000)
+# (10/15/2021 13:07:42.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -143,6 +143,16 @@ OBJS += $(OBJDIR)/AudioWAV_object.o
 $(OBJDIR)/AudioWAV_object.o: $(SRCDIR)/AudioWAV_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AudioWAV.h $(SRCDIR)/AudioWAV_internal.h $(SRCDIR)/fbso.h $(SRCDIR)/u8Array.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/BPT.o
+
+$(OBJDIR)/BPT.o: $(SRCDIR)/BPT.c $(OBJDIR)/BPTIndex.o $(OBJDIR)/BPTLeaf.o $(OBJDIR)/RRDS.o $(SRCDIR)/BPT.h $(SRCDIR)/BPTIndex.h $(SRCDIR)/BPTLeaf.h $(SRCDIR)/BPT_internal.h $(SRCDIR)/RRDS.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BPT32.o
+
+$(OBJDIR)/BPT32.o: $(SRCDIR)/BPT32.c $(OBJDIR)/BPT32Index.o $(OBJDIR)/BPT32Leaf.o $(OBJDIR)/RRDS.o $(SRCDIR)/BPT32.h $(SRCDIR)/BPT32Index.h $(SRCDIR)/BPT32Leaf.h $(SRCDIR)/BPT32_internal.h $(SRCDIR)/RRDS.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/BPT32Index.o
 
 $(OBJDIR)/BPT32Index.o: $(SRCDIR)/BPT32Index.c $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BPT32Index.h $(SRCDIR)/BPT32Index_internal.h $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
@@ -161,6 +171,36 @@ $(OBJDIR)/BPT32Leaf.o: $(SRCDIR)/BPT32Leaf.c $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BP
 OBJS += $(OBJDIR)/BPT32Leaf_object.o
 
 $(OBJDIR)/BPT32Leaf_object.o: $(SRCDIR)/BPT32Leaf_object.c $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BPT32Leaf.h $(SRCDIR)/BPT32Leaf_internal.h $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BPT32_object.o
+
+$(OBJDIR)/BPT32_object.o: $(SRCDIR)/BPT32_object.c $(OBJDIR)/BPT32Index.o $(OBJDIR)/BPT32Leaf.o $(OBJDIR)/RRDS.o $(SRCDIR)/BPT32.h $(SRCDIR)/BPT32Index.h $(SRCDIR)/BPT32Leaf.h $(SRCDIR)/BPT32_internal.h $(SRCDIR)/RRDS.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BPTIndex.o
+
+$(OBJDIR)/BPTIndex.o: $(SRCDIR)/BPTIndex.c $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BPTIndex.h $(SRCDIR)/BPTIndex_internal.h $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BPTIndex_object.o
+
+$(OBJDIR)/BPTIndex_object.o: $(SRCDIR)/BPTIndex_object.c $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BPTIndex.h $(SRCDIR)/BPTIndex_internal.h $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BPTLeaf.o
+
+$(OBJDIR)/BPTLeaf.o: $(SRCDIR)/BPTLeaf.c $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BPTLeaf.h $(SRCDIR)/BPTLeaf_internal.h $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BPTLeaf_object.o
+
+$(OBJDIR)/BPTLeaf_object.o: $(SRCDIR)/BPTLeaf_object.c $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BPTLeaf.h $(SRCDIR)/BPTLeaf_internal.h $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BPT_object.o
+
+$(OBJDIR)/BPT_object.o: $(SRCDIR)/BPT_object.c $(OBJDIR)/BPTIndex.o $(OBJDIR)/BPTLeaf.o $(OBJDIR)/RRDS.o $(SRCDIR)/BPT.h $(SRCDIR)/BPTIndex.h $(SRCDIR)/BPTLeaf.h $(SRCDIR)/BPT_internal.h $(SRCDIR)/RRDS.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Base64.o
@@ -2144,6 +2184,30 @@ BPT32Index_test: $(TEST_SRC)/BPT32Index_test.c $(SRCDIR)/BPT32Index.h $(SRCDIR)/
 TESTS += BPT32Leaf_test
 
 BPT32Leaf_test: $(TEST_SRC)/BPT32Leaf_test.c $(SRCDIR)/BPT32Leaf.h $(SRCDIR)/BPT32Leaf_internal.h $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += BPT32_test
+
+BPT32_test: $(TEST_SRC)/BPT32_test.c $(SRCDIR)/BPT32.h $(SRCDIR)/BPT32_internal.h $(OBJDIR)/BPT32Index.o $(OBJDIR)/BPT32Leaf.o $(OBJDIR)/RRDS.o $(SRCDIR)/BPT32Index.h $(SRCDIR)/BPT32Leaf.h $(SRCDIR)/RRDS.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += BPTIndex_test
+
+BPTIndex_test: $(TEST_SRC)/BPTIndex_test.c $(SRCDIR)/BPTIndex.h $(SRCDIR)/BPTIndex_internal.h $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += BPTLeaf_test
+
+BPTLeaf_test: $(TEST_SRC)/BPTLeaf_test.c $(SRCDIR)/BPTLeaf.h $(SRCDIR)/BPTLeaf_internal.h $(OBJDIR)/BlkdRcds16.o $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += BPT_test
+
+BPT_test: $(TEST_SRC)/BPT_test.c $(SRCDIR)/BPT.h $(SRCDIR)/BPT_internal.h $(OBJDIR)/BPTIndex.o $(OBJDIR)/BPTLeaf.o $(OBJDIR)/RRDS.o $(SRCDIR)/BPTIndex.h $(SRCDIR)/BPTLeaf.h $(SRCDIR)/RRDS.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

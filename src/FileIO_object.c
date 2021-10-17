@@ -36,9 +36,7 @@
 
 #define         FILEIO_OBJECT_C       1
 #include        <FileIO_internal.h>
-#ifdef  FILEIO_SINGLETON
 #include        <psxLock.h>
-#endif
 
 
 
@@ -56,7 +54,7 @@ struct FileIO_class_data_s    {
     FILEIO_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
-    //OBJ_ID          pObjCatalog;
+    OBJARRAY_DATA     *pMemoryFiles;
 };
 
 
@@ -153,8 +151,66 @@ FILEIO_CLASS_DATA  FileIO_ClassObj = {
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
     },
-    //0
+    OBJ_NIL
 };
+
+
+
+//---------------------------------------------------------------
+//                  M e m o r y  F i l e s
+//---------------------------------------------------------------
+
+OBJARRAY_DATA * FileIO_getMemoryFiles (
+    void
+)
+{
+    return (OBJ_ID)(FileIO_ClassObj.pMemoryFiles);
+}
+
+
+bool            FileIO_MemoryFilesSetup (
+    FILEIO_DATA       *pValue
+)
+{
+    PSXLOCK_DATA    *pLock = OBJ_NIL;
+    bool            fRc;
+
+    pLock = psxLock_New( );
+    if (OBJ_NIL == pLock) {
+        DEBUG_BREAK();
+        return false;
+    }
+    fRc = psxLock_Lock(pLock);
+    if (!fRc) {
+        DEBUG_BREAK();
+        obj_Release(pLock);
+        pLock = OBJ_NIL;
+        return false;
+    }
+
+    if (OBJ_NIL == FileIO_ClassObj.pMemoryFiles) {
+        FileIO_ClassObj.pMemoryFiles = ObjArray_New();
+    }
+
+    fRc = psxLock_Unlock(pLock);
+    obj_Release(pLock);
+    pLock = OBJ_NIL;
+    return true;
+}
+
+
+
+void            FileIO_MemoryFilesReset (
+    void
+)
+{
+
+    if (FileIO_ClassObj.pMemoryFiles) {
+        obj_Release(FileIO_ClassObj.pMemoryFiles);
+        FileIO_ClassObj.pMemoryFiles = ObjArray_New();
+    }
+
+}
 
 
 

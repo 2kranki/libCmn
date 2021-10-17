@@ -199,8 +199,11 @@ extern "C" {
 
     /*!
     Create the object files.
-    @param     this    object pointer
-    @param     pClass  Class Node Object pointer
+    @param     this     object pointer
+    @param     pClass   Class Node Object pointer
+    @param     fJson    true == generate _json.c file if called for
+    @param     fObj     true == generate object files if called for
+    @param     fTest    true == generate _test.c file if called for
     @param     fVerbose true == display file generation information
     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
              error code.
@@ -208,6 +211,9 @@ extern "C" {
     ERESULT         Gen_CreateObjectFiles (
         GEN_DATA        *this,
         NODECLASS_DATA  *pClass,
+        uint8_t         fJson,
+        uint8_t         fObj,
+        uint8_t         fTest,
         bool            fVerbose
     );
 

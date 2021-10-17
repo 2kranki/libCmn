@@ -144,6 +144,20 @@ extern "C" {
     );
 
     
+    /*!
+     @property other to be used to associate some other object to
+     this array as needed.
+     */
+    OBJ_ID          array_getOther(
+        ARRAY_DATA      *this
+    );
+
+    bool            array_setOther(
+        ARRAY_DATA      *this,
+        OBJ_ID          pValue
+    );
+
+
     uint32_t        array_getSize(
         ARRAY_DATA      *this
     );

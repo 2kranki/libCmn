@@ -3,6 +3,10 @@
 The following are things that are being thought about. Whether they get done or not
 will depend upon time and resources.
 
+--  BlkdRcds16
+    --  Test undef of BLKDRCDS16_BIG_ENDIAN (ie native endian)
+    --  Consider adding back in record offset or make it a compile/runtime option.
+
 --  Convert CB to allow size changes if needed optionally.
 
 --  Find tests that have waits in them and rewrite new tests that the wait can be bypassed in.

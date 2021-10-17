@@ -79,8 +79,10 @@ struct Main_data_s	{
     PATH_DATA       *pOutputPath;
     NODECLASS_DATA  *pClass;
     DICT_DATA       *pDict;
-    uint16_t        fBackup;
-    uint16_t        unused16;
+    uint8_t         fBackup;
+    uint8_t         fJson;
+    uint8_t         fObj;
+    uint8_t         fTest;
 
 };
 #pragma pack(pop)
