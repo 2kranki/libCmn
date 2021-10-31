@@ -83,6 +83,11 @@ struct u8Array_data_s	{
         OBJ_ID          objId
     );
 
+    uint8_t *       u8Array_GetAddrOf(
+        U8ARRAY_DATA    *this,
+        uint32_t        index
+    );
+
     U8ARRAY_DATA *  u8Array_ParseJsonObject(
         JSONIN_DATA     *pParser
     );

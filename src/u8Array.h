@@ -276,6 +276,18 @@ extern "C" {
     );
     
     
+    /*!
+     Extend() is the opposite of Truncate(). It extends the array
+     to the size specified if it is not already at that size or
+     greater.
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_ error.
+     */
+    ERESULT         u8Array_Extend(
+        U8ARRAY_DATA    *this,
+        uint32_t        size
+    );
+
+
     // If an error occurs, Get() returns 0.
     uint8_t         u8Array_Get(
         U8ARRAY_DATA	*this,

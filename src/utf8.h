@@ -345,7 +345,7 @@ extern "C" {
         //                              // we use NUL-terminator to stop)
         const
         char            *pStrA,         // Input String pointer
-        uint32_t        lenDest,        // in bytes including NUL
+        uint32_t        lenDest,        // in characters including NUL
         W32CHR_T        *pDest
     );
 

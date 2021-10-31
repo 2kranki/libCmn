@@ -189,6 +189,10 @@ extern "C" {
         OBJ_IDENT_BLOCK32,              // Data Block with an optional Fixed Sized Header
         //                              // and Fixed Sized Data Area
         OBJ_IDENT_BLOCK32_CLASS,
+        OBJ_IDENT_BLOCKF16,             // Fixed Length Records within 16-bit sized Block
+        OBJ_IDENT_BLOCKF16_CLASS,
+        OBJ_IDENT_BLOCKV16,             // Variable Length Records within 16-bit sized Block
+        OBJ_IDENT_BLOCKV16_CLASS,
         OBJ_IDENT_BLOCKS,               // A list of Data Blocks and Records
         OBJ_IDENT_BLOCKS_CLASS,
         OBJ_IDENT_BPT,                  // B-Plus Tree

@@ -121,7 +121,7 @@ extern "C" {
 
             case TEXTIN_TYPE_WSTR:
                 this->curTok.src.offset = this->offset;
-                chr = W32Str_CharGetW32(this->pWStr, (uint32_t)++this->offset );
+                chr = W32Str_CharGetW32(this->pWStr, (uint32_t)++this->offset);
                 if( chr == ASCII_CPM_EOF ) {
                     this->curTok.src.offset = W32Str_getLength(this->pWStr);
                     chr = EOF;
@@ -1789,7 +1789,8 @@ extern "C" {
         this->curTok.w32chr[1] = 0;
         TRC_OBJ(
                 this,
-                "\tTextIn::NextToken: file:%d Line:%3d Col:%2d Offset:%lld Char:(%d)%c Cls:(%d)%c\n",
+                "\tTextIn::NextToken: file:%d Line:%3d Col:%2d "
+                "Offset:%lld Char:(%d)%c Cls:(%d)%c\n",
                 this->curTok.src.fileIndex,
                 this->curTok.src.lineNo,
                 this->curTok.src.colNo,

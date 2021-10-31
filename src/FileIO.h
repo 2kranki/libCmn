@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  Generic Dataset/File Input/Output (FileIO) Header
+//        Generic Dataset/File Input/Output (FileIO) Header
 //****************************************************************
 /*
  * Program
@@ -18,6 +18,9 @@
  * History
  *  07/30/2016 Generated
  *  07/10/2021 Regenerated and merged in memFile.
+ *  10/29/2021 Changed memory files to use u8Array instead og array.
+ *             Added memory file retention so that a memory file can
+ *             be closed and then reopened based on path name.
  */
 
 
@@ -163,7 +166,10 @@ extern "C" {
         // method names to the vtbl definition in FileIO_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(FILEIO_DATA *);
+        bool            (*pMemFileAdd)(OBJ_ID);
+        bool            (*pMemFileDelete)(PATH_DATA *);
+        OBJ_ID          (*pMemFileFind)(PATH_DATA *);
+        void            (*pMemFileReset)(void);
     } FILEIO_CLASS_VTBL;
 
 
@@ -272,11 +278,6 @@ extern "C" {
     bool            FileIO_setAppend (
         FILEIO_DATA     *this,
         bool            fValue
-    );
-
-
-    uint32_t        memFile_getBlockSize (
-        FILEIO_DATA     *this
     );
 
 

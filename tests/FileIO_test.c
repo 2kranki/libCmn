@@ -1,92 +1,83 @@
 // vi:nu:et:sts=4 ts=4 sw=4
+//****************************************************************
+//                      Test Object Program
+//****************************************************************
 /*
- *  Generated 07/10/2021 11:26:44
+ * Program
+ *          Test Object Program
+ * Purpose
+ *          This program tests a particular object given certain
+ *          parameters.
+ *
+ * Remarks
+ *  1.      This relies on the fact that we can add to the Test
+ *          Object by simply coding methods that use the Test
+ *          Object.
+ *
+ * History
+ *  08/29/2021 Generated
+ */
+
+
+/*
+ This is free and unencumbered software released into the public domain.
+ 
+ Anyone is free to copy, modify, publish, use, compile, sell, or
+ distribute this software, either in source code form or as a compiled
+ binary, for any purpose, commercial or non-commercial, and by any
+ means.
+ 
+ In jurisdictions that recognize copyright laws, the author or authors
+ of this software dedicate any and all copyright interest in the
+ software to the public domain. We make this dedication for the benefit
+ of the public at large and to the detriment of our heirs and
+ successors. We intend this dedication to be an overt act of
+ relinquishment in perpetuity of all present and future rights to this
+ software under copyright law.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+ 
+ For more information, please refer to <http://unlicense.org/>
+ */
+
+
+
+
+/*
+ TestForFail(error_sttring)         <= Tests eRc for failure
+ TestForFalse(test, error_sttring)
+ TestForNotNull(test, error)
+ TestForNull(test, error)
+ TestForSuccess(error)              <= Tests eRc for success
+ TestForTrue(test, error)
  */
 
 
 
 
 
-// All code under test must be linked into the Unit Test bundle
-// Test Macros:
-//      TINYTEST_ASSERT(condition)
-//      TINYTEST_ASSERT_MSG(condition,msg)
-//      TINYTEST_EQUAL(expected, actual)
-//      TINYTEST_EQUAL_MSG(expected, actual, msg)
-//      TINYTEST_FALSE_MSG(condition,msg)
-//      TINYTEST_FALSE(condition)
-//      TINYTEST_TRUE_MSG(pointer,msg)
-//      TINYTEST_TRUE(condition)
-
-
-
-
-
-#include    <tinytest.h>
 #include    <test_defs.h>
-#include    <DateTime.h>
-#include    <File.h>
+#include    <Test_internal.h>
 #include    <trace.h>
 #include    <FileIO_internal.h>
+#include    <File.h>
 #include    <JsonIn.h>
-#ifdef  FILEIO_JSON_SUPPORT
-#   include    <SrcErrors.h>
-#   include    <szTbl.h>
-#endif
-
-
-
-int             setUp (
-    const
-    char            *pTestName
-)
-{
-    mem_Init( );
-    trace_Shared( ); 
-    // Put setup code here. This method is called before the invocation of each
-    // test method in the class.
-    
-    return 1; 
-}
-
-
-int             tearDown (
-    const
-    char            *pTestName
-)
-{
-    // Put teardown code here. This method is called after the invocation of each
-    // test method in the class.
-
-#ifdef  FILEIO_JSON_SUPPORT
-    SrcErrors_SharedReset( );
-    szTbl_SharedReset( );
-#endif
-    JsonIn_RegisterReset();
-    trace_SharedReset( ); 
-    if (mem_Dump( ) ) {
-        fprintf(
-                stderr,
-                "\x1b[1m"
-                "\x1b[31m"
-                "ERROR: "
-                "\x1b[0m"
-                "Leaked memory areas were found!\n"
-        );
-        exitCode = 4;
-        return 0;
-    }
-    mem_Release( );
-    
-    return 1; 
-}
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 
 
 
 
 
 
-int             test_FileIO_OpenClose (
+ERESULT         Test_FileIO_OpenClose (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
@@ -98,29 +89,30 @@ int             test_FileIO_OpenClose (
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = FileIO_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Alloc() object");
     pObj = FileIO_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Init() object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_FILEIO);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         
         // Test something.
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("test failed");
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_FileIO_Copy01 (
+ERESULT         Test_FileIO_Copy01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
@@ -137,23 +129,23 @@ int             test_FileIO_Copy01 (
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj1 = FileIO_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj1) );
+    TestForNotNull(pObj1, "Missing Test object");
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_FILEIO);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         
         // Test assign.
         pObj2 = FileIO_New();
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
         eRc = FileIO_Assign(pObj1, pObj2);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForFalse((ERESULT_FAILED(eRc)), "Assignment failed");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_FILEIO);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         //iRc = FileIO_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == iRc) );
+        //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -161,12 +153,12 @@ int             test_FileIO_Copy01 (
 
         // Test copy.
         pObj2 = FileIO_Copy(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_FILEIO);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         //iRc = FileIO_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == iRc) );
+        //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -175,16 +167,16 @@ int             test_FileIO_Copy01 (
         // Test json support.
 #if defined(FILEIO_JSON_SUPPORT) && defined(XYZZY)
         pStr = FileIO_ToJson(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "Missing JSON output");
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
         pObj2 = FileIO_NewFromJsonString(pStr);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing JSON created object");
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_FILEIO);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         //iRc = FileIO_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == iRc) );
+        //TestForTrue((0 == iRc), "Failed Compare");
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -195,30 +187,30 @@ int             test_FileIO_Copy01 (
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_FileIO_Test01 (
+ERESULT         Test_FileIO_Test01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
-    //ERESULT         eRc = ERESULT_SUCCESS;
-    FILEIO_DATA       *pObj = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    FILEIO_DATA     *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = FileIO_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_FILEIO);
-        TINYTEST_TRUE( (fRc) );
-        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+        TestForTrue(fRc, "Failed Ident Test");
         
         {
             ASTR_DATA       *pStr = FileIO_ToDebugString(pObj, 4);
@@ -234,18 +226,20 @@ int             test_FileIO_Test01 (
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int         test_FileIO_Read01(
+ERESULT         Test_FileIO_Read01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
-    ERESULT         eRc;
+    ERESULT         eRc = ERESULT_SUCCESS;
     FILEIO_DATA     *pObj = OBJ_NIL;
+    bool            fRc;
     PATH_DATA       *pPath = OBJ_NIL;
     const
     char            *pPathA = TEST_FILES_DIR "/test_expand_01.txt";
@@ -258,57 +252,70 @@ int         test_FileIO_Read01(
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pPath = Path_NewA(pPathA);
-    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    TestForNotNull(pPath, "Missing Path object");
     Path_Clean(pPath);
     fprintf(stderr, "\tpath=%s\n", Path_getData(pPath));
-    TINYTEST_FALSE( (ERESULT_FAILED(Path_IsFile(pPath))) );
-
+    eRc = Path_IsFile(pPath);
+    TestForSuccess("");
 
     pObj = FileIO_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_FILEIO);
+        TestForTrue(fRc, "Failed Ident Test");
+
         eRc = FileIO_Open(pObj, pPath, false);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
 
         fileSize = FileIO_Size(pObj);
-        TINYTEST_FALSE( (-1 == fileSize) );
+        TestForFalse((-1 == fileSize), "");
 
         if (fileSize) {
             pBuffer = mem_Malloc(fileSize);
-            TINYTEST_FALSE( (NULL == pBuffer) );
+            TestForNotNull(pBuffer, "");
             eRc = FileIO_Read(pObj, (uint32_t)fileSize, pBuffer, &amtRead);
-            TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-            TINYTEST_TRUE( (amtRead == fileSize) );
+            TestForSuccess("");
+            TestForTrue((amtRead == fileSize), "");
             mem_Free(pBuffer);
             pBuffer = NULL;
         }
 
         fileOffset = FileIO_SeekBegin(pObj, 0);
-        TINYTEST_TRUE( (0 == fileOffset) );
+        TestForTrue((0 == fileOffset), "");
 
         eRc = FileIO_Gets(pObj, 256, buffer);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         fprintf(stderr, "\tline = \"%s\"\n", buffer);
-        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "LNAME:${LNAME} UNAME:${UNAME}")) );
+        TestForTrue((0 == strcmp((const char *)buffer, "LNAME:${LNAME} UNAME:${UNAME}")), "");
 
         eRc = FileIO_Gets(pObj, 256, buffer);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         fprintf(stderr, "\tline = \"%s\"\n", buffer);
-        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "${UNAME} ${LNAME} ${UNAME}")) );
+        TestForTrue((0 == strcmp((const char *)buffer, "${UNAME} ${LNAME} ${UNAME}")), "");
 
         eRc = FileIO_Gets(pObj, 256, buffer);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         fprintf(stderr, "\tline = \"%s\"\n", buffer);
-        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "${XX} ${UNAME} ${XX}")) );
+        TestForTrue((0 == strcmp((const char *)buffer, "${XX} ${UNAME} ${XX}")), "");
 
         eRc = FileIO_Gets(pObj, 256, buffer);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         fprintf(stderr, "\tline = \"%s\"\n", buffer);
-        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "")) );
+        TestForTrue((0 == strcmp((const char *)buffer, "")), "");
 
         eRc = FileIO_Close(pObj, false);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
+
+        {
+            ASTR_DATA       *pStr = FileIO_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -317,88 +324,99 @@ int         test_FileIO_Read01(
     obj_Release(pPath);
     pPath = OBJ_NIL;
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
-    return 1;
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
 }
 
 
 
-int         test_FileIO_Read02(
+ERESULT         Test_FileIO_Read02 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
-    ERESULT         eRc;
+    ERESULT         eRc = ERESULT_SUCCESS;
     FILEIO_DATA     *pObj = OBJ_NIL;
+    bool            fRc;
     PATH_DATA       *pPath = OBJ_NIL;
-    IO_INTERFACE    *pIO = OBJ_NIL;
+    //IO_INTERFACE    *pIO = OBJ_NIL;
     const
     char            *pPathA = TEST_FILES_DIR "/test_expand_01.txt";
     off_t           fileSize = 0;
     uint8_t         buffer[256];
     uint8_t         *pBuffer = NULL;
-    off_t           amtRead = 0;
+    uint32_t        amtRead = 0;
     off_t           fileOffset;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pPath = Path_NewA(pPathA);
-    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    TestForNotNull(pPath, "Missing Path object");
     Path_Clean(pPath);
     fprintf(stderr, "\tpath=%s\n", Path_getData(pPath));
-    TINYTEST_FALSE( (ERESULT_FAILED(Path_IsFile(pPath))) );
-
+    eRc = Path_IsFile(pPath);
+    TestForSuccess("");
 
     pObj = FileIO_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_FILEIO);
+        TestForTrue(fRc, "Failed Ident Test");
+
         eRc = FileIO_Open(pObj, pPath, false);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
 
         fileSize = FileIO_Size(pObj);
-        TINYTEST_FALSE( (-1 == fileSize) );
-
-        pIO = FileIO_getIO(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pIO) );
+        TestForFalse((-1 == fileSize), "");
 
         if (fileSize) {
             pBuffer = mem_Malloc(fileSize);
-            TINYTEST_FALSE( (NULL == pBuffer) );
-            amtRead = pIO->pVtbl->pRead(pIO, pBuffer, (int32_t)fileSize);
-            TINYTEST_TRUE( (amtRead == fileSize) );
+            TestForNotNull(pBuffer, "");
+            eRc = FileIO_Read(pObj, (uint32_t)fileSize, pBuffer, &amtRead);
+            TestForSuccess("");
+            TestForTrue((amtRead == fileSize), "");
             mem_Free(pBuffer);
             pBuffer = NULL;
         }
 
-        fileOffset = pIO->pVtbl->pSeek(pIO, 0, IO_SEEK_SET);
-        TINYTEST_TRUE( (0 == fileOffset) );
+        fileOffset = FileIO_SeekBegin(pObj, 0);
+        TestForTrue((0 == fileOffset), "");
 
         eRc = FileIO_Gets(pObj, 256, buffer);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         fprintf(stderr, "\tline = \"%s\"\n", buffer);
-        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "LNAME:${LNAME} UNAME:${UNAME}")) );
+        TestForTrue((0 == strcmp((const char *)buffer, "LNAME:${LNAME} UNAME:${UNAME}")), "");
 
         eRc = FileIO_Gets(pObj, 256, buffer);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         fprintf(stderr, "\tline = \"%s\"\n", buffer);
-        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "${UNAME} ${LNAME} ${UNAME}")) );
+        TestForTrue((0 == strcmp((const char *)buffer, "${UNAME} ${LNAME} ${UNAME}")), "");
 
         eRc = FileIO_Gets(pObj, 256, buffer);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         fprintf(stderr, "\tline = \"%s\"\n", buffer);
-        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "${XX} ${UNAME} ${XX}")) );
+        TestForTrue((0 == strcmp((const char *)buffer, "${XX} ${UNAME} ${XX}")), "");
 
         eRc = FileIO_Gets(pObj, 256, buffer);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         fprintf(stderr, "\tline = \"%s\"\n", buffer);
-        TINYTEST_TRUE( (0 == strcmp((const char *)buffer, "")) );
+        TestForTrue((0 == strcmp((const char *)buffer, "")), "");
 
-        eRc = pIO->pVtbl->pClose(pIO);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        eRc = FileIO_Close(pObj, false);
+        TestForSuccess("");
 
-        obj_Release(pIO);
-        pIO = OBJ_NIL;
+        {
+            ASTR_DATA       *pStr = FileIO_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -406,19 +424,21 @@ int         test_FileIO_Read02(
     obj_Release(pPath);
     pPath = OBJ_NIL;
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
-    return 1;
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
 }
 
 
 
-int         test_FileIO_Create01(
+ERESULT         Test_FileIO_Create01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
-    ERESULT         eRc;
+    ERESULT         eRc = ERESULT_SUCCESS;
     FILEIO_DATA     *pObj = OBJ_NIL;
+    bool            fRc;
     PATH_DATA       *pPath = OBJ_NIL;
     const
     char            *pPathA = "/tmp/testFile.tmp";
@@ -430,36 +450,41 @@ int         test_FileIO_Create01(
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pTime = DateTime_NewCurrent();
-    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+    TestForNotNull(pTime, "Missing Test object");
 
     pPath = Path_NewA(pPathA);
-    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    TestForNotNull(pPath, "Missing Path object");
     pStr = DateTime_ToFileString(pTime);
-    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+    TestForNotNull(pTime, "Missing Str object");
     Path_AppendAStr(pPath, pStr);
     obj_Release(pStr);
     pStr = OBJ_NIL;
     Path_AppendA(pPath, ".txt");
-    fprintf(stderr, "\tPath = \"%s\"\n", Path_getData(pPath));
+    Path_Clean(pPath);
+    fprintf(stderr, "\tpath=%s\n", Path_getData(pPath));
+    eRc = Path_IsFile(pPath);
+    TestForFail("");
 
-    pObj = FileIO_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = FileIO_Init(pObj);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = FileIO_New( );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_FILEIO);
+        TestForTrue(fRc, "Failed Ident Test");
+
         eRc = FileIO_Open(pObj, pPath, false);
-        TINYTEST_TRUE( (ERESULT_FAILED(eRc)) );
+        TestForFail("");
 
         eRc = FileIO_Create(pObj, pPath, false);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
 
         eRc =   FileIO_Write(
                            pObj,
                            (uint32_t)(strlen(Path_getData(pPath))+1),
                            Path_getData(pPath)
                 );
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
 
         fileSize = FileIO_Size(pObj);
         fprintf(
@@ -468,13 +493,22 @@ int         test_FileIO_Create01(
                 (strlen(Path_getData(pPath))+1),
                 fileSize
         );
-        TINYTEST_TRUE( ((strlen(Path_getData(pPath))+1) == fileSize) );
+        TestForTrue(((strlen(Path_getData(pPath))+1) == fileSize), "");
 
         eRc = FileIO_Close(pObj, true);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
 
         fileSize = File_SizeA(Path_getData(pPath));
-        TINYTEST_TRUE( (-1 == fileSize) );
+        TestForTrue((-1 == fileSize), "");
+
+        {
+            ASTR_DATA       *pStr = FileIO_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -486,57 +520,66 @@ int         test_FileIO_Create01(
     obj_Release(pTime);
     pTime = OBJ_NIL;
 
-    fprintf(stderr, "...%s completed.\n", pTestName);
-    return 1;
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
 }
 
 
 
-int             test_FileIO_Create02(
+ERESULT         Test_FileIO_Create02 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
     FILEIO_DATA     *pObj = OBJ_NIL;
+    bool            fRc;
     PATH_DATA       *pPath = OBJ_NIL;
     const
     char            *pPathA = "/tmp/testFile.tmp";
+    int64_t         fileSize = 0;
+    //uint8_t         *pBuffer = NULL;
     DATETIME_DATA   *pTime = OBJ_NIL;
     ASTR_DATA       *pStr = OBJ_NIL;
-    int64_t         fileSize = 0;
-    //uint32_t        i;
     uint32_t        index;
     uint8_t         data[256];
-    //uint8_t         *pData = data;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pTime = DateTime_NewCurrent();
-    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+    TestForNotNull(pTime, "Missing Test object");
+
     pPath = Path_NewA(pPathA);
-    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    TestForNotNull(pPath, "Missing Path object");
     pStr = DateTime_ToFileString(pTime);
-    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+    TestForNotNull(pTime, "Missing Str object");
     Path_AppendAStr(pPath, pStr);
     obj_Release(pStr);
     pStr = OBJ_NIL;
     Path_AppendA(pPath, ".txt");
-    fprintf(stderr, "\tPath = \"%s\"\n", Path_getData(pPath));
+    Path_Clean(pPath);
+    fprintf(stderr, "\tpath=(%p)%s\n", pPath, Path_getData(pPath));
+    eRc = Path_IsFile(pPath);
+    TestForFail("");
 
     pObj = FileIO_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_FILEIO);
+        TestForTrue(fRc, "Failed Ident Test");
+
         eRc = FileIO_Create(pObj, pPath, true);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
 
         eRc =   FileIO_Write(
                              pObj,
                              (uint32_t)(strlen(Path_getData(pPath))+1),
                              Path_getData(pPath)
                 );
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
 
         fileSize = FileIO_Size(pObj);
         fprintf(
@@ -545,25 +588,34 @@ int             test_FileIO_Create02(
                 (strlen(Path_getData(pPath))+1),
                 fileSize
                 );
-        TINYTEST_TRUE( ((strlen(Path_getData(pPath))+1) == fileSize) );
+        TestForTrue(((strlen(Path_getData(pPath))+1) == fileSize), "");
 
         eRc = FileIO_Close(pObj, false);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
 
         fileSize = FileIO_Size(pObj);
-        TINYTEST_TRUE( (-1 == fileSize) );
+        TestForTrue((-1 == fileSize), "");
 
         eRc = FileIO_Open(pObj, pPath, true);
-        TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
 
         index = 0;
         eRc = FileIO_Read(pObj, 256, data, &index);
-        TINYTEST_TRUE( (!ERESULT_FAILED(eRc)) );
-        TINYTEST_TRUE( ((strlen(Path_getData(pPath))+1) == index) );
-        TINYTEST_TRUE( (0 == strcmp(Path_getData(pPath), (const char *)data)) );
+        TestForSuccess("");
+        TestForTrue(((strlen(Path_getData(pPath))+1) == index), "");
+        TestForTrue((0 == strcmp(Path_getData(pPath), (const char *)data)), "");
 
         eRc = FileIO_Close(pObj, true);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
+
+        {
+            ASTR_DATA       *pStr = FileIO_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -575,26 +627,64 @@ int             test_FileIO_Create02(
     obj_Release(pTime);
     pTime = OBJ_NIL;
 
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
-    return 1;
+    {
+        FILEIO_CLASS_VTBL   *pVtbl = (void *)obj_getVtbl(FileIO_Class());
+        pVtbl->pMemFileReset();
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
 }
 
 
 
 
-TINYTEST_START_SUITE(test_FileIO);
-    TINYTEST_ADD_TEST(test_FileIO_Create02,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_FileIO_Create01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_FileIO_Read02,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_FileIO_Read01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_FileIO_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_FileIO_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_FileIO_OpenClose,setUp,tearDown);
-TINYTEST_END_SUITE();
+int     main (
+    int         cArgs,
+    const
+    char        *ppArgs[],
+    const
+    char        *ppEnv[]
+)
+{
+    ERESULT     eRc;
+    TEST_DATA   test = {0};
+    TEST_DATA   *pTest = OBJ_NIL;
+    int         i;
+    const
+    char        *pTestNameA = NULL;
 
-TINYTEST_MAIN_SINGLE_SUITE(test_FileIO);
+    pTest = Test_Init(&test);
+    if (OBJ_NIL == pTest) {
+        fprintf(
+                stderr,
+                "\x1b[1m\x1b[31mFATAL\x1b[0m: Could not create Test object!\n\n\n"
+        );
+        exit(201);
+    }
 
+    // Scan args.
+    for (i=0; i<cArgs; i++) {
+        if (0 == strcmp("--no_int3", ppArgs[i])) {
+            Test_setAllowInt3(pTest, false);
+        }
+    }
 
+    // Execute tests.
+    TestExec("OpenClose", Test_FileIO_OpenClose, NULL, NULL);
+    //TestExec("Copy01", Test_FileIO_Copy01, pTest, NULL, NULL);
+    TestExec("Test01", Test_FileIO_Test01, NULL, NULL);
+    TestExec("Read01", Test_FileIO_Read01, NULL, NULL);
+    TestExec("Read02", Test_FileIO_Read02, NULL, NULL);
+    TestExec("Create01", Test_FileIO_Create01, NULL, NULL);
+    TestExec("Create02", Test_FileIO_Create02, NULL, NULL);
+
+    obj_Release(pTest);
+    pTest = OBJ_NIL;
+
+    // Return to Operating System.
+    return 0;
+}
 
 
 

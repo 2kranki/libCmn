@@ -345,7 +345,7 @@ extern "C" {
      Parse and process all options up until the next argument using the
      supplied object definitions.
      @param     this        Object Pointer
-      @return:   If successful, ERESULT_SUCCESS and the appropriate argument
+      @return:  If successful, ERESULT_SUCCESS and the appropriate argument
                 processing was performed; otherwise, an ERESULT_* error code.
      */
     ERESULT         CmdUtl_ProcessOptions (

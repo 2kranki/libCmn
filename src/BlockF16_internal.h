@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   FileIO_internal.h
- *  Generated 07/10/2021 11:26:44
+ * File:   BlockF16_internal.h
+ *  Generated 10/22/2021 08:20:43
  *
  * Notes:
  *  --  N/A
@@ -39,13 +39,12 @@
 
 
 
-#include        <FileIO.h>
-#include        <u8Array_internal.h>
+#include        <BlockF16.h>
 #include        <JsonIn.h>
 
 
-#ifndef FILEIO_INTERNAL_H
-#define FILEIO_INTERNAL_H
+#ifndef BLOCKF16_INTERNAL_H
+#define BLOCKF16_INTERNAL_H
 
 
 
@@ -58,28 +57,32 @@ extern "C" {
 
 
 
-#define FILEIO_HNDL_STDIN       0           // Standard Input
-#define FILEIO_HNDL_STDOUT      1           // Standard Output
-#define FILEIO_HNDL_STDERR      2           // Standard Error Output
+    //                      Main Control Block
+    /* This control block resides at the beginning of block and is
+     * the information necessary to access the block data. The block
+     * size is limited to 32,768.
+     * The block index immediately follows the DATA_BLOCK and builds towards
+     * the data. The data is added at the top of the block towards the
+     * index. The reserved area is just above the data or at the end of block.
+     * WARNING -- Only use offsets, NO pointers/addresses within the block!
+     */
 
-typedef enum FileIO_Close_e {
-    FILEIO_CLOSE_NO=0,                      // Do not issue close.
-    FILEIO_CLOSE_REQ,                       // Close is required.
-} FILEIO_CLOSE;
+    #pragma pack(push, 1)
+    typedef struct data_block_s {
+        uint16_t        cbSize;         // Total Size of BLock including this header
+#define DATA_BLOCK_MAX_SIZE 0xFFFF
+        uint16_t        rsvdSize;       // Size of reserved space at top of block
+        uint16_t        dataSize;       // original record size
+        uint16_t        maxRecords;
+        uint16_t        numRecords;
+        uint16_t        rsvd16;
 
-typedef enum FileIO_Open_e {
-    FILEIO_OPEN_NO=0,                       // Do not issue open.
-    FILEIO_OPEN_REQ,                        // Open is required.
-} FILEIO_OPEN;
+        uint8_t         records[0];     // Records within the block
+    } DATA_BLOCK;
+    #pragma pack(pop)
 
-typedef enum FileIO_Status_e {
-    FILEIO_STATUS_NOTAVAIL=0,               // No status yet
-    FILEIO_STATUS_CLOSED,                   // File is closed.
-    FILEIO_STATUS_READ,                     // File is open for reading only.
-    FILEIO_STATUS_WRITE,                    // File is open for writing only.
-    FILEIO_STATUS_READWRITE,                // File is open for reading or writing.
-    FILEIO_STATUS_EOF                       // EOF or write error has occurred.
-} FILEIO_STATUS;
+    #define RcdSize2Actual(size) (((size + 4 - 1) >> 2) << 2)
+
 
 
     //---------------------------------------------------------------
@@ -87,43 +90,26 @@ typedef enum FileIO_Status_e {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct FileIO_data_s  {
+struct BlockF16_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-#define FILEIO_FILE_OPEN    OBJ_FLAG_USER1
-#define FILEIO_MEM_BASED    OBJ_FLAG_USER2
+#define BLOCKF16_ALLOC  OBJ_FLAG_USER1
 
     // Common Data
-    PATH_DATA       *pPath;
-    int             fileHandle;
-    uint8_t         openFlags;
-    uint8_t         closeFlags;
-    uint8_t         readAccess;
-    uint8_t         writeAccess;
-    uint8_t         status;
-#define FILEIO_STATUS_UNKNOWN   0
-#define FILEIO_STATUS_CLOSED    1
-#define FILEIO_STATUS_READ      2
-#define FILEIO_STATUS_WRITE     3
-#define FILEIO_STATUS_READWRITE 4
-#define FILEIO_STATUS_EOF       5
-    uint8_t         filler[3];
-
-    // Memory-base FileIO
-    U8ARRAY_DATA    *pData;
-    off_t           offset;
+    DATA_BLOCK      blkHdr;
+    DATA_BLOCK      *pBlock;
 
 };
 #pragma pack(pop)
 
     extern
-    struct FileIO_class_data_s  FileIO_ClassObj;
+    struct BlockF16_class_data_s  BlockF16_ClassObj;
 
     extern
     const
-    FILEIO_VTBL         FileIO_Vtbl;
+    BLOCKF16_VTBL         BlockF16_Vtbl;
 
 
 
@@ -131,13 +117,13 @@ struct FileIO_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  FILEIO_SINGLETON
-    FILEIO_DATA *     FileIO_getSingleton (
+#ifdef  BLOCKF16_SINGLETON
+    BLOCKF16_DATA * BlockF16_getSingleton (
         void
     );
 
-    bool            FileIO_setSingleton (
-     FILEIO_DATA       *pValue
+    bool            BlockF16_setSingleton (
+     BLOCKF16_DATA       *pValue
 );
 #endif
 
@@ -147,35 +133,52 @@ struct FileIO_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  FileIO_getSuperVtbl (
-        FILEIO_DATA     *this
+    bool            BlockF16_setBlockSize (
+        BLOCKF16_DATA   *this,
+        uint16_t        value
     );
 
 
-    ERESULT         FileIO_Assign (
-        FILEIO_DATA     *this,
-        FILEIO_DATA     *pOther
+    bool            BlockF16_setReservedSize (
+        BLOCKF16_DATA   *this,
+        uint16_t        value
     );
 
 
-    FILEIO_DATA *   FileIO_Copy (
-        FILEIO_DATA     *this
+    OBJ_IUNKNOWN *  BlockF16_getSuperVtbl (
+        BLOCKF16_DATA   *this
     );
 
 
-    void            FileIO_Dealloc (
+    ERESULT         BlockF16_Assign (
+        BLOCKF16_DATA   *this,
+        BLOCKF16_DATA   *pOther
+    );
+
+
+    BLOCKF16_DATA * BlockF16_Copy (
+        BLOCKF16_DATA   *this
+    );
+
+
+    void            BlockF16_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  FILEIO_JSON_SUPPORT
+    BLOCKF16_DATA * BlockF16_DeepCopy (
+        BLOCKF16_DATA   *this
+    );
+
+
+#ifdef  BLOCKF16_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    FILEIO_DATA *       FileIO_ParseJsonObject (
+    BLOCKF16_DATA * BlockF16_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -189,42 +192,41 @@ struct FileIO_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         FileIO_ParseJsonFields (
+    ERESULT         BlockF16_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        FILEIO_DATA     *pObject
+        BLOCKF16_DATA   *pObject
     );
 #endif
 
 
-    void *          FileIO_QueryInfo (
+    void *          BlockF16_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    int32_t         FileIO_ReadIO (
-        FILEIO_DATA     *this,
-        uint8_t         *pBuffer,
-        int32_t         size
+    uint8_t *       BlockF16_RecordAddress (
+        BLOCKF16_DATA   *this,
+        uint16_t        index           // Relative to 0
     );
 
 
-#ifdef  FILEIO_JSON_SUPPORT
+#ifdef  BLOCKF16_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = FileIO_ToJson(this);
+     ASTR_DATA      *pDesc = BlockF16_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     FileIO_ToJson (
-        FILEIO_DATA      *this
+    ASTR_DATA *     BlockF16_ToJson (
+        BLOCKF16_DATA   *this
     );
 
 
@@ -237,27 +239,21 @@ struct FileIO_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         FileIO_ToJsonFields (
-        FILEIO_DATA     *this,
+    ERESULT         BlockF16_ToJsonFields (
+        BLOCKF16_DATA   *this,
         ASTR_DATA       *pStr
     );
 #endif
 
 
+
+
 #ifdef NDEBUG
 #else
-    bool            FileIO_Validate (
-        FILEIO_DATA       *this
+    bool            BlockF16_Validate (
+        BLOCKF16_DATA   *this
     );
 #endif
-
-
-    int32_t         FileIO_WriteIO (
-        FILEIO_DATA     *this,
-        const
-        uint8_t         *pBuffer,
-        int32_t         size
-    );
 
 
 
@@ -265,5 +261,5 @@ struct FileIO_data_s  {
 }
 #endif
 
-#endif  /* FILEIO_INTERNAL_H */
+#endif  /* BLOCKF16_INTERNAL_H */
 

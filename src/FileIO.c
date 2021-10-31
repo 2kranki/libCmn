@@ -276,7 +276,7 @@ extern "C" {
     //                          D a t a
     //---------------------------------------------------------------
 
-    ARRAY_DATA *    FileIO_getData (
+    U8ARRAY_DATA *  FileIO_getData (
         FILEIO_DATA     *this
     )
     {
@@ -296,7 +296,7 @@ extern "C" {
 
     bool          FileIO_setData (
         FILEIO_DATA     *this,
-        ARRAY_DATA      *pValue
+        U8ARRAY_DATA    *pValue
     )
     {
 #ifdef NDEBUG
@@ -582,6 +582,7 @@ extern "C" {
         bool        fDelete
     )
     {
+        bool        fRc;
         int         iRc;
 
         // Do initialization.
@@ -599,6 +600,21 @@ extern "C" {
 
         //  Close the File.
         if (obj_Flag(this, FILEIO_MEM_BASED)) {
+            FILEIO_CLASS_VTBL   *pVtbl = (void *)obj_getVtbl(FileIO_Class());
+            //FILEIO_DATA         *pFile;
+
+            if (fDelete)
+                ;
+            else {
+                if (this->pData && this->pPath) {
+                    u8Array_setOther(this->pData, this->pPath);
+                    u8Array_setMisc(this->pData, (uint32_t)this->offset);
+                    pVtbl->pMemFileDelete(FileIO_getPath(this));
+                    fRc = pVtbl->pMemFileAdd(this->pData);
+                    obj_Release(this->pData);
+                    this->pData = OBJ_NIL;
+                }
+            }
         } else  {
             this->fileHandle = close(this->fileHandle);
             if (this->fileHandle == -1) {
@@ -740,6 +756,7 @@ extern "C" {
 #endif
         if (this->pPath) {
             obj_Release(this->pPath);
+            this->pPath = OBJ_NIL;
         }
         if (pPath) {
             this->pPath = Path_Copy(pPath);
@@ -758,13 +775,13 @@ extern "C" {
         //  Open the File.
         if (obj_Flag(this, FILEIO_MEM_BASED)) {
             if (OBJ_NIL == this->pData) {
-                this->pData = array_NewWithSize(1);
+                this->pData = u8Array_New();
                 if (OBJ_NIL == this->pData) {
                     DEBUG_BREAK();
                     return ERESULT_OUT_OF_MEMORY;
                 }
             }
-            eRc = array_Truncate(this->pData, 0);
+            eRc = u8Array_Truncate(this->pData, 0);
             this->offset = 0;
         } else  {
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
@@ -1310,14 +1327,25 @@ extern "C" {
 
         //  Open the File.
         if (obj_Flag(this, FILEIO_MEM_BASED)) {
+            FILEIO_CLASS_VTBL   *pVtbl = (void *)obj_getVtbl(FileIO_Class());
+            U8ARRAY_DATA        *pData;
+            pData = pVtbl->pMemFileFind(this->pPath);
+            if (pData) {
+                obj_Retain(pData);
+                this->pData = pData;
+                //this->offset = u8Array_getMisc(pData);
+                pVtbl->pMemFileDelete(this->pPath);
+                u8Array_setOther(pData, OBJ_NIL);
+                this->offset = 0;
+            }
             if (OBJ_NIL == this->pData) {
-                this->pData = array_NewWithSize(1);
-                if (OBJ_NIL == this) {
+                this->pData = u8Array_New();
+                if (OBJ_NIL == this->pData) {
                     DEBUG_BREAK();
                     return ERESULT_OUT_OF_MEMORY;
                 }
+                this->offset = 0;
             }
-            this->offset = 0;
         } else  {
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
             fileHandle =    open(
@@ -1428,6 +1456,12 @@ extern "C" {
             case OBJ_QUERYINFO_TYPE_METHOD:
                 switch (*pStr) {
                         
+                    case 'g':
+                        if (str_Compare("getPath", (char *)pStr) == 0) {
+                            return FileIO_getPath;
+                        }
+                        break;
+
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
                             return FileIO_Disable;
@@ -1515,14 +1549,14 @@ extern "C" {
         // Read in the area.
         if (obj_Flag(this, FILEIO_MEM_BASED)) {
             // Insure that we have the space for it.
-            bytes_read = array_getSizeInBytes(this->pData);
+            bytes_read = u8Array_getSize(this->pData);
             bytes_read -= this->offset;
             if (bytes_read > cBuffer) {
                 bytes_read = cBuffer;
             }
 
             if (bytes_read > 0) {
-                pData = array_GetAddrOf(this->pData, (uint32_t)this->offset+1);
+                pData = u8Array_GetAddrOf(this->pData, ((uint32_t)this->offset + 1));
                 memmove(pBuffer, pData, bytes_read);
             }
             if (pReadCount) {
@@ -1637,7 +1671,7 @@ extern "C" {
 
         //  Position within the File.
         if (obj_Flag(this, FILEIO_MEM_BASED)) {
-            sizeFile = array_getSizeInBytes(this->pData);
+            sizeFile = u8Array_getSize(this->pData);
             if (offset <= sizeFile) {
                 this->offset = offset;
                 fileOffset = offset;
@@ -1670,7 +1704,7 @@ extern "C" {
 
         //  Position within the File.
         if (obj_Flag(this, FILEIO_MEM_BASED)) {
-            sizeFile = array_getSizeInBytes(this->pData);
+            sizeFile = u8Array_getSize(this->pData);
             fileOffset = this->offset + offset;
             if (fileOffset > sizeFile)
                 fileOffset = -1;
@@ -1705,7 +1739,7 @@ extern "C" {
 
         //  Position within the File.
         if (obj_Flag(this, FILEIO_MEM_BASED)) {
-            sizeFile = array_getSizeInBytes(this->pData);
+            sizeFile = u8Array_getSize(this->pData);
             fileOffset = sizeFile + offset;
             if (fileOffset > sizeFile)
                 fileOffset = -1;
@@ -1750,7 +1784,7 @@ extern "C" {
 
         if (obj_Flag(this, FILEIO_MEM_BASED)) {
             if (this->pData) {
-                fileSize = array_getSizeInBytes(this->pData);
+                fileSize = u8Array_getSize(this->pData);
             }
         } else  {
 #if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
@@ -1963,15 +1997,19 @@ extern "C" {
 
         // Write the data.
         if (obj_Flag(this, FILEIO_MEM_BASED)) {
-            sizeNeeded = array_getSizeInBytes(this->pData);
+            sizeNeeded = u8Array_getSize(this->pData);
             sizeNeeded -= this->offset;
             sizeNeeded -= cBuffer;
-            if ( sizeNeeded < 0) {
+            if (sizeNeeded < 0) {
                 sizeNeeded = -sizeNeeded;
-                eRc = array_AppendSpacing(this->pData, sizeNeeded);
+                eRc =   u8Array_Extend(
+                                       this->pData,
+                                       (sizeNeeded + u8Array_getSize(this->pData))
+                        );
             }
-            pData = array_GetAddrOf(this->pData, (uint32_t)this->offset+1);
+            pData = u8Array_GetAddrOf(this->pData, (uint32_t)this->offset+1);
             memmove(pData, pBuffer, cBuffer);
+            this->offset += cBuffer;
         } else  {
             bytes_written = write(this->fileHandle, pBuffer, cBuffer);
             if (bytes_written == -1) {
@@ -2012,15 +2050,18 @@ extern "C" {
 
         // Write the data.
         if (obj_Flag(this, FILEIO_MEM_BASED)) {
-            sizeNeeded = array_getSizeInBytes(this->pData);
+            sizeNeeded = u8Array_getSize(this->pData);
             sizeNeeded -= this->offset;
             sizeNeeded -= size;
             if ( sizeNeeded < 0) {
                 sizeNeeded = -sizeNeeded;
-                eRc = array_AppendSpacing(this->pData, sizeNeeded);
+                eRc =   u8Array_Extend(
+                                       this->pData,
+                                       (sizeNeeded + u8Array_getSize(this->pData))
+                        );
             }
 
-            pData = array_GetAddrOf(this->pData, (uint32_t)this->offset+1);
+            pData = u8Array_GetAddrOf(this->pData, (uint32_t)this->offset+1);
             memmove(pData, pBuffer, size);
         } else  {
             bytes_written = write(this->fileHandle, pBuffer, size);

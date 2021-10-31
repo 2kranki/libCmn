@@ -1,90 +1,82 @@
 // vi:nu:et:sts=4 ts=4 sw=4
+//****************************************************************
+//                      Test Object Program
+//****************************************************************
 /*
- *  Generated 07/10/2021 09:44:02
+ * Program
+ *          Test Object Program
+ * Purpose
+ *          This program tests a particular object given certain
+ *          parameters.
+ *
+ * Remarks
+ *  1.      This relies on the fact that we can add to the Test
+ *          Object by simply coding methods that use the Test
+ *          Object.
+ *
+ * History
+ *  08/29/2021 Generated
+ */
+
+
+/*
+ This is free and unencumbered software released into the public domain.
+ 
+ Anyone is free to copy, modify, publish, use, compile, sell, or
+ distribute this software, either in source code form or as a compiled
+ binary, for any purpose, commercial or non-commercial, and by any
+ means.
+ 
+ In jurisdictions that recognize copyright laws, the author or authors
+ of this software dedicate any and all copyright interest in the
+ software to the public domain. We make this dedication for the benefit
+ of the public at large and to the detriment of our heirs and
+ successors. We intend this dedication to be an overt act of
+ relinquishment in perpetuity of all present and future rights to this
+ software under copyright law.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+ 
+ For more information, please refer to <http://unlicense.org/>
+ */
+
+
+
+
+/*
+ TestForFail(error_sttring)         <= Tests eRc for failure
+ TestForFalse(test, error_sttring)
+ TestForNotNull(test, error)
+ TestForNull(test, error)
+ TestForSuccess(error)              <= Tests eRc for success
+ TestForTrue(test, error)
  */
 
 
 
 
 
-// All code under test must be linked into the Unit Test bundle
-// Test Macros:
-//      TINYTEST_ASSERT(condition)
-//      TINYTEST_ASSERT_MSG(condition,msg)
-//      TINYTEST_EQUAL(expected, actual)
-//      TINYTEST_EQUAL_MSG(expected, actual, msg)
-//      TINYTEST_FALSE_MSG(condition,msg)
-//      TINYTEST_FALSE(condition)
-//      TINYTEST_TRUE_MSG(pointer,msg)
-//      TINYTEST_TRUE(condition)
-
-
-
-
-
-#include    <tinytest.h>
 #include    <test_defs.h>
+#include    <Test_internal.h>
 #include    <trace.h>
 #include    <RRDS_internal.h>
 #include    <JsonIn.h>
-#ifdef  RRDS_JSON_SUPPORT
-#   include    <SrcErrors.h>
-#   include    <szTbl.h>
-#endif
-
-
-
-int             setUp (
-    const
-    char            *pTestName
-)
-{
-    mem_Init( );
-    trace_Shared( ); 
-    // Put setup code here. This method is called before the invocation of each
-    // test method in the class.
-    
-    return 1; 
-}
-
-
-int             tearDown (
-    const
-    char            *pTestName
-)
-{
-    // Put teardown code here. This method is called after the invocation of each
-    // test method in the class.
-
-#ifdef  RRDS_JSON_SUPPORT
-    SrcErrors_SharedReset( );
-    szTbl_SharedReset( );
-#endif
-    JsonIn_RegisterReset();
-    trace_SharedReset( ); 
-    if (mem_Dump( ) ) {
-        fprintf(
-                stderr,
-                "\x1b[1m"
-                "\x1b[31m"
-                "ERROR: "
-                "\x1b[0m"
-                "Leaked memory areas were found!\n"
-        );
-        exitCode = 4;
-        return 0;
-    }
-    mem_Release( );
-    
-    return 1; 
-}
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 
 
 
 
 
 
-int             test_RRDS_OpenClose (
+ERESULT         Test_RRDS_OpenClose (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
@@ -96,29 +88,30 @@ int             test_RRDS_OpenClose (
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = RRDS_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Alloc() object");
     pObj = RRDS_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Init() object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_RRDS);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         
         // Test something.
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("test failed");
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_RRDS_Copy01 (
+ERESULT         Test_RRDS_Copy01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
@@ -135,23 +128,23 @@ int             test_RRDS_Copy01 (
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj1 = RRDS_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj1) );
+    TestForNotNull(pObj1, "Missing Test object");
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_RRDS);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         
         // Test assign.
         pObj2 = RRDS_New();
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
         eRc = RRDS_Assign(pObj1, pObj2);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForFalse((ERESULT_FAILED(eRc)), "Assignment failed");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_RRDS);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         //iRc = RRDS_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == iRc) );
+        //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -159,12 +152,12 @@ int             test_RRDS_Copy01 (
 
         // Test copy.
         pObj2 = RRDS_Copy(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_RRDS);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         //iRc = RRDS_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == iRc) );
+        //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -173,16 +166,16 @@ int             test_RRDS_Copy01 (
         // Test json support.
 #if defined(RRDS_JSON_SUPPORT) && defined(XYZZY)
         pStr = RRDS_ToJson(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "Missing JSON output");
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
         pObj2 = RRDS_NewFromJsonString(pStr);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing JSON created object");
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_RRDS);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         //iRc = RRDS_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == iRc) );
+        //TestForTrue((0 == iRc), "Failed Compare");
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -193,30 +186,30 @@ int             test_RRDS_Copy01 (
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_RRDS_Test01 (
+ERESULT         Test_RRDS_Test01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
-    //ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT         eRc = ERESULT_SUCCESS;
     RRDS_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = RRDS_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_RRDS);
-        TINYTEST_TRUE( (fRc) );
-        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+        TestForTrue(fRc, "Failed Ident Test");
         
         {
             ASTR_DATA       *pStr = RRDS_ToDebugString(pObj, 4);
@@ -232,17 +225,20 @@ int             test_RRDS_Test01 (
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int         test_RRDS_Read01(
+ERESULT         Test_RRDS_Read01 (
+    TEST_DATA       *this,
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    RRDS_DATA     *pDS80;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    RRDS_DATA       *pDS80 = OBJ_NIL;
+    bool            fRc;
     uint32_t        i;
     //bool            fRc;
     const
@@ -252,78 +248,92 @@ int         test_RRDS_Read01(
     uint32_t        numRcds = 19;
     uint32_t        cBlock;
     char            *pBlock;
-    ERESULT         eRc;
     PATH_DATA       *pPath = OBJ_NIL;
     DATETIME_DATA   *pTime = OBJ_NIL;
-    //ASTR_DATA       *pStr = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pTime = DateTime_NewCurrent();
-    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+    TestForNotNull(pTime, "");
 
     pPath = Path_NewA(pPathA);
-    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    TestForNotNull(pPath, "");
     fprintf(stderr, "\tPath = \"%s\"\n", Path_getData(pPath));
 
-    pDS80 = RRDS_New();
-    XCTAssertFalse( (NULL == pDS80));
-    XCTAssertTrue( (80 == RRDS_getRecordSize(pDS80)));
+    pDS80 = RRDS_New( );
+    TestForNotNull(pDS80, "");
+    TestForTrue((80 == RRDS_getRecordSize(pDS80)), "");
 #if defined(__MACOSX_ENV__)
     fprintf(stderr, "\tRecordSize = %d\n",  pDS80->recordSize);
-    XCTAssertTrue( (81 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
+    TestForTrue((81 == pDS80->recordSize, ""));
+    TestForTrue((RRDS_RCD_TRM_NL == pDS80->recordTerm), "");
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-    XCTAssertTrue( (82 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_CRNL == pDS80->recordTerm));
+    TestForTrue((82 == pDS80->recordSize), "");
+    TestForTrue((RRDS_RCD_TRM_CRNL == pDS80->recordTerm), "");
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
-    XCTAssertTrue( (81 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
+    TestForTrue((81 == pDS80->recordSize), "");
+    TestForTrue((RRDS_RCD_TRM_NL == pDS80->recordTerm), "");
 #endif
+    if (pDS80) {
 
-    eRc = RRDS_SetupSizes(pDS80, 80, RRDS_RCD_TRM_NL, 1, 11);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pDS80, OBJ_IDENT_RRDS);
+        TestForTrue(fRc, "Failed Ident Test");
 
-    eRc = RRDS_Open(pDS80, pPath, false);
-    if (ERESULT_FAILED(eRc)) {
-        fprintf(stderr, "\tFailed eRc = %d\n", eRc);
+        eRc = RRDS_SetupSizes(pDS80, 80, RRDS_RCD_TRM_NL, 1, 11);
+        TestForSuccess("");
+
+        eRc = RRDS_Open(pDS80, pPath, false);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "\tFailed eRc = %d\n", eRc);
+        }
+        TestForSuccess("");
+
+        fprintf(stderr, "\trecordSize = %d\n", RRDS_getRecordSize(pDS80));
+        fprintf(stderr, "\tnumRecords = %d\n", RRDS_getSize(pDS80));
+        TestForTrue((80 == RRDS_getRecordSize(pDS80)), "");
+    #if defined(__MACOSX_ENV__)
+        TestForTrue((81 == pDS80->recordSize), "");
+        TestForTrue((RRDS_RCD_TRM_NL == pDS80->recordTerm), "");
+    #endif
+    #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        TestForTrue((82 == pDS80->recordSize), "");
+    #endif
+    #if defined(__PIC32MX_TNEO_ENV__)
+        TestForTrue((81 == pDS80->recordSize), "");
+        TestForTrue((RRDS_RCD_TRM_NL == pDS80->recordTerm), "");
+    #endif
+        TestForTrue((19 == RRDS_getSize(pDS80)), "");
+
+        for (i=0; i<numRcds; ++i) {
+            cBlock = 80;
+            pBlock = block;
+            //dec_putInt32A( i, &cBlock, &pBlock );
+            //eRc = RRDS_RecordWrite(cbp, i+1, block);
+            //STAssertTrue( (fRc), @"RRDS_BlockWrite failed!" );
+            eRc = RRDS_RecordRead(pDS80, i+1, (uint8_t *)block2);
+            TestForSuccess("");
+            fprintf(stderr, "\t%3d = \"%s\"\n", i+1, block2);
+            //XCTAssertTrue( (0 == memcmp(block, block2, 80)) );
+        }
+
+        eRc = RRDS_Close(pDS80, false);
+        TestForSuccess("");
+
+        {
+            ASTR_DATA       *pStr = RRDS_ToDebugString(pDS80, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pDS80);
+        pDS80 = OBJ_NIL;
     }
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-    fprintf(stderr, "\trecordSize = %d\n", RRDS_getRecordSize(pDS80));
-    fprintf(stderr, "\tnumRecords = %d\n", RRDS_getSize(pDS80));
-    XCTAssertTrue( (80 == RRDS_getRecordSize(pDS80)));
-#if defined(__MACOSX_ENV__)
-    XCTAssertTrue( (81 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
-#endif
-#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-    XCTAssertTrue( (82 == pDS80->recordSize));
-#endif
-#if defined(__PIC32MX_TNEO_ENV__)
-    XCTAssertTrue( (81 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
-#endif
-    XCTAssertTrue( (19 == RRDS_getSize(pDS80)));
-
-    for (i=0; i<numRcds; ++i) {
-        cBlock = 80;
-        pBlock = block;
-        //dec_putInt32A( i, &cBlock, &pBlock );
-        //eRc = RRDS_RecordWrite(cbp, i+1, block);
-        //STAssertTrue( (fRc), @"RRDS_BlockWrite failed!" );
-        eRc = RRDS_RecordRead(pDS80, i+1, (uint8_t *)block2);
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-        fprintf(stderr, "\t%3d = \"%s\"\n", i+1, block2);
-        //XCTAssertTrue( (0 == memcmp(block, block2, 80)) );
-    }
-
-    eRc = RRDS_Close(pDS80, false);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-
-    obj_Release(pDS80);
-    pDS80 = OBJ_NIL;
 
     obj_Release(pPath);
     pPath = OBJ_NIL;
@@ -332,105 +342,131 @@ int         test_RRDS_Read01(
     pTime = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int         test_RRDS_Read02(
+ERESULT         Test_RRDS_Read02 (
+    TEST_DATA       *this,
     const
-    char        *pTestName
+    char            *pTestName
 )
 {
-    RRDS_DATA     *pDS80;
-    uint32_t        i;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    RRDS_DATA       *pDS80 = OBJ_NIL;
+    bool            fRc;
+    //uint32_t        i;
     //bool            fRc;
     const
     char            *pPathA    = TEST_FILES_DIR "/mvsobj.object360";
-    uint8_t         block[80]  = {0};
+    //uint8_t         block[80]  = {0};
     uint8_t         block2[80] = {0};
-    uint32_t        numRcds = 19;
-    uint32_t        cBlock;
-    uint8_t         *pBlock;
-    ERESULT         eRc;
+    //uint32_t        numRcds = 19;
+    //uint32_t        cBlock;
+    //char            *pBlock;
     PATH_DATA       *pPath = OBJ_NIL;
     DATETIME_DATA   *pTime = OBJ_NIL;
-    //ASTR_DATA       *pStr = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pTime = DateTime_NewCurrent();
-    TINYTEST_FALSE( (OBJ_NIL == pTime) );
+    TestForNotNull(pTime, "");
 
     pPath = Path_NewA(pPathA);
-    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    TestForNotNull(pPath, "");
     fprintf(stderr, "\tPath = \"%s\"\n", Path_getData(pPath));
 
-    pDS80 = RRDS_New();
-    XCTAssertFalse( (NULL == pDS80));
-    XCTAssertTrue( (80 == RRDS_getRecordSize(pDS80)));
+    pDS80 = RRDS_New( );
+    TestForNotNull(pDS80, "");
+    TestForTrue((80 == RRDS_getRecordSize(pDS80)), "");
 #if defined(__MACOSX_ENV__)
     fprintf(stderr, "\tRecordSize = %d\n",  pDS80->recordSize);
-    XCTAssertTrue( (81 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
+    TestForTrue((81 == pDS80->recordSize, ""));
+    TestForTrue((RRDS_RCD_TRM_NL == pDS80->recordTerm), "");
 #endif
 #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
-    XCTAssertTrue( (82 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_CRNL == pDS80->recordTerm));
+    TestForTrue((82 == pDS80->recordSize), "");
+    TestForTrue((RRDS_RCD_TRM_CRNL == pDS80->recordTerm), "");
 #endif
 #if defined(__PIC32MX_TNEO_ENV__)
-    XCTAssertTrue( (81 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_NL == pDS80->recordTerm));
+    TestForTrue((81 == pDS80->recordSize), "");
+    TestForTrue((RRDS_RCD_TRM_NL == pDS80->recordTerm), "");
 #endif
+    if (pDS80) {
 
-    eRc = RRDS_SetupSizes(pDS80, 80, RRDS_RCD_TRM_NL, 1, 11);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pDS80, OBJ_IDENT_RRDS);
+        TestForTrue(fRc, "Failed Ident Test");
 
-    eRc = RRDS_Open(pDS80, pPath, false);
-    if (ERESULT_FAILED(eRc)) {
-        fprintf(stderr, "\tFailed eRc = %d\n", eRc);
+        eRc = RRDS_SetupSizes(pDS80, 80, RRDS_RCD_TRM_NL, 1, 11);
+        TestForSuccess("");
+
+        eRc = RRDS_Open(pDS80, pPath, false);
+        if (ERESULT_FAILED(eRc)) {
+            fprintf(stderr, "\tFailed eRc = %d\n", eRc);
+        }
+        TestForSuccess("");
+
+        fprintf(stderr, "\trecordSize = %d\n", RRDS_getRecordSize(pDS80));
+        fprintf(stderr, "\tnumRecords = %d\n", RRDS_getSize(pDS80));
+        TestForTrue((80 == RRDS_getRecordSize(pDS80)), "");
+    #if defined(__MACOSX_ENV__)
+        TestForTrue((81 == pDS80->recordSize), "");
+        TestForTrue((RRDS_RCD_TRM_NL == pDS80->recordTerm), "");
+    #endif
+    #if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        TestForTrue((82 == pDS80->recordSize), "");
+    #endif
+    #if defined(__PIC32MX_TNEO_ENV__)
+        TestForTrue((81 == pDS80->recordSize), "");
+        TestForTrue((RRDS_RCD_TRM_NL == pDS80->recordTerm), "");
+    #endif
+        TestForTrue((48 == RRDS_getSize(pDS80)), "");
+
+        eRc = RRDS_RecordRead(pDS80, 1, (uint8_t *)block2);
+        TestForSuccess("");
+        TestForTrue((block2[0] == 0x02), "");
+        TestForTrue((block2[1] == 0xC5), "");
+        TestForTrue((block2[2] == 0xE2), "");
+        TestForTrue((block2[3] == 0xC4), "");
+
+        eRc = RRDS_RecordRead(pDS80, 2, (uint8_t *)block2);
+        TestForSuccess("");
+        TestForTrue((block2[0] == 0x02), "");
+        TestForTrue((block2[1] == 0xC5), "");
+        TestForTrue((block2[2] == 0xE2), "");
+        TestForTrue((block2[3] == 0xC4), "");
+
+        eRc = RRDS_RecordRead(pDS80, 3, (uint8_t *)block2);
+        TestForSuccess("");
+        TestForTrue((block2[0] == 0x02), "");
+        TestForTrue((block2[1] == 0xC5), "");
+        TestForTrue((block2[2] == 0xE2), "");
+        TestForTrue((block2[3] == 0xC4), "");
+
+        eRc = RRDS_RecordRead(pDS80, 4, (uint8_t *)block2);
+        TestForSuccess("");
+        TestForTrue((block2[0] == 0x02), "");
+        TestForTrue((block2[1] == 0xE3), "");
+        TestForTrue((block2[2] == 0xE7), "");
+        TestForTrue((block2[3] == 0xE3), "");
+
+        eRc = RRDS_Close(pDS80, false);
+        TestForSuccess("");
+
+        {
+            ASTR_DATA       *pStr = RRDS_ToDebugString(pDS80, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pDS80);
+        pDS80 = OBJ_NIL;
     }
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-    fprintf(stderr, "\trecordSize = %d\n", RRDS_getRecordSize(pDS80));
-    fprintf(stderr, "\tnumRecords = %d\n", RRDS_getSize(pDS80));
-    XCTAssertTrue( (80 == RRDS_getRecordSize(pDS80)));
-    XCTAssertTrue( (80 == pDS80->recordSize));
-    XCTAssertTrue( (RRDS_RCD_TRM_NONE == pDS80->recordTerm));
-    XCTAssertTrue( (48 == RRDS_getSize(pDS80)));
-
-    eRc = RRDS_RecordRead(pDS80, 1, (uint8_t *)block2);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-    XCTAssertTrue( (block2[0] == 0x02) );
-    XCTAssertTrue( (block2[1] == 0xC5) );
-    XCTAssertTrue( (block2[2] == 0xE2) );
-    XCTAssertTrue( (block2[3] == 0xC4) );
-
-    eRc = RRDS_RecordRead(pDS80, 2, (uint8_t *)block2);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-    XCTAssertTrue( (block2[0] == 0x02) );
-    XCTAssertTrue( (block2[1] == 0xC5) );
-    XCTAssertTrue( (block2[2] == 0xE2) );
-    XCTAssertTrue( (block2[3] == 0xC4) );
-
-    eRc = RRDS_RecordRead(pDS80, 3, (uint8_t *)block2);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-    XCTAssertTrue( (block2[0] == 0x02) );
-    XCTAssertTrue( (block2[1] == 0xC5) );
-    XCTAssertTrue( (block2[2] == 0xE2) );
-    XCTAssertTrue( (block2[3] == 0xC4) );
-
-    eRc = RRDS_RecordRead(pDS80, 4, (uint8_t *)block2);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-    XCTAssertTrue( (block2[0] == 0x02) );
-    XCTAssertTrue( (block2[1] == 0xE3) );
-    XCTAssertTrue( (block2[2] == 0xE7) );
-    XCTAssertTrue( (block2[3] == 0xE3) );
-
-    eRc = RRDS_Close(pDS80, false);
-    XCTAssertFalse( (ERESULT_FAILED(eRc)) );
-
-    obj_Release(pDS80);
-    pDS80 = OBJ_NIL;
 
     obj_Release(pPath);
     pPath = OBJ_NIL;
@@ -439,79 +475,144 @@ int         test_RRDS_Read02(
     pTime = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_RRDS_Insert01(
+ERESULT         Test_RRDS_Insert01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
     RRDS_DATA       *pObj = OBJ_NIL;
+    bool            fRc;
     //uint32_t        i;
     //uint32_t        index;
     uint8_t         data[8];
     uint8_t         *pData = data;
+    const
+    char            *pPathA    = "/tmp/test.rrds";
+    PATH_DATA       *pPath = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
+    pPath = Path_NewA(pPathA);
+    TestForNotNull(pPath, "");
+    fprintf(stderr, "\tPath = \"%s\"\n", Path_getData(pPath));
+
     pObj = RRDS_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_RRDS);
+        TestForTrue(fRc, "Failed Ident Test");
+
         eRc = RRDS_SetupSizes(pObj, 8, RRDS_RCD_TRM_NONE, 1, 11);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
 
         // Create a memory-based file.
-        eRc = RRDS_Create(pObj, OBJ_NIL, true);
+        eRc = RRDS_Create(pObj, pPath, true);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "\tFailed eRc = %d\n", eRc);
         }
-        XCTAssertFalse( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         RRDS_setFillChar(pObj, '1');
 
         str_Copy((char *)data, sizeof(data), "2222222");
         eRc = RRDS_RecordWrite(pObj, 2, pData);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
 
         str_Copy((char *)data, sizeof(data), "0000000");
         eRc = RRDS_RecordRead(pObj, 1, pData);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        TINYTEST_TRUE((0 == strncmp((char *)pData, "11111111", 8)));
+        TestForSuccess("");
+        TestForTrue((0 == strncmp((char *)pData, "11111111", 8)), "");
 
         str_Copy((char *)data, sizeof(data), "0000000");
         pData = data;
         eRc = RRDS_RecordRead(pObj, 2, pData);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        TINYTEST_TRUE((0 == strcmp((char *)pData, "2222222")));
+        TestForSuccess("");
+        TestForTrue((0 == strcmp((char *)pData, "2222222")), "");
+
+        eRc = RRDS_Close(pObj, true);
+        TestForSuccess("");
+
+        {
+            ASTR_DATA       *pStr = RRDS_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
-    return 1;
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+
+    {
+        FILEIO_CLASS_VTBL   *pVtbl = (void *)obj_getVtbl(FileIO_Class());
+        pVtbl->pMemFileReset();
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
 }
 
 
 
 
-TINYTEST_START_SUITE(test_RRDS);
-    TINYTEST_ADD_TEST(test_RRDS_Insert01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_RRDS_Read02,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_RRDS_Read01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_RRDS_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_RRDS_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_RRDS_OpenClose,setUp,tearDown);
-TINYTEST_END_SUITE();
+int     main (
+    int         cArgs,
+    const
+    char        *ppArgs[],
+    const
+    char        *ppEnv[]
+)
+{
+    ERESULT     eRc;
+    TEST_DATA   test = {0};
+    TEST_DATA   *pTest = OBJ_NIL;
+    int         i;
+    const
+    char        *pTestNameA = NULL;
 
-TINYTEST_MAIN_SINGLE_SUITE(test_RRDS);
+    pTest = Test_Init(&test);
+    if (OBJ_NIL == pTest) {
+        fprintf(
+                stderr,
+                "\x1b[1m\x1b[31mFATAL\x1b[0m: Could not create Test object!\n\n\n"
+        );
+        exit(201);
+    }
 
+    // Scan args.
+    for (i=0; i<cArgs; i++) {
+        if (0 == strcmp("--no_int3", ppArgs[i])) {
+            Test_setAllowInt3(pTest, false);
+        }
+    }
 
+    // Execute tests.
+    TestExec("OpenClose", Test_RRDS_OpenClose, NULL, NULL);
+    //TestExec("Copy01", Test_RRDS_Copy01, pTest, NULL, NULL);
+    TestExec("Test01", Test_RRDS_Test01, NULL, NULL);
+    TestExec("Read01", Test_RRDS_Read01, NULL, NULL);
+    TestExec("Read02", Test_RRDS_Read02, NULL, NULL);
+    TestExec("Insert01", Test_RRDS_Insert01, NULL, NULL);
+
+    obj_Release(pTest);
+    pTest = OBJ_NIL;
+
+    // Return to Operating System.
+    return 0;
+}
 
 
 

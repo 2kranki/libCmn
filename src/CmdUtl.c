@@ -235,7 +235,10 @@ extern "C" {
 
 
 
-     bool            CmdUtl_LongOptsEnd(
+    /*! Check for the end of the Options Table.
+     @return    true if end of option table
+     */
+     bool            CmdUtl_IsEndOfOptions(
          const
          CMDUTL_OPTION   *pOptions,
          int             i
@@ -249,8 +252,8 @@ extern "C" {
     /*! Construct the getopt() option string from the given Long Option Table.
      @param     pOptions     Option Table with last entry having NULL and 0
                              for Long and Short names respectively
-     @param      pOptstring  an output area for the getopt-like string
-     @return:    true if successful, otherwise false
+     @param     pOptstring  an output area for the getopt-like string
+     @return:   true if successful, otherwise false
      */
      bool            CmdUtl_OptstringFromLongOptions(
          const
@@ -262,7 +265,7 @@ extern "C" {
          char            *p = pOptstring;
          int             i;
 
-         for (i = 0; !CmdUtl_LongOptsEnd(pOptions, i); i++) {
+         for (i = 0; !CmdUtl_IsEndOfOptions(pOptions, i); i++) {
              if (pOptions[i].shortName && ascii_isAlphanumericA(pOptions[i].shortName)) {
                  int             a;
                  *p++ = pOptions[i].shortName;
@@ -354,7 +357,7 @@ extern "C" {
                  // Found short name. Now translate optstring index into
                  // Options Table index.
                  int i;
-                 for (i = 0; !CmdUtl_LongOptsEnd(pOptions, i); i++)
+                 for (i = 0; !CmdUtl_IsEndOfOptions(pOptions, i); i++)
                      if (pOptions[i].shortName == this->optopt)
                          *pLongIndex = i;
              }
@@ -1504,7 +1507,7 @@ extern "C" {
         this->pOptArg = NULL;
         pOption += 2; /* skip "--" */
         this->optIndex++;
-        for (i = 0; !CmdUtl_LongOptsEnd(pOptions, i); i++) {
+        for (i = 0; !CmdUtl_IsEndOfOptions(pOptions, i); i++) {
             const
             char            *name = pOptions[i].pLongName;
             if (CmdUtl_LongOptsMatch(name, pOption)) {
@@ -1896,14 +1899,14 @@ extern "C" {
 
         if (pDefaultOptions) {
             pOptions = pDefaultOptions;
-            for (i=0; !CmdUtl_LongOptsEnd(pOptions, i); i++) {
+            for (i=0; !CmdUtl_IsEndOfOptions(pOptions, i); i++) {
                 ++cDefault;
             }
         }
 
         if (pProgramOptions) {
             pOptions = pProgramOptions;
-            for (i=0; !CmdUtl_LongOptsEnd(pOptions, i); i++) {
+            for (i=0; !CmdUtl_IsEndOfOptions(pOptions, i); i++) {
                 ++cDefault;
             }
         }
@@ -1917,14 +1920,14 @@ extern "C" {
 
         if (pDefaultOptions) {
             pOptions = pDefaultOptions;
-            for (i=0; !CmdUtl_LongOptsEnd(pOptions, i); i++) {
+            for (i=0; !CmdUtl_IsEndOfOptions(pOptions, i); i++) {
                 this->pOptDefns[j++] = pOptions[i];
             }
         }
 
         if (pProgramOptions) {
             pOptions = pProgramOptions;
-            for (i=0; !CmdUtl_LongOptsEnd(pOptions, i); i++) {
+            for (i=0; !CmdUtl_IsEndOfOptions(pOptions, i); i++) {
                 this->pOptDefns[j++] = pOptions[i];
             }
         }

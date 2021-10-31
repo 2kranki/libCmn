@@ -736,7 +736,11 @@ extern "C" {
             obj_Release(this->pData);
             this->pData = OBJ_NIL;
         }
-        
+        if (this->pOther) {
+            obj_Release(this->pOther);
+            this->pOther = OBJ_NIL;
+        }
+
         obj_setVtbl(this, this->pSuperVtbl);
         obj_Dealloc(this);
         this = OBJ_NIL;
@@ -834,6 +838,36 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       E x t e n d
+    //---------------------------------------------------------------
+
+    ERESULT         u8Array_Extend(
+        U8ARRAY_DATA    *this,
+        uint32_t        newSize
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        size;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u8Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        size = u8Array_getSize(this);
+        if (newSize > size) {
+            eRc = array_AppendSpacing(this->pData, (newSize - size));
+        }
+
+        return eRc;
+    }
+
+
+    //---------------------------------------------------------------
     //                         G e t
     //---------------------------------------------------------------
     
@@ -865,6 +899,34 @@ extern "C" {
     }
     
     
+    uint8_t *       u8Array_GetAddrOf(
+        U8ARRAY_DATA    *this,
+        uint32_t        index
+    )
+    {
+        uint8_t         *pData;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u8Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+        if ((index > 0) && (index <= array_getSize(this->pData)))
+            ;
+        else {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        pData = ((uint8_t *)array_Ptr(this->pData, index));
+
+        return pData;
+    }
+
+
     uint8_t         u8Array_GetFirst(
         U8ARRAY_DATA	*this
     )

@@ -33,6 +33,8 @@
         {name:"BlkdRcds16",     desc:"Block of Variable-Length Records", deps:["Endian.h"]},
         //{name:"blks"},
         {name:"block16"},
+        {name:"BlockF16",       desc:"Fixed Length Records within 16-bit sized Block"},
+        {name:"BlockV16",       desc:"Variable Length Records within 16-bit sized Block"},
         {name:"block32"},
         {name:"Blocks",         deps:["listdl.h"]},
 

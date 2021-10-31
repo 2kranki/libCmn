@@ -1,22 +1,22 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  A Good Test Object (Test01) Header
+//                  Variable Length Records within 16-bit sized Block (BlockV16) Header
 //****************************************************************
 /*
  * Program
- *          A Good Test Object (Test01)
+ *          Variable Length Records within 16-bit sized Block (BlockV16)
  * Purpose
  *          This object provides a standardized way of handling
- *          a separate Test01 to run things without complications
- *          of interfering with the main Test01. A Test01 may be 
- *          called a Test01 on other O/S's.
+ *          a separate BlockV16 to run things without complications
+ *          of interfering with the main BlockV16. A BlockV16 may be 
+ *          called a BlockV16 on other O/S's.
  *
  * Remarks
  *  1.      None
  *
  * History
- *  10/28/2021 Generated
+ *  10/22/2021 Generated
  */
 
 
@@ -55,13 +55,13 @@
 #include        <AStr.h>
 
 
-#ifndef         TEST01_H
-#define         TEST01_H
+#ifndef         BLOCKV16_H
+#define         BLOCKV16_H
 
 
-//#define   TEST01_IS_IMMUTABLE     1
-#define   TEST01_JSON_SUPPORT       1
-//#define   TEST01_SINGLETON        1
+//#define   BLOCKV16_IS_IMMUTABLE     1
+//#define   BLOCKV16_JSON_SUPPORT     1
+//#define   BLOCKV16_SINGLETON        1
 
 
 
@@ -77,26 +77,26 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Test01_data_s  TEST01_DATA;            // Inherits from OBJ
-    typedef struct Test01_class_data_s TEST01_CLASS_DATA;   // Inherits from OBJ
+    typedef struct BlockV16_data_s  BLOCKV16_DATA;            // Inherits from OBJ
+    typedef struct BlockV16_class_data_s BLOCKV16_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct Test01_vtbl_s  {
+    typedef struct BlockV16_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Test01_object.c.
+        // method names to the vtbl definition in BlockV16_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(TEST01_DATA *);
-    } TEST01_VTBL;
+        //bool        (*pIsEnabled)(BLOCKV16_DATA *);
+    } BLOCKV16_VTBL;
 
-    typedef struct Test01_class_vtbl_s    {
+    typedef struct BlockV16_class_vtbl_s    {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in Test01_object.c.
+        // method names to the vtbl definition in BlockV16_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(TEST01_DATA *);
-    } TEST01_CLASS_VTBL;
+        //bool        (*pIsEnabled)(BLOCKV16_DATA *);
+    } BLOCKV16_CLASS_VTBL;
 
 
 
@@ -110,12 +110,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  TEST01_SINGLETON
-    TEST01_DATA *     Test01_Shared (
+#ifdef  BLOCKV16_SINGLETON
+    BLOCKV16_DATA *     BlockV16_Shared (
         void
     );
 
-    void            Test01_SharedReset (
+    void            BlockV16_SharedReset (
         void
     );
 #endif
@@ -125,29 +125,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to Test01 object if successful, otherwise OBJ_NIL.
+     @return    pointer to BlockV16 object if successful, otherwise OBJ_NIL.
      */
-    TEST01_DATA *     Test01_Alloc (
+    BLOCKV16_DATA *     BlockV16_Alloc (
         void
     );
     
     
-    OBJ_ID          Test01_Class (
+    OBJ_ID          BlockV16_Class (
         void
     );
     
     
-    TEST01_DATA *     Test01_New (
+    BLOCKV16_DATA *     BlockV16_New (
         void
     );
     
     
-#ifdef  TEST01_JSON_SUPPORT
-    TEST01_DATA *   Test01_NewFromJsonString (
+#ifdef  BLOCKV16_JSON_SUPPORT
+    BLOCKV16_DATA *   BlockV16_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    TEST01_DATA *   Test01_NewFromJsonStringA (
+    BLOCKV16_DATA *   BlockV16_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -166,41 +166,41 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Test01_Disable (
-        TEST01_DATA       *this
+    ERESULT     BlockV16_Disable (
+        BLOCKV16_DATA       *this
     );
 
 
-    ERESULT     Test01_Enable (
-        TEST01_DATA       *this
+    ERESULT     BlockV16_Enable (
+        BLOCKV16_DATA       *this
     );
 
    
-    TEST01_DATA *   Test01_Init (
-        TEST01_DATA     *this
+    BLOCKV16_DATA *   BlockV16_Init (
+        BLOCKV16_DATA     *this
     );
 
 
-    ERESULT     Test01_IsEnabled (
-        TEST01_DATA       *this
+    ERESULT     BlockV16_IsEnabled (
+        BLOCKV16_DATA       *this
     );
     
  
-#ifdef  TEST01_JSON_SUPPORT
+#ifdef  BLOCKV16_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Test01_ToJson(this);
+     ASTR_DATA      *pDesc = BlockV16_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Test01_ToJson (
-        TEST01_DATA   *this
+    ASTR_DATA *     BlockV16_ToJson (
+        BLOCKV16_DATA   *this
     );
 #endif
 
@@ -209,7 +209,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Test01_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = BlockV16_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -217,8 +217,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Test01_ToDebugString (
-        TEST01_DATA     *this,
+    ASTR_DATA *     BlockV16_ToDebugString (
+        BLOCKV16_DATA     *this,
         int             indent
     );
     
@@ -229,5 +229,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* TEST01_H */
+#endif  /* BLOCKV16_H */
 

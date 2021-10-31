@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Test01.c
- *  Generated 10/28/2021 15:31:08
+ * File:   BlockV16.c
+ *  Generated 10/22/2021 11:40:32
  *
  */
 
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <Test01_internal.h>
+#include        <BlockV16_internal.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -78,11 +78,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            Test01_task_body (
+    void            BlockV16_task_body (
         void            *pData
     )
     {
-        //TEST01_DATA  *this = pData;
+        //BLOCKV16_DATA  *this = pData;
         
     }
 #endif
@@ -93,12 +93,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    TEST01_DATA *     Test01_Alloc (
+    BLOCKV16_DATA *     BlockV16_Alloc (
         void
     )
     {
-        TEST01_DATA       *this;
-        uint32_t        cbSize = sizeof(TEST01_DATA);
+        BLOCKV16_DATA       *this;
+        uint32_t        cbSize = sizeof(BLOCKV16_DATA);
         
         // Do initialization.
         
@@ -110,15 +110,15 @@ extern "C" {
 
 
 
-    TEST01_DATA *     Test01_New (
+    BLOCKV16_DATA *     BlockV16_New (
         void
     )
     {
-        TEST01_DATA       *this;
+        BLOCKV16_DATA       *this;
         
-        this = Test01_Alloc( );
+        this = BlockV16_Alloc( );
         if (this) {
-            this = Test01_Init(this);
+            this = BlockV16_Init(this);
         } 
         return this;
     }
@@ -135,15 +135,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        Test01_getPriority (
-        TEST01_DATA     *this
+    uint16_t        BlockV16_getPriority (
+        BLOCKV16_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -154,14 +154,14 @@ extern "C" {
     }
 
 
-    bool            Test01_setPriority (
-        TEST01_DATA     *this,
+    bool            BlockV16_setPriority (
+        BLOCKV16_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -178,13 +178,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        Test01_getSize (
-        TEST01_DATA       *this
+    uint32_t        BlockV16_getSize (
+        BLOCKV16_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -199,15 +199,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * Test01_getStr (
-        TEST01_DATA     *this
+    ASTR_DATA * BlockV16_getStr (
+        BLOCKV16_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -217,14 +217,14 @@ extern "C" {
     }
     
     
-    bool        Test01_setStr (
-        TEST01_DATA     *this,
+    bool        BlockV16_setStr (
+        BLOCKV16_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -245,15 +245,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  Test01_getSuperVtbl (
-        TEST01_DATA     *this
+    OBJ_IUNKNOWN *  BlockV16_getSuperVtbl (
+        BLOCKV16_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -282,16 +282,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = Test01_Assign(this,pOther);
+        ERESULT eRc = BlockV16_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another TEST01 object
+     @param     pOther  a pointer to another BLOCKV16 object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         Test01_Assign (
-        TEST01_DATA       *this,
-        TEST01_DATA     *pOther
+    ERESULT         BlockV16_Assign (
+        BLOCKV16_DATA       *this,
+        BLOCKV16_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -299,11 +299,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Test01_Validate(pOther)) {
+        if (!BlockV16_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -364,9 +364,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             Test01_Compare (
-        TEST01_DATA     *this,
-        TEST01_DATA     *pOther
+    int             BlockV16_Compare (
+        BLOCKV16_DATA     *this,
+        BLOCKV16_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -379,12 +379,12 @@ extern "C" {
         
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!Test01_Validate(pOther)) {
+        if (!BlockV16_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -406,36 +406,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Test01      *pCopy = Test01_Copy(this);
+        BlockV16      *pCopy = BlockV16_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a TEST01 object which must be 
+     @return    If successful, a BLOCKV16 object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    TEST01_DATA *     Test01_Copy (
-        TEST01_DATA       *this
+    BLOCKV16_DATA *     BlockV16_Copy (
+        BLOCKV16_DATA       *this
     )
     {
-        TEST01_DATA       *pOther = OBJ_NIL;
+        BLOCKV16_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef TEST01_IS_IMMUTABLE
+#ifdef BLOCKV16_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = Test01_New( );
+        pOther = BlockV16_New( );
         if (pOther) {
-            eRc = Test01_Assign(this, pOther);
+            eRc = BlockV16_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -453,11 +453,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            Test01_Dealloc (
+    void            BlockV16_Dealloc (
         OBJ_ID          objId
     )
     {
-        TEST01_DATA   *this = objId;
+        BLOCKV16_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -466,7 +466,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -474,11 +474,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((TEST01_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((BLOCKV16_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        Test01_setStr(this, OBJ_NIL);
+        BlockV16_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -499,32 +499,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Test01      *pDeepCopy = Test01_Copy(this);
+        BlockV16      *pDeepCopy = BlockV16_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a TEST01 object which must be 
+     @return    If successful, a BLOCKV16 object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    TEST01_DATA *     Test01_DeepCopy (
-        TEST01_DATA       *this
+    BLOCKV16_DATA *     BlockV16_DeepCopy (
+        BLOCKV16_DATA       *this
     )
     {
-        TEST01_DATA       *pOther = OBJ_NIL;
+        BLOCKV16_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = Test01_New( );
+        pOther = BlockV16_New( );
         if (pOther) {
-            eRc = Test01_Assign(this, pOther);
+            eRc = BlockV16_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -547,8 +547,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Test01_Disable (
-        TEST01_DATA       *this
+    ERESULT         BlockV16_Disable (
+        BLOCKV16_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -557,7 +557,7 @@ extern "C" {
         TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -584,8 +584,8 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Test01_Enable (
-        TEST01_DATA       *this
+    ERESULT         BlockV16_Enable (
+        BLOCKV16_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -594,7 +594,7 @@ extern "C" {
         TRC_OBJ(this,"%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -615,11 +615,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    TEST01_DATA *   Test01_Init (
-        TEST01_DATA       *this
+    BLOCKV16_DATA *   BlockV16_Init (
+        BLOCKV16_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(TEST01_DATA);
+        uint32_t        cbSize = sizeof(BLOCKV16_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -638,8 +638,8 @@ extern "C" {
 
         //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
         // If you use inheritance, remember to change the obj_ClassObj reference 
-        // in the OBJ_INFO at the end of Test01_object.c
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_TEST01);
+        // in the OBJ_INFO at the end of BlockV16_object.c
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_BLOCKV16);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -647,9 +647,9 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Test01_Vtbl);
-#ifdef  TEST01_JSON_SUPPORT
-        JsonIn_RegisterClass(Test01_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&BlockV16_Vtbl);
+#ifdef  BLOCKV16_JSON_SUPPORT
+        JsonIn_RegisterClass(BlockV16_Class());
 #endif
         
         /*
@@ -663,7 +663,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -672,11 +672,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "Test01::sizeof(TEST01_DATA) = %lu\n", 
-                sizeof(TEST01_DATA)
+                "BlockV16::sizeof(BLOCKV16_DATA) = %lu\n", 
+                sizeof(BLOCKV16_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(TEST01_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(BLOCKV16_DATA));
 #endif
 
         return this;
@@ -688,8 +688,8 @@ extern "C" {
     //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         Test01_IsEnabled (
-        TEST01_DATA       *this
+    ERESULT         BlockV16_IsEnabled (
+        BLOCKV16_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -697,7 +697,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -724,14 +724,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = Test01_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = BlockV16_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "Test01", prefix,
+                        the object name, "BlockV16", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -739,13 +739,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          Test01_QueryInfo (
+    void *          BlockV16_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        TEST01_DATA     *this = objId;
+        BLOCKV16_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -754,7 +754,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -763,11 +763,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(TEST01_DATA);
+                return (void *)sizeof(BLOCKV16_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)Test01_Class();
+                return (void *)BlockV16_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -793,37 +793,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return Test01_Disable;
+                            return BlockV16_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return Test01_Enable;
+                            return BlockV16_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  TEST01_JSON_SUPPORT
+#ifdef  BLOCKV16_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return Test01_ParseJsonFields;
+                            return BlockV16_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return Test01_ParseJsonObject;
+                            return BlockV16_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return Test01_ToDebugString;
+                            return BlockV16_ToDebugString;
                         }
-#ifdef  TEST01_JSON_SUPPORT
+#ifdef  BLOCKV16_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return Test01_ToJsonFields;
+                            return BlockV16_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return Test01_ToJson;
+                            return BlockV16_ToJson;
                         }
 #endif
                         break;
@@ -834,10 +834,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == Test01_ToDebugString)
+                if (pData == BlockV16_ToDebugString)
                     return "ToDebugString";
-#ifdef  TEST01_JSON_SUPPORT
-                if (pData == Test01_ToJson)
+#ifdef  BLOCKV16_JSON_SUPPORT
+                if (pData == BlockV16_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -859,7 +859,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Test01_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = BlockV16_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -867,8 +867,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Test01_ToDebugString (
-        TEST01_DATA      *this,
+    ASTR_DATA *     BlockV16_ToDebugString (
+        BLOCKV16_DATA      *this,
         int             indent
     )
     {
@@ -883,7 +883,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Test01_Validate(this)) {
+        if (!BlockV16_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -904,7 +904,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    Test01_getSize(this),
+                    BlockV16_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -944,15 +944,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            Test01_Validate (
-        TEST01_DATA      *this
+    bool            BlockV16_Validate (
+        BLOCKV16_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_TEST01))
+            if (obj_IsKindOf(this, OBJ_IDENT_BLOCKV16))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -968,7 +968,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(TEST01_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(BLOCKV16_DATA))) {
             return false;
         }
 

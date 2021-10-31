@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (10/17/2021 20:57:38.000)
+# (10/31/2021  5:12:59.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -186,6 +186,26 @@ $(OBJDIR)/BlkdRcds16.o: $(SRCDIR)/BlkdRcds16.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/
 OBJS += $(OBJDIR)/BlkdRcds16_object.o
 
 $(OBJDIR)/BlkdRcds16_object.o: $(SRCDIR)/BlkdRcds16_object.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/Endian.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BlockF16.o
+
+$(OBJDIR)/BlockF16.o: $(SRCDIR)/BlockF16.c $(SRCDIR)/BlockF16.h $(SRCDIR)/BlockF16_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BlockF16_object.o
+
+$(OBJDIR)/BlockF16_object.o: $(SRCDIR)/BlockF16_object.c $(SRCDIR)/BlockF16.h $(SRCDIR)/BlockF16_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BlockV16.o
+
+$(OBJDIR)/BlockV16.o: $(SRCDIR)/BlockV16.c $(SRCDIR)/BlockV16.h $(SRCDIR)/BlockV16_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/BlockV16_object.o
+
+$(OBJDIR)/BlockV16_object.o: $(SRCDIR)/BlockV16_object.c $(SRCDIR)/BlockV16.h $(SRCDIR)/BlockV16_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Blocks.o
@@ -2136,6 +2156,18 @@ BitSet_test: $(TEST_SRC)/BitSet_test.c $(SRCDIR)/BitSet.h $(SRCDIR)/BitSet_inter
 TESTS += BlkdRcds16_test
 
 BlkdRcds16_test: $(TEST_SRC)/BlkdRcds16_test.c $(SRCDIR)/BlkdRcds16.h $(SRCDIR)/BlkdRcds16_internal.h $(SRCDIR)/Endian.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += BlockF16_test
+
+BlockF16_test: $(TEST_SRC)/BlockF16_test.c $(SRCDIR)/BlockF16.h $(SRCDIR)/BlockF16_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += BlockV16_test
+
+BlockV16_test: $(TEST_SRC)/BlockV16_test.c $(SRCDIR)/BlockV16.h $(SRCDIR)/BlockV16_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

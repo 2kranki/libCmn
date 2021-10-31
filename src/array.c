@@ -790,6 +790,10 @@ extern "C" {
         BREAK_TRUE((obj_getRetainCount(this) > 0));
 
         array_FreeArray(this);
+        if (this->pOther) {
+            obj_Release(this->pOther);
+            this->pOther = OBJ_NIL;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super

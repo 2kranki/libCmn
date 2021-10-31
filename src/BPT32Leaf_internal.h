@@ -149,6 +149,41 @@ struct BPT32Leaf_data_s	{
     );
 
 
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = BPT32Leaf_Assign(this,pOther);
+     @endcode
+     @param     this    BPT32LEAF object pointer
+     @param     pOther  a pointer to another BPT32LEAF object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         BPT32Leaf_Assign (
+        BPT32LEAF_DATA     *this,
+        BPT32LEAF_DATA     *pOther
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        BPT32Leaf      *pCopy = BPT32Leaf_Copy(this);
+     @endcode
+     @param     this    BPT32LEAF object pointer
+     @return    If successful, a BPT32LEAF object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    BPT32LEAF_DATA *     BPT32Leaf_Copy (
+        BPT32LEAF_DATA       *this
+    );
+
+
     void            BPT32Leaf_Dealloc (
         OBJ_ID          objId
     );
