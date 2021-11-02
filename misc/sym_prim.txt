@@ -1,13 +1,11 @@
-# This should not affect anything!
+# genEnum --prefix=Sym --name=Prim misc/sym_prim.txt
         UNKNOWN
         CHAR,
         UCHAR
         HALF
-
         UHALF
         WORD,
         UWORD
-
         DBLWORD
         UDBLWORD,
         QUAD

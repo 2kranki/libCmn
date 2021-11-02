@@ -226,6 +226,7 @@ extern "C" {
      */
     ERESULT         Exec_GenRoutines (
         EXEC_DATA       *this,
+        PATH_DATA       *pInputPath,
         const
         char            *pPrefixA,
         const

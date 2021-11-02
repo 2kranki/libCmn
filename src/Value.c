@@ -55,25 +55,75 @@ extern "C" {
     
 
     
-    static
+    /* The following tables were generated from:
+     * "value_type.txt"
+     * If you want to change this enum, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // This table is in enum order and provides
+    // the index + 1 into the Value_Type_entries
+    // table. 0 means no enum entry.
     const
-    char            *pTypeStr[] = {
-       "VALUE_TYPE_UNKNOWN",
-       "VALUE_TYPE_FLOAT",
-       "VALUE_TYPE_DOUBLE",
-       "VALUE_TYPE_INT16",
-       "VALUE_TYPE_INT32",
-       "VALUE_TYPE_INT64",
-       //VALUE_TYPE_INT128,
-       "VALUE_TYPE_UINT16",
-       "VALUE_TYPE_UINT32",
-       "VALUE_TYPE_UINT64",
-       //VALUE_TYPE_UINT128,
-       "VALUE_TYPE_OBJECT",
-       "VALUE_TYPE_DATA",
-       "VALUE_TYPE_DATA_FREE",
-       NULL
-   };
+    uint16_t    Value_Type_index[20] = {
+        19,
+        1,
+        4,
+        5,
+        10,
+        7,
+        8,
+        9,
+        18,
+        15,
+        16,
+        17,
+        11,
+        12,
+        13,
+        14,
+        2,
+        3,
+        6,
+        0,
+    };
+
+
+    typedef struct {
+        const
+        char            *pDesc;
+        uint32_t        value;
+    } Value_Type_entry;
+
+    // This table is in alphanumeric order to be searched
+    // with a sequential or binary search by description.
+
+    const
+    Value_Type_entry    Value_Type_entries[] = {
+        {"VALUE_TYPE_ASTR",1},
+        {"VALUE_TYPE_DATA",16},
+        {"VALUE_TYPE_DATA_FREE",17},
+        {"VALUE_TYPE_DOUBLE",2},
+        {"VALUE_TYPE_FALSE",3},
+        {"VALUE_TYPE_HIGHEST",18},
+        {"VALUE_TYPE_INT16",5},
+        {"VALUE_TYPE_INT32",6},
+        {"VALUE_TYPE_INT64",7},
+        {"VALUE_TYPE_INT8",4},
+        {"VALUE_TYPE_MONEY64",12},
+        {"VALUE_TYPE_NULL",13},
+        {"VALUE_TYPE_OBJECT",14},
+        {"VALUE_TYPE_TRUE",15},
+        {"VALUE_TYPE_UINT16",9},
+        {"VALUE_TYPE_UINT32",10},
+        {"VALUE_TYPE_UINT64",11},
+        {"VALUE_TYPE_UINT8",8},
+        {"VALUE_TYPE_UNKNOWN",0},
+    };
+
+    const
+    uint32_t    cValue_Type_entries = 19;
 
 
 
@@ -141,21 +191,73 @@ extern "C" {
 
 
 
+    // Given an enum value, return its character format.
     const
-    char *     Value_TypeToString (
-        VALUE_DATA      *this,
-        uint16_t        type
+    char *            Value_TypeToDesc(
+        uint32_t        value
     )
     {
-
-        // Do initialization.
-        if (type >= VALUE_TYPE_HIGHEST) {
-            return "";
+        if (value >= 20) {
+            return "<<<Unknown Enum Value>>>";
         }
-
-        // Return to caller.
-        return pTypeStr[type];
+        if (Value_Type_index[value]) {
+            return Value_Type_entries[Value_Type_index[value]-1].pDesc;
+        } else {
+            return "<<<Unknown Enum Value>>>";
+        }
     }
+
+
+
+    // Given an enum description, return its value + 1 or
+    // 0 for not found.
+    const
+    uint32_t        Value_DescToType(
+        char            *pDesc
+    )
+    {
+        int             iRc;
+        uint32_t        iMax = cValue_Type_entries;
+        uint32_t        i    = 0;
+        uint32_t        high = 0;
+        uint32_t        low  = 0;
+        uint32_t        mid  = 0;
+
+        if (iMax > 10) {
+            for (i=0; i<iMax; i++) {
+                iRc = strcmp(pDesc, Value_Type_entries[i].pDesc);
+                if (0 == iRc) {
+                    return Value_Type_entries[i].value + 1;
+                }
+                if (iRc < 0) {
+                    break;
+                }
+            }
+        } else {
+            high = iMax - 1;
+            while (low < high) {
+                mid = (high + low) / 2;
+                i = mid + 1;
+                iRc = strcmp(pDesc, Value_Type_entries[i].pDesc);
+                if (iRc < 0) {
+                    high = mid;
+                } else if (iRc == 0) {
+                    return Value_Type_entries[i].value + 1;
+                } else {
+                    low = mid + 1;
+                }
+            }
+            if( high == low ) {
+                i = low;
+                iRc = strcmp(pDesc, Value_Type_entries[i].pDesc);
+                if (0 == iRc) {
+                    return Value_Type_entries[i].value + 1;
+                }
+            }
+        }
+        return 0;
+    }
+
 
 
 

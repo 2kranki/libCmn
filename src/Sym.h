@@ -98,24 +98,31 @@ extern "C" {
 
 
     // Primitive Types
-    /*
-     Note: Signed Types are even, unsigned types are odd.
+    // Note: Signed Types are even, unsigned types are odd.
+    /* The following enum was generated from:
+     * "sym_prim.txt"
+     * If you want to change this enum, you
+     * should alter the above file and
+     * regenerate using genEnum!
      */
-    typedef enum Sym_primative_e {
+
+    typedef enum Sym_Prim_e {
         SYM_PRIM_UNKNOWN=0,
-        SYM_PRIM_CHAR,
-        SYM_PRIM_UCHAR,
-        SYM_PRIM_HALF,
-        SYM_PRIM_UHALF,
-        SYM_PRIM_WORD,
-        SYM_PRIM_UWORD,
-        SYM_PRIM_DBLWORD,
-        SYM_PRIM_UDBLWORD,
-        SYM_PRIM_QUAD,
-        SYM_PRIM_UQUAD,
-        SYM_PRIM_VOID,
-        SYM_PRIM_POINTER,
-    } SYM_PRIMITIVE;
+        SYM_PRIM_CHAR=1,
+        SYM_PRIM_UCHAR=2,
+        SYM_PRIM_HALF=3,
+        SYM_PRIM_UHALF=4,
+        SYM_PRIM_WORD=5,
+        SYM_PRIM_UWORD=6,
+        SYM_PRIM_DBLWORD=7,
+        SYM_PRIM_UDBLWORD=8,
+        SYM_PRIM_QUAD=9,
+        SYM_PRIM_UQUAD=10,
+        SYM_PRIM_VOID=11,
+        SYM_PRIM_POINTER=12,
+    } SYM_PRIMS;
+
+
 
 
     // Storage Type

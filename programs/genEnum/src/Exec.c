@@ -850,7 +850,7 @@ extern "C" {
 
         eRc = Exec_GenEnum(this, pInputPath, pPrefixA, pNameA);
         eRc = Exec_GenTables(this, pInputPath, pPrefixA, pNameA);
-        eRc = Exec_GenRoutines(this, pPrefixA, pNameA);
+        eRc = Exec_GenRoutines(this, pInputPath, pPrefixA, pNameA);
 
         // Return to caller.
         return eRc;
@@ -908,7 +908,7 @@ extern "C" {
         fprintf(pOut, "\t * should alter the above file and\n");
         fprintf(pOut, "\t * regenerate using genEnum!\n");
         fprintf(pOut, "\t */\n\n");
-        fprintf(pOut, "\tenum %s_%s_e {\n", pPrefixA, pNameA);
+        fprintf(pOut, "\ttypedef enum %s_%s_e {\n", pPrefixA, pNameA);
         iMax = AStrArray_getSize(this->pArray);
         for (i=0; i<iMax; i++) {
             ASTR_DATA       *pLine = AStrArray_Get(this->pArray, i+1);
@@ -924,7 +924,7 @@ extern "C" {
             }
         }
 
-        fprintf(pOut, "\t} %s_%s;\n\n", AStr_getData(pCapsPrefix), AStr_getData(pCapsName));
+        fprintf(pOut, "\t} %s_%sS;\n\n", AStr_getData(pCapsPrefix), AStr_getData(pCapsName));
         fprintf(pOut, "\n\n\n");
 
         obj_Release(pFileName);
@@ -947,6 +947,7 @@ extern "C" {
      */
     ERESULT         Exec_GenRoutines (
         EXEC_DATA       *this,
+        PATH_DATA       *pInputPath,
         const
         char            *pPrefixA,
         const
@@ -957,6 +958,7 @@ extern "C" {
         FILE            *pOut = stdout;
         ASTR_DATA       *pCapsPrefix = OBJ_NIL;
         ASTR_DATA       *pCapsName = OBJ_NIL;
+        PATH_DATA       *pFileName = OBJ_NIL;
 
         // Do initialization.
         TRC_OBJ(this,"%s:\n", __func__);
@@ -969,7 +971,14 @@ extern "C" {
 #endif
         pCapsName = AStr_NewUpperA(pNameA);
         pCapsPrefix = AStr_NewUpperA(pPrefixA);
+        eRc = Path_SplitPath(pInputPath, OBJ_NIL, OBJ_NIL, &pFileName);
 
+        fprintf(pOut, "\t/* The following routine was generated from:\n");
+        fprintf(pOut, "\t * \"%s\"\n", Path_getData(pFileName));
+        fprintf(pOut, "\t * If you want to change it, you\n");
+        fprintf(pOut, "\t * should alter the above file and\n");
+        fprintf(pOut, "\t * regenerate using genEnum!\n");
+        fprintf(pOut, "\t */\n\n");
         fprintf(pOut, "\t// Given an enum value, return its character format.\n");
         fprintf(pOut, "\tconst\n");
         fprintf(pOut, "\tchar *\t\t\t%s_%sToDesc(\n", pPrefixA, pNameA);
@@ -985,7 +994,7 @@ extern "C" {
         fprintf(pOut, "\t\tif (%s_%s_index[value]) {\n", pPrefixA, pNameA);
         fprintf(
                 pOut,
-                "\t\t\treturn p%s_%s_entries[%s_%s_index[value]-1].pDesc;\n",
+                "\t\t\treturn %s_%s_entries[%s_%s_index[value]-1].pDesc;\n",
                 pPrefixA,
                 pNameA,
                 pPrefixA,
@@ -998,6 +1007,12 @@ extern "C" {
         fprintf(pOut, "\t}\n");
         fprintf(pOut, "\n\n\n");
 
+        fprintf(pOut, "\t/* The following routine was generated from:\n");
+        fprintf(pOut, "\t * \"%s\"\n", Path_getData(pFileName));
+        fprintf(pOut, "\t * If you want to change it, you\n");
+        fprintf(pOut, "\t * should alter the above file and\n");
+        fprintf(pOut, "\t * regenerate using genEnum!\n");
+        fprintf(pOut, "\t */\n\n");
         fprintf(pOut, "\t// Given an enum description, return its value + 1 or\n");
         fprintf(pOut, "\t// 0 for not found.\n");
         fprintf(pOut, "\tconst\n");
@@ -1005,17 +1020,17 @@ extern "C" {
         fprintf(pOut, "\t\tchar\t\t\t*pDesc\n");
         fprintf(pOut, "\t)\n");
         fprintf(pOut, "\t{\n");
-        fprintf(pOut, "\t\ttint\t\t\tiRc;\n");
-        fprintf(pOut, "\t\ttuint32_t\t\tiMax = c%s_%s_entries;\n", pPrefixA, pNameA);
-        fprintf(pOut, "\t\ttuint32_t\t\ti    = 0;\n");
-        fprintf(pOut, "\t\ttuint32_t\t\thigh = 0;\n");
-        fprintf(pOut, "\t\ttuint32_t\t\tlow  = 0;\n");
-        fprintf(pOut, "\t\ttuint32_t\t\tmid  = 0;\n\n");
+        fprintf(pOut, "\t\tint\t\t\tiRc;\n");
+        fprintf(pOut, "\t\tuint32_t\t\tiMax = c%s_%s_entries;\n", pPrefixA, pNameA);
+        fprintf(pOut, "\t\tuint32_t\t\ti    = 0;\n");
+        fprintf(pOut, "\t\tuint32_t\t\thigh = 0;\n");
+        fprintf(pOut, "\t\tuint32_t\t\tlow  = 0;\n");
+        fprintf(pOut, "\t\tuint32_t\t\tmid  = 0;\n\n");
         fprintf(pOut, "\t\tif (iMax > 10) {\n");
         fprintf(pOut, "\t\t\tfor (i=0; i<iMax; i++) {\n");
         fprintf(
                 pOut,
-                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pDesc)\n",
+                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pDesc);\n",
                 pPrefixA,
                 pNameA
         );
@@ -1038,7 +1053,7 @@ extern "C" {
         fprintf(pOut, "\t\t\t\ti = mid + 1;\n");
         fprintf(
                 pOut,
-                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pDesc)\n",
+                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pDesc);\n",
                 pPrefixA,
                 pNameA
         );
@@ -1059,7 +1074,7 @@ extern "C" {
         fprintf(pOut, "\t\t\t\ti = low;\n");
         fprintf(
                 pOut,
-                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pDesc)\n",
+                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pDesc);\n",
                 pPrefixA,
                 pNameA
         );
@@ -1079,6 +1094,8 @@ extern "C" {
 
         fprintf(pOut, "\n\n\n");
 
+        obj_Release(pFileName);
+        pFileName = OBJ_NIL;
         obj_Release(pCapsName);
         obj_Release(pCapsPrefix);
 
@@ -1174,7 +1191,7 @@ extern "C" {
         fprintf(pOut, "\t\tconst\n");
         fprintf(pOut, "\t\tchar\t\t\t*pDesc;\n");
         fprintf(pOut, "\t\tuint32_t\t\tvalue;\n");
-        fprintf(pOut, "\t%s_%s_entry\n\n", pPrefixA, pNameA);
+        fprintf(pOut, "\t} %s_%s_entry;\n\n", pPrefixA, pNameA);
         fprintf(pOut, "\t// This table is in alphanumeric order to be searched\n");
         fprintf(pOut, "\t// with a sequential or binary search by description.\n\n");
         fprintf(pOut, "\tconst\n");
@@ -1501,6 +1518,11 @@ extern "C" {
             if (pLine) {
                 AStr_Trim(pLine);
                 TRC_OBJ(this,"\t%d : (%d)%s\n", lineNo, AStr_getLength(pLine), AStr_getData(pLine));
+                if ( AStr_getLength(pLine) && (AStr_CharGetFirstW32(pLine) == '#')) {
+                    obj_Release(pLine);
+                    pLine = OBJ_NIL;
+                    continue;
+                }
                 if (AStr_getLength(pLine) > 0) {
                     ASTR_DATA       *pStr = OBJ_NIL;
                     chrW = AStr_CharGetLastW32(pLine);

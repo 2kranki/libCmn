@@ -1,3 +1,4 @@
+# genEnum --prefix=Value --name=Type misc/value_type.txt
 UNKNOWN
 ASTR           
 DOUBLE

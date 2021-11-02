@@ -111,31 +111,41 @@ extern "C" {
     } VALUE_CLASS_VTBL;
 
 
-    typedef enum Value_type_e {
-        VALUE_TYPE_UNKNOWN=0,
-        VALUE_TYPE_ASTR,            // AStr Object
-        VALUE_TYPE_DOUBLE,          // 64-bit Float
-        VALUE_TYPE_FALSE,           // False object
-        VALUE_TYPE_INT8,            // int8_t
-        VALUE_TYPE_INT16,           // int16_t
-        VALUE_TYPE_INT32,           // int32_t
-        VALUE_TYPE_INT64,           // int64_t
-        VALUE_TYPE_UINT8,           // int8_t
-        VALUE_TYPE_UINT16,          // int16_t
-        VALUE_TYPE_UINT32,          // int32_t
-        VALUE_TYPE_UINT64,          // int64_t
-        VALUE_TYPE_MONEY64,         // Money64 Object
-        VALUE_TYPE_NULL,            // Null Object
-        VALUE_TYPE_OBJECT,          // Any object that supports "ToJson" method
-        VALUE_TYPE_TRUE,            // True object
-        VALUE_TYPE_DATA,            // Any data (pointer and length) (pointer and length
-        //                          // must be valid for life of object)
-        VALUE_TYPE_DATA_FREE,       // Any data (pointer and length) which will be freed
-        //                          // using mem_Free() when no longer needed (pointer
-        //                          // and length must be valid for life of object)
-        VALUE_TYPE_HIGHEST
-    } VALUE_TYPE;
+    /* The following enum was generated from:
+     * "value_type.txt"
+     * If you want to change this enum, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
 
+    typedef enum Value_Type_e {
+        VALUE_TYPE_UNKNOWN=0,
+        VALUE_TYPE_ASTR=1,
+        VALUE_TYPE_DOUBLE=2,
+        VALUE_TYPE_FALSE=3,
+        VALUE_TYPE_INT8=4,
+        VALUE_TYPE_INT16=5,
+        VALUE_TYPE_INT32=6,
+        VALUE_TYPE_INT64=7,
+        VALUE_TYPE_UINT8=8,
+        VALUE_TYPE_UINT16=9,
+        VALUE_TYPE_UINT32=10,
+        VALUE_TYPE_UINT64=11,
+        VALUE_TYPE_MONEY64=12,
+        VALUE_TYPE_NULL=13,
+        VALUE_TYPE_OBJECT=14,
+        VALUE_TYPE_TRUE=15,
+        VALUE_TYPE_DATA=16,
+        VALUE_TYPE_DATA_FREE=17,
+        VALUE_TYPE_HIGHEST=18,
+    } VALUE_TYPES;
+
+
+    // VALUE_TYPE_DATA is any data (pointer and length) (pointer and length
+    // must be valid for life of object)
+    // VALUE_TYPE_DATA_FREE is any data (pointer and length) which will be freed
+    // using mem_Free() when no longer needed (pointer and length must be valid
+    // for life of object)
 
 
 

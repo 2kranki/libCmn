@@ -57,6 +57,65 @@ extern "C" {
     
 
     
+    /* The following tables were generated from:
+     * "sym_prim.txt"
+     * If you want to change this enum, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // This table is in enum order and provides
+    // the index + 1 into the Sym_Prim_entries
+    // table. 0 means no enum entry.
+    const
+    uint16_t    Sym_Prim_index[13] = {
+        9,
+        1,
+        6,
+        3,
+        8,
+        13,
+        11,
+        2,
+        7,
+        5,
+        10,
+        12,
+        4,
+    };
+
+
+    typedef struct {
+        const
+        char            *pDesc;
+        uint32_t        value;
+    } Sym_Prim_entry;
+
+    // This table is in alphanumeric order to be searched
+    // with a sequential or binary search by description.
+
+    const
+    Sym_Prim_entry    Sym_Prim_entries[] = {
+        {"SYM_PRIM_CHAR",1},
+        {"SYM_PRIM_DBLWORD",7},
+        {"SYM_PRIM_HALF",3},
+        {"SYM_PRIM_POINTER",12},
+        {"SYM_PRIM_QUAD",9},
+        {"SYM_PRIM_UCHAR",2},
+        {"SYM_PRIM_UDBLWORD",8},
+        {"SYM_PRIM_UHALF",4},
+        {"SYM_PRIM_UNKNOWN",0},
+        {"SYM_PRIM_UQUAD",10},
+        {"SYM_PRIM_UWORD",6},
+        {"SYM_PRIM_VOID",11},
+        {"SYM_PRIM_WORD",5},
+    };
+
+    const
+    uint32_t    cSym_Prim_entries = 13;
+
+
+
 
 
  
@@ -64,16 +123,89 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            Sym_task_body (
-        void            *pData
+    /* The following routine was generated from:
+     * "sym_prim.txt"
+     * If you want to change it, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // Given an enum value, return its character format.
+    const
+    char *            Sym_PrimToDesc(
+        uint32_t        value
     )
     {
-        //SYM_DATA  *this = pData;
-        
+        if (value >= 13) {
+            return "<<<Unknown Enum Value>>>";
+        }
+        if (Sym_Prim_index[value]) {
+            return Sym_Prim_entries[Sym_Prim_index[value]-1].pDesc;
+        } else {
+            return "<<<Unknown Enum Value>>>";
+        }
     }
-#endif
+
+
+
+    /* The following routine was generated from:
+     * "sym_prim.txt"
+     * If you want to change it, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // Given an enum description, return its value + 1 or
+    // 0 for not found.
+    const
+    uint32_t        Sym_DescToPrim(
+        char            *pDesc
+    )
+    {
+        int            iRc;
+        uint32_t        iMax = cSym_Prim_entries;
+        uint32_t        i    = 0;
+        uint32_t        high = 0;
+        uint32_t        low  = 0;
+        uint32_t        mid  = 0;
+
+        if (iMax > 10) {
+            for (i=0; i<iMax; i++) {
+                iRc = strcmp(pDesc, Sym_Prim_entries[i].pDesc);
+                if (0 == iRc) {
+                    return Sym_Prim_entries[i].value + 1;
+                }
+                if (iRc < 0) {
+                    break;
+                }
+            }
+        } else {
+            high = iMax - 1;
+            while (low < high) {
+                mid = (high + low) / 2;
+                i = mid + 1;
+                iRc = strcmp(pDesc, Sym_Prim_entries[i].pDesc);
+                if (iRc < 0) {
+                    high = mid;
+                } else if (iRc == 0) {
+                    return Sym_Prim_entries[i].value + 1;
+                } else {
+                    low = mid + 1;
+                }
+            }
+            if( high == low ) {
+                i = low;
+                iRc = strcmp(pDesc, Sym_Prim_entries[i].pDesc);
+                if (0 == iRc) {
+                    return Sym_Prim_entries[i].value + 1;
+                }
+            }
+        }
+        return 0;
+    }
+
+
+
 
 
 
