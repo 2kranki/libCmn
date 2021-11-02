@@ -753,7 +753,7 @@ extern "C" {
                 error code.
      */
     ERESULT         AStrArray_Disable (
-        ASTRARRAY_DATA       *this
+        ASTRARRAY_DATA  *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -788,7 +788,7 @@ extern "C" {
                 error code.
      */
     ERESULT         AStrArray_Enable (
-        ASTRARRAY_DATA       *this
+        ASTRARRAY_DATA  *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -813,11 +813,46 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          E n u m
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    OBJENUM_DATA *  AStrArray_Enum (
+        ASTRARRAY_DATA  *this
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!AStrArray_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return pEnum;
+        }
+#endif
+
+        pEnum = ObjArray_Enum(this->pArray);
+
+        // Return to caller.
+        return pEnum;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                        G e t
     //---------------------------------------------------------------
 
-    ASTR_DATA *     AStrArray_Get(
-        ASTRARRAY_DATA    *this,
+    ASTR_DATA *     AStrArray_Get (
+        ASTRARRAY_DATA  *this,
         uint32_t        index       // Relative to 1
     )
     {
@@ -833,7 +868,7 @@ extern "C" {
 #endif
 
         if (this->pArray) {
-            pNode = ObjArray_Get(this->pArray,index);
+            pNode = ObjArray_Get(this->pArray, index);
         }
 
         // Return to caller.
@@ -841,8 +876,8 @@ extern "C" {
     }
 
 
-    ASTR_DATA *     AStrArray_GetFirst(
-        ASTRARRAY_DATA    *this
+    ASTR_DATA *     AStrArray_GetFirst (
+        ASTRARRAY_DATA  *this
     )
     {
         ASTR_DATA       *pNode = OBJ_NIL;

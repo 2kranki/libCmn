@@ -59,57 +59,6 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    static
-    ERESULT         ptrArray_ExpandArray(
-        PTRARRAY_DATA   *this,
-        uint16_t        num
-    )
-    {
-        void            *pWork;
-        uint32_t        oldMax;
-        uint32_t        cbSize;
-        uint16_t        elemSize = sizeof(uint8_t *);
-        
-        // Do initialization.
-        if( this == NULL )
-            return ERESULT_INVALID_OBJECT;
-        if (num < this->max) {
-            return ERESULT_SUCCESSFUL_COMPLETION;
-        }
-        
-        // Expand the Array.
-        oldMax = this->max;
-        if (0 == oldMax) {
-            oldMax = 1;
-        }
-        this->max = oldMax << 1;             // max *= 2
-        while (num > this->max) {
-            this->max = this->max << 1;
-        }
-        cbSize = this->max * elemSize;
-        pWork = (void *)mem_Malloc(cbSize);
-        if( NULL == pWork ) {
-            this->max = oldMax;
-            return ERESULT_INSUFFICIENT_MEMORY;
-        }
-        
-        // Copy the old entries into the new array.
-        if( this->ppArray == NULL )
-            ;
-        else {
-            memmove(pWork, this->ppArray, (oldMax * elemSize));
-            mem_Free(this->ppArray);
-            // this->ppArray = NULL;
-        }
-        this->ppArray = pWork;
-        memset(&this->ppArray[oldMax], 0, ((this->max - oldMax) * elemSize));
-        
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-    
-    
-    
 
 
     /****************************************************************
@@ -121,7 +70,7 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    PTRARRAY_DATA * ptrArray_Alloc(
+    PTRARRAY_DATA * ptrArray_Alloc (
     )
     {
         PTRARRAY_DATA   *this;
@@ -134,7 +83,7 @@ extern "C" {
 
 
 
-    PTRARRAY_DATA * ptrArray_New(
+    PTRARRAY_DATA * ptrArray_New (
     )
     {
         PTRARRAY_DATA   *this;
@@ -156,7 +105,7 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
-    uint32_t        ptrArray_getSize(
+    uint32_t        ptrArray_getSize (
         PTRARRAY_DATA   *this
     )
     {
@@ -183,7 +132,7 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            ptrArray_Dealloc(
+    void            ptrArray_Dealloc (
         OBJ_ID          objId
     )
     {
@@ -223,7 +172,7 @@ extern "C" {
     //                    A p p e n d  O b j e c t
     //---------------------------------------------------------------
     
-    ERESULT         ptrArray_AppendData(
+    ERESULT         ptrArray_AppendData (
         PTRARRAY_DATA	*this,
         void            *pObject,
         uint32_t        *pIndex
@@ -245,7 +194,7 @@ extern "C" {
 #endif
         
         ++this->size;
-        eRc = ptrArray_ExpandArray(this, this->size);
+        eRc = ptrArray_Expand(this, this->size);
         if (ERESULT_HAS_FAILED(eRc)) {
             DEBUG_BREAK();
             return eRc;
@@ -264,7 +213,7 @@ extern "C" {
     //                          D e l e t e
     //---------------------------------------------------------------
     
-    void *          ptrArray_Delete(
+    void *          ptrArray_Delete (
         PTRARRAY_DATA   *this,
         uint32_t        index       // Relative to 1
     )
@@ -304,7 +253,7 @@ extern "C" {
     }
     
     
-    ERESULT         ptrArray_DeleteAll(
+    ERESULT         ptrArray_DeleteAll (
         PTRARRAY_DATA    *this
     )
     {
@@ -329,7 +278,7 @@ extern "C" {
     }
         
         
-    void *          ptrArray_DeleteFirst(
+    void *          ptrArray_DeleteFirst (
         PTRARRAY_DATA	*this
     )
     {
@@ -364,7 +313,7 @@ extern "C" {
     }
     
     
-    void *          ptrArray_DeleteLast(
+    void *          ptrArray_DeleteLast (
         PTRARRAY_DATA	*this
     )
     {
@@ -400,7 +349,7 @@ extern "C" {
     //                        E n u m
     //----------------------------------------------------------
     
-    ERESULT         ptrArray_Enum(
+    ERESULT         ptrArray_Enum (
         PTRARRAY_DATA   *this,
         ENUM_DATA       **ppEnum
     )
@@ -445,11 +394,65 @@ extern "C" {
     
     
     
+    //----------------------------------------------------------
+    //                        E x p a n d
+    //----------------------------------------------------------
+
+    ERESULT         ptrArray_Expand (
+        PTRARRAY_DATA   *this,
+        uint16_t        num
+    )
+    {
+        void            *pWork;
+        uint32_t        oldMax;
+        uint32_t        cbSize;
+        uint16_t        elemSize = sizeof(uint8_t *);
+
+        // Do initialization.
+        if( this == NULL )
+            return ERESULT_INVALID_OBJECT;
+        if (num < this->max) {
+            return ERESULT_SUCCESS;
+        }
+
+        // Expand the Array.
+        oldMax = this->max;
+        if (0 == oldMax) {
+            oldMax = 1;
+        }
+        this->max = oldMax << 1;             // max *= 2
+        while (num > this->max) {
+            this->max = this->max << 1;
+        }
+        cbSize = this->max * elemSize;
+        pWork = (void *)mem_Malloc(cbSize);
+        if( NULL == pWork ) {
+            this->max = oldMax;
+            return ERESULT_INSUFFICIENT_MEMORY;
+        }
+
+        // Copy the old entries into the new array.
+        if( this->ppArray == NULL )
+            ;
+        else {
+            memmove(pWork, this->ppArray, (oldMax * elemSize));
+            mem_Free(this->ppArray);
+            // this->ppArray = NULL;
+        }
+        this->ppArray = pWork;
+        memset(&this->ppArray[oldMax], 0, ((this->max - oldMax) * elemSize));
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                            G e t
     //---------------------------------------------------------------
     
-    void *          ptrArray_GetData(
+    void *          ptrArray_GetData (
         PTRARRAY_DATA   *this,
         uint32_t        index       // Relative to 1
     )
@@ -483,7 +486,7 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    PTRARRAY_DATA *   ptrArray_Init(
+    PTRARRAY_DATA *   ptrArray_Init (
         PTRARRAY_DATA       *this
     )
     {
@@ -517,7 +520,7 @@ extern "C" {
     //                          I n s e r t
     //---------------------------------------------------------------
     
-    ERESULT         ptrArray_InsertData(
+    ERESULT         ptrArray_InsertData (
         PTRARRAY_DATA	*this,
         uint32_t        index,
         void            *pObject
@@ -544,7 +547,7 @@ extern "C" {
 #endif
         
         ++this->size;
-        eRc = ptrArray_ExpandArray(this, this->size);
+        eRc = ptrArray_Expand(this, this->size);
         if (ERESULT_HAS_FAILED(eRc)) {
             DEBUG_BREAK();
             return eRc;
@@ -559,7 +562,7 @@ extern "C" {
         }
         this->ppArray[index] = (uint8_t *)pObject;
         
-        return ERESULT_SUCCESSFUL_COMPLETION;
+        return ERESULT_SUCCESS;
     }
     
     
@@ -568,7 +571,7 @@ extern "C" {
     //                         P o p
     //---------------------------------------------------------------
     
-    void *          ptrArray_PopData(
+    void *          ptrArray_PopData (
         PTRARRAY_DATA   *this
     )
     {
@@ -594,7 +597,7 @@ extern "C" {
     //                         P u s h
     //---------------------------------------------------------------
     
-    ERESULT         ptrArray_PushData(
+    ERESULT         ptrArray_PushData (
         PTRARRAY_DATA   *this,
         void            *pData
     )
@@ -618,10 +621,54 @@ extern "C" {
         
         
     //---------------------------------------------------------------
+    //                          P u t
+    //---------------------------------------------------------------
+
+    ERESULT         ptrArray_PutData (
+        PTRARRAY_DATA   *this,
+        uint32_t        index,
+        void            *pObject
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ptrArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pObject) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (index <= this->size) {
+        }
+        else {
+            return ERESULT_OUT_OF_RANGE;
+        }
+#endif
+        if (index > this->size) {
+            eRc = ptrArray_Expand(this, this->size);
+            if (ERESULT_HAS_FAILED(eRc)) {
+                DEBUG_BREAK();
+                return eRc;
+            }
+        }
+
+        this->ppArray[index] = (uint8_t *)pObject;
+
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       S o r t
     //---------------------------------------------------------------
     
-    ERESULT         ptrArray_Sort(
+    ERESULT         ptrArray_Sort (
         PTRARRAY_DATA	*this,
         PTR_COMPARE     pCompare
     )
@@ -679,7 +726,7 @@ extern "C" {
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
-    ASTR_DATA *     ptrArray_ToDebugString(
+    ASTR_DATA *     ptrArray_ToDebugString (
         PTRARRAY_DATA   *this,
         int             indent
     )
@@ -744,7 +791,7 @@ extern "C" {
 
     #ifdef NDEBUG
     #else
-    bool            ptrArray_Validate(
+    bool            ptrArray_Validate (
         PTRARRAY_DATA      *cbp
     )
     {
@@ -776,7 +823,7 @@ extern "C" {
         void            *pObj       // 1st parm to pVisitor
     )
     {
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        i;
         
         // Do initialization.

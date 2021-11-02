@@ -1,0 +1,32 @@
+# vi:nu:et:sts=4 ts=4 sw=4
+
+
+X Finish NodeTest::Parse (used in NodeObj)
+X Finish NodeTest_test
+X Finish NodeRtn::Parse (which can include a 'test' Rtn as well)
+X Finish NodeRtn_test
+X Finish NodeObj::Parse
+    X Implement NodeBase::Parse
+	X Update name, etc  in Test node after parse.
+* Finish NodeHdr::Parse (which can include a 'test' Rtn as well)
+* Finish NodeHdr_test
+X Finish NodePgm::Parse
+X Finish NodePgm_test
+X Finish NodeLib::Parse 
+X Finish NodeLib_test
+
+* ExpandNodes will create Rtns array for RtnA objects and Tests array for 
+    TstA objects that will be used to generate programs:
+    * Write Hdr/Rtn/Test expansions for NodeObj 
+    * Write HdrRtn/Test expansions for NodeRtn
+
+* Write code generation from arrays and Pgm or Lib Nodes from prior step. 
+    * macos64
+    * win32 
+    * win64
+
+* HJSon now puts a SrcLoc object in each node for error messages. Expand
+    the error messages to include it.
+
+* Fix source prefix for $(SRCDIR)/ and $(TEST_SRC)/.
+ 

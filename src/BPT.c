@@ -1574,7 +1574,7 @@ extern "C" {
     {
         ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
         OBJ_ID          pObj = OBJ_NIL;
-        uint32_t        key;
+        //uint32_t        key;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1727,8 +1727,8 @@ extern "C" {
         uint16_t        *pUsed
     )
     {
-        ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
-        OBJ_ID          pObj = OBJ_NIL;
+        //ERESULT         eRc = ERESULT_DATA_NOT_FOUND;
+        //OBJ_ID          pObj = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG

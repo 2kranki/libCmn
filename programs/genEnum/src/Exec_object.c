@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//  Class Object Metods and Tables for 'FileIO'
-//  Generated 07/10/2021 11:26:44
+//  Class Object Metods and Tables for 'Exec'
+//  Generated 10/31/2021 18:53:12
 
 
 /*
@@ -34,9 +34,11 @@
 
 
 
-#define         FILEIO_OBJECT_C       1
-#include        <FileIO_internal.h>
+#define         EXEC_OBJECT_C       1
+#include        <Exec_internal.h>
+#ifdef  EXEC_SINGLETON
 #include        <psxLock.h>
+#endif
 
 
 
@@ -44,17 +46,17 @@
 //                  Class Object Definition
 //===========================================================
 
-struct FileIO_class_data_s    {
+struct Exec_class_data_s    {
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  FILEIO_SINGLETON
+#ifdef  EXEC_SINGLETON
     volatile
-    FILEIO_DATA       *pSingleton;
+    EXEC_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
-    OBJARRAY_DATA     *pMemoryFiles;
+    //OBJ_ID          pObjCatalog;
 };
 
 
@@ -67,7 +69,7 @@ struct FileIO_class_data_s    {
 
 
 static
-void *          FileIOClass_QueryInfo (
+void *          ExecClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -76,26 +78,26 @@ void *          FileIOClass_QueryInfo (
 
 static
 const
-OBJ_INFO        FileIO_Info;            // Forward Reference
+OBJ_INFO        Exec_Info;            // Forward Reference
 
 
 
 
 static
-bool            FileIOClass_IsKindOf (
+bool            ExecClass_IsKindOf (
     uint16_t        classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_FILEIO_CLASS == classID) {
+    if (OBJ_IDENT_EXEC_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(FileIO_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Exec_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -107,11 +109,11 @@ bool            FileIOClass_IsKindOf (
 
 
 static
-uint16_t        FileIOClass_WhoAmI (
+uint16_t        ExecClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_FILEIO_CLASS;
+    return OBJ_IDENT_EXEC_CLASS;
 }
 
 
@@ -122,44 +124,19 @@ uint16_t        FileIOClass_WhoAmI (
 //===========================================================
 
 static
-bool            FileIO_MemoryFilesAdd (
-    OBJ_ID          pValue
-);
-
-static
-bool            FileIO_MemoryFilesDelete (
-    PATH_DATA       *pValue
-);
-
-static
-OBJ_ID          FileIO_MemoryFilesFind (
-    PATH_DATA       *pValue
-);
-
-static
-void            FileIO_MemoryFilesReset (
-    void
-);
-
-
-static
 const
-FILEIO_CLASS_VTBL    class_Vtbl = {
+EXEC_CLASS_VTBL    class_Vtbl = {
     {
-        &FileIO_Info,
-        FileIOClass_IsKindOf,
+        &Exec_Info,
+        ExecClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        FileIO_Class,
-        FileIOClass_WhoAmI,
-        (P_OBJ_QUERYINFO)FileIOClass_QueryInfo,
-        NULL                        // FileIOClass_ToDebugString
+        Exec_Class,
+        ExecClass_WhoAmI,
+        (P_OBJ_QUERYINFO)ExecClass_QueryInfo,
+        NULL                        // ExecClass_ToDebugString
     },
-    FileIO_MemoryFilesAdd,
-    FileIO_MemoryFilesDelete,
-    FileIO_MemoryFilesFind,
-    FileIO_MemoryFilesReset
 };
 
 
@@ -168,122 +145,16 @@ FILEIO_CLASS_VTBL    class_Vtbl = {
 //                      Class Object
 //-----------------------------------------------------------
 
-FILEIO_CLASS_DATA  FileIO_ClassObj = {
+EXEC_CLASS_DATA  Exec_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(FILEIO_CLASS_DATA),                  // cbSize
+        sizeof(EXEC_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
     },
-    OBJ_NIL
+    //0
 };
-
-
-
-//---------------------------------------------------------------
-//                  M e m o r y  F i l e s
-//---------------------------------------------------------------
-
-static
-bool            FileIO_MemoryFilesAdd (
-    OBJ_ID          pValue
-)
-{
-    ERESULT         eRc;
-    PATH_DATA       *pPath;
-    //uint32_t        i;
-    //uint32_t        iMax;
-    OBJ_ID          pOther;
-
-    if (OBJ_NIL == FileIO_ClassObj.pMemoryFiles) {
-        FileIO_ClassObj.pMemoryFiles = ObjArray_New();
-    }
-
-    pPath = u8Array_getOther(pValue);
-    pOther = FileIO_MemoryFilesFind(pPath);
-    if (pOther)
-        return false;
-
-    eRc = ObjArray_AppendObj(FileIO_ClassObj.pMemoryFiles, pValue, NULL);
-    if (ERESULT_FAILED(eRc))
-        return false;
-
-    return true;
-}
-
-
-static
-bool            FileIO_MemoryFilesDelete (
-    PATH_DATA       *pValue
-)
-{
-    //ERESULT         eRc;
-    uint32_t        i;
-    uint32_t        iMax;
-    OBJ_ID          pFile = OBJ_NIL;
-
-    if (OBJ_NIL == FileIO_ClassObj.pMemoryFiles) {
-        return false;
-    }
-
-    iMax = ObjArray_getSize(FileIO_ClassObj.pMemoryFiles);
-    for (i=0; i<iMax; i++) {
-        pFile = ObjArray_Get(FileIO_ClassObj.pMemoryFiles, i+1);
-        if (pFile) {
-            PATH_DATA       *pFilePath = u8Array_getOther(pFile);
-            if (0 == Path_Compare(pFilePath, pValue)) {
-                pFile = ObjArray_Delete(FileIO_ClassObj.pMemoryFiles, i+1);
-                obj_Release(pFile);
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-
-static
-OBJ_ID          FileIO_MemoryFilesFind (
-    PATH_DATA       *pValue
-)
-{
-    uint32_t        i;
-    uint32_t        iMax;
-    OBJ_ID          pFile = OBJ_NIL;
-
-    if (OBJ_NIL == FileIO_ClassObj.pMemoryFiles) {
-        return OBJ_NIL;
-    }
-
-    iMax = ObjArray_getSize(FileIO_ClassObj.pMemoryFiles);
-    for (i=0; i<iMax; i++) {
-        pFile = ObjArray_Get(FileIO_ClassObj.pMemoryFiles, i+1);
-        if (pFile) {
-            PATH_DATA       *pFilePath = u8Array_getOther(pFile);
-            if (0 == Path_Compare(pFilePath, pValue)) {
-                return pFile;
-            }
-        }
-    }
-
-    return OBJ_NIL;
-}
-
-
-static
-void            FileIO_MemoryFilesReset (
-    void
-)
-{
-
-    if (FileIO_ClassObj.pMemoryFiles) {
-        obj_Release(FileIO_ClassObj.pMemoryFiles);
-        FileIO_ClassObj.pMemoryFiles = OBJ_NIL;
-    }
-
-}
 
 
 
@@ -291,22 +162,22 @@ void            FileIO_MemoryFilesReset (
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  FILEIO_SINGLETON
+#ifdef  EXEC_SINGLETON
 extern
 const
-FILEIO_VTBL       FileIO_VtblShared;
+EXEC_VTBL       Exec_VtblShared;
 
 
-FILEIO_DATA *     FileIO_getSingleton (
+EXEC_DATA *     Exec_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(FileIO_ClassObj.pSingleton);
+    return (OBJ_ID)(Exec_ClassObj.pSingleton);
 }
 
 
-bool            FileIO_setSingleton (
-    FILEIO_DATA       *pValue
+bool            Exec_setSingleton (
+    EXEC_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -326,10 +197,10 @@ bool            FileIO_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (FileIO_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(FileIO_ClassObj.pSingleton));
+    if (Exec_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(Exec_ClassObj.pSingleton));
     }
-    FileIO_ClassObj.pSingleton = pValue;
+    Exec_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -339,18 +210,18 @@ bool            FileIO_setSingleton (
 
 
 
-FILEIO_DATA *     FileIO_Shared (
+EXEC_DATA *     Exec_Shared (
     void
 )
 {
-    FILEIO_DATA       *this = (OBJ_ID)(FileIO_ClassObj.pSingleton);
+    EXEC_DATA       *this = (OBJ_ID)(Exec_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = FileIO_New( );
-        obj_setVtbl(this, (void *)&FileIO_VtblShared);
-        FileIO_setSingleton(this);
+        this = Exec_New( );
+        obj_setVtbl(this, (void *)&Exec_VtblShared);
+        Exec_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // FileIO_ClassObj.pSingleton = OBJ_NIL;
+        // Exec_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -358,16 +229,16 @@ FILEIO_DATA *     FileIO_Shared (
 
 
 
-void            FileIO_SharedReset (
+void            Exec_SharedReset (
     void
 )
 {
-    FILEIO_DATA       *this = (OBJ_ID)(FileIO_ClassObj.pSingleton);
+    EXEC_DATA       *this = (OBJ_ID)(Exec_ClassObj.pSingleton);
     
     if (this) {
-        obj_setVtbl(this, (void *)&FileIO_Vtbl);
+        obj_setVtbl(this, (void *)&Exec_Vtbl);
         obj_Release(this);
-        FileIO_ClassObj.pSingleton = OBJ_NIL;
+        Exec_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -383,13 +254,13 @@ void            FileIO_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          FileIOClass_QueryInfo (
+void *          ExecClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    FILEIO_CLASS_DATA *this = objId;
+    EXEC_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -400,7 +271,7 @@ void *          FileIOClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(FILEIO_DATA);
+            return (void *)sizeof(EXEC_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -413,13 +284,13 @@ void *          FileIOClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&FileIO_Info;
+                        return (void *)&Exec_Info;
                     }
                     break;
                     
                 case 'S':
                     if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                        return (void *)&FileIO_Info.pClassSuperObject;
+                        return (void *)&Exec_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -437,35 +308,35 @@ void *          FileIOClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return FileIO_New;
+                        return Exec_New;
                     }
                     break;
                     
                 case 'P':
-#ifdef  FILEIO_JSON_SUPPORT
+#ifdef  EXEC_JSON_SUPPORT
                     if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                        return FileIO_ParseJsonFields;
+                        return Exec_ParseJsonFields;
                     }
                     if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                        return FileIO_ParseJsonObject;
+                        return Exec_ParseJsonObject;
                     }
 #endif
                     break;
 
                 case 'T':
-#ifdef  FILEIO_JSON_SUPPORT
+#ifdef  EXEC_JSON_SUPPORT
                     if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                        return FileIO_ToJsonFields;
+                        return Exec_ToJsonFields;
                     }
                     if (str_Compare("ToJson", (char *)pStr) == 0) {
-                        return FileIO_ToJson;
+                        return Exec_ToJson;
                     }
 #endif
                     break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return FileIOClass_WhoAmI;
+                        return ExecClass_WhoAmI;
                     }
                     break;
                     
@@ -485,7 +356,7 @@ void *          FileIOClass_QueryInfo (
 
 
 static
-bool            FileIO_IsKindOf (
+bool            Exec_IsKindOf (
     uint16_t        classID
 )
 {
@@ -493,14 +364,14 @@ bool            FileIO_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_FILEIO == classID) {
+    if (OBJ_IDENT_EXEC == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(FileIO_Class())->pClassSuperObject;
+    pObj = obj_getInfo(Exec_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -514,25 +385,25 @@ bool            FileIO_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            FileIO_Dealloc (
+void            Exec_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          FileIO_Class (
+OBJ_ID          Exec_Class (
     void
 )
 {
-    return (OBJ_ID)&FileIO_ClassObj;
+    return (OBJ_ID)&Exec_ClassObj;
 }
 
 
 static
-uint16_t        FileIO_WhoAmI (
+uint16_t        Exec_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_FILEIO;
+    return OBJ_IDENT_EXEC;
 }
 
 
@@ -543,35 +414,35 @@ uint16_t        FileIO_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
-#ifdef  FILEIO_SINGLETON
+#ifdef  EXEC_SINGLETON
 // A Shared object ignores Retain() and Release() except for
 // initialization and termination. So, there must be an
 // independent VTbl from the normal which does support Retain()
 // and Release().
 const
-FILEIO_VTBL     FileIO_VtblShared = {
+EXEC_VTBL     Exec_VtblShared = {
     {
-        &FileIO_Info,
-        FileIO_IsKindOf,
+        &Exec_Info,
+        Exec_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        FileIO_Dealloc,
-        FileIO_Class,
-        FileIO_WhoAmI,
-        (P_OBJ_QUERYINFO)FileIO_QueryInfo,
-        (P_OBJ_TOSTRING)FileIO_ToDebugString,
-        NULL,           // FileIO_Enable,
-        NULL,           // FileIO_Disable,
-        NULL,           // (P_OBJ_ASSIGN)FileIO_Assign,
-        NULL,           // (P_OBJ_COMPARE)FileIO_Compare,
-        NULL,           // (P_OBJ_PTR)FileIO_Copy,
-        NULL,           // (P_OBJ_PTR)FileIO_DeepCopy,
-        NULL            // (P_OBJ_HASH)FileIO_Hash,
+        Exec_Dealloc,
+        Exec_Class,
+        Exec_WhoAmI,
+        (P_OBJ_QUERYINFO)Exec_QueryInfo,
+        (P_OBJ_TOSTRING)Exec_ToDebugString,
+        NULL,           // Exec_Enable,
+        NULL,           // Exec_Disable,
+        NULL,           // (P_OBJ_ASSIGN)Exec_Assign,
+        NULL,           // (P_OBJ_COMPARE)Exec_Compare,
+        NULL,           // (P_OBJ_PTR)Exec_Copy,
+        NULL,           // (P_OBJ_PTR)Exec_DeepCopy,
+        NULL            // (P_OBJ_HASH)Exec_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //FileIO_IsEnabled,
+    //Exec_IsEnabled,
  
 };
 #endif
@@ -583,50 +454,43 @@ FILEIO_VTBL     FileIO_VtblShared = {
 // just that they are deleted when their usage count
 // goes to zero.
 const
-FILEIO_VTBL     FileIO_Vtbl = {
+EXEC_VTBL     Exec_Vtbl = {
     {
-        &FileIO_Info,
-        FileIO_IsKindOf,
+        &Exec_Info,
+        Exec_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        FileIO_Dealloc,
-        FileIO_Class,
-        FileIO_WhoAmI,
-        (P_OBJ_QUERYINFO)FileIO_QueryInfo,
-        (P_OBJ_TOSTRING)FileIO_ToDebugString,
-        NULL,           // FileIO_Enable,
-        NULL,           // FileIO_Disable,
-        NULL,           // (P_OBJ_ASSIGN)FileIO_Assign,
-        NULL,           // (P_OBJ_COMPARE)FileIO_Compare,
-        NULL,           // (P_OBJ_PTR)FileIO_Copy,
-        NULL,           // (P_OBJ_PTR)FileIO_DeepCopy,
-        NULL            // (P_OBJ_HASH)FileIO_Hash,
+        Exec_Dealloc,
+        Exec_Class,
+        Exec_WhoAmI,
+        (P_OBJ_QUERYINFO)Exec_QueryInfo,
+        (P_OBJ_TOSTRING)Exec_ToDebugString,
+        NULL,           // Exec_Enable,
+        NULL,           // Exec_Disable,
+        NULL,           // (P_OBJ_ASSIGN)Exec_Assign,
+        NULL,           // (P_OBJ_COMPARE)Exec_Compare,
+        NULL,           // (P_OBJ_PTR)Exec_Copy,
+        NULL,           // (P_OBJ_PTR)Exec_DeepCopy,
+        NULL            // (P_OBJ_HASH)Exec_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //============= I/O Interface Compatibility ===============
-    (void *)FileIO_Close,
-    (void *)FileIO_Flush,
-    (void *)FileIO_ReadIO,
-    (void *)FileIO_Seek,
-    (void *)FileIO_Tell,
-    (void *)FileIO_WriteIO,
-    //=========== End of I/O Interface Compatibility =============
-
+    //Exec_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        FileIO_Info = {
-    "FileIO",
-    "Generic Dataset/File Input/Output",
-    (OBJ_DATA *)&FileIO_ClassObj,
+OBJ_INFO        Exec_Info = {
+    "Exec",
+    "Execute a Command",
+    (OBJ_DATA *)&Exec_ClassObj,
     (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&FileIO_Vtbl,
-    sizeof(FILEIO_DATA)
+    (OBJ_IUNKNOWN *)&Exec_Vtbl,
+    sizeof(EXEC_DATA)
 };
 
 

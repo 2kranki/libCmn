@@ -96,12 +96,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    PTRARRAY_DATA * ptrArray_Alloc(
+    PTRARRAY_DATA * ptrArray_Alloc (
         void
     );
     
     
-    PTRARRAY_DATA * ptrArray_New(
+    PTRARRAY_DATA * ptrArray_New (
         void
     );
     
@@ -112,7 +112,7 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        ptrArray_getSize(
+    uint32_t        ptrArray_getSize (
         PTRARRAY_DATA   *this
     );
 
@@ -121,35 +121,48 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         ptrArray_AppendData(
+    ERESULT         ptrArray_AppendData (
         PTRARRAY_DATA	*this,
         void            *pData,
         uint32_t        *pIndex
     );
     
     
-    void *          ptrArray_Delete(
+    void *          ptrArray_Delete (
         PTRARRAY_DATA   *this,
         uint32_t        index       // Relative to 1
     );
     
     
-    ERESULT         ptrArray_DeleteAll(
+    ERESULT         ptrArray_DeleteAll (
         PTRARRAY_DATA   *this
     );
 
 
-    void *          ptrArray_DeleteFirst(
+    void *          ptrArray_DeleteFirst (
         PTRARRAY_DATA	*this
     );
 
 
-    void *          ptrArray_DeleteLast(
+    void *          ptrArray_DeleteLast (
         PTRARRAY_DATA	*this
     );
 
 
-    void *          ptrArray_GetData(
+    /*!
+     Create an Enumerator that will enumerate through all the pointers.
+     @param     this    object pointer
+     @param     num     a number relative to 1 that indexes into the array
+     @return:   If successful, valid enumerator. Otherwise, OBJ_NIL.
+                error code.
+     */
+    ERESULT         ptrArray_Expand (
+        PTRARRAY_DATA   *this,
+        uint16_t        num
+    );
+
+
+    void *          ptrArray_GetData (
         PTRARRAY_DATA   *this,
         uint32_t        index       // Relative to 1
     );
@@ -163,47 +176,65 @@ extern "C" {
                 the Pointer Array should not be altered while the enumerator
                 exists.
      */
-    ERESULT         ptrArray_Enum(
+    ERESULT         ptrArray_Enum (
         PTRARRAY_DATA   *this,
         ENUM_DATA       **ppEnum
     );
     
     
-    PTRARRAY_DATA * ptrArray_Init(
+    PTRARRAY_DATA * ptrArray_Init (
         PTRARRAY_DATA   *this
     );
 
 
     /*!
-     Insert the given data at the given index shifting the array as needed. This
-     does an insert before operation.
+     Expand the array if needed to support the given index, then insert the
+     given data at the given index shifting the array as needed. This does
+     an insert before operation.
      @param     this    object pointer
      @param     index   a number relative to 1 that indexes into the array
+     @param     pData   pointer to be stored in the array
      @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_* error
      code.
      */
-    ERESULT         ptrArray_InsertData(
+    ERESULT         ptrArray_InsertData (
         PTRARRAY_DATA	*this,
         uint32_t        index,
         void            *pData
     );
     
     
-    void *          ptrArray_PopData(
+    void *          ptrArray_PopData (
         PTRARRAY_DATA   *this
     );
 
 
-    ERESULT         ptrArray_PushData(
+    ERESULT         ptrArray_PushData (
         PTRARRAY_DATA   *this,
         void            *pData
     );
     
     
-    ERESULT         ptrArray_Sort(
-        PTRARRAY_DATA	*this,
-        PTR_COMPARE     pCompare
+    /*!
+     Expand the array if needed to support the given index, then replace
+     the pointer at the given index with the given pointer.
+     @param     this    object pointer
+     @param     index   a number relative to 1 that indexes into the array
+     @param     pData   pointer to be stored in the array
+     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_* error
+     code.
+     */
+    ERESULT         ptrArray_PutData (
+        PTRARRAY_DATA    *this,
+        uint32_t        index,
+        void            *pData
     );
+
+
+        ERESULT         ptrArray_Sort (
+            PTRARRAY_DATA	*this,
+            PTR_COMPARE     pCompare
+        );
     
     
     /*!
@@ -218,7 +249,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    ptrArray_ToDebugString(
+    ASTR_DATA *    ptrArray_ToDebugString (
         PTRARRAY_DATA   *this,
         int             indent
     );
@@ -230,7 +261,7 @@ extern "C" {
     // Returns:
     //	TRUE			=	Successful Completion
     //	FALSE        	=	Unsuccessful Completion
-    ERESULT 		ptrArray_Visit(
+    ERESULT 		ptrArray_Visit (
         PTRARRAY_DATA   *this,
         P_ERESULT_EXIT2 pVisitor,
         void            *pObj       // 1st parm to pVisitor

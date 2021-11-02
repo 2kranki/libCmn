@@ -17,6 +17,8 @@
 
 
 const
+char        *pProgram = "genCW";
+const
 char        *pProgramPath = NULL;
 int         fDebug = 0;             // -d or --debug or --no-debug
 int         speed = 20;
@@ -37,8 +39,6 @@ void        usage(
 )
 {
     static
-    const
-    char        *pProgram = "genCW";
     if (pMsg) {
         fprintf(stderr, "?%s - %s\n", pProgram, pMsg);
     }

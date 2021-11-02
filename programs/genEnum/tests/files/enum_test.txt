@@ -1,0 +1,16 @@
+        UNKNOWN
+        CHAR,
+        UCHAR
+        HALF
+
+        UHALF
+        WORD,
+        UWORD
+
+        DBLWORD
+        UDBLWORD,
+        QUAD
+        UQUAD,
+        VOID
+        POINTER
+

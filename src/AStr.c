@@ -134,11 +134,42 @@ extern "C" {
                 }
             }
         }
+
         return this;
     }
     
 
     
+    ASTR_DATA *     AStr_NewUpperA(
+        const
+        char            *pszIn            /* Input String Pointer */
+    )
+    {
+        ASTR_DATA      *this;
+        ASTR_DATA      *pOther = OBJ_NIL;
+        ERESULT         eRc;
+        uint32_t        len;
+
+        this = AStr_New( );
+        if (this) {
+            len = (uint32_t)utf8_StrLenChars(pszIn);
+            if (len) {
+                eRc = AStr_AppendA(this, pszIn);
+                if (ERESULT_HAS_FAILED(eRc)) {
+                    DEBUG_BREAK();
+                    obj_Release(this);
+                    return OBJ_NIL;
+                }
+                pOther = AStr_ToUpper(this);
+                obj_Release(this);
+            }
+        }
+
+        return pOther;
+    }
+
+
+
     ASTR_DATA *     AStr_NewFromMidA(
         const
         char            *pszIn,

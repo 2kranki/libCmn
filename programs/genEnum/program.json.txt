@@ -1,0 +1,15 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+
+{
+    "program":{
+        "name":"genEnum",
+        "deps":["Cmn"],
+        "hdrs":["Main_defs.h"],
+        "main":"mainProgram.c"
+    },
+    "objects":[
+        // {name:"Dict"},
+        {name:"Exec",       desc:"Execute a command"},
+        {name:"Main"},
+    ]
+}

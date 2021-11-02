@@ -1,10 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   Main_internal.h
- *	Generated 04/28/2020 23:01:38
+ *  Generated 10/31/2021 16:52:50
  *
  * Notes:
- *  --	N/A
+ *  --  N/A
  *
  */
 
@@ -41,19 +41,20 @@
 
 #include        <Main.h>
 #include        <Appl_internal.h>
-#include        <Gen.h>
+#ifdef  MAIN_USE_DICT
+#include        <dict.h>
+#endif
 #include        <JsonIn.h>
-#include        <TextOut.h>
 
 
 #ifndef MAIN_INTERNAL_H
-#define	MAIN_INTERNAL_H
+#define MAIN_INTERNAL_H
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -65,7 +66,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct Main_data_s	{
+struct Main_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     APPL_DATA       super;
@@ -73,16 +74,12 @@ struct Main_data_s	{
 
     // Common Data
     ASTR_DATA       *pStr;
-    //PATH_DATA       *pFilePath;     // JSON Input File Path
-    GEN_DATA        *pGen;
-    ASTR_DATA       *pOut;
-    PATH_DATA       *pOutputPath;
-    NODECLASS_DATA  *pClass;
+#ifdef  MAIN_USE_DICT
     DICT_DATA       *pDict;
+#endif
+    uint16_t        size;           // maximum number of elements
     uint8_t         fBackup;
-    uint8_t         fJson;
-    uint8_t         fObj;
-    uint8_t         fTest;
+    uint8_t         rsvd8;
 
 };
 #pragma pack(pop)
@@ -92,7 +89,7 @@ struct Main_data_s	{
 
     extern
     const
-    MAIN_VTBL        Main_Vtbl;
+    MAIN_VTBL         Main_Vtbl;
 
 
 
@@ -116,14 +113,19 @@ struct Main_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    APPL_DATA *     Main_getAppl (
+        MAIN_DATA       *this
+    );
+
+
     OBJ_IUNKNOWN *  Main_getSuperVtbl (
-        MAIN_DATA     *this
+        MAIN_DATA       *this
     );
 
 
     ERESULT         Main_Assign (
-        MAIN_DATA    *this,
-        MAIN_DATA    *pOther
+        MAIN_DATA       *this,
+        MAIN_DATA       *pOther
     );
 
 
@@ -132,13 +134,7 @@ struct Main_data_s	{
         ASTR_DATA       *pStr
     );
 
-    PATH_DATA *     Main_CreateOutputPath (
-        MAIN_DATA       *this,
-        ASTR_DATA       *pStr,
-        const
-        char            *pOsNameA
-    );
-
+    
     MAIN_DATA *     Main_Copy (
         MAIN_DATA       *this
     );
@@ -149,9 +145,15 @@ struct Main_data_s	{
     );
 
 
+    MAIN_DATA *     Main_DeepCopy (
+        MAIN_DATA       *this
+    );
+
+
     ERESULT         Main_ParseArgsDefault (
         MAIN_DATA        *this
     );
+
 
     int             Main_ParseArgsLong (
         MAIN_DATA       *this,
@@ -160,6 +162,7 @@ struct Main_data_s	{
         char            ***pppArgV
     );
 
+
     int             Main_ParseArgsShort (
         MAIN_DATA       *this,
         int             *pArgC,
@@ -167,30 +170,6 @@ struct Main_data_s	{
         char            ***pppArgV
     );
 
-    /*!
-     Parse the given file into a JSON Node structure and
-     perform some cursory checks on the structure.
-     @param     this    object pointer
-     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
-     */
-    ERESULT             Main_ParseInputFile (
-        MAIN_DATA           *this,
-        PATH_DATA           *pPath
-    );
-
-    /*!
-     Parse the given string into a JSON Node structure and
-     perform some cursory checks on the structure.
-     @param     this    object pointer
-     @return    If successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-     error code.
-     */
-    ERESULT             Main_ParseInputStr (
-        MAIN_DATA           *this,
-        const
-        char                *pStr
-    );
 
 #ifdef  MAIN_JSON_SUPPORT
     /*!
@@ -240,15 +219,13 @@ struct Main_data_s	{
     );
 
 
-#ifdef NDEBUG
-#else
-    // This is used in external test programs.
-    ERESULT         Main_SetOutputTest(
+    ERESULT         Main_SetupFromArgV (
         MAIN_DATA       *this,
-        const
-        char            *pStrA
+        uint16_t        cArgs,
+        char            *ppArgV[],
+        char            **ppEnv
     );
-#endif
+
 
 #ifdef  MAIN_JSON_SUPPORT
     /*!
@@ -306,20 +283,18 @@ struct Main_data_s	{
     );
 
 
-
-
 #ifdef NDEBUG
 #else
-    bool			Main_Validate (
+    bool            Main_Validate (
         MAIN_DATA       *this
     );
 #endif
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* MAIN_INTERNAL_H */
+#endif  /* MAIN_INTERNAL_H */
 

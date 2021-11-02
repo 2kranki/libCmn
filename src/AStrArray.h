@@ -55,6 +55,7 @@
 #include        <AStr.h>
 #include        <Path.h>
 #include        <ObjArray.h>
+#include        <ObjEnum.h>
 
 
 #ifndef         ASTRARRAY_H
@@ -148,7 +149,7 @@ extern "C" {
     );
     
     
-    ASTRARRAY_DATA * AStrArray_NewFromArgV(
+    ASTRARRAY_DATA * AStrArray_NewFromArgV (
         int             cArgs,
         const
         char            *ppArgV[]
@@ -162,7 +163,7 @@ extern "C" {
                 containing the array of strings, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTRARRAY_DATA * AStrArray_NewFromArrayA(
+    ASTRARRAY_DATA * AStrArray_NewFromArrayA (
         const
         char            *ppArgV[]
     );
@@ -180,7 +181,7 @@ extern "C" {
 #endif
 
 
-    ASTRARRAY_DATA * AStrArray_NewFromUtf8File(
+    ASTRARRAY_DATA * AStrArray_NewFromUtf8File (
         PATH_DATA       *pPath,
         int             maxLineLength
     );
@@ -191,12 +192,12 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA * AStrArray_getArray(
+    OBJARRAY_DATA * AStrArray_getArray (
         ASTRARRAY_DATA  *this
     );
 
 
-    uint32_t        AStrArray_getSize(
+    uint32_t        AStrArray_getSize (
         ASTRARRAY_DATA  *this
     );
 
@@ -214,13 +215,13 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS and the index in pIndex
                 if it is not NULL.  Otherwise, an ERESULT_* error.
      */
-    ERESULT         AStrArray_AppendStr(
-        ASTRARRAY_DATA    *this,
+    ERESULT         AStrArray_AppendStr (
+        ASTRARRAY_DATA  *this,
         ASTR_DATA       *pObject,
         uint32_t        *pIndex
     );
 
-    ERESULT         AStrArray_AppendUtf8File(
+    ERESULT         AStrArray_AppendUtf8File (
         ASTRARRAY_DATA  *this,
         PATH_DATA       *pPath,
         int             maxLineLength
@@ -239,7 +240,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS otherwise an
                 ERESULT_* error
      */
-    ERESULT         AStrArray_Assign(
+    ERESULT         AStrArray_Assign (
         ASTRARRAY_DATA  *this,
         ASTRARRAY_DATA  *pOther
     );
@@ -256,7 +257,7 @@ extern "C" {
      be released, otherwise OBJ_NIL.
      @warning   Remember to release the returned the returned object.
      */
-    ASTRARRAY_DATA * AStrArray_Copy(
+    ASTRARRAY_DATA * AStrArray_Copy (
         ASTRARRAY_DATA  *this
     );
 
@@ -264,30 +265,48 @@ extern "C" {
     // DeleteFromBottom() returns the top element after deleting it,
     // but not releasing it. It needs to be released before it is
     // discarded.
-    ASTR_DATA *     AStrArray_DeleteFirst(
-        ASTRARRAY_DATA    *this
+    ASTR_DATA *     AStrArray_DeleteFirst (
+        ASTRARRAY_DATA  *this
     );
 
 
     // DeleteFromTop() returns the top element after deleting it,
     // but not releasing it. It needs to be released before it is
     // discarded.
-    ASTR_DATA *     AStrArray_DeleteLast(
-        ASTRARRAY_DATA    *this
-    );
-
-
-    ASTR_DATA *     AStrArray_Get(
-        ASTRARRAY_DATA    *this,
-        uint32_t        index       // Relative to 1
-    );
-
-    ASTR_DATA *     AStrArray_GetFirst(
+    ASTR_DATA *     AStrArray_DeleteLast (
         ASTRARRAY_DATA  *this
     );
 
-    ASTR_DATA *     AStrArray_GetLast(
-        ASTRARRAY_DATA    *this
+
+    /*!
+     Create an enumerator for the array in ascending order.
+     @param     this    object pointer
+     @return    If successful, an Enumerator object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned Enum object.
+     */
+    OBJENUM_DATA *  AStrArray_Enum (
+        ASTRARRAY_DATA  *this
+    );
+
+
+    /*!
+     Get the i'th entry from the array if it exists.
+     @param     this    object pointer
+     @param     index   entry index relattive to 1
+     @return    If successful, an AStr object,  otherwise OBJ_NIL;
+     */
+    ASTR_DATA *     AStrArray_Get (
+        ASTRARRAY_DATA  *this,
+        uint32_t        index       // Relative to 1
+    );
+
+    ASTR_DATA *     AStrArray_GetFirst (
+        ASTRARRAY_DATA  *this
+    );
+
+    ASTR_DATA *     AStrArray_GetLast (
+        ASTRARRAY_DATA  *this
     );
 
 
@@ -296,14 +315,14 @@ extern "C" {
     );
 
 
-    ERESULT         AStrArray_InsertStr(
-        ASTRARRAY_DATA    *this,
+    ERESULT         AStrArray_InsertStr (
+        ASTRARRAY_DATA  *this,
         uint32_t        index,
         ASTR_DATA       *pObject
     );
 
 
-    ERESULT         AStrArray_SortAscending(
+    ERESULT         AStrArray_SortAscending (
         ASTRARRAY_DATA    *this
     );
 

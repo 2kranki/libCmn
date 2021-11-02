@@ -1809,8 +1809,8 @@ extern "C" {
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        uint32_t        i;
-        uint32_t        iMax;
+        //uint32_t        i;
+        //uint32_t        iMax;
         //uint32_t        j;
         
         // Do initialization.

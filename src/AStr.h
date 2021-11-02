@@ -86,28 +86,28 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    ASTR_DATA *    AStr_Alloc(
+    ASTR_DATA *    AStr_Alloc (
         void
     );
     
     
-    OBJ_ID         AStr_Class(
+    OBJ_ID         AStr_Class (
         void
     );
     
     
-    ASTR_DATA *    AStr_New(
+    ASTR_DATA *    AStr_New (
         void
     );
 
     
-    ASTR_DATA *    AStr_NewA(
+    ASTR_DATA *    AStr_NewA (
         const
-        char			*pszIn			/* Input String Pointer */
+        char			*pszInA		    /* Input String Pointer */
     );
     
     
-    ASTR_DATA *    AStr_NewFromMidA(
+    ASTR_DATA *    AStr_NewFromMidA (
         const
         char            *pszIn,         /* [in] Variable String Pointer */
         uint32_t        offset,
@@ -115,66 +115,66 @@ extern "C" {
     );
     
     
-    ASTR_DATA *    AStr_NewFromCharA(
+    ASTR_DATA *    AStr_NewFromCharA (
         uint32_t        len,
         const
         char            chr
     );
     
     
-    ASTR_DATA *    AStr_NewFromEnv(
+    ASTR_DATA *    AStr_NewFromEnv (
         const
         char            *pStr
     );
     
     
-    ASTR_DATA *     AStr_NewFromHexData(
+    ASTR_DATA *     AStr_NewFromHexData (
         void            *pData,
         int32_t         cData,
         uint16_t        indent
     );
 
 
-    ASTR_DATA *    AStr_NewFromInt64(
+    ASTR_DATA *    AStr_NewFromInt64 (
         int64_t         value
     );
     
     
 #ifdef  ASTR_JSON_SUPPORT
-    ASTR_DATA *    AStr_NewFromJsonString(
+    ASTR_DATA *    AStr_NewFromJsonString (
         ASTR_DATA       *pString
     );
     
-    ASTR_DATA *    AStr_NewFromJsonStringA(
+    ASTR_DATA *    AStr_NewFromJsonStringA (
         const
         char            *pString
     );
 #endif
 
 
-    ASTR_DATA *    AStr_NewFromPrint(
+    ASTR_DATA *    AStr_NewFromPrint (
         const
         char            *pFormat,
         ...
     );
 
 
-    ASTR_DATA *    AStr_NewFromTimeNow(
+    ASTR_DATA *    AStr_NewFromTimeNow (
         void
     );
  
     
-    ASTR_DATA *    AStr_NewFromUInt64(
+    ASTR_DATA *    AStr_NewFromUInt64 (
         uint64_t        value
     );
     
     
-    ASTR_DATA *    AStr_NewFromUtf8File(
+    ASTR_DATA *    AStr_NewFromUtf8File (
         PATH_DATA       *pPath
     );
 
 
-    ASTR_DATA *    AStr_NewFromW32Str(
+    ASTR_DATA *    AStr_NewFromW32Str (
         W32STR_DATA     *pStr
     );
 
@@ -188,12 +188,18 @@ extern "C" {
                  otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *    AStr_NewParenthesizedFromAStr(
+    ASTR_DATA *    AStr_NewParenthesizedFromAStr (
         ASTR_DATA       *this
     );
     
     
-    ASTR_DATA *    AStr_NewW32(
+    ASTR_DATA *    AStr_NewUpperA (
+        const
+        char            *pszInA         /* Input String Pointer */
+    );
+
+
+    ASTR_DATA *    AStr_NewW32 (
         const
         W32CHR_T		*pszIn			/* Input String Pointer */
     );
@@ -205,13 +211,13 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        AStr_getCrcIEEE(
+    uint32_t        AStr_getCrcIEEE (
         ASTR_DATA       *this
     );
     
     
     const
-    char *          AStr_getData(
+    char *          AStr_getData (
         ASTR_DATA      *this
     );
     
@@ -221,7 +227,7 @@ extern "C" {
                 the string, not the actual size of the string in
                 memory.  -1 indicates an error occurred.
      */
-    uint32_t        AStr_getLength(
+    uint32_t        AStr_getLength (
         ASTR_DATA      *this
     );
     
@@ -231,7 +237,7 @@ extern "C" {
                 the string, not the actual size of the string in
                 memory.  -1 indicates an error occurred.
      */
-    uint32_t        AStr_getSize(
+    uint32_t        AStr_getSize (
         ASTR_DATA      *this
     );
     
@@ -242,20 +248,20 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT         AStr_Append(
+    ERESULT         AStr_Append (
         ASTR_DATA		*this,
         ASTR_DATA       *pOther
     );
     
     
-    ERESULT         AStr_AppendA(
+    ERESULT         AStr_AppendA (
         ASTR_DATA		*this,
         const
         char            *pStr
     );
     
     
-    ERESULT         AStr_AppendMidA(
+    ERESULT         AStr_AppendMidA (
         ASTR_DATA        *this,
         const
         char            *pStr,
@@ -264,19 +270,19 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_AppendW32Str(
+    ERESULT         AStr_AppendW32Str (
         ASTR_DATA		*this,
         W32STR_DATA     *pStr
     );
     
     
-    ERESULT         AStr_AppendUtf8File(
+    ERESULT         AStr_AppendUtf8File (
         ASTR_DATA		*this,
         PATH_DATA       *pPath
     );
     
     
-    ERESULT         AStr_AppendW32(
+    ERESULT         AStr_AppendW32 (
         ASTR_DATA		*this,
         uint32_t        len,
         const
@@ -284,21 +290,21 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_AppendCharA(
+    ERESULT         AStr_AppendCharA (
         ASTR_DATA		*this,
         const
         char            chr
     );
     
     
-    ERESULT         AStr_AppendCharW32(
+    ERESULT         AStr_AppendCharW32 (
         ASTR_DATA		*this,
         const
         W32CHR_T        chr
     );
     
     
-    ERESULT         AStr_AppendCharRepeatA(
+    ERESULT         AStr_AppendCharRepeatA (
         ASTR_DATA		*this,
         uint32_t        len,
         const
@@ -306,7 +312,7 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_AppendCharRepeatW32(
+    ERESULT         AStr_AppendCharRepeatW32 (
         ASTR_DATA		*this,
         uint32_t        len,
         const
@@ -314,14 +320,14 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_AppendHex8(
+    ERESULT         AStr_AppendHex8 (
         ASTR_DATA       *this,
         const
         uint8_t         num
     );
     
     
-    ERESULT         AStr_AppendHex16(
+    ERESULT         AStr_AppendHex16 (
         ASTR_DATA		*this,
         const
         uint16_t        num
@@ -342,7 +348,7 @@ extern "C" {
      @param cData   data length
      @param indent  number of spaces to indent each line of the dump with
      */
-    ERESULT        AStr_AppendHexData(
+    ERESULT        AStr_AppendHexData (
         ASTR_DATA       *this,
         void            *pData,
         int32_t         cData,
@@ -350,7 +356,7 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_AppendPrint(
+    ERESULT         AStr_AppendPrint (
         ASTR_DATA		*this,
         const
         char            *pFormat,
@@ -358,7 +364,7 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_Assign(
+    ERESULT         AStr_Assign (
         ASTR_DATA		*this,
         ASTR_DATA       *pOther
     );
@@ -376,7 +382,7 @@ extern "C" {
                 the index of the character within the string (relative to 1). Otherwise,
                 an ERESULT_* error code is returned.
      */
-    ERESULT         AStr_CharFindNextW32(
+    ERESULT         AStr_CharFindNextW32 (
         ASTR_DATA		*this,
         uint32_t        *pIndex,                // [in-out]
         const
@@ -396,7 +402,7 @@ extern "C" {
                 the index of the character within the string (relative to 1). Otherwise,
                 an ERESULT_* error code is returned.
      */
-    ERESULT         AStr_CharFindPrevW32(
+    ERESULT         AStr_CharFindPrevW32 (
         ASTR_DATA		*this,
         uint32_t        *pIndex,                // [in-out]
         const
@@ -404,28 +410,28 @@ extern "C" {
     );
     
     
-    W32CHR_T        AStr_CharGetW32(
+    W32CHR_T        AStr_CharGetW32 (
         ASTR_DATA		*this,
         uint32_t        offset
     );
     
-    W32CHR_T        AStr_CharGetFirstW32(
+    W32CHR_T        AStr_CharGetFirstW32 (
         ASTR_DATA        *this
     );
     
-    W32CHR_T        AStr_CharGetLastW32(
+    W32CHR_T        AStr_CharGetLastW32 (
         ASTR_DATA        *this
     );
     
 
-    ERESULT         AStr_CharInsertW32(
+    ERESULT         AStr_CharInsertW32 (
         ASTR_DATA       *this,
         uint32_t        offset,
         W32CHR_T        chr
     );
     
     
-    ERESULT         AStr_CharInsertW32Repeat(
+    ERESULT         AStr_CharInsertW32Repeat (
         ASTR_DATA       *this,
         uint32_t        offset,
         uint32_t        len,
@@ -433,14 +439,14 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_CharPutW32(
+    ERESULT         AStr_CharPutW32 (
         ASTR_DATA		*this,
         uint32_t        offset,
         W32CHR_T        chr
     );
     
     
-    ERESULT         AStr_CharReplaceAllW32(
+    ERESULT         AStr_CharReplaceAllW32 (
         ASTR_DATA		*this,
         const
         W32CHR_T        chrSrch,
@@ -457,7 +463,7 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             AStr_Compare(
+    int             AStr_Compare (
         ASTR_DATA		*this,
         ASTR_DATA       *pOther
     );
@@ -471,7 +477,7 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             AStr_CompareA(
+    int             AStr_CompareA (
         ASTR_DATA		*this,
         const
         char            *pOtherA
@@ -486,7 +492,7 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             AStr_CompareLeftA(
+    int             AStr_CompareLeftA (
         ASTR_DATA        *this,
         const
         char            *pOther
@@ -501,25 +507,25 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             AStr_CompareRightA(
+    int             AStr_CompareRightA (
         ASTR_DATA		*this,
         const
         char            *pOther
     );
     
     
-    int             AStr_CompareW32(
+    int             AStr_CompareW32 (
         ASTR_DATA		*this,
         const
         W32CHR_T        *pOther
     );
     
     
-    ASTR_DATA *     AStr_Copy(
+    ASTR_DATA *     AStr_Copy (
         ASTR_DATA       *this
     );
     
-    ASTR_DATA *     AStr_CopySpcl(
+    ASTR_DATA *     AStr_CopySpcl (
         ASTR_DATA       *this,
         W32CHR_T        (*pSpcl)(W32CHR_T) // Applies this routine to each character
                                            // being copied.
@@ -533,7 +539,7 @@ extern "C" {
     );
     
     
-    ASTR_DATA *     AStr_DeepCopy(
+    ASTR_DATA *     AStr_DeepCopy (
         ASTR_DATA       *this
     );
     
@@ -550,7 +556,7 @@ extern "C" {
      @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
                 is returned.
      */
-    ERESULT         AStr_ExpandVars(
+    ERESULT         AStr_ExpandVars (
         ASTR_DATA       *this,
         const
         char *          (*pFindA)(OBJ_ID, const char *pNameA),
@@ -568,7 +574,7 @@ extern "C" {
      @return    If one of the chars is found, ERESULT_SUCCESS.
                 ERESULT_OUT_OF_RANGE if none of the chars are found.
      */
-    ERESULT         AStr_FindNextA(
+    ERESULT         AStr_FindNextA (
         ASTR_DATA       *this,
         const
         char            *pStrA,             // UTF-8 String
@@ -586,7 +592,7 @@ extern "C" {
      @return    If one of the chars is found, ERESULT_SUCCESS.
                 ERESULT_OUT_OF_RANGE if none of the chars are found.
      */
-    ERESULT         AStr_FindNextW32(
+    ERESULT         AStr_FindNextW32 (
         ASTR_DATA       *this,
         const
         W32CHR_T        *pStrW32,
@@ -594,17 +600,17 @@ extern "C" {
     );
 
 
-    uint32_t        AStr_Hash(
+    uint32_t        AStr_Hash (
         ASTR_DATA       *this
     );
     
     
-    ASTR_DATA *     AStr_Init(
+    ASTR_DATA *     AStr_Init (
         ASTR_DATA       *this
     );
 
 
-    ERESULT         AStr_InsertA(
+    ERESULT         AStr_InsertA (
         ASTR_DATA		*this,
         uint32_t        offset,
         const
@@ -612,7 +618,7 @@ extern "C" {
         );
 
     
-    ERESULT         AStr_InsertW32(
+    ERESULT         AStr_InsertW32 (
         ASTR_DATA		*this,
         uint32_t        offset,
         const
@@ -626,7 +632,7 @@ extern "C" {
      @return    If string conforms to a number, ERESULT_SUCCESS,
                 otherwise, an ERESULT_* Error Code.
      */
-    ERESULT         AStr_IsNumeric(
+    ERESULT         AStr_IsNumeric (
         ASTR_DATA        *this
     );
 
@@ -638,12 +644,12 @@ extern "C" {
      @return    If string contains only ASCII, ERESULT_SUCCESS,
                 otherwise, an ERESULT_* Error Code.
      */
-    ERESULT         AStr_IsOnlyASCII(
+    ERESULT         AStr_IsOnlyASCII (
         ASTR_DATA		*this
     );
     
     
-    ERESULT         AStr_Left(
+    ERESULT         AStr_Left (
         ASTR_DATA		*this,
         uint32_t        len,
         ASTR_DATA       **ppOther           // [out]
@@ -658,7 +664,7 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS is returned, otherwise an ERESULT_*
                  error is returned.
      */
-    ERESULT         AStr_MatchA(
+    ERESULT         AStr_MatchA (
         ASTR_DATA       *this,
         const
         char            *pPattern
@@ -678,7 +684,7 @@ extern "C" {
                 error is returned.
      @warning  Remember to release the returned AStr object if present.
      */
-    ERESULT         AStr_Mid(
+    ERESULT         AStr_Mid (
         ASTR_DATA		*this,
         uint32_t        offset,
         uint32_t        len,
@@ -686,7 +692,7 @@ extern "C" {
     );
     
     
-    ERESULT         AStr_Remove(
+    ERESULT         AStr_Remove (
         ASTR_DATA		*this,
         uint32_t        offset,
         uint32_t        len
@@ -704,14 +710,14 @@ extern "C" {
                 error is returned.
      @warning  Remember to release the returned AStr object if present.
      */
-    ERESULT         AStr_Right(
+    ERESULT         AStr_Right (
         ASTR_DATA		*this,
         uint32_t        len,
         ASTR_DATA       **ppOther           // [out]
     );
     
     
-    ERESULT         AStr_SpanW32(
+    ERESULT         AStr_SpanW32 (
         ASTR_DATA		*this,
         uint32_t        *pIndex,            // [in-out]
         const
@@ -731,13 +737,13 @@ extern "C" {
                 deliminating character is not included.
      @warning  Remember to release the returned AStr object.
      */
-    ASTRARRAY_DATA * AStr_SplitOnCharW32(
+    ASTRARRAY_DATA * AStr_SplitOnCharW32 (
         ASTR_DATA       *this,
         const
         W32CHR_T        chr
     );
     
-    ASTRARRAY_DATA * AStr_SplitOnCharsW32(
+    ASTRARRAY_DATA * AStr_SplitOnCharsW32 (
         ASTR_DATA       *this,
         const
         W32CHR_T        *pChrs              // NUL-terminated list of chars
@@ -751,7 +757,7 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned AStrC object.
      */
-    ASTRC_DATA *    AStr_ToAStrC(
+    ASTRC_DATA *    AStr_ToAStrC (
         ASTR_DATA       *this
     );
     
@@ -764,12 +770,12 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     AStr_ToChrCon(
+    ASTR_DATA *     AStr_ToChrCon (
         ASTR_DATA       *this
     );
     
     
-    ASTR_DATA *     AStr_ToLower(
+    ASTR_DATA *     AStr_ToLower (
         ASTR_DATA       *this
     );
     
@@ -780,7 +786,7 @@ extern "C" {
      @return    If successful, an new AStr object which must be released,
                 otherwise OBJ_NIL.
      */
-    ASTR_DATA *     AStr_ToLowerName(
+    ASTR_DATA *     AStr_ToLowerName (
         ASTR_DATA      *this
     );
     
@@ -798,13 +804,13 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     AStr_ToDebugString(
+    ASTR_DATA *     AStr_ToDebugString (
         ASTR_DATA      *this,
         int             indent
     );
     
     
-    int64_t         AStr_ToInt64(
+    int64_t         AStr_ToInt64 (
         ASTR_DATA		*this
     );
     
@@ -815,7 +821,7 @@ extern "C" {
                 otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     AStr_ToJson(
+    ASTR_DATA *     AStr_ToJson (
         ASTR_DATA       *this
     );
     
@@ -826,7 +832,7 @@ extern "C" {
      @return    If successful, an new AStr object which must be released,
                 otherwise OBJ_NIL.
      */
-    ASTR_DATA *     AStr_ToSQL(
+    ASTR_DATA *     AStr_ToSQL (
         ASTR_DATA      *this
     );
 
@@ -835,7 +841,7 @@ extern "C" {
      Copy the string to stderr.
      @return    If successful, ERESULT_SUCCESS, otherwise ERESULT_* error.
      */
-    ERESULT         AStr_ToStderr(
+    ERESULT         AStr_ToStderr (
         ASTR_DATA       *this
     );
     
@@ -845,7 +851,7 @@ extern "C" {
      @return    If successful, an new AStr object which must be released,
                 otherwise OBJ_NIL.
      */
-    ASTR_DATA *     AStr_ToString(
+    ASTR_DATA *     AStr_ToString (
         ASTR_DATA       *this
     );
     
@@ -856,7 +862,7 @@ extern "C" {
      @return    If successful, an new AStr object which must be released,
                 otherwise OBJ_NIL.
      */
-    ASTR_DATA *     AStr_ToUpper(
+    ASTR_DATA *     AStr_ToUpper (
         ASTR_DATA      *this
     );
     
@@ -867,24 +873,24 @@ extern "C" {
      @return    If successful, an new AStr object which must be released,
                 otherwise OBJ_NIL.
      */
-    ASTR_DATA *     AStr_ToUpperName(
+    ASTR_DATA *     AStr_ToUpperName (
         ASTR_DATA      *this
     );
     
     
-    uint64_t        AStr_ToUint64(
+    uint64_t        AStr_ToUint64 (
         ASTR_DATA		*this
     );
     
     
-    ERESULT         AStr_ToUtf8File(
+    ERESULT         AStr_ToUtf8File (
         ASTR_DATA		*this,
         PATH_DATA       *pPath
     );
     
     
     // The string returned from this must be obj_Release'd.
-    W32STR_DATA *   AStr_ToW32Str(
+    W32STR_DATA *   AStr_ToW32Str (
         ASTR_DATA       *this
     );
     
@@ -894,12 +900,12 @@ extern "C" {
      @return:   If successful, an new AStr object which must be released,
      otherwise OBJ_NIL.
      */
-    ERESULT         AStr_Trim(
+    ERESULT         AStr_Trim (
         ASTR_DATA		*this
     );
     
     
-    ERESULT         AStr_Truncate(
+    ERESULT         AStr_Truncate (
         ASTR_DATA		*this,
         uint32_t        len
     );

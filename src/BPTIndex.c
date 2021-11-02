@@ -81,7 +81,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     uint16_t        BPTIndex_FindByKey (
-        BPTINDEX_DATA *this,
+        BPTINDEX_DATA   *this,
         void            *pKey,
         uint16_t        *pInsert
     )
@@ -1936,7 +1936,7 @@ extern "C" {
         BPTINDEX_NODE *pNode1 = NULL;
         BPTINDEX_NODE *pNode2 = NULL;
         uint8_t         *pData1;
-        uint8_t         *pData2;
+        //uint8_t         *pData2;
         uint16_t        keyLen;
         uint16_t        rcdLen;
         BPTINDEX_RSVD *pRsvd;
