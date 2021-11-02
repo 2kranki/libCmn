@@ -180,6 +180,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          I n d e x
+    //---------------------------------------------------------------
+
+    U16ARRAY_DATA * Exec_getIndex (
+        EXEC_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Exec_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pIndex;
+    }
+
+
+    bool            Exec_setIndex (
+        EXEC_DATA       *this,
+        U16ARRAY_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Exec_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pIndex) {
+            obj_Release(this->pIndex);
+        }
+        this->pIndex = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -573,6 +619,7 @@ extern "C" {
 #endif
 
         Exec_setArray(this, OBJ_NIL);
+        Exec_setIndex(this, OBJ_NIL);
         Exec_setSorted(this, OBJ_NIL);
         Exec_setStr(this, OBJ_NIL);
 
@@ -736,6 +783,8 @@ extern "C" {
         //TEXTOUT_DATA    *pOut;
         ASTRARRAY_DATA  *pArray = OBJ_NIL;
         ASTRARRAY_DATA  *pSorted = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
 
         // Do initialization.
         TRC_OBJ(this,"%s:\n", __func__);
@@ -783,8 +832,21 @@ extern "C" {
             return ERESULT_GENERAL_FAILURE;
         }
         eRc = AStrArray_SortAscending(pSorted);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
         this->pArray = pArray;
         this->pSorted = pSorted;
+        iMax = AStrArray_getSize(pSorted);
+        this->pIndex = U16Array_NewMinSize(this->maxIndex);
+        if (this->pIndex) {
+            for (i=0; i<iMax; i++) {
+                ASTR_DATA       *pStr = AStrArray_Get(this->pSorted, i+1);
+                if (pStr) {
+                    eRc = U16Array_Put(this->pIndex, obj_getMisc(pStr)+1, i+1);
+                }
+            }
+        }
 
         eRc = Exec_GenEnum(this, pInputPath, pPrefixA, pNameA);
         eRc = Exec_GenTables(this, pInputPath, pPrefixA, pNameA);
@@ -853,16 +915,12 @@ extern "C" {
             if (pLine) {
                 fprintf(
                         pOut,
-                        "\t\t%s_%s_%s",
+                        "\t\t%s_%s_%s=%d,\n",
                         AStr_getData(pCapsPrefix),
                         AStr_getData(pCapsName),
-                        AStr_getData(pLine)
+                        AStr_getData(pLine),
+                        obj_getMisc(pLine)
                 );
-                if (0 == i) {
-                    fprintf(pOut, "=0,\n");
-                } else {
-                    fprintf(pOut, ",\n");
-                }
             }
         }
 
@@ -918,10 +976,25 @@ extern "C" {
         fprintf(pOut, "\t\tuint32_t\t\tvalue\n");
         fprintf(pOut, "\t)\n");
         fprintf(pOut, "\t{\n");
-        fprintf(pOut, "\t\tif (value >= c%s_%s_entries) {\n", pPrefixA, pNameA);
+        fprintf(pOut, "\t\tif (value >= %d) {\n", this->maxIndex);
         fprintf(pOut, "\t\t\treturn \"<<<Unknown Enum Value>>>\";\n");
         fprintf(pOut, "\t\t}\n");
+#ifdef XYZZY
         fprintf(pOut, "\t\treturn p%s_%s_desc[value];\n", pPrefixA, pNameA);
+#else
+        fprintf(pOut, "\t\tif (%s_%s_index[value]) {\n", pPrefixA, pNameA);
+        fprintf(
+                pOut,
+                "\t\t\treturn p%s_%s_entries[%s_%s_index[value]-1].pDesc;\n",
+                pPrefixA,
+                pNameA,
+                pPrefixA,
+                pNameA
+        );
+        fprintf(pOut, "\t\t} else {\n");
+        fprintf(pOut, "\t\t\treturn \"<<<Unknown Enum Value>>>\";\n");
+        fprintf(pOut, "\t\t}\n");
+#endif
         fprintf(pOut, "\t}\n");
         fprintf(pOut, "\n\n\n");
 
@@ -1060,9 +1133,10 @@ extern "C" {
         fprintf(pOut, "\t * should alter the above file and\n");
         fprintf(pOut, "\t * regenerate using genEnum!\n");
         fprintf(pOut, "\t */\n\n");
+#ifdef XYZZY
         fprintf(pOut, "\t// This table is in enum order.\n\n");
         fprintf(pOut, "\tconst\n");
-        fprintf(pOut, "\tchar\t*p%s_%s_desc[] {\n", pPrefixA, pNameA);
+        fprintf(pOut, "\tchar\t*p%s_%s_desc[] = {\n", pPrefixA, pNameA);
         iMax = AStrArray_getSize(this->pArray);
         for (i=0; i<iMax; i++) {
             ASTR_DATA       *pLine = AStrArray_Get(this->pArray, i+1);
@@ -1077,6 +1151,24 @@ extern "C" {
             }
         }
         fprintf(pOut, "\t};\n\n\n");
+#endif
+        fprintf(pOut, "\t// This table is in enum order and provides\n");
+        fprintf(pOut, "\t// the index + 1 into the %s_%s_entries\n", pPrefixA, pNameA);
+        fprintf(pOut, "\t// table. 0 means no enum entry.\n");
+        fprintf(pOut, "\tconst\n");
+        fprintf(
+                pOut,
+                "\tuint16_t\t%s_%s_index[%d] = {\n",
+                pPrefixA,
+                pNameA,
+                this->maxIndex
+        );
+        iMax = this->maxIndex;
+        for (i=0; i<iMax; i++) {
+            uint16_t        index = U16Array_Get(this->pIndex, i+1);
+            fprintf(pOut, "\t\t%d,\n", index);
+        }
+        fprintf(pOut, "\t};\n\n\n");
 
         fprintf(pOut, "\ttypedef struct {\n");
         fprintf(pOut, "\t\tconst\n");
@@ -1086,7 +1178,7 @@ extern "C" {
         fprintf(pOut, "\t// This table is in alphanumeric order to be searched\n");
         fprintf(pOut, "\t// with a sequential or binary search by description.\n\n");
         fprintf(pOut, "\tconst\n");
-        fprintf(pOut, "\t%s_%s_entry\t%s_%s_entries[] {\n", pPrefixA, pNameA, pPrefixA, pNameA);
+        fprintf(pOut, "\t%s_%s_entry\t%s_%s_entries[] = {\n", pPrefixA, pNameA, pPrefixA, pNameA);
         iMax = AStrArray_getSize(this->pSorted);
         for (i=0; i<iMax; i++) {
             ASTR_DATA       *pLine = AStrArray_Get(this->pSorted, i+1);
@@ -1424,15 +1516,20 @@ extern "C" {
                             AStr_getLength(pStr),
                             AStr_getData(pStr)
                     );
-                    eRc = AStrArray_AppendStr(pArray, pStr, NULL);
+                    if (AStr_getLength(pStr)) {
+                        eRc = AStrArray_AppendStr(pArray, pStr, NULL);
+                    }
                     lineNo++;
                     obj_Release(pStr);
                     //pStr = OBJ_NIL;
+                } else {
+                    lineNo++;
                 }
                 obj_Release(pLine);
                 pLine = OBJ_NIL;
             }
         }
+        this->maxIndex = lineNo;
 
         // Return to caller.
         return pArray;

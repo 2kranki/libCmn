@@ -142,7 +142,14 @@ extern "C" {
         void
     );
     
-    
+
+    /*! Create a new array with a minimum number of zeroed elements.
+     */
+    U16ARRAY_DATA *     U16Array_NewMinSize (
+        uint16_t            minSize
+    );
+
+
 #ifdef  U16ARRAY_JSON_SUPPORT
     U16ARRAY_DATA * U16Array_NewFromJsonString (
         ASTR_DATA       *pString
@@ -272,6 +279,13 @@ extern "C" {
 
 
     ERESULT         U16Array_InsertData (
+        U16ARRAY_DATA   *this,
+        uint32_t        index,
+        uint16_t        data
+    );
+
+
+    ERESULT         U16Array_Put (
         U16ARRAY_DATA   *this,
         uint32_t        index,
         uint16_t        data

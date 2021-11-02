@@ -1,32 +1,16 @@
 # vi:nu:et:sts=4 ts=4 sw=4
 
 
-X Finish NodeTest::Parse (used in NodeObj)
-X Finish NodeTest_test
-X Finish NodeRtn::Parse (which can include a 'test' Rtn as well)
-X Finish NodeRtn_test
-X Finish NodeObj::Parse
-    X Implement NodeBase::Parse
-	X Update name, etc  in Test node after parse.
-* Finish NodeHdr::Parse (which can include a 'test' Rtn as well)
-* Finish NodeHdr_test
-X Finish NodePgm::Parse
-X Finish NodePgm_test
-X Finish NodeLib::Parse 
-X Finish NodeLib_test
+*   Maybe use as input a csv file:
+    name,value,description
+    *   Description would be generated in the enum only.
+    *   value would be optional and only used for non-contiguous enums.
 
-* ExpandNodes will create Rtns array for RtnA objects and Tests array for 
-    TstA objects that will be used to generate programs:
-    * Write Hdr/Rtn/Test expansions for NodeObj 
-    * Write HdrRtn/Test expansions for NodeRtn
+*   Allow blank lines to bump value, but not generate entry.
 
-* Write code generation from arrays and Pgm or Lib Nodes from prior step. 
-    * macos64
-    * win32 
-    * win64
+*   If values are not contiguous, generate double index (??), first index
+    is uint16_t to index + 1 into second array which contains name,value pairs
+    (as we have now). 0 in first index would indicate no entry.
+    cPrefixType would still be max allowed.
 
-* HJSon now puts a SrcLoc object in each node for error messages. Expand
-    the error messages to include it.
 
-* Fix source prefix for $(SRCDIR)/ and $(TEST_SRC)/.
- 

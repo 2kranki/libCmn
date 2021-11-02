@@ -43,6 +43,7 @@
 #include        <AStrArray.h>
 #include        <JsonIn.h>
 #include        <TextIn.h>
+#include        <U16Array.h>
 
 
 #ifndef EXEC_INTERNAL_H
@@ -74,6 +75,8 @@ struct Exec_data_s  {
     ASTR_DATA       *pStr;
     ASTRARRAY_DATA  *pArray;
     ASTRARRAY_DATA  *pSorted;
+    U16ARRAY_DATA   *pIndex;
+    uint32_t        maxIndex;
 
 };
 #pragma pack(pop)

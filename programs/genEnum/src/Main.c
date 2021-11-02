@@ -1468,7 +1468,15 @@ extern "C" {
         );
         fprintf(
                 pOutput,
-                "  added to make the enumerations unique.\n"
+                "  added to make the enumerations unique. A blank line will be\n"
+        );
+        fprintf(
+                pOutput,
+                "  counted for the enum value, but will not have an enum entry.\n"
+        );
+        fprintf(
+                pOutput,
+                "  Be careful with empty lines because of this.\n"
         );
         fprintf(
                 pOutput,

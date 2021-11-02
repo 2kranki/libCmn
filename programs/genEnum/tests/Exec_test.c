@@ -256,7 +256,7 @@ ERESULT         Test_Exec_Read01 (
     TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
-        //obj_TraceSet(pObj, true);
+        obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_EXEC);
         TestForTrue(fRc, "Failed Ident Test");
 

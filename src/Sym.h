@@ -126,7 +126,7 @@ extern "C" {
         SYM_STOR_TYPE_UNKNOWN=0,
         SYM_STOR_TYPE_PUBLIC=0x8000,
         SYM_STOR_TYPE_EXTERN=0x4000,
-        // If not public or not extern,
+        // If not public and not extern,
         // then local/private.
         SYM_STOR_TYPE_STATIC=0x2000,
 

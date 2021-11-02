@@ -118,7 +118,29 @@ extern "C" {
 
 
 
-    
+    U16ARRAY_DATA *     U16Array_NewMinSize (
+        uint16_t            minSize
+    )
+    {
+        ERESULT             eRc;
+        U16ARRAY_DATA       *this;
+
+        this = U16Array_New( );
+        if (this) {
+            eRc = array_Expand((ARRAY_DATA *)this, minSize);
+            array_setSize((ARRAY_DATA *)this, minSize);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+                obj_Release(this);
+                this = OBJ_NIL;
+            }
+        }
+        return this;
+    }
+
+
+
+
 
     //===============================================================
     //                      P r o p e r t i e s
@@ -977,6 +999,40 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                            P u t
+    //---------------------------------------------------------------
+
+    ERESULT         U16Array_Put (
+        U16ARRAY_DATA   *this,
+        uint32_t        index,
+        uint16_t        data
+    )
+    {
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !U16Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if ((index > 0) && (index <= array_getSize((ARRAY_DATA *)this)))
+            ;
+        else {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        *((uint16_t *)array_Ptr((ARRAY_DATA *)this, index)) = data;
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------

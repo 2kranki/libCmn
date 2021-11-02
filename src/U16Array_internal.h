@@ -119,7 +119,7 @@ struct U16Array_data_s	{
     );
 
 
-    U16ARRAY_DATA *       U16Array_Copy (
+    U16ARRAY_DATA * U16Array_Copy (
         U16ARRAY_DATA     *this
     );
 
@@ -136,7 +136,7 @@ struct U16Array_data_s	{
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    U16ARRAY_DATA *       U16Array_ParseJsonObject (
+    U16ARRAY_DATA * U16Array_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -152,7 +152,7 @@ struct U16Array_data_s	{
      */
     ERESULT         U16Array_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        U16ARRAY_DATA     *pObject
+        U16ARRAY_DATA   *pObject
     );
 #endif
 
@@ -179,7 +179,7 @@ struct U16Array_data_s	{
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     U16Array_ToJson (
-        U16ARRAY_DATA      *this
+        U16ARRAY_DATA   *this
     );
 
 
@@ -193,7 +193,7 @@ struct U16Array_data_s	{
                 error code.
      */
     ERESULT         U16Array_ToJsonFields (
-        U16ARRAY_DATA     *this,
+        U16ARRAY_DATA   *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -204,7 +204,7 @@ struct U16Array_data_s	{
 #ifdef NDEBUG
 #else
     bool			U16Array_Validate (
-        U16ARRAY_DATA       *this
+        U16ARRAY_DATA   *this
     );
 #endif
 

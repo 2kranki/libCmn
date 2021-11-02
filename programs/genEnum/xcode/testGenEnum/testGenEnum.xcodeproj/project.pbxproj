@@ -12,7 +12,7 @@
 		C4A8BA51272F642200E033FD /* Exec_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A8BA49272F642200E033FD /* Exec_object.c */; };
 		C4A8BA52272F642200E033FD /* Main_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A8BA4D272F642200E033FD /* Main_object.c */; };
 		C4A8BA53272F642200E033FD /* Exec.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A8BA4F272F642200E033FD /* Exec.c */; };
-		C4A8BA572730D85C00E033FD /* Main_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A8BA562730D85C00E033FD /* Main_test.c */; };
+		C4A8BA592731ADE800E033FD /* Exec_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A8BA582731ADE800E033FD /* Exec_test.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,7 +39,7 @@
 		C4A8BA4D272F642200E033FD /* Main_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Main_object.c; sourceTree = "<group>"; };
 		C4A8BA4E272F642200E033FD /* Main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
 		C4A8BA4F272F642200E033FD /* Exec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Exec.c; sourceTree = "<group>"; };
-		C4A8BA562730D85C00E033FD /* Main_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Main_test.c; sourceTree = "<group>"; };
+		C4A8BA582731ADE800E033FD /* Exec_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Exec_test.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,7 +75,7 @@
 		C4A8BA39272F627200E033FD /* testGenEnum */ = {
 			isa = PBXGroup;
 			children = (
-				C4A8BA562730D85C00E033FD /* Main_test.c */,
+				C4A8BA582731ADE800E033FD /* Exec_test.c */,
 			);
 			name = testGenEnum;
 			path = ../../tests;
@@ -167,7 +167,7 @@
 				C4A8BA51272F642200E033FD /* Exec_object.c in Sources */,
 				C4A8BA52272F642200E033FD /* Main_object.c in Sources */,
 				C4A8BA50272F642200E033FD /* Main.c in Sources */,
-				C4A8BA572730D85C00E033FD /* Main_test.c in Sources */,
+				C4A8BA592731ADE800E033FD /* Exec_test.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
