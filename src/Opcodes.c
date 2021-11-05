@@ -191,52 +191,6 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                        A r r a y
-    //---------------------------------------------------------------
-
-    OBJARRAY_DATA * Opcodes_getArray (
-        OPCODES_DATA    *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Opcodes_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pArray;
-    }
-
-
-    bool            Opcodes_setArray (
-        OPCODES_DATA    *this,
-        OBJARRAY_DATA   *pValue
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Opcodes_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pArray) {
-            obj_Release(this->pArray);
-        }
-        this->pArray = pValue;
-
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -295,7 +249,7 @@ extern "C" {
         }
 #endif
 
-        return ObjArray_getSize(this->pArray);
+        return szBT_getSize(this->pTree);
     }
 
 
@@ -324,6 +278,52 @@ extern "C" {
     
   
 
+    //---------------------------------------------------------------
+    //                        T r e e
+    //---------------------------------------------------------------
+
+    SZBT_DATA *     Opcodes_getTree (
+        OPCODES_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Opcodes_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pTree;
+    }
+
+
+    bool            Opcodes_setTree (
+        OPCODES_DATA    *this,
+        SZBT_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Opcodes_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pTree) {
+            obj_Release(this->pTree);
+        }
+        this->pTree = pValue;
+
+        return true;
+    }
+
+
+
 
 
     //===============================================================
@@ -344,6 +344,7 @@ extern "C" {
         OPCODE_ENTRY    *pEntry;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!Opcodes_Validate(this)) {
@@ -361,17 +362,14 @@ extern "C" {
         }
 #endif
 
-        if (OBJ_NIL == this->pArray) {
-            this->pArray = ObjArray_New();
-            if (OBJ_NIL == this->pArray) {
-                return ERESULT_OUT_OF_MEMORY;
-            }
-        }
-
+        obj_Retain(pOpc);
         pEntry = Opcode_getEntry(pOpc);
-        pEntry->unique = ObjArray_getSize(this->pArray);
+        pEntry->unique = Opcodes_getSize(this);
 
-        eRc = ObjArray_AppendObj(this->pArray, pOpc, NULL);
+        eRc = szBT_AddA(this->pTree, Opcode_getNameA(pOpc), pOpc);
+        if (ERESULT_FAILED(eRc)) {
+            obj_Release(pOpc);
+        }
 
         // Return to caller.
         return eRc;
@@ -428,12 +426,18 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-        if (pOther->pArray) {
-            ObjArray_DeleteAll(pOther->pArray);
+        if (pOther->pTree) {
+            obj_Release(pOther->pTree);
+            pOther->pTree = OBJ_NIL;
         }
 
         // Create a copy of objects and areas in this object placing
         // them in other.
+        pOther->pTree = szBT_New();
+        if (OBJ_NIL == pOther->pTree) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        eRc = szBT_setDeleteExit(pOther->pTree, (void *)Opcodes_DeleteExit, pOther);
         pEnum = Opcodes_Enum(this);
         for (;;) {
             OPCODE_DATA         *pOpc = OBJ_NIL;
@@ -577,7 +581,7 @@ extern "C" {
         }
 #endif
 
-        Opcodes_setArray(this, OBJ_NIL);
+        Opcodes_setTree(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -649,6 +653,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_FAILURE;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!Opcodes_Validate(this)) {
@@ -657,11 +662,11 @@ extern "C" {
         }
 #endif
 
-        if (OBJ_NIL == this->pArray) {
+        if (OBJ_NIL == this->pTree) {
             return eRc;
         }
 
-        //FIXME: eRc = szBT_DeleteA(this->pTree, pNameA);
+        eRc = szBT_DeleteA(this->pTree, pNameA);
 
         // Return to caller.
         return eRc;
@@ -680,12 +685,13 @@ extern "C" {
                 error code.
      */
     ERESULT         Opcodes_Disable (
-        OPCODES_DATA		*this
+        OPCODES_DATA	*this
     )
     {
         //ERESULT         eRc;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!Opcodes_Validate(this)) {
@@ -715,12 +721,13 @@ extern "C" {
                 error code.
      */
     ERESULT         Opcodes_Enable (
-        OPCODES_DATA		*this
+        OPCODES_DATA    *this
     )
     {
         //ERESULT         eRc;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!Opcodes_Validate(this)) {
@@ -747,10 +754,11 @@ extern "C" {
         OPCODES_DATA    *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc;
         OBJENUM_DATA    *pEnum = OBJ_NIL;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!Opcodes_Validate(this)) {
@@ -760,11 +768,17 @@ extern "C" {
         }
 #endif
 
-        if (OBJ_NIL == this->pArray) {
+        if (OBJ_NIL == this->pTree) {
             return OBJ_NIL;
         }
 
-        pEnum = ObjArray_Enum(this->pArray);
+        pEnum = ObjEnum_New();
+        if (pEnum) {
+            eRc = szBT_ForEach(this->pTree, (void *)Opcodes_ScanExit, this, pEnum);
+            if (pEnum->pArray) {
+                eRc = ObjArray_SortAscending(pEnum->pArray, NULL);
+            }
+        }
 
         return pEnum;
     }
@@ -783,11 +797,9 @@ extern "C" {
     {
         //ERESULT         eRc;
         OPCODE_DATA     *pEntry = OBJ_NIL;
-        uint32_t        i;
-        uint32_t        iMax;
-        bool            fRc;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!Opcodes_Validate(this)) {
@@ -797,18 +809,7 @@ extern "C" {
         }
 #endif
 
-        if (OBJ_NIL == this->pArray) {
-            return OBJ_NIL;
-        }
-
-        iMax = ObjArray_getSize(this->pArray);
-        for (i=0; i<iMax; i++) {
-            pEntry = ObjArray_Get(this->pArray, i+1);
-            if (pEntry) {
-                fRc = Opcode_CompareOpcode(pEntry, pOpc);
-            }
-        }
-        //FIXME: pOpc = (OPCODE_DATA *)szBT_FindA(this->pTree, pNameA);
+        //pEntry = (OPCODE_DATA *)NodeBT_FindA(this->pTree, 0, (char *)pOpc);
 
         // Return to caller.
         return pEntry;
@@ -825,6 +826,7 @@ extern "C" {
         OPCODE_DATA     *pOpc = OBJ_NIL;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!Opcodes_Validate(this)) {
@@ -834,43 +836,10 @@ extern "C" {
         }
 #endif
 
-        if (OBJ_NIL == this->pArray) {
-            return OBJ_NIL;
-        }
-
-        //FIXME: pOpc = (OPCODE_DATA *)szBT_FindA(this->pTree, pNameA);
+        pOpc = (OPCODE_DATA *)szBT_FindA(this->pTree, pNameA);
 
         // Return to caller.
         return pOpc;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          G e t
-    //---------------------------------------------------------------
-
-    OPCODE_DATA *   Opcodes_Get (
-        OPCODES_DATA    *this,
-        uint32_t        index
-    )
-    {
-        //ERESULT         eRc;
-        OPCODE_DATA     *pObj = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Opcodes_Validate(this)) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-
-        pObj = ObjArray_Get(this->pArray, index);
-
-        return pObj;
     }
 
 
@@ -884,7 +853,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(OPCODES_DATA);
-        //ERESULT         eRc;
+        ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -915,13 +884,13 @@ extern "C" {
         JsonIn_RegisterClass(Opcodes_Class());
 #endif
 
-        this->pArray = ObjArray_New( );
-        if (OBJ_NIL == this->pArray) {
+        this->pTree = szBT_New( );
+        if (OBJ_NIL == this->pTree) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
         }
-        //eRc = szBT_setDeleteExit(this->pTree, (void *)Opcodes_DeleteExit, this);
+        eRc = szBT_setDeleteExit(this->pTree, (void *)Opcodes_DeleteExit, this);
 
 #ifdef NDEBUG
 #else
@@ -1115,54 +1084,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                 S o r t  A s c e n d i n g
-    //---------------------------------------------------------------
-
-    /*!
-     Sort the codes by opcode name and renumber the unique value of
-     each opcode entry. The opcode entries
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Opcodes_SortAscending (
-        OPCODES_DATA    *this
-    )
-    {
-        ERESULT         eRc;
-        uint32_t        i;
-        uint32_t        iMax;
-        OPCODE_DATA     *pOpc;
-        OPCODE_ENTRY    *pEntry;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Opcodes_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        eRc =   ObjArray_SortAscending(
-                                     Opcodes_getArray(this),
-                                     (P_OBJ_COMPARE)Opcode_Compare
-                );
-
-        iMax = ObjArray_getSize(Opcodes_getArray(this));
-        for (i=0; i<iMax; ++i) {
-            pOpc = ObjArray_Get(Opcodes_getArray(this), i+1);
-            pEntry = Opcode_getEntry(pOpc);
-            pEntry->unique = i+1;
-        }
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     
@@ -1319,7 +1240,7 @@ extern "C" {
                 error code.
      */
     ERESULT         Opcodes_VerifyTree (
-        OPCODES_DATA        *this
+        OPCODES_DATA    *this
     )
     {
         ERESULT         eRc = ERESULT_FAILURE;
@@ -1333,7 +1254,7 @@ extern "C" {
         }
 #endif
 
-        //FIXME: eRc = szBT_VerifyTree(this->pTree);
+        eRc = szBT_VerifyTree(this->pTree);
 
         // Return to caller.
         return eRc;

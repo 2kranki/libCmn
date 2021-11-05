@@ -86,6 +86,16 @@ extern "C" {
             NULL,
             "Prefix Name (normally an object prefix which prefixes the name)"
         },
+        {
+            "start",
+            0,
+            CMDUTL_ARG_OPTION_REQUIRED,
+            CMDUTL_TYPE_STRING,
+            0,
+            offsetof(MAIN_DATA, pStart),
+            NULL,
+            "Optional Enumeration Starting Value"
+        },
         {0}
     };
 
@@ -384,11 +394,57 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          S t a r t
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     Main_getStart (
+        MAIN_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Main_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pStart;
+    }
+
+
+    bool            Main_setStart (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Main_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pStart) {
+            obj_Release(this->pStart);
+        }
+        this->pStart = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * Main_getStr (
-        MAIN_DATA     *this
+    ASTR_DATA *     Main_getStr (
+        MAIN_DATA       *this
     )
     {
         
@@ -405,9 +461,9 @@ extern "C" {
     }
     
     
-    bool        Main_setStr (
-        MAIN_DATA     *this,
-        ASTR_DATA   *pValue
+    bool            Main_setStr (
+        MAIN_DATA       *this,
+        ASTR_DATA       *pValue
     )
     {
 #ifdef NDEBUG
@@ -723,6 +779,7 @@ extern "C" {
 #endif
         Main_setName(this, OBJ_NIL);
         Main_setPrefix(this, OBJ_NIL);
+        Main_setStart(this, OBJ_NIL);
         Main_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -1144,6 +1201,17 @@ extern "C" {
                     "FATAL - Failed to create Exec object\n"
         );
 
+        Appl_ErrorFatalOnBool(
+                    (OBJ_NIL == this->pPrefix),
+                    "FATAL - --prefix is required!\n"
+        );
+        Appl_ErrorFatalOnBool(
+                    (OBJ_NIL == this->pName),
+                    "FATAL - --name is required!\n"
+        );
+        if (this->pStart) {
+            Exec_setStart(pExec, this->pStart);
+        }
         eRc =   Exec_Exec(
                           pExec,
                           pPath,

@@ -44,7 +44,7 @@
 #ifdef  MAIN_USE_DICT
 #include        <dict.h>
 #endif
-#include        <Exec.h>
+#include        <Exec_internal.h>
 #include        <JsonIn.h>
 
 
@@ -76,6 +76,7 @@ struct Main_data_s  {
     // Common Data
     ASTR_DATA       *pName;
     ASTR_DATA       *pPrefix;
+    ASTR_DATA       *pStart;
     ASTR_DATA       *pStr;
 #ifdef  MAIN_USE_DICT
     DICT_DATA       *pDict;

@@ -41,6 +41,7 @@
 
 #include        <Opcode.h>
 #include        <JsonIn.h>
+#include        <Node_internal.h>
 
 
 #ifndef OPCODE_INTERNAL_H
@@ -235,8 +236,6 @@ struct Opcode_data_s	{
         ASTR_DATA       *pStr
     );
 #endif
-
-
 
 
 #ifdef NDEBUG

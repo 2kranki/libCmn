@@ -336,11 +336,57 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         S t a r t
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     Exec_getStart (
+        EXEC_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Exec_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pStart;
+    }
+
+
+    bool            Exec_setStart (
+        EXEC_DATA       *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Exec_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pStart) {
+            obj_Release(this->pStart);
+        }
+        this->pStart = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * Exec_getStr (
-        EXEC_DATA     *this
+    ASTR_DATA *     Exec_getStr (
+        EXEC_DATA       *this
     )
     {
         
@@ -357,9 +403,9 @@ extern "C" {
     }
     
     
-    bool        Exec_setStr (
-        EXEC_DATA     *this,
-        ASTR_DATA   *pValue
+    bool            Exec_setStr (
+        EXEC_DATA       *this,
+        ASTR_DATA       *pValue
     )
     {
 #ifdef NDEBUG
@@ -621,6 +667,7 @@ extern "C" {
         Exec_setArray(this, OBJ_NIL);
         Exec_setIndex(this, OBJ_NIL);
         Exec_setSorted(this, OBJ_NIL);
+        Exec_setStart(this, OBJ_NIL);
         Exec_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
@@ -913,14 +960,26 @@ extern "C" {
         for (i=0; i<iMax; i++) {
             ASTR_DATA       *pLine = AStrArray_Get(this->pArray, i+1);
             if (pLine) {
-                fprintf(
-                        pOut,
-                        "\t\t%s_%s_%s=%d,\n",
-                        AStr_getData(pCapsPrefix),
-                        AStr_getData(pCapsName),
-                        AStr_getData(pLine),
-                        obj_getMisc(pLine)
-                );
+                if (this->pStart) {
+                    fprintf(
+                            pOut,
+                            "\t\t%s_%s_%s=%s+%d,\n",
+                            AStr_getData(pCapsPrefix),
+                            AStr_getData(pCapsName),
+                            AStr_getData(pLine),
+                            AStr_getData(this->pStart),
+                            obj_getMisc(pLine)
+                    );
+                } else {
+                    fprintf(
+                            pOut,
+                            "\t\t%s_%s_%s=%d,\n",
+                            AStr_getData(pCapsPrefix),
+                            AStr_getData(pCapsName),
+                            AStr_getData(pLine),
+                            obj_getMisc(pLine)
+                    );
+                }
             }
         }
 
@@ -985,21 +1044,54 @@ extern "C" {
         fprintf(pOut, "\t\tuint32_t\t\tvalue\n");
         fprintf(pOut, "\t)\n");
         fprintf(pOut, "\t{\n");
-        fprintf(pOut, "\t\tif (value >= %d) {\n", this->maxIndex);
+        if (this->pStart) {
+            fprintf(
+                    pOut,
+                    "\t\tif ((value - %s) >= %d) {\n",
+                    AStr_getData(this->pStart),
+                    this->maxIndex
+            );
+        } else {
+            fprintf(pOut, "\t\tif (value >= %d) {\n", this->maxIndex);
+        }
         fprintf(pOut, "\t\t\treturn \"<<<Unknown Enum Value>>>\";\n");
         fprintf(pOut, "\t\t}\n");
 #ifdef XYZZY
         fprintf(pOut, "\t\treturn p%s_%s_desc[value];\n", pPrefixA, pNameA);
 #else
-        fprintf(pOut, "\t\tif (%s_%s_index[value]) {\n", pPrefixA, pNameA);
-        fprintf(
-                pOut,
-                "\t\t\treturn %s_%s_entries[%s_%s_index[value]-1].pDesc;\n",
-                pPrefixA,
-                pNameA,
-                pPrefixA,
-                pNameA
-        );
+        if (this->pStart) {
+            fprintf(
+                    pOut,
+                    "\t\tif (%s_%s_index[value - %s]) {\n",
+                    pPrefixA,
+                    pNameA,
+                    AStr_getData(this->pStart)
+            );
+            fprintf(
+                    pOut,
+                    "\t\t\treturn %s_%s_entries[%s_%s_index[value - %s] - 1].pDesc;\n",
+                    pPrefixA,
+                    pNameA,
+                    pPrefixA,
+                    pNameA,
+                    AStr_getData(this->pStart)
+            );
+        } else {
+            fprintf(
+                    pOut,
+                    "\t\tif (%s_%s_index[value]) {\n",
+                    pPrefixA,
+                    pNameA
+            );
+            fprintf(
+                    pOut,
+                    "\t\t\treturn %s_%s_entries[%s_%s_index[value] - 1].pDesc;\n",
+                    pPrefixA,
+                    pNameA,
+                    pPrefixA,
+                    pNameA
+            );
+        }
         fprintf(pOut, "\t\t} else {\n");
         fprintf(pOut, "\t\t\treturn \"<<<Unknown Enum Value>>>\";\n");
         fprintf(pOut, "\t\t}\n");
@@ -1200,25 +1292,48 @@ extern "C" {
         for (i=0; i<iMax; i++) {
             ASTR_DATA       *pLine = AStrArray_Get(this->pSorted, i+1);
             if (pLine) {
-                fprintf(
-                        pOut,
-                        "\t\t{\"%s_%s_%s\",%d},\n",
-                        AStr_getData(pCapsPrefix),
-                        AStr_getData(pCapsName),
-                        AStr_getData(pLine),
-                        obj_getMisc(pLine)
-                );
+                if (this->pStart) {
+                    fprintf(
+                            pOut,
+                            "\t\t{\"%s_%s_%s\",%s+%d},\n",
+                            AStr_getData(pCapsPrefix),
+                            AStr_getData(pCapsName),
+                            AStr_getData(pLine),
+                            AStr_getData(this->pStart),
+                            obj_getMisc(pLine)
+                    );
+                } else {
+                    fprintf(
+                            pOut,
+                            "\t\t{\"%s_%s_%s\",%d},\n",
+                            AStr_getData(pCapsPrefix),
+                            AStr_getData(pCapsName),
+                            AStr_getData(pLine),
+                            obj_getMisc(pLine)
+                    );
+                }
             }
         }
         fprintf(pOut, "\t};\n\n");
         fprintf(pOut, "\tconst\n");
         fprintf(
                 pOut,
-                "\tuint32_t\tc%s_%s_entries = %d;\n",
+                "\tuint32_t\tc%s_%s_entries = %d;\n\n\n\n\n",
                 pPrefixA,
                 pNameA,
                 iMax
         );
+        fprintf(pOut, "\t// This table is the names in alphanumeric order.\n");
+        fprintf(pOut, "\tconst\n");
+        fprintf(pOut, "\tchar\t\t*p%s_%s_names[] = {\n", pPrefixA, pNameA);
+        iMax = AStrArray_getSize(this->pSorted);
+        for (i=0; i<iMax; i++) {
+            ASTR_DATA       *pLine = AStrArray_Get(this->pSorted, i+1);
+            if (pLine) {
+                fprintf(pOut, "\t\t\"%s\",\n", AStr_getData(pLine));
+            }
+        }
+        fprintf(pOut, "\t};\n\n");
         fprintf(pOut, "\n\n\n\n\n");
 
 

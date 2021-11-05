@@ -42,7 +42,7 @@
 #include        <Opcodes.h>
 #include        <JsonIn.h>
 #include        <Opcode_internal.h>
-#include        <szBT.h>
+#include        <szBT_internal.h>
 
 
 #ifndef OPCODES_INTERNAL_H
@@ -71,7 +71,7 @@ struct Opcodes_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    OBJARRAY_DATA   *pArray;
+    SZBT_DATA       *pTree;
 
 };
 #pragma pack(pop)

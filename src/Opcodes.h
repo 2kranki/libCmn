@@ -53,7 +53,6 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <ObjArray.h>
 #include        <ObjEnum.h>
 #include        <Opcode.h>
 
@@ -166,11 +165,6 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA * Opcodes_getArray (
-        OPCODES_DATA    *this
-    );
-
-
     uint32_t        Opcodes_getSize (
         OPCODES_DATA    *this
     );
@@ -222,17 +216,6 @@ extern "C" {
         OPCODES_DATA    *this,
         const
         char            *pNameA
-    );
-
-
-    /*!
-     Get the indexth Opcode from the array of opcodes.
-     @return    If successful, an Opcode object is returned.  Otherwise,
-                OBJ_NIL.
-     */
-    OPCODE_DATA *   Opcodes_Get (
-        OPCODES_DATA    *this,
-        uint32_t        index
     );
 
 

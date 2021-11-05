@@ -415,7 +415,7 @@ OPCODE_VTBL     Opcode_Vtbl = {
         (P_OBJ_COMPARE)Opcode_Compare,
         (P_OBJ_PTR)Opcode_Copy,
         NULL, 			// (P_OBJ_PTR)Opcode_DeepCopy,
-        NULL 			// (P_OBJ_HASH)Opcode_Hash,
+        (P_OBJ_HASH)Opcode_Hash,
     },
     // Put other object method names below this.
     // Properties:

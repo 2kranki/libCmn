@@ -154,6 +154,48 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                        C l a s s
+    //---------------------------------------------------------------
+
+    uint8_t         Opcode_getClass (
+        OPCODE_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Opcode_getEntry(this)->iClass;
+    }
+
+
+    bool            Opcode_setClass (
+        OPCODE_DATA     *this,
+        uint8_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Opcode_getEntry(this)->iClass = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //           D i s a s s e m b l y  S t r i n g
     //---------------------------------------------------------------
 
@@ -261,6 +303,85 @@ extern "C" {
 
         this->pExec = pExec;
         this->pObjExec = pObjExec;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        F l a g
+    //---------------------------------------------------------------
+
+    uint16_t        Opcode_getFlag1 (
+        OPCODE_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Opcode_getEntry(this)->flag1;
+    }
+
+
+    bool            Opcode_setFlag1 (
+        OPCODE_DATA     *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Opcode_getEntry(this)->flag1 = value;
+
+        return true;
+    }
+
+
+    uint16_t        Opcode_getFlag2 (
+        OPCODE_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Opcode_getEntry(this)->flag2;
+    }
+
+
+    bool            Opcode_setFlag2 (
+        OPCODE_DATA     *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Opcode_getEntry(this)->flag2 = value;
 
         return true;
     }
@@ -618,6 +739,35 @@ extern "C" {
     }
     
    
+    int             Opcode_CompareA (
+        OPCODE_DATA     *this,
+        const
+        char            *pNameA
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS_EQUAL;
+        int             i = 0;
+
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -2;
+        }
+        if (NULL == pNameA) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return -2;
+        }
+#endif
+
+        i = utf8_StrCmp(this->entry.NameA, pNameA);
+
+        return i;
+    }
+
+
     bool            Opcode_CompareOpcode (
         OPCODE_DATA     *this,
         const
@@ -901,6 +1051,35 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          H a s h
+    //---------------------------------------------------------------
+
+    uint32_t        Opcode_Hash(
+        OPCODE_DATA     *this
+    )
+    {
+        uint32_t        hash = 0;
+        const
+        char            *pStr = NULL;
+
+#ifdef NDEBUG
+#else
+        if( !Opcode_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+
+        pStr = this->entry.NameA;
+        if (pStr) {
+            hash = str_HashAcmA(pStr, NULL);
+        }
+
+        return hash;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -925,6 +1104,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
+        //this = (OBJ_ID)Node_Init((NODE_DATA *)this);        // Needed for Inheritance
         this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_OPCODE);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
@@ -934,7 +1114,10 @@ extern "C" {
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&Opcode_Vtbl);
-        
+#ifdef  OPCODE_JSON_SUPPORT
+        JsonIn_RegisterClass(Opcode_Class());
+#endif
+
         /*
         this->pArray = objArray_New( );
         if (OBJ_NIL == this->pArray) {
@@ -959,6 +1142,7 @@ extern "C" {
                 sizeof(OPCODE_DATA)
         );
 #endif
+        BREAK_NOT_BOUNDARY4(sizeof(OPCODE_ENTRY));
         BREAK_NOT_BOUNDARY4(sizeof(OPCODE_DATA));
 #endif
 
@@ -1397,6 +1581,48 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                   U p d a t e  N a m e
+    //---------------------------------------------------------------
+
+    /*!
+     Update the Node's name to be that in the Sym entry.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Opcode_UpdateName (
+        OPCODE_DATA     *this
+    )
+    {
+        //ERESULT         eRc;
+        NODE_DATA       *pNode;
+        NAME_DATA       *pName;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        pNode = Opcode_getNode(this);
+
+        pName = Name_NewUTF8(this->entry.NameA);
+        if (pName) {
+            Node_setName(pNode, pName);
+            obj_Release(pName);
+            pName = OBJ_NIL;
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

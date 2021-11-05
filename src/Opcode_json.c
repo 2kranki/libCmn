@@ -116,6 +116,7 @@ extern "C" {
             exit(EXIT_FAILURE);
         }
         Opcode_setDisA(pObject, AStr_getData(pWrk));
+        eRc = JsonIn_FindU8NodeInHashA(pParser, "iClass", &pObject->entry.iClass);
         (void)JsonIn_FindU8NodeInHashA(pParser, "cCode", &pObject->entry.cCode);
         if (pObject->entry.cCode) {
             eRc = JsonIn_FindArrayNodeInHashA(pParser, "iCode", &pArray);
@@ -255,6 +256,8 @@ extern "C" {
                                                         &pObject->entry.iInterrupts);
         }
         eRc = JsonIn_FindU32NodeInHashA(pParser, "unique", &pObject->entry.unique);
+        eRc = JsonIn_FindU16NodeInHashA(pParser, "flag1", &pObject->entry.flag1);
+        eRc = JsonIn_FindU16NodeInHashA(pParser, "flag2", &pObject->entry.flag2);
 
         // Return to caller.
     exit00:
@@ -432,6 +435,7 @@ extern "C" {
 
         AStr_AppendPrint(pStr, "\tName:\"%s\",\n", this->entry.NameA);
         AStr_AppendPrint(pStr, "\tDis:\"%s\",\n", this->entry.DisA);
+        JsonOut_Append_u8("iClass", this->entry.iClass, pStr);
         JsonOut_Append_u8("cCode", this->entry.cCode, pStr);
         JsonOut_Append_u8_array("iCode", this->entry.cCode, this->entry.iCode, pStr);
         JsonOut_Append_u8_array("iMask", this->entry.cCode, this->entry.iMask, pStr);
@@ -489,6 +493,8 @@ extern "C" {
             }
         }
         JsonOut_Append_u32("unique", this->entry.unique, pStr);
+        JsonOut_Append_u16("flag1", this->entry.flag1, pStr);
+        JsonOut_Append_u16("flag2", this->entry.flag2, pStr);
 
         return ERESULT_SUCCESS;
     }

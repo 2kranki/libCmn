@@ -7,7 +7,7 @@
  * Program
  *			A Red-Black Binary Tree of Nodes (NodeBT)
  * Purpose
- *            This object provides a Red-Black Binary Tree of Nodes.
+ *          This object provides a Red-Black Binary Tree of Nodes.
  *          It is good for a quick indexed list or array of Nodes
  *          with order.
  *

@@ -54,6 +54,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <Node.h>
 
 
 #ifndef         OPCODE_H
@@ -104,7 +105,7 @@ extern "C" {
     // Note:    No pointers are allowed in this structure. Also, this
     //          structure size must be a multiple of 4.
     typedef struct    Opcode_Entry_s {
-#define OPCODE_ENTRY_NAME_MAX 9             // Name Length w/ trailing NUL
+#define OPCODE_ENTRY_NAME_MAX 13             // Name Length w/ trailing NUL
         const
         char            NameA[OPCODE_ENTRY_NAME_MAX];
 #define OPCODE_ENTRY_DIS_MAX 16              // Disassembly String Length w/ trailing NUL
@@ -134,6 +135,8 @@ extern "C" {
 #define OPCODE_ENTRY_IINTERRUPTS_MAX 32     // Number of Interrupts allowed (1 per bit)
         uint32_t        unique;             // A unique number used as an index by other
         //                                  // programs
+        uint16_t        flag1;              // To be used as needed
+        uint16_t        flag2;              // To be used as needed
     }   OPCODE_ENTRY;
 
 
@@ -207,6 +210,19 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*! Property: Opcode Class
+        To be used as needed.
+     */
+    uint8_t         Opcode_getClass (
+        OPCODE_DATA     *this
+    );
+
+    bool            Opcode_setClass (
+        OPCODE_DATA     *this,
+        uint8_t         value
+    );
+
+
     /*! Property: Opcode Disassembly String
      */
     const
@@ -233,6 +249,32 @@ extern "C" {
     );
 
 
+    /*! Property: Flag Set 1
+        To be used as needed.
+     */
+    uint16_t         Opcode_getFlag1 (
+        OPCODE_DATA     *this
+    );
+
+    bool            Opcode_setFlag1 (
+        OPCODE_DATA     *this,
+        uint16_t        value
+    );
+
+
+    /*! Property: Flag Set 2
+        To be used as needed.
+     */
+    uint16_t         Opcode_getFlag2 (
+        OPCODE_DATA     *this
+    );
+
+    bool            Opcode_setFlag2 (
+        OPCODE_DATA     *this,
+        uint16_t        value
+    );
+
+
     /*! Property: Opcode Length including all parameters
      */
     uint8_t         Opcode_getLen (
@@ -249,6 +291,13 @@ extern "C" {
      */
     const
     char *          Opcode_getNameA (
+        OPCODE_DATA     *this
+    );
+
+
+    /*! Property: Node
+     */
+    NODE_DATA *     Opcode_getNode (
         OPCODE_DATA     *this
     );
 
@@ -314,6 +363,13 @@ extern "C" {
     );
 
 
+    int             Opcode_CompareA (
+        OPCODE_DATA     *this,
+        const
+        char            *pNameA
+    );
+
+
     /*!
      Compare the provided binary opcode with
      this entry.
@@ -352,6 +408,11 @@ extern "C" {
     ERESULT         Opcode_Exec (
         OPCODE_DATA     *this,
         OBJ_ID          pOperand
+    );
+
+
+    uint32_t        Opcode_Hash(
+        OPCODE_DATA     *this
     );
 
 

@@ -72,6 +72,7 @@ struct Exec_data_s  {
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    ASTR_DATA       *pStart;
     ASTR_DATA       *pStr;
     ASTRARRAY_DATA  *pArray;
     ASTRARRAY_DATA  *pSorted;
@@ -109,6 +110,12 @@ struct Exec_data_s  {
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
+
+    bool            Exec_setStart (
+        EXEC_DATA       *this,
+        ASTR_DATA       *pValue
+    );
+
 
     OBJ_IUNKNOWN *  Exec_getSuperVtbl (
         EXEC_DATA     *this

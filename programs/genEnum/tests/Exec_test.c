@@ -302,6 +302,85 @@ ERESULT         Test_Exec_Read01 (
 
 
 
+ERESULT         Test_Exec_Read02 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    EXEC_DATA       *pObj = OBJ_NIL;
+    bool            fRc;
+    PATH_DATA       *pPath = OBJ_NIL;
+    ASTR_DATA       *pStart = OBJ_NIL;
+    const
+    char            *pPathA = TEST_FILES_DIR "/enum_test.txt";
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pStart = AStr_NewA("ASMPOTS_EXTERNAL");
+    TestForNotNull(pStart, "Missing Path object");
+
+    pPath = Path_NewA(pPathA);
+    TestForNotNull(pPath, "Missing Path object");
+    Path_Clean(pPath);
+    fprintf(stderr, "\tpath=(%p)%s\n", pPath, Path_getData(pPath));
+    eRc = Path_IsFile(pPath);
+    TestForSuccess("");
+
+    pObj = Exec_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_EXEC);
+        TestForTrue(fRc, "Failed Ident Test");
+        Exec_setStart(pObj, pStart);
+
+        eRc = Exec_Exec(pObj, pPath, OBJ_NIL, "Sym", "Prim");
+        TestForSuccess("");
+
+        {
+            ASTR_DATA       *pStr = AStrArray_ToDebugString(pObj->pArray, 4);
+            if (pStr) {
+                fprintf(stderr, "Array: %s\n\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        {
+            ASTR_DATA       *pStr = AStrArray_ToDebugString(pObj->pSorted, 4);
+            if (pStr) {
+                fprintf(stderr, "Sorted: %s\n\n\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        {
+            ASTR_DATA       *pStr = Exec_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
+    obj_Release(pStart);
+    pStart = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
 
 int     main (
     int         cArgs,
@@ -339,6 +418,7 @@ int     main (
     //TestExec("Copy01", Test_Exec_Copy01, pTest, NULL, NULL);
     TestExec("Test01", Test_Exec_Test01, NULL, NULL);
     TestExec("Read01", Test_Exec_Read01, NULL, NULL);
+    TestExec("Read02", Test_Exec_Read02, NULL, NULL);
 
     obj_Release(pTest);
     pTest = OBJ_NIL;

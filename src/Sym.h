@@ -546,7 +546,7 @@ extern "C" {
     );
 
 
-    /*! Property: NodeLink
+    /*! Property: Node
      */
     NODE_DATA *     Sym_getNode (
         SYM_DATA        *this

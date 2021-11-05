@@ -1,156 +1,173 @@
 // vi:nu:et:sts=4 ts=4 sw=4
+//****************************************************************
+//                      Test Object Program
+//****************************************************************
 /*
- *	Generated 02/27/2020 16:46:25
+ * Program
+ *          Test Object Program
+ * Purpose
+ *          This program tests a particular object given certain
+ *          parameters.
+ *
+ * Remarks
+ *  1.      This relies on the fact that we can add to the Test
+ *          Object by simply coding methods that use the Test
+ *          Object.
+ *
+ * History
+ *  08/29/2021 Generated
+ */
+
+
+/*
+ This is free and unencumbered software released into the public domain.
+ 
+ Anyone is free to copy, modify, publish, use, compile, sell, or
+ distribute this software, either in source code form or as a compiled
+ binary, for any purpose, commercial or non-commercial, and by any
+ means.
+ 
+ In jurisdictions that recognize copyright laws, the author or authors
+ of this software dedicate any and all copyright interest in the
+ software to the public domain. We make this dedication for the benefit
+ of the public at large and to the detriment of our heirs and
+ successors. We intend this dedication to be an overt act of
+ relinquishment in perpetuity of all present and future rights to this
+ software under copyright law.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+ 
+ For more information, please refer to <http://unlicense.org/>
+ */
+
+
+
+
+/*
+ TestForFail(error_sttring)         <= Tests eRc for failure
+ TestForFalse(test, error_sttring)
+ TestForNotNull(test, error)
+ TestForNull(test, error)
+ TestForSuccess(error)              <= Tests eRc for success
+ TestForTrue(test, error)
  */
 
 
 
 
 
-// All code under test must be linked into the Unit Test bundle
-// Test Macros:
-//      TINYTEST_ASSERT(condition)
-//      TINYTEST_ASSERT_MSG(condition,msg)
-//      TINYTEST_EQUAL(expected, actual)
-//      TINYTEST_EQUAL_MSG(expected, actual, msg)
-//      TINYTEST_FALSE_MSG(condition,msg)
-//      TINYTEST_FALSE(condition)
-//      TINYTEST_TRUE_MSG(pointer,msg)
-//      TINYTEST_TRUE(condition)
-
-
-
-
-
-#include    <tinytest.h>
-#include    <cmn_defs.h>
-#include    <JsonIn.h>
+#include    <test_defs.h>
+#include    <Test_internal.h>
 #include    <trace.h>
 #include    <Opcodes_internal.h>
-#ifdef  OPCODES_JSON_SUPPORT
-#   include    <SrcErrors.h>
-#   include    <szTbl.h>
-#endif
-
-
-
-int             setUp (
-    const
-    char            *pTestName
-)
-{
-    mem_Init( );
-    trace_Shared( ); 
-    // Put setup code here. This method is called before the invocation of each
-    // test method in the class.
-    
-    return 1; 
-}
-
-
-int             tearDown (
-    const
-    char            *pTestName
-)
-{
-    // Put teardown code here. This method is called after the invocation of each
-    // test method in the class.
-
-#ifdef  OPCODES_JSON_SUPPORT
-    SrcErrors_SharedReset( );
-    szTbl_SharedReset( );
-#endif
-    JsonIn_RegisterReset();
-    trace_SharedReset( ); 
-    if (mem_Dump( ) ) {
-        fprintf(
-                stderr,
-                "\x1b[1m"
-                "\x1b[31m"
-                "ERROR: "
-                "\x1b[0m"
-                "Leaked memory areas were found!\n"
-        );
-        exitCode = 4;
-        return 0;
-    }
-    mem_Release( );
-    
-    return 1; 
-}
+#include    <JsonIn.h>
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 
 
 
 
 
 
-int             test_Opcodes_OpenClose (
+ERESULT         Test_Opcodes_OpenClose (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    OPCODES_DATA	    *pObj = OBJ_NIL;
+    OPCODES_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = Opcodes_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Alloc() object");
     pObj = Opcodes_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Init() object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_OPCODES);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         
         // Test something.
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("test failed");
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_Opcodes_Copy01 (
+ERESULT         Test_Opcodes_Copy01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    OPCODES_DATA	*pObj1 = OBJ_NIL;
-    OPCODES_DATA	*pObj2 = OBJ_NIL;
+    OPCODES_DATA    *pObj1 = OBJ_NIL;
+    OPCODES_DATA    *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(OPCODES_JSON_SUPPORT)
-    ASTR_DATA	    *pStr = OBJ_NIL;
-#endif
-   
+    ASTR_DATA       *pStr = OBJ_NIL;
+    OPCODE_DATA     *pOpc = OBJ_NIL;
+    //int             iRc;
+    uint32_t        i;
+    uint32_t        iMax;
+
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj1 = Opcodes_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj1) );
+    TestForNotNull(pObj1, "Missing Test object");
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_OPCODES);
-        TINYTEST_TRUE( (fRc) );
-        
+        TestForTrue(fRc, "Failed Ident Test");
+
+        // Add some entries.
+        pOpc = Opcode_NewA("lh");
+        TestForNotNull(pOpc, "");
+        eRc = Opcodes_Add(pObj1, pOpc);
+        TestForSuccess("");
+        obj_Release(pOpc);
+        pOpc = Opcode_NewA("ah");
+        TestForNotNull(pOpc, "");
+        eRc = Opcodes_Add(pObj1, pOpc);
+        TestForSuccess("");
+        obj_Release(pOpc);
+        pOpc = Opcode_NewA("sth");
+        TestForNotNull(pOpc, "");
+        eRc = Opcodes_Add(pObj1, pOpc);
+        TestForSuccess("");
+        obj_Release(pOpc);
+
         // Test assign.
         pObj2 = Opcodes_New();
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
         eRc = Opcodes_Assign(pObj1, pObj2);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForFalse((ERESULT_FAILED(eRc)), "Assignment failed");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_OPCODES);
-        TINYTEST_TRUE( (fRc) );
-        //eRc = Opcodes_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == eRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+        iMax = Opcodes_getSize(pObj1);
+        i    = Opcodes_getSize(pObj2);
+        TestForTrue((i == iMax), "");
+        pOpc = Opcodes_FindA(pObj2, "lh");
+        TestForNotNull(pOpc, "");
+        //iRc = Opcodes_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -158,144 +175,185 @@ int             test_Opcodes_Copy01 (
 
         // Test copy.
         pObj2 = Opcodes_Copy(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_OPCODES);
-        TINYTEST_TRUE( (fRc) );
-        //eRc = Opcodes_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == eRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+        //iRc = Opcodes_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(OPCODES_JSON_SUPPORT)
         pStr = Opcodes_ToJson(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "Missing JSON output");
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
         pObj2 = Opcodes_NewFromJsonString(pStr);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing JSON created object");
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_OPCODES);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = Opcodes_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == eRc) );
+        //iRc = Opcodes_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
+        iMax = Opcodes_getSize(pObj1);
+        i    = Opcodes_getSize(pObj2);
+        TestForTrue((i == iMax), "");
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
-#endif
 
         obj_Release(pObj1);
         pObj1 = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_Opcodes_Test01 (
+ERESULT         Test_Opcodes_Test01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    OPCODES_DATA	*pObj = OBJ_NIL;
-    OPCODES_DATA    *pObj2 = OBJ_NIL;
-    OPCODE_DATA     *pOpc = OBJ_NIL;
+    OPCODES_DATA    *pObj = OBJ_NIL;
     bool            fRc;
-    OBJENUM_DATA    *pEnum = OBJ_NIL;
-    uint32_t        i;
-    ASTR_DATA       *pStr = OBJ_NIL;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = Opcodes_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_OPCODES);
-        TINYTEST_TRUE( (fRc) );
-
-        pOpc = Opcode_NewA("lh");
-        TINYTEST_FALSE( (OBJ_NIL == pOpc) );
-        eRc = Opcodes_Add(pObj, pOpc);
-        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
-        TINYTEST_TRUE( (1 == Opcodes_getSize(pObj)) );
-        obj_Release(pOpc);
-        pOpc = Opcode_NewA("br");
-        TINYTEST_FALSE( (OBJ_NIL == pOpc) );
-        eRc = Opcodes_Add(pObj, pOpc);
-        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
-        TINYTEST_TRUE( (2 == Opcodes_getSize(pObj)) );
-        obj_Release(pOpc);
-        pOpc = Opcode_NewA("br");
-        TINYTEST_FALSE( (OBJ_NIL == pOpc) );
-        // Version 1 was based on the opcode name
-        // being unique and was used as the index.
-        // V2 does not require that, because you
-        // might have the opcode name used in
-        // several object formats or assembler
-        // inputs.
-        eRc = Opcodes_Add(pObj, pOpc);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        TINYTEST_TRUE( (3 == Opcodes_getSize(pObj)) );
-        obj_Release(pOpc);
-
-        pEnum = Opcodes_Enum(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pEnum) );
-        fprintf(stderr, "Enum:\n");
-        for (;;) {
-            pOpc = OBJ_NIL;
-            eRc = ObjEnum_Next(pEnum, 1, (OBJ_ID *)&pOpc, &i);
-            if (ERESULT_OK(eRc) && pOpc) {
-                fprintf(stderr, "\t%s\n", Opcode_getNameA(pOpc));
-            } else {
-                break;
+        TestForTrue(fRc, "Failed Ident Test");
+        
+        {
+            ASTR_DATA       *pStr = Opcodes_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
             }
         }
-        obj_Release(pEnum);
-        pEnum = OBJ_NIL;
-
-        pStr = Opcodes_ToJson(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        fprintf(stderr, "ToJson: %s\n", AStr_getData(pStr));
-        pObj2 = Opcodes_NewFromJsonString(pStr);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
-        TINYTEST_TRUE( (3 == Opcodes_getSize(pObj)) );
-        //FIXME: pOpc = Opcodes_FindA(pObj2, "br");
-        //FIXME: TINYTEST_FALSE( (OBJ_NIL == pOpc) );
-        //FIXME: pOpc = Opcodes_FindA(pObj2, "lh");
-        //FIXME: TINYTEST_FALSE( (OBJ_NIL == pOpc) );
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        obj_Release(pObj2);
-        pObj2 = OBJ_NIL;
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
+}
+
+
+
+ERESULT         Test_Opcodes_Test02 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    OPCODES_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
+    OPCODE_DATA     *pOpc = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = Opcodes_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_OPCODES);
+        TestForTrue(fRc, "Failed Ident Test");
+
+        pOpc = Opcode_NewA("lh");
+        TestForNotNull(pOpc, "");
+        eRc = Opcodes_Add(pObj, pOpc);
+        TestForSuccess("");
+        obj_Release(pOpc);
+        pOpc = Opcode_NewA("ah");
+        TestForNotNull(pOpc, "");
+        eRc = Opcodes_Add(pObj, pOpc);
+        TestForSuccess("");
+        obj_Release(pOpc);
+        pOpc = Opcode_NewA("sth");
+        TestForNotNull(pOpc, "");
+        eRc = Opcodes_Add(pObj, pOpc);
+        TestForSuccess("");
+        obj_Release(pOpc);
+
+        {
+            ASTR_DATA       *pStr = Opcodes_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
 }
 
 
 
 
-TINYTEST_START_SUITE(test_Opcodes);
-    TINYTEST_ADD_TEST(test_Opcodes_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_Opcodes_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Opcodes_OpenClose,setUp,tearDown);
-TINYTEST_END_SUITE();
+int     main (
+    int         cArgs,
+    const
+    char        *ppArgs[],
+    const
+    char        *ppEnv[]
+)
+{
+    ERESULT     eRc;
+    TEST_DATA   test = {0};
+    TEST_DATA   *pTest = OBJ_NIL;
+    int         i;
+    const
+    char        *pTestNameA = NULL;
 
-TINYTEST_MAIN_SINGLE_SUITE(test_Opcodes);
+    pTest = Test_Init(&test);
+    if (OBJ_NIL == pTest) {
+        fprintf(
+                stderr,
+                "\x1b[1m\x1b[31mFATAL\x1b[0m: Could not create Test object!\n\n\n"
+        );
+        exit(201);
+    }
 
+    // Scan args.
+    for (i=0; i<cArgs; i++) {
+        if (0 == strcmp("--no_int3", ppArgs[i])) {
+            Test_setAllowInt3(pTest, false);
+        }
+    }
 
+    // Execute tests.
+    TestExec("OpenClose", Test_Opcodes_OpenClose, NULL, NULL);
+    TestExec("Copy01", Test_Opcodes_Copy01, NULL, NULL);
+    TestExec("Test01", Test_Opcodes_Test01, NULL, NULL);
+    TestExec("Test02", Test_Opcodes_Test02, NULL, NULL);
+
+    obj_Release(pTest);
+    pTest = OBJ_NIL;
+
+    // Return to Operating System.
+    return 0;
+}
 
 
 
