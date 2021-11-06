@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
 //  Class Object Metods and Tables for 'Test01'
-//  Generated 10/28/2021 15:31:08
+//  Generated 11/06/2021 15:49:17
 
 
 /*
@@ -488,7 +488,7 @@ OBJ_INFO        Test01_Info = {
     "Test01",
     "A Good Test Object",
     (OBJ_DATA *)&Test01_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&Test01_ClassObj,
     (OBJ_IUNKNOWN *)&Test01_Vtbl,
     sizeof(TEST01_DATA)
 };

@@ -79,6 +79,20 @@ struct Gen_data_s	{
     const
     char            *pOutputDrvDirA;
 
+    void            (*pMsgInfo)(
+        APPL_DATA       *this,
+        const
+        char            *fmt,
+        ...
+    );
+    void            (*pMsgWarn)(
+        APPL_DATA       *this,
+        uint16_t        iVerbose,
+        const
+        char            *fmt,
+        ...
+    );
+    OBJ_ID          pMsgObj;
 };
 #pragma pack(pop)
 
@@ -163,6 +177,12 @@ struct Gen_data_s	{
         TEXTIN_DATA     *pInput,
         TEXTOUT_DATA    *pOutput,
         uint32_t        *pCnt
+    );
+
+
+    ERESULT         Gen_ExpandVars(
+        GEN_DATA        *this,
+        ASTR_DATA       *pInOut
     );
 
 

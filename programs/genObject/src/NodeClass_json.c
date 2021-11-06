@@ -179,7 +179,7 @@ extern "C" {
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        NODECLASS_DATA   *pObject = OBJ_NIL;
+        NODECLASS_DATA  *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -187,8 +187,6 @@ extern "C" {
             SrcErrors_Print(OBJ_NIL, stderr);
             goto exit00;
         }
-        fprintf(stderr, "======-------======\nmem_Dump(); after NodeClass_NewFromJsonString()\n");
-        mem_Dump();
 
         pObject = NodeClass_ParseJsonObject(pParser);
         

@@ -1,0 +1,17 @@
+# vi:nu:et:sts=4 ts=4 sw=4
+
+The object of genObject is to be able to generate a basic object with certain attributes
+such as inheritance, JSON support, etc.  It takes a basic JSON description of the object
+and generates the necessary files which are required.  For instance, the "_json.c" file
+is only needed if JSON support is requested. By generating these files, a lot of basic
+work and errors can be avoided.
+
+The program has the following classes for performing certain jobs:
+    
+    "Main" inherits from "Appl" and provides the command line interface to the program.
+    "Dict" inherits from "NodeHash" and provides a Dictionary of Data needed.
+    "NodeClass" contains the data and methods to define a class with its properties,
+         "NodeProp".
+    "NodeProp" contains the Class properties such as ???.
+    "Gen" generates a file given "Dict" and ??? to use for substitution or ???.
+

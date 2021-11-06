@@ -168,6 +168,25 @@ extern "C" {
     );
 
 
+    bool            Gen_setMsg (
+        GEN_DATA     *this,
+        void            (*pMsgInfo)(
+            APPL_DATA       *this,
+            const
+            char            *fmt,
+            ...
+        ),
+        void            (*pMsgWarn)(
+            APPL_DATA       *this,
+            uint16_t        iVerbose,
+            const
+            char            *fmt,
+            ...
+        ),
+        OBJ_ID       pObj
+    );
+
+
     const
     char *          Gen_getModelDrvDirA (
         GEN_DATA        *this
@@ -245,8 +264,11 @@ extern "C" {
     );
 
 
-    /*! Set default values for arguments just prior to them being parsed.
-     Parsed arguments may replace any value set here.
+    /*!
+     Set default values for arguments just prior to them being parsed
+     in the file to be generated such as GEN_DATE, GEN_TIME, etc.  The
+     generated arguments are stored in the dictionary.  Parsed arguments
+     may replace any value set here.
      @return    If successful, then ERESULT_SUCESS. Otherwise, an ERESULT_*
                 error. Note: this is ignored in Appl.
      */

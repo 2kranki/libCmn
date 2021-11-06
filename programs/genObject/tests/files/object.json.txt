@@ -1,0 +1,14 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+// genObject --work object.json.txt
+//          move .test from src subdirectory to test subdirectory.
+
+{
+    "objectType":"NodeClass",
+    "name":"Spcl",
+    "super":"Appl",
+    "desc":"Specail Object for Testing genObject",
+    //"immutable":true,         // Default(false)
+    "json":true,              // Default(false)
+    //"singleton":true,         // Default(false)
+    //"test":false,             // Default(true)
+}

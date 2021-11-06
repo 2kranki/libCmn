@@ -264,6 +264,23 @@ extern "C" {
     }
     
   
+    ${USUPER}_DATA *  ${LNAME}_getSuper (
+        ${UNAME}_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!${LNAME}_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        
+        return (${USUPER}_DATA *)this;
+    }
 
     
 
@@ -377,6 +394,11 @@ extern "C" {
         char            *pStr2;
 #endif
         
+#ifdef  ${UNAME}_SINGLETON
+        if (OBJ_NIL == this) {
+            this = ${LNAME}_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!${LNAME}_Validate(this)) {
@@ -555,6 +577,11 @@ extern "C" {
 
         // Do initialization.
         TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ${UNAME}_SINGLETON
+        if (OBJ_NIL == this) {
+            this = ${LNAME}_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!${LNAME}_Validate(this)) {
@@ -592,6 +619,11 @@ extern "C" {
 
         // Do initialization.
         TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ${UNAME}_SINGLETON
+        if (OBJ_NIL == this) {
+            this = ${LNAME}_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!${LNAME}_Validate(this)) {
@@ -636,7 +668,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        //this = (OBJ_ID)${LSUPER}_Init((${USUPER}_DATA *)this);   // Needed for Inheritance
         // If you use inheritance, remember to change the obj_ClassObj reference 
         // in the OBJ_INFO at the end of ${LNAME}_object.c
         this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_${UNAME});
@@ -696,6 +728,11 @@ extern "C" {
         
         // Do initialization.
         TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ${UNAME}_SINGLETON
+        if (OBJ_NIL == this) {
+            this = ${LNAME}_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!${LNAME}_Validate(this)) {

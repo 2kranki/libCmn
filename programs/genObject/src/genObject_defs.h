@@ -172,6 +172,8 @@ extern "C" {
 #define OBJECT_NAME_UPPER   "UNAME"
 #define OUTPUT_DRIVE        "OUTPUT_DRIVE"
 #define OUTPUT_DIR          "OUTPUT_DIR"
+#define SUPER_NAME          "LSUPER"
+#define SUPER_NAME_UPPER    "USUPER"
 
 
 

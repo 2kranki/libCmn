@@ -111,22 +111,6 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-    static
-    const
-    char *          Gen_FindExpandA(
-        GEN_DATA        *this,
-        const
-        char            *pNameA
-    )
-    {
-        const
-        char            *pStrA = NULL;
-
-        pStrA = Dict_GetA(this->pDict, pNameA);
-        return pStrA;
-    }
-
-
 
 
     /****************************************************************
@@ -216,6 +200,45 @@ extern "C" {
             obj_Release(this->pDict);
         }
         this->pDict = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      M e s s a g e
+    //---------------------------------------------------------------
+
+    bool            Gen_setMsg (
+        GEN_DATA     *this,
+        void            (*pMsgInfo)(
+            APPL_DATA       *this,
+            const
+            char            *fmt,
+            ...
+        ),
+        void            (*pMsgWarn)(
+            APPL_DATA       *this,
+            uint16_t        iVerbose,
+            const
+            char            *fmt,
+            ...
+        ),
+        OBJ_ID       pObj
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pMsgInfo = pMsgInfo;
+        this->pMsgWarn = pMsgWarn;
+        this->pMsgObj = pObj;
 
         return true;
     }
@@ -1009,7 +1032,7 @@ extern "C" {
                 break;
             } else {
                 if (OBJ_NIL != pLine) {
-                    eRc = AStr_ExpandVars(pLine, (void *)Gen_FindExpandA, this);
+                    eRc = Gen_ExpandVars(this, pLine);
                     if ((OBJ_NIL != pLine) && (AStr_getSize(pLine) != 0)) {
                         eRc = TextOut_PutAStr(pOutput, pLine);
                         if (ERESULT_FAILED(eRc)) {
@@ -1088,17 +1111,18 @@ extern "C" {
                         "Could not open input file, %s!\n",
                         Path_getData(pOutputPath)
         );
-        if (fVerbose) {
-            fprintf(stderr,
-                    "\t\t%s -> %s\n",
-                    Path_getData(pModelPath),
-                    Path_getData(pOutputPath)
+        if (this->pMsgInfo) {
+            this->pMsgInfo(
+                    this->pMsgObj,
+                           "%s -> %s\n",
+                           Path_getData(pModelPath),
+                           Path_getData(pOutputPath)
             );
         }
         cnt = 0;
         eRc = Gen_ExpandData(this, pInput, pOutput, &cnt);
-        if (fVerbose) {
-            fprintf(stderr, "\t\t%d lines\n", cnt);
+        if (this->pMsgInfo) {
+            this->pMsgInfo(this->pMsgObj, "%d lines\n", cnt);
         }
 
         obj_Release(pInput);
@@ -1113,6 +1137,115 @@ extern "C" {
         // Return to caller.
         return eRc;
     }
+
+
+    /*! Expand the ${} variables in a line until there are no more. When
+        a variable is found, look it up in the dictionary and then the
+        program environment.  If it exists in one of those, replace the
+        ${} variable with the text found. If it is not found, simply
+        remove the ${} variable and note it to the log.
+     */
+    ERESULT         Gen_ExpandVars(
+        GEN_DATA        *this,
+        ASTR_DATA       *pInOut
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i = 0;
+        uint32_t        j;
+        uint32_t        len;
+        int32_t         chr;
+        bool            fMore = true;
+        //PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pName = OBJ_NIL;
+        const
+        char            *pEnvVar = NULL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Gen_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (0 == AStr_getLength(pInOut)) {
+            return ERESULT_SUCCESS;
+        }
+
+        // Expand Environment variables.
+        while (fMore) {
+            fMore = false;
+            eRc = AStr_CharFindNextW32(pInOut, &i, '$');
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            else {
+                chr = AStr_CharGetW32(pInOut, i+1);
+                if (chr == '{') {
+                    j = i + 2;
+                    eRc = AStr_CharFindNextW32(pInOut, &j, '}');
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_PARSE_ERROR;
+                    }
+                    len = j - (i + 2);
+                    eRc = AStr_Mid(pInOut, i+2, len, &pName);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+
+                    // See if we can find the variable in the dictionary
+                    // or program environment.
+                    pEnvVar = NULL;
+                    if (this->pDict) {
+                        pEnvVar = Dict_GetA(this->pDict, AStr_getData(pName));
+                    }
+                    if (NULL == pEnvVar) {
+                        pEnvVar = getenv(AStr_getData(pName));
+                        if (NULL == pEnvVar) {
+                            obj_Release(pName);
+                            if (this->pMsgWarn) {
+                                this->pMsgWarn(
+                                        this->pMsgObj,
+                                        0,
+                                        "Could not find variable, %s, skipped!\n",
+                                        AStr_getData(pName)
+                                );
+                            }
+                        }
+                    }
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
+
+                    // Remove the ${} variable.
+                    eRc = AStr_Remove(pInOut, i, len+3);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+
+                    // Insert the variable's text if it exists.
+                    if (pEnvVar) {
+                        eRc = AStr_InsertA(pInOut, i, pEnvVar);
+                        if (ERESULT_FAILED(eRc)) {
+                            return ERESULT_OUT_OF_MEMORY;
+                        }
+                    }
+                    pEnvVar = NULL;
+                    fMore = true;
+                }
+                else {
+                    ++i;
+                    fMore = true;
+                    continue;
+                }
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
 
 
 

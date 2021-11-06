@@ -70,8 +70,8 @@ struct Test_data_s  {
 
     // Common Data
     ASTR_DATA       *pStr;
-    uint16_t        size;           // maximum number of elements
-    uint16_t        rsvd16;
+    uint16_t        fQuiet;           
+    uint16_t        iVerbose;
     int             iExitCode;
     bool            fAllowInt3;
 

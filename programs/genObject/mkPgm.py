@@ -316,6 +316,13 @@ def         perform_actions():
             print('ERROR - make test failed!')
             return 4
 
+    # Try the new version.
+    if args.debug:
+        rc = do_cmd("genObject --work tests/files/object.json.txt" % args.ostype)
+        if rc != 0:
+            print('ERROR - make test failed!')
+            return 4
+
     return 0
 
 

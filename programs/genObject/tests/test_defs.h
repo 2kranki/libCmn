@@ -46,8 +46,9 @@ extern "C" {
 #endif
     
 
-#define TEST_FILES_DIR  "${HOME}/git/libCmn/tests/files"    
-    
+#define TEST_FILES_DIR   "${HOME}/git/libCmn/programs/genObject/tests/files"
+#define TEST_MODELS_DIR  "${HOME}/git/libCmn/programs/genObject/models"
+
     
     //****************************************************************
     //* * * * * * * * * * *  Data Definitions  * * * * * * * * * * * *

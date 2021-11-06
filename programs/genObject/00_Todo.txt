@@ -1,0 +1,22 @@
+# vi:nu:et:sts=4 ts=4 sw=4
+
+*   Merge in genGetterSetter.
+    *   JSON -  (???) properties:[[int,uint32_t,name],[ptr,int8_t,name],[object,ObjName,name]]
+*   Change Gen to create an AStr instead of a file ???
+*   Think about separating each method into its own AStr
+    which would be stored by type (internal, class, property, 
+    general). Add class to each (private, ???, public).
+    Add read/write property to all properties which would
+    indicate where to gen headers (ie .h or _internal.h)
+    Have each have a description.  Generate files with
+    methods/properties generated in alphabetical order
+    within class.
+        method name
+        method type (private, property, public)
+        method class (read, write, read_write) for public
+                    If class is absent, gen read_write in 
+                    _internal.h
+*   Run output through a C Beautifier, look in old UtilCommand directory
+    
+
+

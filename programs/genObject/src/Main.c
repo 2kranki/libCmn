@@ -1077,6 +1077,24 @@ extern "C" {
     }
     
   
+    APPL_DATA *     Main_getSuper (
+        MAIN_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Main_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (APPL_DATA *)this;
+    }
+
+
 
     
 
@@ -1546,6 +1564,12 @@ extern "C" {
             return OBJ_NIL;
         }
         Gen_setDict(this->pGen, this->pDict);
+        Gen_setMsg(
+                   this->pGen,
+                   (void *)Appl_MsgInfo,
+                   (void *)Appl_MsgWarn,
+                   Main_getSuper(this)
+        );
 
         Appl_setUsage(
                           (APPL_DATA *)this,
@@ -1697,9 +1721,7 @@ extern "C" {
 #endif
         TRC_OBJ(this, "Main_ProcessArg(%s)\n", pStr ? AStr_getData(pStr) : "");
 
-        if (!Appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\tProcessing - %s...\n", AStr_getData(pStr));
-        }
+        Appl_MsgInfo(Main_getSuper(this), "\tProcessing - %s...\n", AStr_getData(pStr));
 
         pPath = Main_CheckInputPath(this, pStr);
         Appl_ErrorFatalOnBool(
@@ -1744,9 +1766,11 @@ extern "C" {
                     "FATAL - Failed to create expansion entries from &s\n",
                     Path_getData(pPath)
         );
-        if (!Appl_getQuiet((APPL_DATA *)this)) {
-            fprintf(stderr, "\t\tCreated object from %s.\n", Path_getData(pPath));
-        }
+        Appl_MsgInfo(
+                     Main_getSuper(this),
+                     "\t\tCreated object from %s.\n",
+                     Path_getData(pPath)
+        );
 
         // Return to caller.
         obj_Release(pClass);

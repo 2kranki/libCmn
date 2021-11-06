@@ -16,7 +16,7 @@
  *  1.      None
  *
  * History
- *  10/28/2021 Generated
+ *  11/06/2021 Generated
  */
 
 
@@ -77,11 +77,12 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Test01_data_s  TEST01_DATA;            // Inherits from OBJ
-    typedef struct Test01_class_data_s TEST01_CLASS_DATA;   // Inherits from OBJ
+    typedef struct Test01_data_s  TEST01_DATA;          // Inherits from OBJ
+    typedef struct Test01_class_data_s TEST01_CLASS_DATA;  // Inherits from OBJ
 
     typedef struct Test01_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        //Test01_VTBL    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in Test01_object.c.
         // Properties:

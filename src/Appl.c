@@ -1123,6 +1123,11 @@ extern "C" {
         ERESULT     eRc;
         
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!Appl_Validate(this)) {
@@ -1198,6 +1203,11 @@ extern "C" {
     {
         int             iRc = 0;
         
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!Appl_Validate(this)) {
@@ -1247,6 +1257,11 @@ extern "C" {
         ERESULT         eRc;
         
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!Appl_Validate(this)) {
@@ -1283,7 +1298,7 @@ extern "C" {
         OBJ_ID          objId
     )
     {
-        APPL_DATA   *this = objId;
+        APPL_DATA       *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -1345,6 +1360,11 @@ extern "C" {
         ERESULT         eRc;
         
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!Appl_Validate(this)) {
@@ -1385,6 +1405,11 @@ extern "C" {
         //ERESULT         eRc;
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!Appl_Validate(this)) {
@@ -1420,6 +1445,11 @@ extern "C" {
         //ERESULT         eRc;
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!Appl_Validate(this)) {
@@ -1450,6 +1480,11 @@ extern "C" {
         //ASTR_DATA       *pStr;
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -1503,6 +1538,11 @@ extern "C" {
         //ASTR_DATA       *pStr;
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -1531,6 +1571,11 @@ extern "C" {
     {
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -1623,6 +1668,11 @@ extern "C" {
         //ERESULT         eRc;
         
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!Appl_Validate(this)) {
@@ -1652,6 +1702,11 @@ extern "C" {
         bool            fRc;
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -1669,6 +1724,83 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                       M e s s a g e s
+    //---------------------------------------------------------------
+
+    void            Appl_MsgInfo(
+        APPL_DATA       *this,
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+
+        // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Appl_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+
+        if (!this->fQuiet) {
+            va_start( argsp, fmt );
+            fprintf( stderr, "Msg:  " );
+            vfprintf( stderr, fmt, argsp );
+            va_end( argsp );
+            fprintf( stderr, "\n" );
+        }
+
+    }
+
+
+
+    void            Appl_MsgWarn(
+        APPL_DATA       *this,
+        uint16_t        iVerbose,
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+
+        // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Appl_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+
+        if (!this->fQuiet && (this->iVerbose >= iVerbose)) {
+            va_start( argsp, fmt );
+            fprintf( stderr, "Warning:  " );
+            vfprintf( stderr, fmt, argsp );
+            va_end( argsp );
+            fprintf( stderr, "\n" );
+        }
+
+    }
+
+
+
+    //---------------------------------------------------------------
     //                  N e x t  A r g u m e n t
     //---------------------------------------------------------------
 
@@ -1679,6 +1811,11 @@ extern "C" {
         char            *pData = NULL;
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -1706,6 +1843,11 @@ extern "C" {
         uint16_t        num = 0;
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -1734,6 +1876,11 @@ extern "C" {
         ERESULT         eRc;
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -1761,6 +1908,11 @@ extern "C" {
         ERESULT         eRc;
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -1801,6 +1953,11 @@ extern "C" {
         NODE_DATA       *pProperty = OBJ_NIL;
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -1855,9 +2012,11 @@ extern "C" {
         const
         char            *pStr = pData;
         
+#ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
-            return NULL;
+            this = Appl_Shared();
         }
+#endif
 #ifdef NDEBUG
 #else
         if (!Appl_Validate(this)) {
@@ -1983,6 +2142,11 @@ extern "C" {
         PATH_DATA       *pPath;
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -2068,6 +2232,11 @@ extern "C" {
         ASTRARRAY_DATA  *pArgs;
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if(!Appl_Validate(this)) {
@@ -2214,6 +2383,11 @@ extern "C" {
         OBJ_INFO        *pInfo;
         
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!Appl_Validate(this)) {
@@ -2286,6 +2460,20 @@ extern "C" {
         const
         char            *pNameA = "???";
 
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if( !Appl_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+
         fprintf(pOutput, "\n\n");
         if (this->pProgramPath) {
             eRc = Path_SplitPath(this->pProgramPath, OBJ_NIL, OBJ_NIL, &pName);
@@ -2316,6 +2504,20 @@ extern "C" {
     {
         ERESULT         eRc;
         int32_t         len;
+
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if( !Appl_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
 
         eRc = AStr_Truncate(pStr, 0);
         eRc = AStr_AppendA(pStr, "  ");
@@ -2354,6 +2556,20 @@ extern "C" {
         char            *pNameA = "???";
         int             i;
         ASTR_DATA       *pStr = OBJ_NIL;
+
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if( !Appl_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
 
         pStr = AStr_New( );
         if (OBJ_NIL == pStr) {
@@ -2465,6 +2681,11 @@ extern "C" {
     {
 
         // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {

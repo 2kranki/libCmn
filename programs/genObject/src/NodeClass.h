@@ -8,7 +8,7 @@
  *			Class Definition (NodeClass)
  * Purpose
  *			This object contains the data and methods to define
- *          class with its properties (NodeProp).
+ *          a class with its properties (NodeProp).
  *
  * Remarks
  *	1.      None

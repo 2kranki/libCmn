@@ -457,8 +457,8 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    ASTR_DATA * NodeClass_getSuper (
-        NODECLASS_DATA     *this
+    ASTR_DATA *     NodeClass_getSuper (
+        NODECLASS_DATA  *this
     )
     {
 
@@ -475,9 +475,9 @@ extern "C" {
     }
 
 
-    bool        NodeClass_setSuper (
-        NODECLASS_DATA     *this,
-        ASTR_DATA   *pValue
+    bool            NodeClass_setSuper (
+        NODECLASS_DATA  *this,
+        ASTR_DATA       *pValue
     )
     {
 #ifdef NDEBUG
@@ -804,6 +804,37 @@ extern "C" {
                                 pStr
                         );
             }
+            obj_Release(pStr);
+        }
+        if (this->pSuper) {
+            ASTR_DATA           *pStr;
+            eRc = Dict_AddAStr(
+                            pDict,
+                            SUPER_NAME,
+                            this->pName
+                    );
+            pStr = AStr_ToUpper(this->pName);
+            eRc = Dict_AddAStr(
+                            pDict,
+                            SUPER_NAME_UPPER,
+                            pStr
+                    );
+            obj_Release(pStr);
+        } else {
+            ASTR_DATA           *pStr;
+            pStr = AStr_NewA("obj");
+            eRc = Dict_AddAStr(
+                            pDict,
+                            SUPER_NAME,
+                            this->pName
+                    );
+            obj_Release(pStr);
+            pStr = AStr_NewA("OBJ");
+            eRc = Dict_AddAStr(
+                            pDict,
+                            SUPER_NAME_UPPER,
+                            pStr
+                    );
             obj_Release(pStr);
         }
 

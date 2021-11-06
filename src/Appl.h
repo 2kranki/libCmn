@@ -377,6 +377,35 @@ extern "C" {
     );
 
 
+    /*!
+     Issue a Warning messages if the Quiet property is false (default).
+     @param     this        Object Pointer
+     @param     fmt         fprint type format     */
+    void            Appl_MsgInfo(
+        APPL_DATA       *this,
+        const
+        char            *fmt,
+        ...
+    );
+
+
+    /*!
+     Issue a Warning messages if the Quiet property is false (default)
+     and the Verbose property is greater than or equal to iVerbose
+     (default 0).
+     @param     this        Object Pointer
+     @param     iVerbose    Verbose Level
+     @param     fmt         fprint type format
+     */
+    void            Appl_MsgWarn(
+        APPL_DATA       *this,
+        uint16_t        iVerbose,
+        const
+        char            *fmt,
+        ...
+    );
+
+
     char *          Appl_NextArg (
         APPL_DATA       *this
     );

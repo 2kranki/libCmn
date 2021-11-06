@@ -264,7 +264,7 @@ int     main (
 
     // Execute tests.
     TestExec("OpenClose", Test_Test01_OpenClose, NULL, NULL);
-    //TestExec("Copy01", Test_Test01_Copy01, pTest, NULL, NULL);
+    //TestExec("Copy01", Test_Test01_Copy01, NULL, NULL);
     TestExec("Test01", Test_Test01_Test01, NULL, NULL);
 
     obj_Release(pTest);

@@ -1,0 +1,14 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+// genObject --cmn object.json.txt
+//          move .test from src subdirectory to test subdirectory.
+
+{
+    "objectType":"NodeClass",
+    "name":"Gen",
+    //"super":"obj",
+    "desc":"Generate a File",
+    //"immutable":true,         // Default(false)
+    //"json":true,              // Default(false)
+    //"singleton":true,         // Default(false)
+    //"test":false,             // Default(true)
+}

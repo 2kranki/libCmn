@@ -488,7 +488,7 @@ OBJ_INFO        ${LNAME}_Info = {
     "${LNAME}",
     "${DESC}",
     (OBJ_DATA *)&${LNAME}_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&${LSUPER}_ClassObj,
     (OBJ_IUNKNOWN *)&${LNAME}_Vtbl,
     sizeof(${UNAME}_DATA)
 };

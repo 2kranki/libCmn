@@ -1,156 +1,150 @@
 // vi:nu:et:sts=4 ts=4 sw=4
+//****************************************************************
+//                      Test Object Program
+//****************************************************************
 /*
- *	Generated 05/05/2020 09:59:00
+ * Program
+ *          Test Object Program
+ * Purpose
+ *          This program tests a particular object given certain
+ *          parameters.
+ *
+ * Remarks
+ *  1.      This relies on the fact that we can add to the Test
+ *          Object by simply coding methods that use the Test
+ *          Object.
+ *
+ * History
+ *  08/29/2021 Generated
+ */
+
+
+/*
+ This is free and unencumbered software released into the public domain.
+ 
+ Anyone is free to copy, modify, publish, use, compile, sell, or
+ distribute this software, either in source code form or as a compiled
+ binary, for any purpose, commercial or non-commercial, and by any
+ means.
+ 
+ In jurisdictions that recognize copyright laws, the author or authors
+ of this software dedicate any and all copyright interest in the
+ software to the public domain. We make this dedication for the benefit
+ of the public at large and to the detriment of our heirs and
+ successors. We intend this dedication to be an overt act of
+ relinquishment in perpetuity of all present and future rights to this
+ software under copyright law.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+ 
+ For more information, please refer to <http://unlicense.org/>
+ */
+
+
+
+
+/*
+ TestForFail(error_sttring)         <= Tests eRc for failure
+ TestForFalse(test, error_sttring)
+ TestForNotNull(test, error)
+ TestForNull(test, error)
+ TestForSuccess(error)              <= Tests eRc for success
+ TestForTrue(test, error)
  */
 
 
 
 
 
-// All code under test must be linked into the Unit Test bundle
-// Test Macros:
-//      TINYTEST_ASSERT(condition)
-//      TINYTEST_ASSERT_MSG(condition,msg)
-//      TINYTEST_EQUAL(expected, actual)
-//      TINYTEST_EQUAL_MSG(expected, actual, msg)
-//      TINYTEST_FALSE_MSG(condition,msg)
-//      TINYTEST_FALSE(condition)
-//      TINYTEST_TRUE_MSG(pointer,msg)
-//      TINYTEST_TRUE(condition)
-
-
-
-
-
-#include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
+#include    <Test_internal.h>
 #include    <trace.h>
 #include    <Gen_internal.h>
+#include    <JsonIn.h>
 #include    <SrcErrors.h>
 #include    <szTbl.h>
 
 
 
-int             setUp (
-    const
-    char            *pTestName
-)
-{
-    mem_Init( );
-    trace_Shared( ); 
-    // Put setup code here. This method is called before the invocation of each
-    // test method in the class.
-    
-    return 1; 
-}
-
-
-int             tearDown (
-    const
-    char            *pTestName
-)
-{
-    // Put teardown code here. This method is called after the invocation of each
-    // test method in the class.
-
-    SrcErrors_SharedReset( );
-    szTbl_SharedReset( );
-    JsonIn_RegisterReset();
-    trace_SharedReset( );
-    if (mem_Dump( ) ) {
-        fprintf(
-                stderr,
-                "\x1b[1m"
-                "\x1b[31m"
-                "ERROR: "
-                "\x1b[0m"
-                "Leaked memory areas were found!\n"
-        );
-        exitCode = 4;
-        return 0;
-    }
-    mem_Release( );
-    
-    return 1; 
-}
 
 
 
-
-
-
-int             test_Gen_OpenClose (
+ERESULT         Test_Gen_OpenClose (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    GEN_DATA	    *pObj = OBJ_NIL;
+    GEN_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = Gen_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Alloc() object");
     pObj = Gen_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Init() object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_GEN);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         
         // Test something.
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("test failed");
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_Gen_Copy01 (
+ERESULT         Test_Gen_Copy01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    GEN_DATA	    *pObj1 = OBJ_NIL;
-    GEN_DATA	    *pObj2 = OBJ_NIL;
-    DICT_DATA       *pDict = OBJ_NIL;
+    GEN_DATA       *pObj1 = OBJ_NIL;
+    GEN_DATA       *pObj2 = OBJ_NIL;
     bool            fRc;
 #if defined(GEN_JSON_SUPPORT) && defined(XYZZY)
-    ASTR_DATA	    *pStr = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
 #endif
+    //int             iRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj1 = Gen_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj1) );
+    TestForNotNull(pObj1, "Missing Test object");
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_GEN);
-        TINYTEST_TRUE( (fRc) );
-        pDict = Dict_New( );
-        TINYTEST_FALSE( (OBJ_NIL == pDict) );
-        Gen_setDict(pObj1, pDict);
-
+        TestForTrue(fRc, "Failed Ident Test");
+        
         // Test assign.
         pObj2 = Gen_New();
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
         eRc = Gen_Assign(pObj1, pObj2);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForFalse((ERESULT_FAILED(eRc)), "Assignment failed");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_GEN);
-        TINYTEST_TRUE( (fRc) );
-        Gen_setDict(pObj2, pDict);
-        //eRc = Gen_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == eRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+        //iRc = Gen_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -158,13 +152,12 @@ int             test_Gen_Copy01 (
 
         // Test copy.
         pObj2 = Gen_Copy(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_GEN);
-        TINYTEST_TRUE( (fRc) );
-        Gen_setDict(pObj2, pDict);
-        //eRc = Gen_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == eRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+        //iRc = Gen_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -173,17 +166,16 @@ int             test_Gen_Copy01 (
         // Test json support.
 #if defined(GEN_JSON_SUPPORT) && defined(XYZZY)
         pStr = Gen_ToJson(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "Missing JSON output");
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
         pObj2 = Gen_NewFromJsonString(pStr);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing JSON created object");
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_GEN);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        Gen_setDict(pObj2, pDict);
-        //eRc = Gen_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == eRc) );
+        //iRc = Gen_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -191,51 +183,158 @@ int             test_Gen_Copy01 (
 
         obj_Release(pObj1);
         pObj1 = OBJ_NIL;
-        obj_Release(pDict);
-        pDict = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_Gen_Test01 (
+ERESULT         Test_Gen_Test01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    GEN_DATA	    *pObj = OBJ_NIL;
-    DICT_DATA       *pDict = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
-    ASTR_DATA       *pStr2 = OBJ_NIL;
-    PATH_DATA       *pPath = OBJ_NIL;
-    PATH_DATA       *pPathReal = OBJ_NIL;
+    GEN_DATA       *pObj = OBJ_NIL;
     bool            fRc;
-    int             iRc;
-    const
-    char            *pStrA;
-    const
-    char            *pMdlDirA =
-                    "~/git/libCmn/programs/genObject/models/";
-    const
-    char            *pTestDirA =
-                    "~/git/libCmn/programs/genObject/tests/files/x/";
-    char            *pFileNameA;
-
+   
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = Gen_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_GEN);
+        TestForTrue(fRc, "Failed Ident Test");
+        Test_setVerbose(this, 1);
+        Gen_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+        
+        {
+            ASTR_DATA       *pStr = Gen_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+// Test Gen_ExpandVars().
+ERESULT         Test_Gen_Test02 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    GEN_DATA       *pObj = OBJ_NIL;
+    bool            fRc;
+    const
+    char            *pHome = NULL;
+    int             len = 0;
+    ASTR_DATA       *pStr1 = OBJ_NIL;
+    ASTR_DATA       *pStr2 = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "Test Gen_ExpandVars().\n");
+
+    pObj = Gen_New( );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_GEN);
-        TINYTEST_TRUE( (fRc) );
-        pDict = Dict_New( );
-        TINYTEST_FALSE( (OBJ_NIL == pDict) );
+        TestForTrue(fRc, "Failed Ident Test");
+        Test_setVerbose(this, 1);
+        Gen_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+
+        pHome = getenv("HOME");
+        TestForNotNull(((char *)pHome), "");
+        if (pHome) {
+            len = (int)strlen(pHome);
+            pStr1 = AStr_NewA(pHome);
+            eRc = AStr_AppendA(pStr1, "$");
+            TestForSuccess("");
+            eRc = AStr_AppendA(pStr1, pHome);
+            TestForSuccess("");
+        }
+
+        pStr2 = AStr_NewA("${HOME}$${HOME}");
+        TestForNotNull(pStr2, "");
+        if (pStr2) {
+
+            eRc = Gen_ExpandVars(pObj, pStr2);
+            TestForSuccess("");
+            TestForTrue((AStr_getLength(pStr1) == AStr_getLength(pStr2)), "");
+            TestForTrue((0 == AStr_Compare(pStr1, pStr2)), "");
+
+            obj_Release(pStr1);
+            pStr1 = OBJ_NIL;
+            obj_Release(pStr2);
+            pStr2 = OBJ_NIL;
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_Gen_Test03 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    GEN_DATA       *pObj = OBJ_NIL;
+    bool            fRc;
+    DICT_DATA       *pDict = OBJ_NIL;
+    ASTR_DATA       *pStr  = OBJ_NIL;
+    ASTR_DATA       *pStr2 = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
+    PATH_DATA       *pPathReal = OBJ_NIL;
+    int             iRc;
+    const
+    char            *pStrA;
+    const
+    char            *pMdlDirA = TEST_MODELS_DIR "/";
+    const
+    char            *pTestDirA = TEST_FILES_DIR "/x/";
+    char            *pFileNameA;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "Test Gen_CreateModelPath().\n");
+
+    pDict = Dict_New( );
+    TestForNotNull(pDict, "");
+
+    pObj = Gen_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_GEN);
+        TestForTrue(fRc, "Failed Ident Test");
+        Test_setVerbose(this, 1);
+        Gen_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
         Gen_setDict(pObj, pDict);
 
         // Override default file locations.
@@ -244,54 +343,54 @@ int             test_Gen_Test01 (
         Gen_SetDefaults(pObj);
 
         pStr = AStr_NewA("Xyzzy");
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "");
         eRc = Dict_AddAStr(pObj->pDict, OBJECT_NAME, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         pStr2 = Dict_FindA(pObj->pDict, OBJECT_NAME);
-        TINYTEST_FALSE( (OBJ_NIL == pStr2) );
+        TestForNotNull(pStr2, "");
         fRc = obj_IsKindOf(pStr2, OBJ_IDENT_ASTR);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "");
         eRc = AStr_CompareA(pStr2, "Xyzzy");
-        TINYTEST_TRUE( (0 == eRc) );
+        TestForTrue((0 == eRc), "");
         eRc = Gen_SetDefaults(pObj);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         pStrA = Dict_GetA(pObj->pDict, MODEL_DRIVE);
-        TINYTEST_TRUE( (NULL == pStrA) );
+        TestForNull((char *)pStrA, "");
         pStrA = Dict_GetA(pObj->pDict, MODEL_DIR);
-        TINYTEST_FALSE( (NULL == pStrA) );
+        TestForNotNull((char *)pStrA, "");
         pPathReal = Path_NewA(pMdlDirA);
-        TINYTEST_FALSE( (OBJ_NIL == pPathReal) );
+        TestForNotNull(pPathReal, "");
         Path_Clean(pPathReal);
         iRc = Path_CompareA(pPathReal, pStrA);
-        TINYTEST_TRUE( (0 == iRc) );
+        TestForTrue(fRc, "");
         obj_Release(pPathReal);
         pPathReal = OBJ_NIL;
         pStrA = Dict_GetA(pObj->pDict, OUTPUT_DRIVE);
-        TINYTEST_TRUE( (NULL == pStrA) );
+        TestForNull((char *)pStrA, "");
         pStrA = Dict_GetA(pObj->pDict, OUTPUT_DIR);
-        TINYTEST_FALSE( (NULL == pStrA) );
+        TestForNotNull((char *)pStrA, "");
         pPathReal = Path_NewA(pTestDirA);
-        TINYTEST_FALSE( (OBJ_NIL == pPathReal) );
+        TestForNotNull(pPathReal, "");
         Path_Clean(pPathReal);
         iRc = Path_CompareA(pPathReal, pStrA);
-        TINYTEST_TRUE( (0 == iRc) );
+        TestForTrue(fRc, "");
         obj_Release(pPathReal);
         pPathReal = OBJ_NIL;
 
         pFileNameA = "model.obj.h.txt";
         pStr2 = AStr_NewA(pFileNameA);
         pPath = Gen_CreateModelPath(pObj, pStr2);
-        TINYTEST_FALSE( (OBJ_NIL == pPath) );
+        TestForNotNull(pPath, "");
         pPathReal = Path_NewA(pMdlDirA);
-        TINYTEST_FALSE( (OBJ_NIL == pPathReal) );
+        TestForNotNull(pPathReal, "");
         eRc = Path_AppendFileNameA(pPathReal, pFileNameA);
-        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+        TestForSuccess("");
         Path_Clean(pPathReal);
         fprintf(stderr, "\tmodel: %s -> %s\n", AStr_getData(pStr2), Path_getData(pPath));
         iRc = Path_Compare(pPath, pPathReal);
-        TINYTEST_TRUE( (0 == iRc) );
+        TestForTrue(fRc, "");
         obj_Release(pPathReal);
         pPathReal = OBJ_NIL;
         obj_Release(pPath);
@@ -303,15 +402,15 @@ int             test_Gen_Test01 (
         pFileNameA = "src/Xyzzy.h";
         pStr2 = AStr_NewA(pFileNameA);
         pPath = Gen_CreateOutputPath(pObj, "src", ".h");
-        TINYTEST_FALSE( (OBJ_NIL == pPath) );
+        TestForNotNull(pPath, "");
         pPathReal = Path_NewA(pTestDirA);
-        TINYTEST_FALSE( (OBJ_NIL == pPathReal) );
+        TestForNotNull(pPathReal, "");
         eRc = Path_AppendFileNameA(pPathReal, pFileNameA);
-        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+        TestForSuccess("");
         Path_Clean(pPathReal);
         fprintf(stderr, "\toutput: %s -> %s\n", AStr_getData(pStr2), Path_getData(pPath));
         iRc = Path_Compare(pPath, pPathReal);
-        TINYTEST_TRUE( (0 == iRc) );
+        TestForTrue(fRc, "");
         obj_Release(pPathReal);
         pPathReal = OBJ_NIL;
         obj_Release(pPath);
@@ -323,15 +422,15 @@ int             test_Gen_Test01 (
         pFileNameA = "src/Xyzzy_internal.h";
         pStr2 = AStr_NewA(pFileNameA);
         pPath = Gen_CreateOutputPath(pObj, "src", "_internal.h");
-        TINYTEST_FALSE( (OBJ_NIL == pPath) );
+        TestForNotNull(pPath, "");
         pPathReal = Path_NewA(pTestDirA);
-        TINYTEST_FALSE( (OBJ_NIL == pPathReal) );
+        TestForNotNull(pPathReal, "");
         eRc = Path_AppendFileNameA(pPathReal, pFileNameA);
-        TINYTEST_TRUE( (ERESULT_OK(eRc)) );
+        TestForSuccess("");
         Path_Clean(pPathReal);
         fprintf(stderr, "\toutput: %s -> %s\n", AStr_getData(pStr2), Path_getData(pPath));
         iRc = Path_Compare(pPath, pPathReal);
-        TINYTEST_TRUE( (0 == iRc) );
+        TestForTrue(fRc, "");
         obj_Release(pPathReal);
         pPathReal = OBJ_NIL;
         obj_Release(pPath);
@@ -340,39 +439,29 @@ int             test_Gen_Test01 (
         pStr2 = OBJ_NIL;
         pFileNameA = NULL;
 
-        {
-            ASTR_DATA       *pStr = Gen_ToDebugString(pObj, 0);
-            if (pStr) {
-                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
-
         obj_Release(pObj);
         pObj = OBJ_NIL;
-        obj_Release(pDict);
-        pDict = OBJ_NIL;
     }
 
+    obj_Release(pDict);
+    pDict = OBJ_NIL;
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_Gen_ExpandData01 (
+ERESULT         Test_Gen_Test04 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
     GEN_DATA        *pObj = OBJ_NIL;
-    DICT_DATA       *pDict = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
-    //ASTR_DATA       *pStr2 = OBJ_NIL;
-    //PATH_DATA       *pPath = OBJ_NIL;
     bool            fRc;
+    int             iRc;
+    DICT_DATA       *pDict = OBJ_NIL;
     TEXTIN_DATA     *pInput = OBJ_NIL;
     TEXTOUT_DATA    *pOutput = OBJ_NIL;
     const
@@ -380,69 +469,73 @@ int             test_Gen_ExpandData01 (
                     "${UNAME} ${LNAME} ${UNAME}\n"
                     "${XX} ${UNAME} ${XX}\n";
     ASTR_DATA       *pLines;
+    ASTR_DATA       *pStr;
     uint32_t        cnt = 0;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "Testing: Gen_ExpandData()\n");
+
+    pDict = Dict_New( );
+    TestForNotNull(pDict, "");
 
     pLines = AStr_NewA(pLinesA);
-    TINYTEST_FALSE( (OBJ_NIL == pLines) );
+    TestForNotNull(pLines, "");
     pInput = TextIn_NewFromAStr(
                         OBJ_NIL,        // Path for Doc
                         pLines,         // Data AStr
                         1,              // FileNo for Doc
                         4               // Tab spacing
             );
-    TINYTEST_FALSE( (OBJ_NIL == pInput) );
+    TestForNotNull(pInput, "");
     pOutput = TextOut_NewAStr();
-    TINYTEST_FALSE( (OBJ_NIL == pOutput) );
+    TestForNotNull(pOutput, "");
 
     pObj = Gen_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_GEN);
-        TINYTEST_TRUE( (fRc) );
-        pDict = Dict_New( );
-        TINYTEST_FALSE( (OBJ_NIL == pDict) );
+        TestForTrue(fRc, "Failed Ident Test");
+        Test_setVerbose(this, 1);
+        Gen_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
         Gen_setDict(pObj, pDict);
 
         // Setup Expansion Variables.
         pStr = AStr_NewA("Xyzzy");
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "");
         eRc = Dict_AddAStr(pObj->pDict, OBJECT_NAME, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         pStr = AStr_NewA("XYZZY");
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "");
         eRc = Dict_AddAStr(pObj->pDict, OBJECT_NAME_UPPER, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         pStr = AStr_NewA("${LNAME}");
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "");
         eRc = Dict_AddAStr(pObj->pDict, "XX", pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         // Note use of expansion within expansion for XX.
 
         eRc = Gen_ExpandData(pObj, pInput, pOutput, &cnt);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         pStr = TextOut_getStr(pOutput);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "");
         fprintf(stderr, "\tExpanded:\n%s\n", AStr_getData(pStr));
-        eRc = AStr_CompareLeftA(pStr, "LNAME:Xyzzy UNAME:XYZZY\n");
-        TINYTEST_TRUE( (0 == eRc) );
-        eRc = AStr_CompareRightA(pStr, "Xyzzy XYZZY Xyzzy\n");
-        TINYTEST_TRUE( (0 == eRc) );
+        iRc = AStr_CompareLeftA(pStr, "LNAME:Xyzzy UNAME:XYZZY\n");
+        TestForTrue((0 == iRc), "");
+        iRc = AStr_CompareRightA(pStr, "Xyzzy XYZZY Xyzzy\n");
+        TestForTrue((0 == iRc), "");
         fprintf(stderr, "\tLines: %d\n", cnt);
+        TestForTrue((3 == cnt), "");
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
-        obj_Release(pDict);
-        pDict = OBJ_NIL;
     }
 
     obj_Release(pOutput);
@@ -451,13 +544,14 @@ int             test_Gen_ExpandData01 (
     pInput = OBJ_NIL;
     obj_Release(pLines);
     pLines = OBJ_NIL;
-
+    obj_Release(pDict);
+    pDict = OBJ_NIL;
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
-
+#ifdef FROM_OLD_TESTS
 int             test_Gen_ExpandFile01 (
     const
     char            *pTestName
@@ -473,8 +567,7 @@ int             test_Gen_ExpandFile01 (
     TEXTIN_DATA     *pInput = OBJ_NIL;
     TEXTOUT_DATA    *pOutput = OBJ_NIL;
     const
-    char            *pPathA =
-                    "~/git/libCmn/programs/genObject/tests/files/test_expand_01.txt";
+    char            *pPathA = TEST_FILES_DIR "/test_expand_01.txt";
     uint32_t        cnt = 0;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -567,8 +660,7 @@ int             test_Gen_ExpandFile02 (
     TEXTIN_DATA     *pInput = OBJ_NIL;
     TEXTOUT_DATA    *pOutput = OBJ_NIL;
     const
-    char            *pPathA =
-                    "~/git/libCmn/programs/genObject/models/model.obj._internal.h.txt";
+    char            *pPathA = TEST_MODELS_DIR "/model.obj._internal.h.txt";
     uint32_t        cnt = 0;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
@@ -635,22 +727,56 @@ int             test_Gen_ExpandFile02 (
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return 1;
 }
+#endif
 
 
 
 
-TINYTEST_START_SUITE(test_Gen);
-    TINYTEST_ADD_TEST(test_Gen_ExpandFile02,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Gen_ExpandFile01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Gen_ExpandData01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Gen_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_Gen_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Gen_OpenClose,setUp,tearDown);
-TINYTEST_END_SUITE();
+int     main (
+    int         cArgs,
+    const
+    char        *ppArgs[],
+    const
+    char        *ppEnv[]
+)
+{
+    ERESULT     eRc;
+    TEST_DATA   test = {0};
+    TEST_DATA   *pTest = OBJ_NIL;
+    int         i;
+    const
+    char        *pTestNameA = NULL;
 
-TINYTEST_MAIN_SINGLE_SUITE(test_Gen);
+    pTest = Test_Init(&test);
+    if (OBJ_NIL == pTest) {
+        fprintf(
+                stderr,
+                "\x1b[1m\x1b[31mFATAL\x1b[0m: Could not create Test object!\n\n\n"
+        );
+        exit(201);
+    }
 
+    // Scan args.
+    for (i=0; i<cArgs; i++) {
+        if (0 == strcmp("--no_int3", ppArgs[i])) {
+            Test_setAllowInt3(pTest, false);
+        }
+    }
 
+    // Execute tests.
+    TestExec("OpenClose", Test_Gen_OpenClose, NULL, NULL);
+    //TestExec("Copy01", Test_Gen_Copy01, pTest, NULL, NULL);
+    TestExec("Test01", Test_Gen_Test01, NULL, NULL);
+    TestExec("Test02", Test_Gen_Test02, NULL, NULL);
+    TestExec("Test03", Test_Gen_Test03, NULL, NULL);
+    TestExec("Test04", Test_Gen_Test04, NULL, NULL);
+
+    obj_Release(pTest);
+    pTest = OBJ_NIL;
+
+    // Return to Operating System.
+    return 0;
+}
 
 
 

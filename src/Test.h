@@ -204,7 +204,27 @@ extern "C" {
     );
 
 
-    
+    uint16_t        Test_getQuiet (
+        TEST_DATA     *this
+    );
+
+    bool            Test_setQuiet (
+        TEST_DATA       *this,
+        uint16_t        value
+    );
+
+
+    uint16_t        Test_getVerbose (
+        TEST_DATA     *this
+    );
+
+    bool            Test_setVerbose (
+        TEST_DATA       *this,
+        uint16_t        value
+    );
+
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
@@ -294,7 +314,24 @@ extern "C" {
         TEST_DATA       *this
     );
     
- 
+
+    void            Test_MsgInfo(
+        TEST_DATA       *this,
+        const
+        char            *fmt,
+        ...
+    );
+
+
+    void            Test_MsgWarn(
+        TEST_DATA       *this,
+        uint16_t        iVerbose,
+        const
+        char            *fmt,
+        ...
+    );
+
+
     /*!
      Setup for an execution.
      @param     this    object pointer

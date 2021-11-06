@@ -277,6 +277,48 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                        Q u i e t
+    //---------------------------------------------------------------
+
+    uint16_t        Test_getQuiet (
+        TEST_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Test_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->fQuiet;
+    }
+
+
+    bool            Test_setQuiet (
+        TEST_DATA       *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Test_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->fQuiet = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
@@ -367,7 +409,49 @@ extern "C" {
     
   
 
-    
+    //---------------------------------------------------------------
+    //                       V e r b o s e
+    //---------------------------------------------------------------
+
+    uint16_t        Test_getVerbose (
+        TEST_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Test_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->iVerbose;
+    }
+
+
+    bool            Test_setVerbose (
+        TEST_DATA       *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Test_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->iVerbose = value;
+
+        return true;
+    }
+
+
+
+
 
     //===============================================================
     //                          M e t h o d s
@@ -1188,6 +1272,83 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                       M e s s a g e s
+    //---------------------------------------------------------------
+
+    void            Test_MsgInfo(
+        TEST_DATA       *this,
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+
+        // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Test_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+
+        if (!this->fQuiet) {
+            va_start( argsp, fmt );
+            fprintf( stderr, "Msg:  " );
+            vfprintf( stderr, fmt, argsp );
+            va_end( argsp );
+            fprintf( stderr, "\n" );
+        }
+
+    }
+
+
+
+    void            Test_MsgWarn(
+        TEST_DATA       *this,
+        uint16_t        iVerbose,
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+
+        // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Test_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+
+        if (!this->fQuiet && (this->iVerbose >= iVerbose)) {
+            va_start( argsp, fmt );
+            fprintf( stderr, "Warning:  " );
+            vfprintf( stderr, fmt, argsp );
+            va_end( argsp );
+            fprintf( stderr, "\n" );
+        }
+
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------

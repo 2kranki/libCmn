@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   Test01.c
- *  Generated 10/28/2021 15:31:08
+ *  Generated 11/06/2021 15:49:17
  *
  */
 
@@ -264,6 +264,23 @@ extern "C" {
     }
     
   
+    OBJ_DATA *  Test01_getSuper (
+        TEST01_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Test01_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        
+        return (OBJ_DATA *)this;
+    }
 
     
 
@@ -377,6 +394,11 @@ extern "C" {
         char            *pStr2;
 #endif
         
+#ifdef  TEST01_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Test01_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!Test01_Validate(this)) {
@@ -554,7 +576,12 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  TEST01_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Test01_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!Test01_Validate(this)) {
@@ -591,7 +618,12 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
-        TRC_OBJ(this,"%s:\n", __func__);
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  TEST01_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Test01_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!Test01_Validate(this)) {
@@ -636,7 +668,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
+        //this = (OBJ_ID)Test01_Init((OBJ_DATA *)this);   // Needed for Inheritance
         // If you use inheritance, remember to change the obj_ClassObj reference 
         // in the OBJ_INFO at the end of Test01_object.c
         this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_TEST01);
@@ -695,6 +727,12 @@ extern "C" {
         //ERESULT         eRc;
         
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  TEST01_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Test01_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
         if (!Test01_Validate(this)) {
