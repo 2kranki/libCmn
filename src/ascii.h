@@ -310,6 +310,19 @@ extern "C" {
     
     
     /*!
+     @return:   true if asciiChar is [ \t].
+                Otherwise, false is returned.
+     */
+    bool                ascii_isSpaceA (
+        char                asciiChar
+    );
+
+    bool                ascii_isSpaceW32 (
+        W32CHR_T            unicodeChar
+    );
+
+
+    /*!
      @return:   true if asciiChar is [A..Z].
                 Otherwise, false is returned.
      */

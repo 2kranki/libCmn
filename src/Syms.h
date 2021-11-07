@@ -226,6 +226,13 @@ extern "C" {
         char            *pNameA
     );
 
+    SYM_DATA *      Syms_FindW32 (
+        SYMS_DATA       *this,
+        int32_t         cls,
+        const
+        W32CHR_T        *pNameW32
+    );
+
 
     SYM_DATA *      Syms_FindAddr (
         SYMS_DATA       *this,

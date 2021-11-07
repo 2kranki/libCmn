@@ -223,6 +223,22 @@ extern "C" {
     );
     
     
+    /*!
+     Output the given utf-8 string as a centered C/C++
+     comment, "//".
+     @param     this    Object Pointer
+     @param     pStrA    Pointer to UTF-8 string
+     @return    If successful, ERESULT_SUCCESS.  Otherwise,
+     an ERESULT_* error code
+     */
+    ERESULT             TextOut_PutCCmtCenteredA(
+        TEXTOUT_DATA        *this,
+        const
+        char                *pStrA,
+        uint32_t            lineWidth
+    );
+
+
     ERESULT         TextOut_Putwc (
         TEXTOUT_DATA    *this,
         const

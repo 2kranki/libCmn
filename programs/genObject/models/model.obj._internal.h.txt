@@ -73,6 +73,12 @@ struct ${LNAME}_data_s	{
     uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
 
+#ifdef   ${UNAME}_MSGS
+    // Informational and Warning Log Messages
+    void            (*pMsgInfo)(OBJ_ID, const char *, ...);
+    void            (*pMsgWarn)(OBJ_ID, uint16_t, const char *, ...);
+    OBJ_ID          pMsgObj;
+#endif
 };
 #pragma pack(pop)
 

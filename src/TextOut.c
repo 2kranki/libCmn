@@ -925,6 +925,54 @@ extern "C" {
     }
     
     
+    ERESULT             TextOut_PutCCmtCenteredA(
+        TEXTOUT_DATA        *this,
+        const
+        char                *pStrA,
+        uint32_t            lineWidth
+    )
+    {
+        ERESULT             eRc = ERESULT_INVALID_PARAMETER;
+        int                 len;
+        uint32_t            offset = 0;
+        char                *pLineA;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if(!TextOut_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if(NULL == pStrA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        len = utf8_StrLenA(pStrA);
+
+        pLineA = mem_Calloc(1, lineWidth+1);
+        if (NULL == pLineA) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        if (len < (lineWidth - 3)) {
+            offset = (lineWidth - 3 - len) / 2;
+        } else {
+            len = lineWidth - 3;
+        }
+
+        strcpy(pLineA, "// ");
+        strncpy((pLineA+3+offset), pStrA, len);
+        pLineA[3+offset+len] = '\0';
+        eRc = TextOut_PutA(this, pLineA);
+        mem_Free(pLineA);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
     ERESULT             TextOut_PutAStr(
         TEXTOUT_DATA        *this,
         ASTR_DATA           *pStr

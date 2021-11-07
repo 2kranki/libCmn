@@ -44,6 +44,7 @@
 #include        <Dict_internal.h>
 #include        <ascii.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
@@ -303,6 +304,7 @@ extern "C" {
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
+        uint32_t        len;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -311,11 +313,20 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
+        if (NULL == pNameA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
         if (NULL == pDataA) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
+        len = (uint32_t)utf8_StrLenA(pNameA);
+        if (len > DICT_NAME_MAXLEN) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
         
         pStr = AStr_NewA(pDataA);
         if (OBJ_NIL == pStr) {

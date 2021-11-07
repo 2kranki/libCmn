@@ -155,9 +155,11 @@ extern "C" {
 // WARNING: Objects that inherit from this one cannot expand entry.
 //          Those fields must be added here.
 
+#define SYM_NAME_MAXLEN 64
+#define SYM_EXTRA2_MAXLEN 132
 #pragma pack(push, 1)
     typedef struct sym_entry_s {
-        char            name[65];           // NUL-terminated name
+        char            name[SYM_NAME_MAXLEN+1]; // NUL-terminated name
         // Note: Abs or Rel may not be valid in initial passes.
         uint8_t         fFlgs1;             // Flags
         #define SYM_FLGS1_ACT       0x80        // Active Entry
@@ -203,7 +205,7 @@ extern "C" {
         //                                  //  true  == Register Number Assignment
         //                                  //  false == Base Register
         uint32_t        disp;               // Displacement in Base Register
-        uint8_t         extra2[132];        // Used as needed (Initialized
+        uint8_t         extra2[SYM_EXTRA2_MAXLEN];  // Used as needed (Initialized
         //                                  // for U8VlArray)
     } SYM_ENTRY;
 #pragma pack(pop)

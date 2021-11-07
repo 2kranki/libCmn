@@ -124,13 +124,13 @@ extern "C" {
      upper case only version will be used to create the _DATA
      definitions.
      */
-    ASTR_DATA * genObj_getClassName(
+    ASTR_DATA *     genObj_getClassName(
         GENOBJ_DATA     *this
     );
     
-    bool        genObj_setClassName(
-        GENOBJ_DATA *this,
-        ASTR_DATA   *pValue
+    bool            genObj_setClassName(
+        GENOBJ_DATA     *this,
+        ASTR_DATA       *pValue
     );
     
 
@@ -270,7 +270,7 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    genObj_ToDebugString(
+    ASTR_DATA *     genObj_ToDebugString(
         GENOBJ_DATA     *this,
         int             indent
     );

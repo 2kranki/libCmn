@@ -44,6 +44,7 @@
 #include        <Syms_internal.h>
 #include        <ObjEnum_internal.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
@@ -785,6 +786,35 @@ extern "C" {
 #endif
 
         pSym = (SYM_DATA *)szBT_FindA(this->pTree, pNameA);
+
+        // Return to caller.
+        return pSym;
+    }
+
+
+    SYM_DATA *      Syms_FindW32 (
+        SYMS_DATA       *this,
+        int32_t         cls,
+        const
+        W32CHR_T        *pNameW32
+    )
+    {
+        //ERESULT         eRc;
+        SYM_DATA        *pSym = OBJ_NIL;
+        char            nameA[SYM_NAME_MAXLEN+1]; // NUL-terminated name
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Syms_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        utf8_W32StrToUtf8Str(0, pNameW32, (SYM_NAME_MAXLEN+1), nameA);
+        pSym = (SYM_DATA *)szBT_FindA(this->pTree, nameA);
 
         // Return to caller.
         return pSym;

@@ -69,6 +69,7 @@
 #include    <JsonIn.h>
 #include    <SrcErrors.h>
 #include    <szTbl.h>
+#include    <utf8.h>
 
 
 
@@ -352,8 +353,8 @@ ERESULT         Test_Gen_Test03 (
         TestForNotNull(pStr2, "");
         fRc = obj_IsKindOf(pStr2, OBJ_IDENT_ASTR);
         TestForTrue(fRc, "");
-        eRc = AStr_CompareA(pStr2, "Xyzzy");
-        TestForTrue((0 == eRc), "");
+        iRc = AStr_CompareA(pStr2, "Xyzzy");
+        TestForTrue((0 == iRc), "");
         eRc = Gen_SetDefaults(pObj);
         TestForSuccess("");
         pStrA = Dict_GetA(pObj->pDict, MODEL_DRIVE);
@@ -551,83 +552,89 @@ ERESULT         Test_Gen_Test04 (
 }
 
 
-#ifdef FROM_OLD_TESTS
-int             test_Gen_ExpandFile01 (
+
+ERESULT         Test_Gen_Test05 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
     GEN_DATA        *pObj = OBJ_NIL;
-    DICT_DATA       *pDict = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
-    //ASTR_DATA       *pStr2 = OBJ_NIL;
-    PATH_DATA       *pPath = OBJ_NIL;
     bool            fRc;
+    int             iRc;
+    DICT_DATA       *pDict = OBJ_NIL;
     TEXTIN_DATA     *pInput = OBJ_NIL;
     TEXTOUT_DATA    *pOutput = OBJ_NIL;
+    ASTR_DATA       *pStr;
+    uint32_t        cnt = 0;
     const
     char            *pPathA = TEST_FILES_DIR "/test_expand_01.txt";
-    uint32_t        cnt = 0;
+    PATH_DATA       *pPath = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "Testing: Gen_ExpandFile()\n");
+
+    pDict = Dict_New( );
+    TestForNotNull(pDict, "");
 
     pPath = Path_NewA(pPathA);
-    TINYTEST_FALSE( (OBJ_NIL == pPath) );
+    TestForNotNull(pPath, "");
     pInput = TextIn_NewFromPath(
                         pPath,          // Data File
                         1,              // FileNo for Doc
                         4               // Tab spacing
             );
-    TINYTEST_FALSE( (OBJ_NIL == pInput) );
+    TestForNotNull(pInput, "");
+    obj_Release(pPath);
+    pPath = OBJ_NIL;
     pOutput = TextOut_NewAStr();
-    TINYTEST_FALSE( (OBJ_NIL == pOutput) );
+    TestForNotNull(pOutput, "");
 
     pObj = Gen_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_GEN);
-        TINYTEST_TRUE( (fRc) );
-        pDict = Dict_New( );
-        TINYTEST_FALSE( (OBJ_NIL == pDict) );
+        TestForTrue(fRc, "Failed Ident Test");
+        Test_setVerbose(this, 1);
+        Gen_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
         Gen_setDict(pObj, pDict);
 
         // Setup Expansion Variables.
         pStr = AStr_NewA("Xyzzy");
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "");
         eRc = Dict_AddAStr(pObj->pDict, OBJECT_NAME, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         pStr = AStr_NewA("XYZZY");
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "");
         eRc = Dict_AddAStr(pObj->pDict, OBJECT_NAME_UPPER, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         pStr = AStr_NewA("${LNAME}");
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "");
         eRc = Dict_AddAStr(pObj->pDict, "XX", pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         // Note use of expansion within expansion for XX.
 
         eRc = Gen_ExpandData(pObj, pInput, pOutput, &cnt);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
         pStr = TextOut_getStr(pOutput);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "");
         fprintf(stderr, "\tExpanded:\n%s\n", AStr_getData(pStr));
+        iRc = AStr_CompareLeftA(pStr, "LNAME:Xyzzy UNAME:XYZZY\n");
+        TestForTrue((0 == iRc), "");
+        iRc = AStr_CompareRightA(pStr, "Xyzzy XYZZY Xyzzy\n\n");
+        TestForTrue((0 == iRc), "");
         fprintf(stderr, "\tLines: %d\n", cnt);
-        eRc = AStr_CompareLeftA(pStr, "LNAME:Xyzzy UNAME:XYZZY\n");
-        TINYTEST_TRUE( (0 == eRc) );
-        eRc = AStr_CompareRightA(pStr, "Xyzzy XYZZY Xyzzy\n\n");
-        TINYTEST_TRUE( (0 == eRc) );
+        TestForTrue((4 == cnt), "");
 
-        obj_Release(pDict);
-        pDict = OBJ_NIL;
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
@@ -636,98 +643,134 @@ int             test_Gen_ExpandFile01 (
     pOutput = OBJ_NIL;
     obj_Release(pInput);
     pInput = OBJ_NIL;
-    obj_Release(pPath);
-    pPath = OBJ_NIL;
-
+    obj_Release(pDict);
+    pDict = OBJ_NIL;
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_Gen_ExpandFile02 (
+ERESULT         Test_Gen_Test06 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    GEN_DATA        *pObj = OBJ_NIL;
-    DICT_DATA       *pDict = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
-    //ASTR_DATA       *pStr2 = OBJ_NIL;
-    PATH_DATA       *pPath = OBJ_NIL;
+    GEN_DATA       *pObj = OBJ_NIL;
     bool            fRc;
-    TEXTIN_DATA     *pInput = OBJ_NIL;
-    TEXTOUT_DATA    *pOutput = OBJ_NIL;
-    const
-    char            *pPathA = TEST_MODELS_DIR "/model.obj._internal.h.txt";
-    uint32_t        cnt = 0;
+    DICT_DATA       *pDict = OBJ_NIL;
+    ASTR_DATA       *pStr  = OBJ_NIL;
+    int             iRc;
+    char            *pInput1A;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "Test Gen_CreateModelPath().\n");
 
-    pPath = Path_NewA(pPathA);
-    TINYTEST_FALSE( (OBJ_NIL == pPath) );
-    Path_Clean(pPath);
-    pInput = TextIn_NewFromPath(
-                        pPath,          // Data File
-                        1,              // FileNo for Doc
-                        4               // Tab spacing
-            );
-    TINYTEST_FALSE( (OBJ_NIL == pInput) );
-    pOutput = TextOut_NewAStr();
-    TINYTEST_FALSE( (OBJ_NIL == pOutput) );
+    pDict = Dict_New( );
+    TestForNotNull(pDict, "OBJECT_NAME");
 
     pObj = Gen_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_GEN);
-        TINYTEST_TRUE( (fRc) );
-        pDict = Dict_New( );
-        TINYTEST_FALSE( (OBJ_NIL == pDict) );
+        TestForTrue(fRc, "Failed Ident Test");
+        Test_setVerbose(this, 1);
+        Gen_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
         Gen_setDict(pObj, pDict);
 
-        // Setup Expansion Variables.
-        pStr = AStr_NewA("Test01");
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        eRc = Dict_AddAStr(pObj->pDict, OBJECT_NAME, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        pStr = AStr_NewA("TEST01");
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        eRc = Dict_AddAStr(pObj->pDict, OBJECT_NAME_UPPER, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        // Override default file locations.
+        Gen_SetDefaults(pObj);
+
+        pStr = AStr_NewA("Xyzzy");
+        TestForNotNull(pStr, "");
+        eRc = Dict_AddAStr(pObj->pDict, "LNAME", pStr);
+        TestForSuccess("");
+        eRc = Dict_AddAStr(pObj->pDict, "UNAME", pStr);
+        TestForSuccess("");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         eRc = Gen_SetDefaults(pObj);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("");
 
-        eRc = Gen_ExpandData(pObj, pInput, pOutput, &cnt);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        pStr = TextOut_getStr(pOutput);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        fprintf(stderr, "\tExpanded:\n%s\n", AStr_getData(pStr));
-        fprintf(stderr, "\tLines: %d\n", cnt);
+        pInput1A = "";
+        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
+        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
+        fprintf(stderr, "\tiRc: %d\n", iRc);
+        TestForTrue((iRc == 0), "");
 
-        obj_Release(pDict);
-        pDict = OBJ_NIL;
+        pInput1A = "LNAME";
+        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
+        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
+        fprintf(stderr, "\tiRc: %d\n", iRc);
+        TestForTrue((iRc == 1), "");
+
+        pInput1A = "!LNAME";
+        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
+        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
+        fprintf(stderr, "\tiRc: %d\n", iRc);
+        TestForTrue((iRc == 0), "");
+
+        pInput1A = "!LNAMEX";
+        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
+        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
+        fprintf(stderr, "\tiRc: %d\n", iRc);
+        TestForTrue((iRc == 1), "");
+
+        pInput1A = "LNAME && UNAME";
+        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
+        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
+        fprintf(stderr, "\tiRc: %d\n", iRc);
+        TestForTrue((iRc == 1), "");
+
+        pInput1A = "LNAME && UNAMEX";
+        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
+        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
+        fprintf(stderr, "\tiRc: %d\n", iRc);
+        TestForTrue((iRc == 0), "");
+
+        pInput1A = "LNAME || UNAME";
+        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
+        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
+        fprintf(stderr, "\tiRc: %d\n", iRc);
+        TestForTrue((iRc == 1), "");
+
+        pInput1A = "LNAMEX || UNAME";
+        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
+        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
+        fprintf(stderr, "\tiRc: %d\n", iRc);
+        TestForTrue((iRc == 1), "");
+
+        pInput1A = mem_StrDup("%ifdef UNAME\nxyzzy\n%else\nXYZZY\n%endif\n");
+        fprintf(stderr, "\tPreProc: \"%s\"\n", pInput1A);
+        Gen_PreprocInput(pObj, pInput1A);
+        fprintf(stderr, "\tiRc: %d\n", iRc);
+        TestForTrue((iRc == 1), "");
+        fprintf(stderr, "\tResult: \"%s\"\n", pInput1A);
+        mem_Free(pInput1A);
+        pInput1A = NULL;
+
+        pInput1A = mem_StrDup("%ifdef !UNAME\nxyzzy\n%else\nXYZZY\n%endif\n");
+        fprintf(stderr, "\tPreProc: \"%s\"\n", pInput1A);
+        Gen_PreprocInput(pObj, pInput1A);
+        fprintf(stderr, "\tiRc: %d\n", iRc);
+        TestForTrue((iRc == 1), "");
+        fprintf(stderr, "\tResult: \"%s\"\n", pInput1A);
+        mem_Free(pInput1A);
+        pInput1A = NULL;
+
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-    obj_Release(pOutput);
-    pOutput = OBJ_NIL;
-    obj_Release(pInput);
-    pInput = OBJ_NIL;
-    obj_Release(pPath);
-    pPath = OBJ_NIL;
-
+    obj_Release(pDict);
+    pDict = OBJ_NIL;
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
-#endif
 
 
 
@@ -770,6 +813,8 @@ int     main (
     TestExec("Test02", Test_Gen_Test02, NULL, NULL);
     TestExec("Test03", Test_Gen_Test03, NULL, NULL);
     TestExec("Test04", Test_Gen_Test04, NULL, NULL);
+    TestExec("Test05", Test_Gen_Test05, NULL, NULL);
+    TestExec("Test06", Test_Gen_Test06, NULL, NULL);
 
     obj_Release(pTest);
     pTest = OBJ_NIL;

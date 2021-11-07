@@ -18,7 +18,7 @@
  *              https://github.com/kokke/tiny-regex-c
  *              https://github.com/Koxiaet/tiny-regex-c
  *          This library is licensed by the Unlicense maintaining the
- *          primary license for this library.
+ *          primary license for this library (ie Public Domain).
  *
  * Supports:
  * ---------
@@ -147,7 +147,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  TREGEX_SINGLETON
-    TREGEX_DATA *     TRegex_Shared (
+    TREGEX_DATA *   TRegex_Shared (
         void
     );
 

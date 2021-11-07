@@ -218,6 +218,12 @@ extern "C" {
         char            *pNameA
     );
 
+    OPCODE_DATA *   Opcodes_FindW32 (
+        OPCODES_DATA    *this,
+        const
+        W32CHR_T        *pNameW32
+    );
+
 
     OPCODES_DATA *   Opcodes_Init (
         OPCODES_DATA     *this

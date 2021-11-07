@@ -843,6 +843,35 @@ extern "C" {
     }
 
 
+    OPCODE_DATA *   Opcodes_FindW32 (
+        OPCODES_DATA    *this,
+        const
+        W32CHR_T        *pNameW32
+    )
+    {
+        //ERESULT         eRc;
+        OPCODE_DATA     *pOpc = OBJ_NIL;
+        char            nameA[OPCODE_ENTRY_NAME_MAX+1];
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!Opcodes_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        utf8_W32StrToUtf8Str(0, pNameW32, (OPCODE_ENTRY_NAME_MAX+1), nameA);
+        pOpc = (OPCODE_DATA *)szBT_FindA(this->pTree, nameA);
+
+        // Return to caller.
+        return pOpc;
+    }
+
+
 
     //---------------------------------------------------------------
     //                          I n i t

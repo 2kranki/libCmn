@@ -740,6 +740,41 @@ extern "C" {
     
     
     //**********************************************************
+    //                      i s S p a c e
+    //**********************************************************
+
+    bool                ascii_isSpaceA(
+        char                asciiChar
+    )
+    {
+        bool                fRc = false;
+
+        if ((asciiChar == ' ') || (asciiChar == '\t')) {
+            fRc = true;
+        }
+
+        return fRc;
+
+    }
+
+
+    bool                ascii_isSpaceW32(
+        W32CHR_T            unicodeChar
+    )
+    {
+        bool                fRc = false;
+
+        if ((unicodeChar == ' ') || (unicodeChar == '\t')) {
+            fRc = true;
+        }
+
+        return fRc;
+
+    }
+
+
+
+    //**********************************************************
     //                  i s U p p e r
     //**********************************************************
     

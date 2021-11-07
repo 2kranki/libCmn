@@ -214,6 +214,19 @@ struct Gen_data_s	{
 #endif
 
 
+    int             Gen_PreProcBoolEval (
+        GEN_DATA        *this,
+        char            *z,
+        int             lineno
+    );
+
+
+    void            Gen_PreprocInput (
+        GEN_DATA        *this,
+        char            *z
+    );
+
+
     void *          Gen_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,

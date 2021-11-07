@@ -61,7 +61,7 @@
 
 //#define   DICT_SINGLETON    1
 
-
+#define         DICT_NAME_MAXLEN    32
 
 
 

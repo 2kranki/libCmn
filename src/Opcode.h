@@ -105,9 +105,9 @@ extern "C" {
     // Note:    No pointers are allowed in this structure. Also, this
     //          structure size must be a multiple of 4.
     typedef struct    Opcode_Entry_s {
-#define OPCODE_ENTRY_NAME_MAX 13             // Name Length w/ trailing NUL
+#define OPCODE_ENTRY_NAME_MAX 12             // Name Length w/o trailing NUL
         const
-        char            NameA[OPCODE_ENTRY_NAME_MAX];
+        char            NameA[OPCODE_ENTRY_NAME_MAX+1];
 #define OPCODE_ENTRY_DIS_MAX 16              // Disassembly String Length w/ trailing NUL
         const
         char            DisA[OPCODE_ENTRY_DIS_MAX];

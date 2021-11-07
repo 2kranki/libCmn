@@ -132,6 +132,36 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                      M e s s a g e s
+    //---------------------------------------------------------------
+
+#ifdef   ${UNAME}_MSGS
+    bool            ${LNAME}_setMsgs (
+        ${UNAME}_DATA    *this,
+        void            (*pMsgInfo)(OBJ_ID, const char *, ...),
+        void            (*pMsgWarn)(OBJ_ID, uint16_t, const char *, ...),
+        OBJ_ID          pObj
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!${LNAME}_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pMsgInfo = pMsgInfo;
+        this->pMsgWarn = pMsgWarn;
+        this->pMsgObj = pObj;
+
+        return true;
+    }
+#endif
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -633,6 +663,11 @@ extern "C" {
 #endif
         
         TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
+#ifdef   ${UNAME}_MSGS
+        if (this->pMsgInfo) {
+            this->pMsgInfo(this->pMsgObj, "Enabling object!\n");
+        }
+#endif
         obj_Enable(this);
 
         // Put code here...

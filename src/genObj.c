@@ -894,7 +894,7 @@ extern "C" {
     
 
     //---------------------------------------------------------------
-    //               G e n e r a t e  D a t a  E n d
+    //                  G e n e r a t e
     //---------------------------------------------------------------
     
     ERESULT         genObj_GenDataEnd(
@@ -940,11 +940,6 @@ extern "C" {
         return ERESULT_SUCCESS;
     }
     
-    
-    
-    //---------------------------------------------------------------
-    //               G e n e r a t e  D a t a  S t a r t
-    //---------------------------------------------------------------
     
     ERESULT         genObj_GenDataStart(
         GENOBJ_DATA     *this,
@@ -1012,11 +1007,6 @@ extern "C" {
     }
     
     
-    
-    //---------------------------------------------------------------
-    //          G e n e r a t e  M e t h o d  H e a d e r
-    //---------------------------------------------------------------
-
     ERESULT         genObj_GenMethodHeader(
         GENOBJ_DATA     *this,
         ASTR_DATA       *pTitle,
@@ -1091,11 +1081,6 @@ extern "C" {
     }
 
 
-
-    //---------------------------------------------------------------
-    //          G e n e r a t e  G e t t e r  S e t t e r
-    //---------------------------------------------------------------
-    
     ERESULT         genObj_GenGetSet(
         GENOBJ_DATA     *this,
         ASTR_DATA       **ppStr,            // (in/out)
@@ -1471,11 +1456,6 @@ extern "C" {
     }
     
     
-    
-    //---------------------------------------------------------------
-    //               G e n e r a t e  H e a d i n g
-    //---------------------------------------------------------------
-    
     ERESULT         genObj_GenHeading(
         GENOBJ_DATA     *this,
         ASTR_DATA       **ppStr             // (in/out)
@@ -1541,11 +1521,6 @@ extern "C" {
         return ERESULT_SUCCESS;
     }
     
-    
-    
-    //---------------------------------------------------------------
-    //      G e n e r a t e  F i l e I n t e r n a l  H e a d e r
-    //---------------------------------------------------------------
     
     ASTR_DATA *     genObj_GenFileInternalHeader(
         GENOBJ_DATA     *this,
@@ -1700,11 +1675,6 @@ extern "C" {
     }
     
     
-    
-    //---------------------------------------------------------------
-    //               G e n e r a t e  L i c e n s e
-    //---------------------------------------------------------------
-    
     ERESULT         genObj_GenLicense(
         GENOBJ_DATA     *this,
         ASTR_DATA       **ppStr             // (in/out)
@@ -1758,11 +1728,6 @@ extern "C" {
         return ERESULT_SUCCESS;
     }
     
-    
-    
-    //---------------------------------------------------------------
-    //               G e n e r a t e  M e t h o d
-    //---------------------------------------------------------------
     
     ERESULT         genObj_GenMethod(
         GENOBJ_DATA     *this,

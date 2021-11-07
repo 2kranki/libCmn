@@ -13,7 +13,8 @@
  *          called a Gen on other O/S's.
  *
  * Remarks
- *	1.      None
+ *	1.      The beginngs of the preprocessor was taken from "lemon"
+ *          by Richard Hipp which was placed in the Public Domain.
  *
  * History
  *	05/05/2020 Generated
