@@ -832,6 +832,7 @@ extern "C" {
         ASTRARRAY_DATA  *pSorted = OBJ_NIL;
         uint32_t        i;
         uint32_t        iMax;
+        bool            fJson = false;
 
         // Do initialization.
         TRC_OBJ(this,"%s:\n", __func__);
@@ -865,7 +866,7 @@ extern "C" {
         }
 #endif
 
-        pArray = Exec_ReadFile(this, pIn);
+        pArray = Exec_ReadFileOld(this, pIn);
         obj_Release(pIn);
         pIn = OBJ_NIL;
         if (OBJ_NIL == pArray) {
@@ -1598,7 +1599,7 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ASTRARRAY_DATA * Exec_ReadFile (
+    ASTRARRAY_DATA * Exec_ReadFileOld (
         EXEC_DATA       *this,
         TEXTIN_DATA     *pIn
     )

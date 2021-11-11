@@ -218,7 +218,18 @@ int             test_Sym_Test01 (
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_SYM);
         TINYTEST_TRUE( (fRc) );
-        TINYTEST_TRUE( (pObj->entry.extra2[0] == sizeof(pObj->entry.extra2)) );
+
+        {
+            ASTR_DATA       *pStr = Sym_ToJson(pObj);
+            TINYTEST_FALSE( (OBJ_NIL == pStr) );
+            fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        fprintf(stderr, "\textra2[0] = %d\n", pObj->entry.extra2[0]);
+        fprintf(stderr, "\textra2[1] = %d\n", pObj->entry.extra2[1]);
+        TINYTEST_TRUE( (pObj->entry.extra2[0] == SYM_EXTRA2_MAXLEN) );
         TINYTEST_TRUE( (pObj->entry.extra2[1] == 2) );
 
         obj_Release(pObj);

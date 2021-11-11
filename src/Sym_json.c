@@ -102,7 +102,7 @@ extern "C" {
             fprintf(stderr, "FATAL - Failed to find Name!\n\n\n");
             exit(EXIT_FAILURE);
         }
-        if (AStr_getLength(pWrk) > sizeof(pObject->entry.name)-1) {
+        if (AStr_getLength(pWrk) > sizeof(pObject->entry.nameA)-1) {
             DEBUG_BREAK();
             fprintf(stderr, "FATAL - Name was too big!\n\n\n");
             exit(EXIT_FAILURE);
@@ -129,7 +129,7 @@ extern "C" {
         (void)JsonIn_FindU16NodeInHashA(pParser, "reg",     &pObject->entry.reg);
         (void)JsonIn_FindI32NodeInHashA(pParser, "value",   &pObject->entry.value);
         (void)JsonIn_FindU32NodeInHashA(pParser, "disp",    &pObject->entry.disp);
-        eRc = JsonIn_SubObjectInHash(pParser,   "extra");
+        eRc = JsonIn_SubObjectInHash(pParser,   "extra2");
         if (ERESULT_OK(eRc)) {
             pData = hex_ParseObject(pParser, &len);
             JsonIn_SubObjectEnd(pParser);
@@ -299,7 +299,7 @@ extern "C" {
         ASTR_DATA       *pStr
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
 #ifdef XYZZZY 
         void *          (*pQueryInfo)(
             OBJ_ID          objId,
@@ -315,14 +315,7 @@ extern "C" {
         uint32_t        len;
         ASTR_DATA       *pWrk;
 
-        AStr_AppendA(pStr, "\"Node\":{ ");
-        eRc = Node_ToJsonFields(Sym_getNode(this), pStr);
-        if (ERESULT_FAILED(eRc)) {
-            return eRc;
-        }
-        AStr_AppendA(pStr, "},\n");
-
-        len = utf8_Utf8ToChrConStr(0, this->entry.name, sizeof(NameA), NameA);
+        len = utf8_Utf8ToChrConStr(0, this->entry.nameA, sizeof(NameA), NameA);
         AStr_AppendPrint(pStr, "\tname:\"%s\",\n", NameA);
         (void)JsonOut_Append_u8("fFlgs1",   this->entry.fFlgs1, pStr);
         (void)JsonOut_Append_u8("fFlgs2",   this->entry.fFlgs2, pStr);
@@ -345,7 +338,7 @@ extern "C" {
         (void)JsonOut_Append_u32("disp",    this->entry.disp, pStr);
         pWrk = hex_DataToJSON(sizeof(this->entry.extra2), this->entry.extra2);
         if (pWrk) {
-            AStr_AppendA(pStr, "\t\"extra\":");
+            AStr_AppendA(pStr, "\t\"extra2\":");
             AStr_Append(pStr, pWrk);
             obj_Release(pWrk);
             pWrk = OBJ_NIL;

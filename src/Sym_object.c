@@ -432,7 +432,7 @@ OBJ_INFO        Sym_Info = {
     "Sym",
     "Simple Symbol Table Entry",
     (OBJ_DATA *)&Sym_ClassObj,
-    (OBJ_DATA *)&Node_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&Sym_Vtbl,
     sizeof(SYM_DATA)
 };

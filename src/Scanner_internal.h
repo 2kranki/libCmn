@@ -196,7 +196,7 @@ struct Scanner_data_s	{
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SCANNER_DATA *       Scanner_ParseJsonObject (
+    SCANNER_DATA *  Scanner_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -212,7 +212,7 @@ struct Scanner_data_s	{
      */
     ERESULT         Scanner_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SCANNER_DATA     *pObject
+        SCANNER_DATA    *pObject
     );
 #endif
 
@@ -239,7 +239,7 @@ struct Scanner_data_s	{
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     Scanner_ToJson (
-        SCANNER_DATA      *this
+        SCANNER_DATA    *this
     );
 
 
@@ -253,7 +253,7 @@ struct Scanner_data_s	{
                 error code.
      */
     ERESULT         Scanner_ToJsonFields (
-        SCANNER_DATA     *this,
+        SCANNER_DATA    *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -264,7 +264,7 @@ struct Scanner_data_s	{
 #ifdef NDEBUG
 #else
     bool			Scanner_Validate (
-        SCANNER_DATA       *this
+        SCANNER_DATA    *this
     );
 #endif
 

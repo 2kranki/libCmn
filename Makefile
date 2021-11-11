@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (11/ 7/2021 18:49:59.000)
+# (11/11/2021 21:12:12.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -1728,16 +1728,6 @@ OBJS += $(OBJDIR)/fbso_object.o
 $(OBJDIR)/fbso_object.o: $(SRCDIR)/fbso_object.c $(SRCDIR)/Path.h $(SRCDIR)/fbso.h $(SRCDIR)/fbso_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/genObj.o
-
-$(OBJDIR)/genObj.o: $(SRCDIR)/genObj.c $(SRCDIR)/genObj.h $(SRCDIR)/genObj_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/genObj_object.o
-
-$(OBJDIR)/genObj_object.o: $(SRCDIR)/genObj_object.c $(SRCDIR)/genObj.h $(SRCDIR)/genObj_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/greg.o
 
 $(OBJDIR)/greg.o: $(SRCDIR)/greg.c $(SRCDIR)/greg.h $(SRCDIR)/greg_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2894,12 +2884,6 @@ fbsi_test: $(TEST_SRC)/fbsi_test.c $(SRCDIR)/fbsi.h $(SRCDIR)/fbsi_internal.h $(
 TESTS += fbso_test
 
 fbso_test: $(TEST_SRC)/fbso_test.c $(SRCDIR)/fbso.h $(SRCDIR)/fbso_internal.h $(SRCDIR)/Path.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F) --no_int3
-
-TESTS += genObj_test
-
-genObj_test: $(TEST_SRC)/genObj_test.c $(SRCDIR)/genObj.h $(SRCDIR)/genObj_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

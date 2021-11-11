@@ -400,6 +400,46 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          I n d e x
+    //---------------------------------------------------------------
+
+    uint32_t        W32StrC_getIndex(
+        W32STRC_DATA     *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !W32StrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return obj_getMisc(this);
+    }
+
+
+    bool            W32StrC_setIndex(
+        W32STRC_DATA    *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !W32StrC_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_setMisc(this, value);
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      L e n g t h
     //---------------------------------------------------------------
 

@@ -366,14 +366,23 @@ int             test_TextIn_GetLine01(
         eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "abc")) );
+        TINYTEST_TRUE( (1 == loc.lineNo) );
+        TINYTEST_TRUE( (1 == loc.colNo) );
+        TINYTEST_TRUE( (0 == loc.offset) );
 
         eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (buffer[0] == '\0') );
+        TINYTEST_TRUE( (2 == loc.lineNo) );
+        TINYTEST_TRUE( (0 == loc.colNo) );
+        TINYTEST_TRUE( (4 == loc.offset) );
 
         eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
         TINYTEST_TRUE( (0 == strcmp(buffer, "def")) );
+        TINYTEST_TRUE( (3 == loc.lineNo) );
+        TINYTEST_TRUE( (1 == loc.colNo) );
+        TINYTEST_TRUE( (5 == loc.offset) );
 
         eRc = TextIn_GetLineA(pObj, sizeof(buffer), buffer, &loc);
         TINYTEST_TRUE( (eRc == ERESULT_EOF_ERROR) );

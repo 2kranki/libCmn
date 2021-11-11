@@ -115,7 +115,6 @@
         {name:"File",           deps:["u8Array.h"]},
         {name:"FileIO",         desc:"Generic Dataset/File Input/Output", deps:["Path.h"]},
         {name:"FileRef"         deps:["AStrC.h","Path.h"]},
-        {name:"genObj"},
         {name:"greg"},
         {name:"hex",            json:true},
         {name:"hjson"},

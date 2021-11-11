@@ -210,6 +210,20 @@ extern "C" {
     );
 
 
+    /*! @property   scan index
+        The scan index is where within this string the LookAhead()
+        and Advancee() methods start their search.
+     */
+    uint32_t        W32StrC_getIndex(
+        W32STRC_DATA     *this
+    );
+
+    bool            W32StrC_setIndex(
+        W32STRC_DATA    *this,
+        uint32_t        value
+    );
+
+
     uint32_t        W32StrC_getLength(
         W32STRC_DATA   *this
     );

@@ -921,8 +921,8 @@ int             test_Scanner_ScanIdentifier01(
             pStr = OBJ_NIL;
             pStr = Scanner_ScanIdentifierToAStr(pObj);
             TINYTEST_TRUE( (OBJ_NIL == pStr) );
-            fprintf(stderr, "\tscan: %d\n", Scanner_getOffset(pObj));
-            TINYTEST_TRUE( (1 == Scanner_getOffset(pObj)) );
+            fprintf(stderr, "\tscan: %d\n", Scanner_getIndex(pObj));
+            TINYTEST_TRUE( (1 == Scanner_getIndex(pObj)) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
 
@@ -938,8 +938,8 @@ int             test_Scanner_ScanIdentifier01(
             pStr = OBJ_NIL;
             pStr = Scanner_ScanIdentifierToAStr(pObj);
             TINYTEST_TRUE( (OBJ_NIL == pStr) );
-            fprintf(stderr, "\tscan: %d\n", Scanner_getOffset(pObj));
-            TINYTEST_TRUE( (1 == Scanner_getOffset(pObj)) );
+            fprintf(stderr, "\tscan: %d\n", Scanner_getIndex(pObj));
+            TINYTEST_TRUE( (1 == Scanner_getIndex(pObj)) );
             obj_Release(pStr);
             pStr = OBJ_NIL;
 

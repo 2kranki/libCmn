@@ -80,9 +80,10 @@ extern "C" {
         uint32_t        fileIndex;          // File Name Index
         //                                  // Note: If zero, then the entire
         //                                  //      location is ignored.
-        uint16_t        colNo;              // Source Input Column Number
+        uint16_t        colNo;              // Source Input Column Number (relative to 1)
+        //                                  // If empty line, colNo is 0.
         uint16_t        unused16;
-        uint32_t        lineNo;             // Source Input Line Number
+        uint32_t        lineNo;             // Source Input Line Number (relative to 0)
         uint32_t        unused32;
         int64_t         offset;             // File Offset (zero based)
     } SRCLOC;

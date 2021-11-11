@@ -183,7 +183,7 @@ struct Exec_data_s  {
      @param     this    object pointer
      @return    if successful, the AStrArray with data.  Otherwise, OBJ_NIL.
      */
-    ASTRARRAY_DATA * Exec_ReadFile (
+    ASTRARRAY_DATA * Exec_ReadFileOld (
         EXEC_DATA       *this,
         TEXTIN_DATA     *pIn
     );

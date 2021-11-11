@@ -266,7 +266,6 @@ extern "C" {
         if (this) {
             Sym_setNameA(this, pNameA);
             Sym_getEntry(this)->cls = cls;
-            Sym_UpdateName(this);
         }
 
         return this;
@@ -512,7 +511,6 @@ extern "C" {
 #endif
 
         Sym_getEntry(this)->cls = value;
-        Node_setClass(Sym_getNode(this), value);
 
         return true;
     }
@@ -639,8 +637,6 @@ extern "C" {
 #endif
 
         memmove(&this->entry, pValue, sizeof(SYM_ENTRY));
-        Sym_UpdateName(this);       // Setup the new name in the node part
-                                    // of this object.
 
         return true;
     }
@@ -1327,7 +1323,7 @@ extern "C" {
         }
 #endif
 
-        return Sym_getEntry(this)->name;
+        return Sym_getEntry(this)->nameA;
     }
 
 
@@ -1351,33 +1347,14 @@ extern "C" {
         }
 #endif
 
-        str_Copy((char *)Sym_getEntry(this)->name, sizeof(Sym_getEntry(this)->name), pValue);
-        Sym_getEntry(this)->hash = str_HashAcmA(Sym_getEntry(this)->name, NULL);
+        str_Copy(
+                 (char *)Sym_getEntry(this)->nameA,
+                 sizeof(Sym_getEntry(this)->nameA),
+                 pValue
+        );
+        Sym_getEntry(this)->hash = str_HashAcmA(Sym_getEntry(this)->nameA, NULL);
 
         return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          N o d e
-    //---------------------------------------------------------------
-
-    NODE_DATA *     Sym_getNode (
-        SYM_DATA        *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Sym_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return (NODE_DATA *)this;
     }
 
 
@@ -1846,7 +1823,6 @@ extern "C" {
 #endif
 
         Sym_getEntry(this)->type = value;
-        Node_setType(Sym_getNode(this), value);
 
         return true;
     }
@@ -2015,7 +1991,7 @@ extern "C" {
 
         i = this->entry.cls - pOther->entry.cls;
         if (0 == i) {
-            i = utf8_StrCmp(this->entry.name, pOther->entry.name);
+            i = utf8_StrCmp(this->entry.nameA, pOther->entry.nameA);
         }
         if (i < 0)
             i =  -1;
@@ -2050,12 +2026,12 @@ extern "C" {
 #endif
 
         if (0 == cls) {
-            i = utf8_StrCmp(this->entry.name, pNameA);
+            i = utf8_StrCmp(this->entry.nameA, pNameA);
         }
         else {
             i = this->entry.cls - cls;
             if (0 == i) {
-                i = utf8_StrCmp(this->entry.name, pNameA);
+                i = utf8_StrCmp(this->entry.nameA, pNameA);
             }
             if (i < 0)
                 i = -1;
@@ -2321,8 +2297,8 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)Node_Init((NODE_DATA *)this);    // Needed for Inheritance
-        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SYM);
+        //this = (OBJ_ID)Node_Init((NODE_DATA *)this);    // Needed for Inheritance
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SYM);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -2335,8 +2311,8 @@ extern "C" {
         JsonIn_RegisterClass(Sym_Class());
 #endif
 
-        // Set up Extra to be used by U8VlArray.
-        this->entry.extra2[0] = sizeof(this->entry.extra2);
+        // Set up Extra2 to be used by U8VlArray.
+        this->entry.extra2[0] = SYM_EXTRA2_MAXLEN;
         this->entry.extra2[1] = 2;
 
         /*
@@ -2604,7 +2580,7 @@ extern "C" {
                     obj_getRetainCount(this)
             );
 
-        len = utf8_Utf8ToChrConStr(0, this->entry.name, sizeof(NameA), NameA);
+        len = utf8_Utf8ToChrConStr(0, this->entry.nameA, sizeof(NameA), NameA);
         if (indent) {
             AStr_AppendCharRepeatA(pStr, indent+4, ' ');
         }
@@ -2670,47 +2646,6 @@ extern "C" {
     
     
     
-    //---------------------------------------------------------------
-    //                   U p d a t e  N a m e
-    //---------------------------------------------------------------
-
-    /*!
-     Update the Node's name to be that in the Sym entry.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Sym_UpdateName (
-        SYM_DATA        *this
-    )
-    {
-        //ERESULT         eRc;
-        NODE_DATA       *pNode;
-        NAME_DATA       *pName;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Sym_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-        pNode = Sym_getNode(this);
-
-        pName = Name_NewUTF8(this->entry.name);
-        if (pName) {
-            Node_setName(pNode, pName);
-            obj_Release(pName);
-            pName = OBJ_NIL;
-        }
-
-        // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-
-
-
     //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------

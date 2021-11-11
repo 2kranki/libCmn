@@ -159,7 +159,7 @@ extern "C" {
 #define SYM_EXTRA2_MAXLEN 132
 #pragma pack(push, 1)
     typedef struct sym_entry_s {
-        char            name[SYM_NAME_MAXLEN+1]; // NUL-terminated name
+        char            nameA[SYM_NAME_MAXLEN+1]; // NUL-terminated name
         // Note: Abs or Rel may not be valid in initial passes.
         uint8_t         fFlgs1;             // Flags
         #define SYM_FLGS1_ACT       0x80        // Active Entry
@@ -794,17 +794,6 @@ extern "C" {
     );
     
     
-    /*!
-     Update the Node's name to be that in the Sym entry.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Sym_UpdateName (
-        SYM_DATA        *this
-    );
-
-
 
     
 #ifdef	__cplusplus

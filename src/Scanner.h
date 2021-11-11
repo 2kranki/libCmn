@@ -171,8 +171,17 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    uint32_t        Scanner_getOffset (
+    /*! @property   scan index
+        The scan index is where within this string the LookAhead()
+        and Advancee() methods start their search.
+     */
+    uint32_t        Scanner_getIndex(
         SCANNER_DATA    *this
+    );
+
+    bool            Scanner_setIndex(
+        SCANNER_DATA    *this,
+        uint32_t        value
     );
 
 

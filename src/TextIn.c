@@ -1175,8 +1175,11 @@ extern "C" {
         bool            fMore = true;
         bool            fLoc = false;
         TOKEN_FIELDS    *pTok;
+        int             sizeBegin = size;
+
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if (!TextIn_Validate(this)) {
@@ -1199,6 +1202,17 @@ extern "C" {
 
         while (fMore) {
             pTok = TextIn_NextToken(this);
+            if (!fLoc) {
+                loc = this->curTok.src;
+                fLoc = true;
+                TRC_OBJ(
+                        this,
+                        "\tBegin line: %d  col: %d  offset: %d\n",
+                        loc.lineNo,
+                        loc.colNo,
+                        loc.offset
+                );
+            }
             switch (pTok->w32chr[0]) {
                 case '\n':
                     fMore = false;
@@ -1215,10 +1229,6 @@ extern "C" {
                     }
                     break;
                 default:
-                    if (!fLoc) {
-                        loc = this->curTok.src;
-                        fLoc = true;
-                    }
                     chrSize = utf8_W32ToChrCon(pTok->w32chr[0], chrData);
                     if (chrSize && (chrSize < size)) {
                         str_Concat(pBuffer, size, chrData);
@@ -1245,6 +1255,8 @@ extern "C" {
             (void)LineIndex_Add(this->pLineIndex, &loc);
         }
         if (pLoc) {
+            if (size == (sizeBegin - 1))
+                loc.lineNo--;
             *pLoc = loc;
         }
         return eRc;
@@ -1289,6 +1301,17 @@ extern "C" {
 
         while (fMore) {
             pTok = TextIn_NextToken(this);
+            if (!fLoc) {
+                loc = this->curTok.src;
+                fLoc = true;
+                TRC_OBJ(
+                        this,
+                        "\tBegin line: %d  col: %d  offset: %d\n",
+                        loc.lineNo,
+                        loc.colNo,
+                        loc.offset
+                );
+            }
             switch (pTok->w32chr[0]) {
                 case '\n':
                     fMore = false;
@@ -1307,10 +1330,6 @@ extern "C" {
                     }
                     break;
                 default:
-                    if (!fLoc) {
-                        loc = this->curTok.src;
-                        fLoc = true;
-                    }
                     eRc = AStr_AppendCharW32(pStr, pTok->w32chr[0]);
                     len++;
                     if (this->upperLimit && (len >= this->upperLimit)) {
@@ -1326,6 +1345,8 @@ extern "C" {
             (void)LineIndex_Add(this->pLineIndex, &loc);
         }
         if (pLoc) {
+            if ((NULL == pStr) || (0 == AStr_getLength(pStr)))
+                loc.lineNo--;
             *pLoc = loc;
         }
         if (ppStr) {
@@ -1350,6 +1371,7 @@ extern "C" {
         bool            fMore = true;
         bool            fLoc = false;
         TOKEN_FIELDS    *pTok;
+        int             sizeBegin = size;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1373,6 +1395,17 @@ extern "C" {
 
         while (fMore) {
             pTok = TextIn_NextToken(this);
+            if (!fLoc) {
+                loc = this->curTok.src;
+                fLoc = true;
+                TRC_OBJ(
+                        this,
+                        "\tBegin line: %d  col: %d  offset: %d\n",
+                        loc.lineNo,
+                        loc.colNo,
+                        loc.offset
+                );
+            }
             switch (pTok->w32chr[0]) {
                 case '\n':
                     fMore = false;
@@ -1385,10 +1418,6 @@ extern "C" {
                     fMore = false;
                     break;
                 default:
-                    if (!fLoc) {
-                        loc = this->curTok.src;
-                        fLoc = true;
-                    }
                     if (size) {
                         *pBuffer = pTok->w32chr[0];
                         pBuffer++;
@@ -1414,6 +1443,8 @@ extern "C" {
             (void)LineIndex_Add(this->pLineIndex, &loc);
         }
         if (pLoc) {
+            if (size == (sizeBegin - 1))
+                loc.lineNo--;
             *pLoc = loc;
         }
         return ERESULT_SUCCESS;
@@ -1458,6 +1489,17 @@ extern "C" {
 
         while (fMore) {
             pTok = TextIn_NextToken(this);
+            if (!fLoc) {
+                loc = this->curTok.src;
+                fLoc = true;
+                TRC_OBJ(
+                        this,
+                        "\tBegin line: %d  col: %d  offset: %d\n",
+                        loc.lineNo,
+                        loc.colNo,
+                        loc.offset
+                );
+            }
             switch (pTok->w32chr[0]) {
                 case '\n':
                     fMore = false;
@@ -1476,10 +1518,6 @@ extern "C" {
                     }
                     break;
                 default:
-                    if (!fLoc) {
-                        loc = this->curTok.src;
-                        fLoc = true;
-                    }
                     eRc = W32Str_AppendCharW32(pStr, 1, pTok->w32chr[0]);
                     len++;
                     if (this->upperLimit && (len >= this->upperLimit)) {
@@ -1495,6 +1533,8 @@ extern "C" {
             (void)LineIndex_Add(this->pLineIndex, &loc);
         }
         if (pLoc) {
+            if ((NULL == pStr) || (0 == W32Str_getLength(pStr)))
+                loc.lineNo--;
             *pLoc = loc;
         }
         if (ppStr) {

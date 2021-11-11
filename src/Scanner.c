@@ -986,10 +986,10 @@ Exit00:
     //===============================================================
 
     //---------------------------------------------------------------
-    //                     S c a n  O f f s e t
+    //                     S c a n  I n d e x
     //---------------------------------------------------------------
 
-    uint32_t        Scanner_getOffset (
+    uint32_t        Scanner_getIndex (
         SCANNER_DATA    *this
     )
     {
@@ -1003,6 +1003,25 @@ Exit00:
 
         return obj_getMisc(this);
     }
+
+    bool            Scanner_setIndex(
+        SCANNER_DATA    *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Scanner_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_setMisc(this, value);
+
+        return true;
+    }
+
 
 
     //---------------------------------------------------------------

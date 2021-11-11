@@ -1,16 +1,15 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          SYMS Console Transmit Task (Syms) Header
+//              Symbol Table (Syms) Header
 //****************************************************************
 /*
  * Program
- *			Separate Syms (Syms)
+ *			Symbol Table (Syms)
  * Purpose
- *			This object provides a standardized way of handling
- *          a separate Syms to run things without complications
- *          of interfering with the main Syms. A Syms may be 
- *          called a Syms on other O/S's.
+ *			This object provides a simple single level Symbol
+ *          Table of Sym objects.  The table utilizes a Red-Black
+ *          Balanced Tree to scan the entries in name order.
  *
  * Remarks
  *	1.      None

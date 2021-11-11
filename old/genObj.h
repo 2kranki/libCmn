@@ -10,7 +10,8 @@
  *			This object provides a way of generating a new Object.
  *
  * Remarks
- *	1.      None
+ *	1.      Left boundary for methods is 5 with method name at 21.
+ *          Method parameters and variables are +4 or 9/25.
  *
  * History
  *	12/09/2017 Generated
