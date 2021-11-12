@@ -1,0 +1,21 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+# This should not affect anything!
+{
+	data: [
+        {name:"UNKNOWN", desc:"Unknown value"},
+        {name:"CHAR"},
+        {name:"UCHAR"},
+        {name:"HALF"},
+	
+        {name:"UHALF"},
+        {name:"WORD"},
+        {name:"UWORD"},
+
+        {name:"DBLWORD"},
+        {name:"UDBLWORD"},
+        {name:"QUAD"},
+        {name:"UQUAD"},,
+        {name:"VOID"},
+        {name:"POINTER"},
+	],
+}

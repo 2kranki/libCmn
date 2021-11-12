@@ -1039,21 +1039,23 @@ extern "C" {
         fprintf(pOut, "\t * should alter the above file and\n");
         fprintf(pOut, "\t * regenerate using genEnum!\n");
         fprintf(pOut, "\t */\n\n");
+
         fprintf(pOut, "\t// Given an enum value, return its character format.\n");
         fprintf(pOut, "\tconst\n");
-        fprintf(pOut, "\tchar *\t\t\t%s_%sToDesc(\n", pPrefixA, pNameA);
+        fprintf(pOut, "\tchar *\t\t\t%s_%sToDesc (\n", pPrefixA, pNameA);
         fprintf(pOut, "\t\tuint32_t\t\tvalue\n");
         fprintf(pOut, "\t)\n");
         fprintf(pOut, "\t{\n");
         if (this->pStart) {
             fprintf(
                     pOut,
-                    "\t\tif ((value - %s) >= %d) {\n",
+                    "\t\tif ((value - %s) >= c%s_%s_index) {\n",
                     AStr_getData(this->pStart),
-                    this->maxIndex
+                    pPrefixA,
+                    pNameA
             );
         } else {
-            fprintf(pOut, "\t\tif (value >= %d) {\n", this->maxIndex);
+            fprintf(pOut, "\t\tif (value >= c%s_%s_index) {\n", pPrefixA, pNameA);
         }
         fprintf(pOut, "\t\t\treturn \"<<<Unknown Enum Value>>>\";\n");
         fprintf(pOut, "\t\t}\n");
@@ -1097,7 +1099,65 @@ extern "C" {
         fprintf(pOut, "\t\t\treturn \"<<<Unknown Enum Value>>>\";\n");
         fprintf(pOut, "\t\t}\n");
 #endif
+        fprintf(pOut, "\t}\n\n");
+
+        fprintf(pOut, "\t// Given an enum value, return its name.\n");
+        fprintf(pOut, "\tconst\n");
+        fprintf(pOut, "\tchar *\t\t\t%s_%sToName (\n", pPrefixA, pNameA);
+        fprintf(pOut, "\t\tuint32_t\t\tvalue\n");
+        fprintf(pOut, "\t)\n");
+        fprintf(pOut, "\t{\n");
+        if (this->pStart) {
+            fprintf(
+                    pOut,
+                    "\t\tif ((value - %s) >= c%s_%s_index) {\n",
+                    AStr_getData(this->pStart),
+                    pPrefixA,
+                    pNameA
+            );
+        } else {
+            fprintf(pOut, "\t\tif (value >= c%s_%s_index) {\n", pPrefixA, pNameA);
+        }
+        fprintf(pOut, "\t\t\treturn NULL;\n");
+        fprintf(pOut, "\t\t}\n");
+        if (this->pStart) {
+            fprintf(
+                    pOut,
+                    "\t\tif (%s_%s_index[value - %s]) {\n",
+                    pPrefixA,
+                    pNameA,
+                    AStr_getData(this->pStart)
+            );
+            fprintf(
+                    pOut,
+                    "\t\t\treturn %s_%s_entries[%s_%s_index[value - %s] - 1].pName;\n",
+                    pPrefixA,
+                    pNameA,
+                    pPrefixA,
+                    pNameA,
+                    AStr_getData(this->pStart)
+            );
+        } else {
+            fprintf(
+                    pOut,
+                    "\t\tif (%s_%s_index[value]) {\n",
+                    pPrefixA,
+                    pNameA
+            );
+            fprintf(
+                    pOut,
+                    "\t\t\treturn %s_%s_entries[%s_%s_index[value] - 1].pName;\n",
+                    pPrefixA,
+                    pNameA,
+                    pPrefixA,
+                    pNameA
+            );
+        }
+        fprintf(pOut, "\t\t} else {\n");
+        fprintf(pOut, "\t\t\treturn NULL;\n");
+        fprintf(pOut, "\t\t}\n");
         fprintf(pOut, "\t}\n");
+
         fprintf(pOut, "\n\n\n");
 
         fprintf(pOut, "\t/* The following routine was generated from:\n");
@@ -1106,10 +1166,11 @@ extern "C" {
         fprintf(pOut, "\t * should alter the above file and\n");
         fprintf(pOut, "\t * regenerate using genEnum!\n");
         fprintf(pOut, "\t */\n\n");
+
         fprintf(pOut, "\t// Given an enum description, return its value + 1 or\n");
         fprintf(pOut, "\t// 0 for not found.\n");
         fprintf(pOut, "\tconst\n");
-        fprintf(pOut, "\tuint32_t\t\t%s_DescTo%s(\n", pPrefixA, pNameA);
+        fprintf(pOut, "\tuint32_t\t\t%s_DescTo%s (\n", pPrefixA, pNameA);
         fprintf(pOut, "\t\tchar\t\t\t*pDesc\n");
         fprintf(pOut, "\t)\n");
         fprintf(pOut, "\t{\n");
@@ -1243,25 +1304,7 @@ extern "C" {
         fprintf(pOut, "\t * should alter the above file and\n");
         fprintf(pOut, "\t * regenerate using genEnum!\n");
         fprintf(pOut, "\t */\n\n");
-#ifdef XYZZY
-        fprintf(pOut, "\t// This table is in enum order.\n\n");
-        fprintf(pOut, "\tconst\n");
-        fprintf(pOut, "\tchar\t*p%s_%s_desc[] = {\n", pPrefixA, pNameA);
-        iMax = AStrArray_getSize(this->pArray);
-        for (i=0; i<iMax; i++) {
-            ASTR_DATA       *pLine = AStrArray_Get(this->pArray, i+1);
-            if (pLine) {
-                fprintf(
-                        pOut,
-                        "\t\t\"%s_%s_%s\",\n",
-                        AStr_getData(pCapsPrefix),
-                        AStr_getData(pCapsName),
-                        AStr_getData(pLine)
-                );
-            }
-        }
-        fprintf(pOut, "\t};\n\n\n");
-#endif
+
         fprintf(pOut, "\t// This table is in enum order and provides\n");
         fprintf(pOut, "\t// the index + 1 into the %s_%s_entries\n", pPrefixA, pNameA);
         fprintf(pOut, "\t// table. 0 means no enum entry.\n");
@@ -1279,10 +1322,19 @@ extern "C" {
             fprintf(pOut, "\t\t%d,\n", index);
         }
         fprintf(pOut, "\t};\n\n\n");
+        fprintf(pOut, "\tconst\n");
+        fprintf(
+                pOut,
+                "\tuint32_t\tc%s_%s_index = %d;\n\n\n\n\n",
+                pPrefixA,
+                pNameA,
+                iMax
+        );
 
         fprintf(pOut, "\ttypedef struct {\n");
         fprintf(pOut, "\t\tconst\n");
         fprintf(pOut, "\t\tchar\t\t\t*pDesc;\n");
+        fprintf(pOut, "\t\tchar\t\t\t*pName;\n");
         fprintf(pOut, "\t\tuint32_t\t\tvalue;\n");
         fprintf(pOut, "\t} %s_%s_entry;\n\n", pPrefixA, pNameA);
         fprintf(pOut, "\t// This table is in alphanumeric order to be searched\n");
@@ -1296,9 +1348,10 @@ extern "C" {
                 if (this->pStart) {
                     fprintf(
                             pOut,
-                            "\t\t{\"%s_%s_%s\",%s+%d},\n",
+                            "\t\t{\"%s_%s_%s\", \"%s\", %s+%d},\n",
                             AStr_getData(pCapsPrefix),
                             AStr_getData(pCapsName),
+                            AStr_getData(pLine),
                             AStr_getData(pLine),
                             AStr_getData(this->pStart),
                             obj_getMisc(pLine)
@@ -1306,17 +1359,17 @@ extern "C" {
                 } else {
                     fprintf(
                             pOut,
-                            "\t\t{\"%s_%s_%s\",%d},\n",
+                            "\t\t{\"%s_%s_%s\", \"%s\", %d},\n",
                             AStr_getData(pCapsPrefix),
                             AStr_getData(pCapsName),
+                            AStr_getData(pLine),
                             AStr_getData(pLine),
                             obj_getMisc(pLine)
                     );
                 }
             }
         }
-        fprintf(pOut, "\t};\n\n");
-        fprintf(pOut, "\tconst\n");
+        fprintf(pOut, "\t};\n");
         fprintf(
                 pOut,
                 "\tuint32_t\tc%s_%s_entries = %d;\n\n\n\n\n",
@@ -1324,17 +1377,6 @@ extern "C" {
                 pNameA,
                 iMax
         );
-        fprintf(pOut, "\t// This table is the names in alphanumeric order.\n");
-        fprintf(pOut, "\tconst\n");
-        fprintf(pOut, "\tchar\t\t*p%s_%s_names[] = {\n", pPrefixA, pNameA);
-        iMax = AStrArray_getSize(this->pSorted);
-        for (i=0; i<iMax; i++) {
-            ASTR_DATA       *pLine = AStrArray_Get(this->pSorted, i+1);
-            if (pLine) {
-                fprintf(pOut, "\t\t\"%s\",\n", AStr_getData(pLine));
-            }
-        }
-        fprintf(pOut, "\t};\n\n");
         fprintf(pOut, "\n\n\n\n\n");
 
 

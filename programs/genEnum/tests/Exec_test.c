@@ -241,7 +241,7 @@ ERESULT         Test_Exec_Read01 (
     bool            fRc;
     PATH_DATA       *pPath = OBJ_NIL;
     const
-    char            *pPathA = TEST_FILES_DIR "/enum_test.txt";
+    char            *pPathA = TEST_FILES_DIR "/enum_test_old.txt";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -314,7 +314,7 @@ ERESULT         Test_Exec_Read02 (
     PATH_DATA       *pPath = OBJ_NIL;
     ASTR_DATA       *pStart = OBJ_NIL;
     const
-    char            *pPathA = TEST_FILES_DIR "/enum_test.txt";
+    char            *pPathA = TEST_FILES_DIR "/enum_test_old.txt";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
