@@ -552,307 +552,231 @@ extern "C" {
 
 
 
-#ifdef XYZZY
-    bool            Scanner_ParseCmdStr(
-        SCANNER_DATA    *cbp,
-        char            *pCmdStr,
-        uint32_t        *pNumArgs,
 
+
+
+    ASTR_DATA *     Scanner_ScanStringToAStrInt(
+        SCANNER_DATA    *this,
+        bool            fTermWS             // true == whitespace trminates string
     )
     {
-        uint16_t        cbSize;
-        int             Num = 0;
-        int             cArgs = 0;
-        char            *pCurCmd;
-        char            quote;
-
-        // Do initialization.
-        if( pCmdStr == NULL )
-            return( false );
-        cbp->cArg = 1;
-        cbSize = 2 * sizeof(char *);
-        cbp->ppArg = (char **)mem_Malloc( cbSize );
-        if( cbp->ppArg ) {
-            cbp->flags |= GOT_ARGV;
-        }
-        else
-            return false;
-        *(cbp->ppArg) = "";     // Set program name.
-
-        // Scan off the each parameter.
-        while( *pCmdStr ) {
-            pCurCmd = NULL;
-            // Pass over white space.
-            while( *pCmdStr && ((*pCmdStr == ' ') || (*pCmdStr == '\n')
-                                || (*pCmdStr == '\r') || (*pCmdStr == '\t')) )
-                ++pCmdStr;
-            // Handle Quoted Arguments.
-            if( (*pCmdStr == '\"') || (*pCmdStr == '\'') ) {
-                quote = *pCmdStr++;
-                pCurCmd = pCmdStr;
-                while( *pCmdStr && (*pCmdStr != quote) ) {
-                    ++pCmdStr;
-                }
-                if( *pCmdStr ) {
-                    *pCmdStr = '\0';
-                    ++pCmdStr;
-                }
-            }
-            // Handle Non-Quoted Arguments.
-            else if( *pCmdStr ) {
-                pCurCmd = pCmdStr;
-                // Scan until white space.
-                while( *pCmdStr && !((*pCmdStr == ' ') || (*pCmdStr == '\n')
-                                     || (*pCmdStr == '\r') || (*pCmdStr == '\t')) ) {
-                    ++pCmdStr;
-                }
-                if( *pCmdStr ) {
-                    *pCmdStr = '\0';
-                    ++pCmdStr;
-                }
-            }
-            else
-                continue;
-            // Add the command to the array.
-            if( pCurCmd ) {
-                ++Num;
-                cbp->ppArg = (char **)mem_Realloc( cbp->ppArg, ((Num + 2) * sizeof(char *)) );
-                if( cbp->ppArg ) {
-                    cbp->ppArg[Num]   = pCurCmd;
-                    cbp->ppArg[Num+1] = NULL;
-                    ++cbp->cArg;
-                }
-                else
-                    return( false );
-            }
-        }
-
-        // Return to caller.
-        return true;
-    }
-#endif
-
-
-
-#ifdef XYZZY
-//---------------------------------------------------------------
-//                    S c a n D a t e
-//---------------------------------------------------------------
-
-/* CmdStr is scanned one character at a time into the Output
- * buffer supplied. The scan will go until it hits end of line
- * the end of the string. It will copy at most maxLen characters
- * to the output.
- NOTE: This only accepets ascii characters at this point.
- */
-bool            scanner_ScanDate(
-    char            **ppCmdStr,         // NUL terminated string pointer
-    uint32_t        *pScannedLen,       // (returned) Scanned Length
-                                        // (not including leading whitespace)
-    uint32_t        *pValue             // (returned) Scanned Number
-)
-{
-    bool            fRc = false;
-    char            *pCurChr = NULL;
-    uint32_t        cOutput = 0;
-    //char            Quote = 0;
-    char            dd10 = 0;
-    char            dd1  = 0;
-    char            mm10 = 0;
-    char            mm1  = 0;
-    uint8_t         mm = 0;
-    uint8_t         dd = 0;
-    //uint16_t        yyyy = 0;
-    //uint8_t         wday = 0;
-    //char            szDate[11] = "MM/DD/YYYY";
-
-    // Do initialization.
-    if( NULL == ppCmdStr ) {
-        fRc = false;
-        goto Exit00;
-    }
-    pCurChr = *ppCmdStr;
-    //W32CHR_T        chr;
-    //int             chrLen = 0;
-
-    // Scan off leading white-space.
-    scanner_ScanWhite(&pCurChr, NULL);
-
-    // Scan the paramter.
-    if( *pCurChr ) {
-        // MM
-        if( ('0' <= *pCurChr) || ('1' >= *pCurChr) ) {
-            mm10 = *pCurChr;
-            ++pCurChr;
-        }
-        else
-            return false;
-        if( ('0' <= *pCurChr) || ('1' >= *pCurChr) ) {
-            mm1 = *pCurChr;
-            ++pCurChr;
-        }
-        // DD
-        if( (*pCurChr >= '0') || (*pCurChr <= '3') ) {
-            dd10 = *pCurChr;
-            ++pCurChr;
-        }
-        else
-            return false;
-        if( (*pCurChr >= '0') || ('1' >= *pCurChr) ) {
-            dd1 = *pCurChr;
-            ++pCurChr;
-        }
-
-        if( ('0' <= *pCurChr) || ('1' >= *pCurChr) ) {
-            mm = *pCurChr - '0';
-            ++pCurChr;
-        }
-        else {
-            return false;
-        }
-        if( ('0' <= *pCurChr) || ('9' >= *pCurChr) ) {
-            mm *= 10;
-            mm += *pCurChr - '0';
-            ++pCurChr;
-        }
-        else {
-            return false;
-        }
-        if ( !((mm > 0) && (mm < 13)) ) {
-            return false;
-        }
-        if( '/' == *pCurChr ) {
-            ++pCurChr;
-        }
-        else {
-            return false;
-        }
-
-        // DD/
-        if( ('0' <= *pCurChr) || ('3' >= *pCurChr) ) {
-            dd += *pCurChr - '0';
-            ++pCurChr;
-        }
-        if( ('0' <= *pCurChr) || ('9' >= *pCurChr) ) {
-            dd *= 10;
-            dd += *pCurChr - '0';
-            ++pCurChr;
-        }
-    }
-
-
-    // Return to caller.
-    fRc = true;
-Exit00:
-    if( ppCmdStr ) {
-        *ppCmdStr = pCurChr;
-    }
-    if( pScannedLen ) {
-        *pScannedLen = cOutput;
-    }
-    return( fRc );
-}
-
-
-
-#endif
-
-
-
-#ifdef XYZZY
-    /*!
-     Set up an ArgC/ArgV type array given a command line string
-     excluding the program name.
-     @param     pStrA    Pointer to a UTF-8 Argument character string
-     @return    If successful, an AStrArray object which must be
-                released containing the Argument Array, otherwise
-                OBJ_NIL if an error occurred.
-     @warning   Remember to release the returned AStrArray object.
-     */
-    ASTRARRAY_DATA * scanner_ScanStringToAStrArray(
-        const
-        char            *pStrA
-    )
-    {
-        ERESULT         eRc;
-        bool            fRc;
-        char            *pCurCmd;
-        uint32_t        cmdLen = 0;
-        char            *pCurChr;
-        ASTRARRAY_DATA  *pArgs = OBJ_NIL;
-        ASTR_DATA       *pArg = OBJ_NIL;
+        bool            fRc = false;
+        W32CHR_T        Quote = 0;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        W32CHR_T        chr;
+        W32CHR_T        chr2;
+        uint32_t        len = 0;
 
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if(pStrA && (utf8_StrLenA(pStrA) > 0))
-            ;
-        else {
+        if( !Scanner_Validate(this) ) {
             DEBUG_BREAK();
-            //return ERESULT_INVALID_PARAMETER;
-            return OBJ_NIL;
+            return false;
         }
 #endif
-        pArgs = AStrArray_New( );
-        if (OBJ_NIL == pArgs) {
-            DEBUG_BREAK();
-            //return ERESULT_OUT_OF_MEMORY;
+
+        pStr = AStr_New( );
+        if (OBJ_NIL == pStr) {
             return OBJ_NIL;
         }
-        pCurChr = (char *)pStrA;
 
-        // Set up program name argument.
-        pArg = AStr_NewA("");
-        if (pArg) {
-            eRc = AStrArray_AppendStr(pArgs, pArg, NULL);
-            obj_Release(pArg);
-            pArg = OBJ_NIL;
-        }
+        // Scan off leading white-space.
+        Scanner_ScanWS(this);
 
-        // Scan off the each parameter.
-        while( pCurChr && *pCurChr ) {
-            pCurCmd = NULL;
-            cmdLen = 0;
-
-            // Pass over white space.
-            fRc = scanner_ScanWhite(&pCurChr, NULL);
-
+        // Scan the paramter.
+        chr = Scanner_LookAhead(this, len+1);
+        if (chr) {
             // Handle Quoted Arguments.
-            pArg = scanner_ScanStringToAStr(&pCurChr, NULL);
-            if (pArg) {
-                eRc = AStrArray_AppendStr(pArgs, pArg, NULL);
-                obj_Release(pArg);
-                pArg = OBJ_NIL;
+            if( ('"' == chr) || ('\'' == chr) ) {
+                Quote = chr;
+                len += 1;
+                for (;;) {
+                    chr = Scanner_LookAhead(this, len+1);
+                    if (chr == '\0') {
+                        // ERROR - End of String in middle of quoted string
+                        fRc = false;
+                        goto Exit00;
+                    }
+                    if( chr == Quote ) {
+                        chr2 = Scanner_LookAhead(this, len+2);
+                        if( chr2 == Quote ) {
+                            len += 2;
+                            AStr_AppendCharW32(pStr, Quote);
+                            fRc = true;
+                        }
+                        else {
+                            len += 1;
+                            break;
+                        }
+                    }
+                    else if( chr == '\\' ) {
+                        chr2 = Scanner_LookAhead(this, len+2);
+                        if( chr2 == Quote ) {
+                            len += 1;
+                        } else if( chr2 == '\\' ) {
+                            len += 2;
+                            AStr_AppendCharA(pStr, '\\');
+                            fRc = true;
+                            continue;
+                        } else if( chr2 == '0' ) {
+                            len += 2;
+                            AStr_AppendCharA(pStr, '\0');
+                            fRc = true;
+                        } else if( chr2 == 'b' ) {
+                            len += 2;
+                            AStr_AppendCharA(pStr, '\b');
+                            fRc = true;
+                            continue;
+                        } else if( chr2 == 'f' ) {
+                            len += 2;
+                            AStr_AppendCharA(pStr, '\f');
+                            fRc = true;
+                            continue;
+                        } else if( chr2 == 'n' ) {
+                            len += 2;
+                            AStr_AppendCharA(pStr, '\n');
+                            fRc = true;
+                            continue;
+                        } else if( chr2 == 'r' ) {
+                            len += 2;
+                            AStr_AppendCharA(pStr, '\r');
+                            fRc = true;
+                            continue;
+                        } else if( chr2 == 't' ) {
+                            len += 2;
+                            AStr_AppendCharA(pStr, '\t');
+                            fRc = true;
+                            continue;
+                        } else if( chr2 == 'x' ) {
+                            len += 2;
+                            // At this point, we need two more characters of
+                            // 0..9,a..f,A..F to give us our hex character.
+                            chr  = Scanner_LookAhead(this, len+1);
+                            chr2 = Scanner_LookAhead(this, len+2);
+                            if (('\0' == chr) || ('\0' == chr2)) {
+                                goto Exit00;
+                            }
+                            chr2 = 0;
+                            if (ascii_isHexW32(chr)) {
+                                chr2 <<= 4;
+                                chr2 |= ascii_FromHexW32(chr);
+                                len += 1;
+                                fRc = true;
+                            } else {
+                                fRc = false;
+                                goto Exit00;
+                            }
+                            chr  = Scanner_LookAhead(this, len+1);
+                            if (ascii_isHexW32(chr)) {
+                                chr2 <<= 4;
+                                chr2 |= ascii_FromHexW32(chr);
+                                len += 1;
+                                fRc = true;
+                            } else {
+                                fRc = false;
+                                goto Exit00;
+                            }
+                            if (fRc) {
+                                AStr_AppendCharW32(pStr, chr2);
+                                fRc = true;
+                            } else {
+                                goto Exit00;
+                            }
+                            continue;
+                        }
+                    }
+                    else {
+                        AStr_AppendCharW32(pStr, chr);
+                        len += 1;
+                        fRc = true;
+                    }
+                }
+            } else {
+                // Handle Non-Quoted Arguments.
+                for (;;) {
+                    chr  = Scanner_LookAhead(this, len+1);
+                    if (Scanner_IsSeparator(chr, fTermWS) || ('"' == chr) || ('\'' == chr)) {
+                        break;
+                    } else {
+                        AStr_AppendCharW32(pStr, chr);
+                        len += 1;
+                        fRc = true;
+                    }
+                }
             }
-
-            // Pass over white space.
-            if ((',' == *pCurChr) || ('\t' == *pCurChr)) {
-                ++pCurChr;
+            chr  = Scanner_LookAhead(this, len+1);
+            if (chr && Scanner_IsTerminator(this, chr, fTermWS)) {
+                len += 1;
             }
         }
+
 
         // Return to caller.
-        return pArgs;
+    Exit00:
+        if (fRc && len) {
+            Scanner_Advance(this, len);
+        }
+        if (!fRc) {
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        return pStr;
     }
-#endif
-
-
-
-#ifdef XYZZY
-#endif
 
 
 
     bool            Scanner_IsSeparator(
-        W32CHR_T        chr
-
+        W32CHR_T        chr,
+        bool            fTermWS             // true == whitespace trminates string
     )
     {
         bool            fRc = false;
 
-        if ((chr == '\0') || (',' == chr) || ascii_isWhiteSpaceW32(chr)) {
+        if ((chr == '\0') || (',' == chr)) {
+            fRc = true;
+        } else if  (fTermWS && ascii_isWhiteSpaceW32(chr)) {
             fRc = true;
         }
+
+        return fRc;
+    }
+
+
+
+    bool            Scanner_IsSeparatorExtended(
+        W32CHR_T        chr,
+        bool            fTermWS             // true == whitespace trminates string
+    )
+    {
+        bool            fRc = false;
+
+        switch (chr) {
+            case '\0':
+                fRc = true;
+            case ',':
+                fRc = true;
+            case '=':
+                fRc = true;
+            case ')':
+                fRc = true;
+            case '+':
+                fRc = true;
+            case '-':
+                fRc = true;
+            case '*':
+                fRc = true;
+            case '/':
+                fRc = true;
+            case '<':
+                fRc = true;
+            case '>':
+                fRc = true;
+        }
+        if  (fTermWS && ascii_isWhiteSpaceW32(chr)) {
+            fRc = true;
+        }
+
         return fRc;
     }
 
@@ -860,13 +784,13 @@ Exit00:
 
     bool            Scanner_IsTerminator(
         SCANNER_DATA    *this,
-        W32CHR_T        chr
-
+        W32CHR_T        chr,
+        bool            fTermWS             // true == whitespace trminates string
     )
     {
         bool            fRc = false;
 
-        if (Scanner_IsSeparator(chr) || (this->sep && (this->sep == chr))) {
+        if (Scanner_IsSeparator(chr, fTermWS) || (this->sep && (this->sep == chr))) {
             fRc = true;
         }
         return fRc;
@@ -1247,45 +1171,6 @@ Exit00:
     
     
     //---------------------------------------------------------------
-    //                         C a l c
-    //---------------------------------------------------------------
-
-    /*!
-     Assume that the scanner string is an expression, parse it and
-     calculate its answer.
-     @param     this    object pointer
-     @param     pAnswer pointer where answer is returned
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Scanner_Calc (
-        SCANNER_DATA    *this,
-        int32_t         *pAnswer
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-        int32_t         ans = 0;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Scanner_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        ans = Scanner_Expr(this);
-
-        // Return to caller.
-        if (pAnswer)
-            *pAnswer = ans;
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -1506,7 +1391,7 @@ Exit00:
                 error code.
      */
     ERESULT         Scanner_Enable (
-        SCANNER_DATA		*this
+        SCANNER_DATA	*this
     )
     {
         //ERESULT         eRc;
@@ -1729,12 +1614,38 @@ Exit00:
     //                          M a t c h
     //---------------------------------------------------------------
 
-    bool            Scanner_MatchChr(
+    bool            Scanner_MatchChrW32(
         SCANNER_DATA    *this,
         W32CHR_T        chr
     )
     {
-        bool            fMatch = true;
+        bool            fMatch = false;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Scanner_Validate(this)) {
+            DEBUG_BREAK();
+            // return ERESULT_INVALID_OBJECT;
+            return fMatch;
+        }
+#endif
+
+        // Scan off leading white-space.
+        Scanner_ScanWS(this);
+
+        fMatch = W32StrC_MatchChr((W32STRC_DATA *)this, chr);
+
+        return fMatch;
+    }
+
+
+    bool            Scanner_MatchChrsW32(
+        SCANNER_DATA    *this,
+        W32CHR_T        *pChrs
+    )
+    {
+        bool            fMatch = false;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1746,7 +1657,12 @@ Exit00:
         }
 #endif
 
-        fMatch = W32StrC_MatchChr((W32STRC_DATA *)this, chr);
+        // Scan off leading white-space.
+        Scanner_ScanWS(this);
+
+        while (!fMatch && *pChrs) {
+            fMatch = W32StrC_MatchChr((W32STRC_DATA *)this, *pChrs++);
+        }
 
         return fMatch;
     }
@@ -1769,6 +1685,9 @@ Exit00:
             return 0;
         }
 #endif
+
+        // Scan off leading white-space.
+        Scanner_ScanWS(this);
 
         fMatch = W32StrC_MatchStrA((W32STRC_DATA *)this, pStrA);
 
@@ -1947,6 +1866,33 @@ Exit00:
     //                    S c a n  S t r i n g
     //---------------------------------------------------------------
 
+    ERESULT         Scanner_ScanExpr (
+        SCANNER_DATA    *this,
+        int32_t         *pAnswer
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int32_t         ans = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Scanner_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        ans = Scanner_Expr(this);
+
+        // Return to caller.
+        if (pAnswer)
+            *pAnswer = ans;
+        return eRc;
+    }
+
+
+
     ASTR_DATA *     Scanner_ScanIdentifierToAStr(
         SCANNER_DATA    *this
     )
@@ -2009,7 +1955,7 @@ Exit00:
 
 
     //---------------------------------------------------------------
-    //                    S c a n  I n t e g e r 32
+    //                    S c a n  I n t e g e r 3 2
     //---------------------------------------------------------------
 
     bool            Scanner_ScanInteger32(
@@ -2108,21 +2054,11 @@ Exit00:
     //                    S c a n  S t r i n g
     //---------------------------------------------------------------
 
-    /* CmdStr is scanned one character at a time into the Output
-     * buffer supplied. The scan will go until it hits end of line or
-     * the end of the string. It will copy at most maxLen characters
-     * to the output.
-     */
     ASTR_DATA *     Scanner_ScanStringToAStr(
         SCANNER_DATA    *this
     )
     {
-        bool            fRc = false;
-        W32CHR_T        Quote = 0;
         ASTR_DATA       *pStr = OBJ_NIL;
-        W32CHR_T        chr;
-        W32CHR_T        chr2;
-        uint32_t        len = 0;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -2133,141 +2069,12 @@ Exit00:
         }
 #endif
 
-        pStr = AStr_New( );
-        if (OBJ_NIL == pStr) {
-            return OBJ_NIL;
-        }
-
         // Scan off leading white-space.
         Scanner_ScanWS(this);
 
-        // Scan the paramter.
-        chr = Scanner_LookAhead(this, len+1);
-        if(chr) {
-            // Handle Quoted Arguments.
-            if( ('"' == chr) || ('\'' == chr) ) {
-                Quote = chr;
-                len += 1;
-                for (;;) {
-                    chr = Scanner_LookAhead(this, len+1);
-                    if (chr == '\0') {
-                        // ERROR - End of String in middle of quoted string
-                        fRc = false;
-                        goto Exit00;
-                    }
-                    if( chr == Quote ) {
-                        chr2 = Scanner_LookAhead(this, len+2);
-                        if( chr2 == Quote ) {
-                            len += 2;
-                            AStr_AppendCharW32(pStr, Quote);
-                            fRc = true;
-                        }
-                        else {
-                            len += 1;
-                            break;
-                        }
-                    }
-                    else if( chr == '\\' ) {
-                        chr2 = Scanner_LookAhead(this, len+2);
-                        if( chr2 == Quote ) {
-                            len += 1;
-                        } else if( chr2 == '0' ) {
-                            len += 2;
-                            AStr_AppendCharA(pStr, '\0');
-                            fRc = true;
-                        } else if( chr2 == 'b' ) {
-                            len += 2;
-                            AStr_AppendCharA(pStr, '\b');
-                            fRc = true;
-                            continue;
-                        } else if( chr2 == 'f' ) {
-                            len += 2;
-                            AStr_AppendCharA(pStr, '\f');
-                            fRc = true;
-                            continue;
-                        } else if( chr2 == 'n' ) {
-                            len += 2;
-                            AStr_AppendCharA(pStr, '\n');
-                            fRc = true;
-                            continue;
-                        } else if( chr2 == 'r' ) {
-                            len += 2;
-                            AStr_AppendCharA(pStr, '\r');
-                            fRc = true;
-                            continue;
-                        } else if( chr2 == 'x' ) {
-                            len += 2;
-                            // At this point, we need two more characters of 0..9,a..f,A..F
-                            // to give us our hex character.
-                            chr  = Scanner_LookAhead(this, len+1);
-                            chr2 = Scanner_LookAhead(this, len+2);
-                            if (('\0' == chr) || ('\0' == chr2)) {
-                                goto Exit00;
-                            }
-                            chr2 = 0;
-                            if (ascii_isHexW32(chr)) {
-                                chr2 <<= 4;
-                                chr2 |= ascii_FromHexW32(chr);
-                                len += 1;
-                                fRc = true;
-                            } else {
-                                fRc = false;
-                                goto Exit00;
-                            }
-                            chr  = Scanner_LookAhead(this, len+1);
-                            if (ascii_isHexW32(chr)) {
-                                chr2 <<= 4;
-                                chr2 |= ascii_FromHexW32(chr);
-                                len += 1;
-                                fRc = true;
-                            } else {
-                                fRc = false;
-                                goto Exit00;
-                            }
-                            if (fRc) {
-                                AStr_AppendCharW32(pStr, chr2);
-                                fRc = true;
-                            } else {
-                                goto Exit00;
-                            }
-                            continue;
-                        }
-                    }
-                    else {
-                        AStr_AppendCharW32(pStr, chr);
-                        len += 1;
-                        fRc = true;
-                    }
-                }
-            } else {
-                // Handle Non-Quoted Arguments.
-                for (;;) {
-                    chr  = Scanner_LookAhead(this, len+1);
-                    if (Scanner_IsSeparator(chr) || ('"' == chr) || ('\'' == chr)) {
-                        break;
-                    } else {
-                        AStr_AppendCharW32(pStr, chr);
-                        len += 1;
-                        fRc = true;
-                    }
-                }
-            }
-            chr  = Scanner_LookAhead(this, len+1);
-            if (chr && Scanner_IsTerminator(this, chr)) {
-                len += 1;
-            }
-        }
-
+        pStr = Scanner_ScanStringToAStrInt(this, false);
 
         // Return to caller.
-    Exit00:
-        if (fRc && len) {
-            Scanner_Advance(this, len);
-        }
-        if (!fRc) {
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-        }
         return pStr;
     }
 
@@ -2314,7 +2121,7 @@ Exit00:
                 pArg = OBJ_NIL;
             }
 
-            // Scan off the each parameter.
+            // Scan off each parameter.
             for (;;) {
                 chr  = Scanner_LookAhead(this, 1);
                 if (chr) {
@@ -2322,7 +2129,7 @@ Exit00:
                     fRc = Scanner_ScanWS(this);
 
                     // Handle Quoted Arguments.
-                    pArg = Scanner_ScanStringToAStr(this);
+                    pArg = Scanner_ScanStringToAStrInt(this, true);
                     if (pArg) {
                         eRc = AStrArray_AppendStr(pArgs, pArg, NULL);
                         obj_Release(pArg);
@@ -2332,7 +2139,7 @@ Exit00:
 
                     // Pass over terminator.
                     chr  = Scanner_LookAhead(this, 1);
-                    if (Scanner_IsSeparator(chr)) {
+                    if (chr && Scanner_IsSeparator(chr, true)) {
                         Scanner_Advance(this, 1);
                     }
 
@@ -2349,6 +2156,91 @@ Exit00:
             }
             return pArgs;
         }
+
+
+
+    //---------------------------------------------------------------
+    //                    S c a n  U n s i g n e d 3 2
+    //---------------------------------------------------------------
+
+    bool            Scanner_ScanUnsigned32(
+        SCANNER_DATA    *this,
+        uint32_t        *pValue             // (returned) Scanned Number
+    )
+    {
+        bool            fRc = false;
+        uint32_t        value = 0;
+        W32CHR_T        chr;
+        W32CHR_T        chr2;
+        uint32_t        len = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Scanner_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        // Scan off leading white-space.
+        Scanner_ScanWS(this);
+
+        chr = Scanner_LookAhead(this, len+1);
+        if ('0' == chr) {
+            chr2 = Scanner_LookAhead(this, len+2);
+            if (('x' == chr2) || ('X' == chr2)) {
+                len += 2;
+                for (;;) {
+                    chr = Scanner_LookAhead(this, len+1);
+                    if (ascii_isHexW32(chr)) {
+                        value <<= 4;
+                        value |= ascii_FromHexW32(chr);
+                        len += 1;
+                        fRc = true;
+                    } else {
+                        break;
+                    }
+                }
+                goto Exit;
+            } else {
+                len += 1;
+                for (;;) {
+                    chr = Scanner_LookAhead(this, len+1);
+                    if( ('0' <= chr) && ('7' >= chr) ) {
+                        value = (value << 3) + (chr - '0');
+                        len += 1;
+                    } else {
+                        break;
+                    }
+                }
+                fRc = true;
+                goto Exit;
+            }
+        } else {
+            for (;;) {
+                chr = Scanner_LookAhead(this, len+1);
+                if( ('0' <= chr) && ('9' >= chr) ) {
+                    value = (value << 3) + (value << 1) + (chr - '0');
+                    len += 1;
+                    fRc = true;
+                }
+                else
+                    break;
+            }
+        }
+
+
+        // Return to caller.
+    Exit:
+        if (fRc && len) {
+            Scanner_Advance(this, len);
+        }
+        if(pValue) {
+            *pValue = value;
+        }
+        return fRc;
+    }
 
 
 
@@ -2383,6 +2275,42 @@ Exit00:
 
         // Return to caller.
         return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          S e t u p
+    //---------------------------------------------------------------
+
+    ERESULT         Scanner_SetupA(
+        SCANNER_DATA    *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        bool            fRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Scanner_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        fRc = W32StrC_SetupA((W32STRC_DATA *)this, pStrA);
+        if (fRc) {
+            this->sep = 0;
+            //W32StrC_Reset((W32STRC_DATA *)this); //Not needed, setup does it.
+        } else {
+            eRc = ERESULT_FAILURE;
+        }
+
+        // Return to caller.
+        return eRc;
     }
 
 

@@ -1480,7 +1480,7 @@ extern "C" {
         this->pInputLookAhead      = (void *)Scanner_LookAhead;
 
         this->pObjParse = pScan;
-        this->pInputMatchA         = (void *)Scanner_MatchChr;
+        this->pInputMatchA         = (void *)Scanner_MatchChrW32;
         this->pInputMatchStrA      = (void *)Scanner_MatchStrA;
         this->pInputScanIdentifier = (void *)Scanner_ScanIdentifierToAStr;
         this->pInputScanInteger32  = (void *)Scanner_ScanInteger32;

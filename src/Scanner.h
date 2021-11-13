@@ -1,15 +1,21 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          String Scanner (Scanner) Header
+//          Generic String Scanner (Scanner) Header
 //****************************************************************
 /*
  * Program
- *			String Scanner (Scanner)
+ *			Generic String Scanner (Scanner)
  * Purpose
  *			This object provides a generic scanner which is based
- *          on a builtin static W32StrC.
+ *          on a builtin static W32StrC.  Originally, it was a set
+ *          of disjoint routines that scanned various types of
+ *          items which were used mostly to scan program command
+ *          lines. They have been updated to be more cohesive and
+ *          more general in nature.
  *
+ *          Most of the methods will first scan off white-space
+ *          before beginning their specific scan.
  * Remarks
  *  1.      OBJ_FLAG_USER1 is used by this object.
  *  2.      obj's Misc fields are used by this object.
@@ -53,6 +59,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <AStrArray.h>
 
 
 #ifndef         SCANNER_H
@@ -242,20 +249,6 @@ extern "C" {
 
 
     /*!
-     Assume that the scanner string is an expression, parse it and
-     calculate its answer.
-     @param     this    object pointer
-     @param     pAnswer pointer where answer is returned
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Scanner_Calc (
-        SCANNER_DATA    *this,
-        int32_t         *pAnswer
-    );
-
-
-    /*!
      Compare the two provided objects.
      @return    ERESULT_SUCCESS_EQUAL if this == other
                 ERESULT_SUCCESS_LESS_THAN if this < other
@@ -304,7 +297,8 @@ extern "C" {
 
 
     /*!
-     Return the character pointed at by the obj's Misc plus offset.
+     Return the character pointed at by the obj's Misc plus offset
+     (ie one of the next character(s) to be scanned).
      @param     this    object pointer
      @param     offset  offset of lookahead (relative to 1)
      @return    If successful, the indexed character, otherwise 0.
@@ -324,9 +318,26 @@ extern "C" {
      @return    If they match, return true otherwise false.
      @warning   This method uses obj's misc field.
      */
-    bool            Scanner_MatchChr(
+    bool            Scanner_MatchChrW32(
         SCANNER_DATA    *this,
         W32CHR_T        chr
+    );
+
+
+    /*!
+     Match each of the given character(s) against the current obj's
+     Misc index into the string.  If they match, advance the scan
+     and return true. Otherwise, try the next charactere in the list
+     terminating when NUL is found.
+     @param     this    object pointer
+     @param     pChrs   pointer to a NUL-terminaed list of characters
+                        to be matched
+     @return    If they match, return true; otherwise false.
+     @warning   This method uses obj's misc field.
+     */
+    bool            Scanner_MatchChrsW32(
+        SCANNER_DATA    *this,
+        W32CHR_T        *pChrs
     );
 
 
@@ -356,12 +367,26 @@ extern "C" {
 
 
     /*!
+     Assume that the scanner string is an expression, parse it and
+     calculate its answer.
+     @param     this    object pointer
+     @param     pAnswer pointer where answer is returned
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Scanner_ScanExpr (
+        SCANNER_DATA    *this,
+        int32_t         *pAnswer
+    );
+
+
+    /*!
      Scan a UTF-8 identifier defined by:
             [a-zA-Z_][0-9a-zA-Z_]*
-     The value scanned is returned if scan is successful.
-     Nothing is changed if the scan is unsuccessful.
+     Leading white-space is skipped and the scan terminates
+     when a charracter which does not match the above is found.
      @param     this    object pointer
-     @return    If successful, an AStr object is returned.
+     @return    If successful, an AStr object is returned. Otherwise, OBJ_NIL.
      @warning   The AStr object must be released!
      */
     ASTR_DATA *     Scanner_ScanIdentifierToAStr(
@@ -374,10 +399,12 @@ extern "C" {
                 ('0' ('x' | 'X') [0-9a-fA-F]*)      ** Hexadecimal **
             |   ('0' [0-7]*)                        ** Octal **
             |   (('-' | '+' | ) [1-9][0-9]+)        ** Decimal **
-     The value scanned is returned if scan is successful.
+     The value scanned is returned if scan is successful and the next
+     scan will start immediately after this one. No terminator is con-
+     sidered since the scan is well defined.
      Nothing is changed if the scan is unsuccessful.
      @param     this    object pointer
-     @param     pValue      Optional pointer to where value will be returned
+     @param     pValue  Optional pointer to where value will be returned
      @return    If successful, true and *pValue contains the amount converted,
                 otherwise false.
      */
@@ -388,9 +415,26 @@ extern "C" {
 
 
     /*!
-     Scan a string from the input which is terminated by white-space, comma or NUL.
-     The string may be qouted with ' or ".  A quoted string may contain \b, \f, \n,
-     or \r which will be properly scanned and translated.
+     Scan a string from the input which is terminated by comma or NUL. This
+     is equivalent to a comma delimited file type scan. The string may be
+     quoted or not.  Whitespace will be absorbed into the string if not
+     quoted. Leading whitespace will not be absorbed into the string.
+     If strings need to contain spaces, they must be surrounded
+     by quotes, either single or double.  Quoted strings may also
+     contain the special sequences which will be translated into
+     specific characters such as:
+            \\      '\'
+            \b      0x07
+            \f      0x0C
+            \n      0x0A
+            \r      0x0D
+            \t      0x09
+     Quoted strings are terminated by a quote which is the duplicate
+     of the leading quote, either single or double. For a non-quoted
+     string, the scan is terminated by a comma (',') or line ter-
+     minator (NUL). Note that this is a slightly different scan
+     than the one used for ScanStringToAstrArray(). In either case,
+     the scan is left pointing after the string terminator.
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 scanned string, otherwise OBJ_NIL.
@@ -403,15 +447,53 @@ extern "C" {
 
     /*!
      Set up an ArgC/ArgV type array given a command line string
-     excluding the program name.
+     excluding the program name. The string is parsed using ',',
+     whitespace or line terminator (NUL) to separate each item.
+     If strings need to contain spaces, they must be surrounded
+     by quotes, either single or double.  Quoted strings may also
+     contain the special sequences which will be translated into
+     specific characters such as:
+            \\      '\'
+            \b      0x07
+            \f      0x0C
+            \n      0x0A
+            \r      0x0D
+            \t      0x09
+     Quoted strings are tereminated by a quote which is the duplicate
+     of the leading quote.  Non-quoted strings are terminated by
+     ',', whitespace or line terminator (NUL). The scan is stopped
+     at the line terminator (NUL).
      @return    If successful, an AStrArray object which must be
                 released containing the Argument Array, otherwise
-                OBJ_NIL if an error occurred.
+                OBJ_NIL if an error occurred. The first of element
+                of the returned array will be a "" string to take
+                the place of the program name.
      @warning   Remember to release the returned AStrArray object.
      */
     ASTRARRAY_DATA * Scanner_ScanStringToAstrArray (
         SCANNER_DATA    *this
     );
+
+
+    /*!
+     Scan a UTF-8 decimal value such as:
+                ('0' ('x' | 'X') [0-9a-fA-F]*)      ** Hexadecimal **
+            |   ('0' [0-7]*)                        ** Octal **
+            |   [1-9][0-9]+)                        ** Decimal **
+     The value scanned is returned if scan is successful and the next
+     scan will start immediately after this one. No terminator is con-
+     sidered since the scan is well defined.
+     Nothing is changed if the scan is unsuccessful.
+     @param     this    object pointer
+     @param     pValue      Optional pointer to where value will be returned
+     @return    If successful, true and *pValue contains the amount converted,
+                otherwise false.
+     */
+    bool            Scanner_ScanUnsigned32 (
+        SCANNER_DATA    *this,
+        uint32_t        *pValue
+    );
+
 
     /*!
      Scan White-space moving the scan point past the white-space.
@@ -420,6 +502,18 @@ extern "C" {
      */
     bool            Scanner_ScanWS (
         SCANNER_DATA    *this
+    );
+
+
+    /*!
+     Set up the given string as the string to be scanned, resetting
+     the internal scan state and releasing any prior scan data.
+     @return    If successful, true; otherewise, false.
+     */
+    ERESULT         Scanner_SetupA(
+        SCANNER_DATA    *this,
+        const
+        char            *pStrA
     );
 
 

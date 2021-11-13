@@ -131,7 +131,32 @@ struct Scanner_data_s	{
     );
 
 
-    //      >>> Parsing Methods <<<
+    bool            Scanner_IsSeparator(
+        W32CHR_T        chr,
+        bool            fTermWS             // true == whitespace trminates string
+    );
+
+
+    bool            Scanner_IsSeparatorExtended(
+        W32CHR_T        chr,
+        bool            fTermWS             // true == whitespace trminates string
+    );
+
+
+    bool            Scanner_IsTerminator(
+        SCANNER_DATA    *this,
+        W32CHR_T        chr,
+        bool            fTermWS             // true == whitespace trminates string
+    );
+
+
+    ASTR_DATA *     Scanner_ScanStringToAStrInt(
+        SCANNER_DATA    *this,
+        bool            fTermWS             // true == whitespace trminates string
+    );
+
+
+    //      >>> Expression Parsing Methods <<<
     int32_t         Scanner_Add(
         SCANNER_DATA    *this
     );

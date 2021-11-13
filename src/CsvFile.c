@@ -234,7 +234,7 @@ extern "C" {
         }
 #endif
 
-        while( CsvFile_ParseComment(this) )
+        while (CsvFile_ParseComment(this))
             ;
 
         if (CsvFile_ParseEOF(this)) {

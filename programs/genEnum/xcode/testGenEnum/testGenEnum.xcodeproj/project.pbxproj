@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C468926C273EED2C005933F3 /* Item.c in Sources */ = {isa = PBXBuildFile; fileRef = C4689269273EED2B005933F3 /* Item.c */; };
+		C468926D273EED2C005933F3 /* Item_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C468926A273EED2B005933F3 /* Item_object.c */; };
 		C4A8BA43272F632B00E033FD /* libCmn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A8BA42272F632B00E033FD /* libCmn.a */; };
 		C4A8BA50272F642200E033FD /* Main.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A8BA48272F642200E033FD /* Main.c */; };
 		C4A8BA51272F642200E033FD /* Exec_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4A8BA49272F642200E033FD /* Exec_object.c */; };
@@ -28,6 +30,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C4689268273EED2B005933F3 /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item.h; sourceTree = "<group>"; };
+		C4689269273EED2B005933F3 /* Item.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Item.c; sourceTree = "<group>"; };
+		C468926A273EED2B005933F3 /* Item_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Item_object.c; sourceTree = "<group>"; };
+		C468926B273EED2C005933F3 /* Item_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item_internal.h; sourceTree = "<group>"; };
 		C4A8BA37272F627200E033FD /* testGenEnum */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = testGenEnum; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4A8BA42272F632B00E033FD /* libCmn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCmn.a; path = ../../../../../Support/lib/macos64/libCmn/libCmn.a; sourceTree = "<group>"; };
 		C4A8BA47272F642200E033FD /* Main_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main_defs.h; sourceTree = "<group>"; };
@@ -97,6 +103,10 @@
 				C4A8BA49272F642200E033FD /* Exec_object.c */,
 				C4A8BA4F272F642200E033FD /* Exec.c */,
 				C4A8BA4B272F642200E033FD /* Exec.h */,
+				C468926B273EED2C005933F3 /* Item_internal.h */,
+				C468926A273EED2B005933F3 /* Item_object.c */,
+				C4689269273EED2B005933F3 /* Item.c */,
+				C4689268273EED2B005933F3 /* Item.h */,
 				C4A8BA4A272F642200E033FD /* Main_internal.h */,
 				C4A8BA4D272F642200E033FD /* Main_object.c */,
 				C4A8BA48272F642200E033FD /* Main.c */,
@@ -164,9 +174,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				C4A8BA53272F642200E033FD /* Exec.c in Sources */,
+				C468926D273EED2C005933F3 /* Item_object.c in Sources */,
 				C4A8BA51272F642200E033FD /* Exec_object.c in Sources */,
 				C4A8BA52272F642200E033FD /* Main_object.c in Sources */,
 				C4A8BA50272F642200E033FD /* Main.c in Sources */,
+				C468926C273EED2C005933F3 /* Item.c in Sources */,
 				C4A8BA592731ADE800E033FD /* Exec_test.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

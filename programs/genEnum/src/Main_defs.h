@@ -105,6 +105,8 @@ extern "C" {
         OBJ_S86_IDENT_BASE=OBJ_IDENT_USER_ENTRIES,
         OBJ_IDENT_DICT,
         OBJ_IDENT_DICT_CLASS,
+        OBJ_IDENT_ITEM,
+        OBJ_IDENT_ITEM_CLASS,
         //OBJ_IDENT_MAIN,                   // Defined in cmn_defs
         //OBJ_IDENT_MAIN_CLASS
     } OBJ_MAIN_IDENTS;

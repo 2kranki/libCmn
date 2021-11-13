@@ -226,6 +226,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                        I t e m s
+    //---------------------------------------------------------------
+
+    OBJARRAY_DATA * Exec_getItems (
+        EXEC_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Exec_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pItems;
+    }
+
+
+    bool            Exec_setItems (
+        EXEC_DATA       *this,
+        OBJARRAY_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Exec_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pItems) {
+            obj_Release(this->pItems);
+        }
+        this->pItems = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -1279,6 +1325,7 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         uint32_t        i;
         uint32_t        iMax;
+        uint32_t        j;
         FILE            *pOut = stdout;
         ASTR_DATA       *pCapsPrefix = OBJ_NIL;
         ASTR_DATA       *pCapsName = OBJ_NIL;
@@ -1317,11 +1364,18 @@ extern "C" {
                 this->maxIndex
         );
         iMax = this->maxIndex;
+        j = 0;
+        fprintf(pOut, "\t\t");
         for (i=0; i<iMax; i++) {
             uint16_t        index = U16Array_Get(this->pIndex, i+1);
-            fprintf(pOut, "\t\t%d,\n", index);
+            fprintf(pOut, "%d, ", index);
+            j++;
+            if (j >= 8) {
+                j = 0;
+                fprintf(pOut, "\n\t\t");
+            }
         }
-        fprintf(pOut, "\t};\n\n\n");
+        fprintf(pOut, "\n\t};\n\n\n");
         fprintf(pOut, "\tconst\n");
         fprintf(
                 pOut,
@@ -1675,7 +1729,13 @@ extern "C" {
                 break;
             if (pLine) {
                 AStr_Trim(pLine);
-                TRC_OBJ(this,"\t%d : (%d)%s\n", lineNo, AStr_getLength(pLine), AStr_getData(pLine));
+                TRC_OBJ(
+                        this,
+                        "\t%d : (%d)%s\n",
+                        lineNo,
+                        AStr_getLength(pLine),
+                        AStr_getData(pLine)
+                );
                 if ( AStr_getLength(pLine) && (AStr_CharGetFirstW32(pLine) == '#')) {
                     obj_Release(pLine);
                     pLine = OBJ_NIL;

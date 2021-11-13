@@ -1,186 +1,181 @@
 // vi:nu:et:sts=4 ts=4 sw=4
+//****************************************************************
+//                      Test Object Program
+//****************************************************************
 /*
- *	Generated 03/04/2020 21:17:29
+ * Program
+ *          Test Object Program
+ * Purpose
+ *          This program tests a particular object given certain
+ *          parameters.
+ *
+ * Remarks
+ *  1.      This relies on the fact that we can add to the Test
+ *          Object by simply coding methods that use the Test
+ *          Object.
+ *
+ * History
+ *  08/29/2021 Generated
+ */
+
+
+/*
+ This is free and unencumbered software released into the public domain.
+ 
+ Anyone is free to copy, modify, publish, use, compile, sell, or
+ distribute this software, either in source code form or as a compiled
+ binary, for any purpose, commercial or non-commercial, and by any
+ means.
+ 
+ In jurisdictions that recognize copyright laws, the author or authors
+ of this software dedicate any and all copyright interest in the
+ software to the public domain. We make this dedication for the benefit
+ of the public at large and to the detriment of our heirs and
+ successors. We intend this dedication to be an overt act of
+ relinquishment in perpetuity of all present and future rights to this
+ software under copyright law.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+ 
+ For more information, please refer to <http://unlicense.org/>
+ */
+
+
+
+
+/*
+ TestForFail(error_sttring)         <= Tests eRc for failure
+ TestForFalse(test, error_sttring)
+ TestForNotNull(test, error)
+ TestForNull(test, error)
+ TestForSuccess(error)              <= Tests eRc for success
+ TestForTrue(test, error)
  */
 
 
 
 
 
-// All code under test must be linked into the Unit Test bundle
-// Test Macros:
-//      TINYTEST_ASSERT(condition)
-//      TINYTEST_ASSERT_MSG(condition,msg)
-//      TINYTEST_EQUAL(expected, actual)
-//      TINYTEST_EQUAL_MSG(expected, actual, msg)
-//      TINYTEST_FALSE_MSG(condition,msg)
-//      TINYTEST_FALSE(condition)
-//      TINYTEST_TRUE_MSG(pointer,msg)
-//      TINYTEST_TRUE(condition)
-
-
-
-
-
-#include    <tinytest.h>
-#include    <cmn_defs.h>
-#include    <AStrArray.h>
-#include    <JsonIn.h>
+#include    <test_defs.h>
+#include    <Test_internal.h>
 #include    <trace.h>
 #include    <Scanner_internal.h>
-#ifdef  SCANNER_JSON_SUPPORT
-#   include    <SrcErrors.h>
-#   include    <szTbl.h>
-#endif
-
-
-
-int             setUp (
-    const
-    char            *pTestName
-)
-{
-    mem_Init( );
-    trace_Shared( ); 
-    // Put setup code here. This method is called before the invocation of each
-    // test method in the class.
-    
-    return 1; 
-}
-
-
-int             tearDown (
-    const
-    char            *pTestName
-)
-{
-    // Put teardown code here. This method is called after the invocation of each
-    // test method in the class.
-
-#ifdef  SCANNER_JSON_SUPPORT
-    SrcErrors_SharedReset( );
-    szTbl_SharedReset( );
-#endif
-    JsonIn_RegisterReset();
-    trace_SharedReset( ); 
-    if (mem_Dump( ) ) {
-        fprintf(
-                stderr,
-                "\x1b[1m"
-                "\x1b[31m"
-                "ERROR: "
-                "\x1b[0m"
-                "Leaked memory areas were found!\n"
-        );
-        exitCode = 4;
-        return 0;
-    }
-    mem_Release( );
-    
-    return 1; 
-}
+#include    <JsonIn.h>
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 
 
 
 
 
 
-int             test_Scanner_OpenClose (
+ERESULT         Test_Scanner_OpenClose (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SCANNER_DATA	    *pObj = OBJ_NIL;
+    SCANNER_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = Scanner_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Alloc() object");
     pObj = Scanner_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Init() object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_SCANNER);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         
         // Test something.
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("test failed");
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_Scanner_Copy01 (
+ERESULT         Test_Scanner_Copy01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SCANNER_DATA	    *pObj1 = OBJ_NIL;
-    SCANNER_DATA	    *pObj2 = OBJ_NIL;
+    SCANNER_DATA       *pObj1 = OBJ_NIL;
+    SCANNER_DATA       *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(SCANNER_JSON_SUPPORT)
-    ASTR_DATA	    *pStr = OBJ_NIL;
+#if defined(SCANNER_JSON_SUPPORT) && defined(XYZZY)
+    ASTR_DATA       *pStr = OBJ_NIL;
 #endif
+    //int             iRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = Scanner_NewA("abcdef");
-    TINYTEST_FALSE( (OBJ_NIL == pObj1) );
+    pObj1 = Scanner_New( );
+    TestForNotNull(pObj1, "Missing Test object");
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_SCANNER);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         
         // Test assign.
         pObj2 = Scanner_New();
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
         eRc = Scanner_Assign(pObj1, pObj2);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForFalse((ERESULT_FAILED(eRc)), "Assignment failed");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SCANNER);
-        TINYTEST_TRUE( (fRc) );
-        eRc = Scanner_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (0 == eRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+        //iRc = Scanner_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
+        //TODO: Add More tests here!
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
         // Test copy.
         pObj2 = Scanner_Copy(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SCANNER);
-        TINYTEST_TRUE( (fRc) );
-        eRc = Scanner_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (0 == eRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+        //iRc = Scanner_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
+        //TODO: Add More tests here!
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(SCANNER_JSON_SUPPORT)
+#if defined(SCANNER_JSON_SUPPORT) && defined(XYZZY)
         pStr = Scanner_ToJson(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "Missing JSON output");
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
         pObj2 = Scanner_NewFromJsonString(pStr);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing JSON created object");
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SCANNER);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        eRc = Scanner_Compare(pObj1, pObj2);
-        TINYTEST_TRUE( (0 == eRc) );
+        //iRc = Scanner_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -191,858 +186,535 @@ int             test_Scanner_Copy01 (
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_Scanner_Test01 (
-    const
-    char            *pTestName
-)
-{
-    //ERESULT         eRc = ERESULT_SUCCESS;
-    SCANNER_DATA	    *pObj = OBJ_NIL;
-    bool            fRc;
-   
-    fprintf(stderr, "Performing: %s\n", pTestName);
-
-    pObj = Scanner_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SCANNER);
-        TINYTEST_TRUE( (fRc) );
-        
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
-}
-
-
-
-int             test_Scanner_ScanInteger01(
-    const
-    char            *pTestName
-)
-{
-    SCANNER_DATA    *pObj = OBJ_NIL;
-    char            *pTestString;
-    int32_t         value = 0;
-    bool            fRc;
-
-    fprintf(stderr, "Performing: %s\n", pTestName);
-
-    pTestString = " 100";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        TINYTEST_TRUE( (4 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (100 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " 100 ";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        TINYTEST_TRUE( (4 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (100 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " 100,";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        TINYTEST_TRUE( (4 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (100 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " -10,";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        TINYTEST_TRUE( (4 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (-10 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " +10,";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        TINYTEST_TRUE( (4 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (10 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " x,";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (!fRc) );
-        TINYTEST_TRUE( (1 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (0 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " 1x,";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        TINYTEST_TRUE( (2 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (1 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " 0x10F";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        fprintf(stderr, "\t%s == %d scan: %d\n", pTestString, value, obj_getMisc(pObj));
-        TINYTEST_TRUE( (6 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (271 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " 0x10F ";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        fprintf(stderr, "\t%s == %d scan: %d\n", pTestString, value, obj_getMisc(pObj));
-        TINYTEST_TRUE( (6 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (271 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " 0x10F,";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        fprintf(stderr, "\t%s == %d scan: %d\n", pTestString, value, obj_getMisc(pObj));
-        TINYTEST_TRUE( (6 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (271 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " 0100";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        fprintf(stderr, "\t%s == %d scan: %d\n", pTestString, value, obj_getMisc(pObj));
-        TINYTEST_TRUE( (5 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (64 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " 0277 ";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        fprintf(stderr, "\t%s == %d scan: %d\n", pTestString, value, obj_getMisc(pObj));
-        TINYTEST_TRUE( (5 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (191 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " 0123 ";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        fprintf(stderr, "\t%s == %d scan: %d\n", pTestString, value, obj_getMisc(pObj));
-        TINYTEST_TRUE( (5 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (83 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " 0";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        value = 0;
-        fRc = Scanner_ScanInteger32(pObj, &value);
-        TINYTEST_TRUE( (fRc) );
-        TINYTEST_TRUE( (2 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (0 == value) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
-    return 1;
-}
-
-
-
-int             test_Scanner_ScanAstr01(
-    const
-    char            *pTestName
-)
-{
-    SCANNER_DATA    *pObj = OBJ_NIL;
-    char            *pTestString;
-    ASTR_DATA       *pStr = OBJ_NIL;
-
-    fprintf(stderr, "Performing: %s\n", pTestName);
-
-    pTestString = " abc";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        pStr = OBJ_NIL;
-        pStr = Scanner_ScanStringToAStr(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        fprintf(stderr, "\t%s == \"%s\" scan: %d\n",
-                pTestString,
-                AStr_getData(pStr),
-                obj_getMisc(pObj)
-        );
-        TINYTEST_TRUE( (4 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (0 == strcmp("abc", AStr_getData(pStr))) );
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-       pTestString = " abc ";
-       pObj = Scanner_NewA(pTestString);
-       TINYTEST_FALSE( (OBJ_NIL == pObj) );
-       if (pObj) {
-
-           pStr = OBJ_NIL;
-           pStr = Scanner_ScanStringToAStr(pObj);
-           TINYTEST_FALSE( (OBJ_NIL == pStr) );
-           fprintf(stderr, "\t%s == \"%s\" scan: %d\n",
-                   pTestString,
-                   AStr_getData(pStr),
-                   obj_getMisc(pObj)
-           );
-           TINYTEST_TRUE( (5 == obj_getMisc(pObj)) );
-           TINYTEST_TRUE( (0 == strcmp("abc", AStr_getData(pStr))) );
-           obj_Release(pStr);
-           pStr = OBJ_NIL;
-
-           obj_Release(pObj);
-           pObj = OBJ_NIL;
-       }
-
-       pTestString = " abc,";
-       pObj = Scanner_NewA(pTestString);
-       TINYTEST_FALSE( (OBJ_NIL == pObj) );
-       if (pObj) {
-
-           pStr = OBJ_NIL;
-           pStr = Scanner_ScanStringToAStr(pObj);
-           TINYTEST_FALSE( (OBJ_NIL == pStr) );
-           fprintf(stderr, "\t%s == \"%s\" scan: %d\n",
-                   pTestString,
-                   AStr_getData(pStr),
-                   obj_getMisc(pObj)
-           );
-           TINYTEST_TRUE( (5 == obj_getMisc(pObj)) );
-           TINYTEST_TRUE( (0 == strcmp("abc", AStr_getData(pStr))) );
-           obj_Release(pStr);
-           pStr = OBJ_NIL;
-
-           obj_Release(pObj);
-           pObj = OBJ_NIL;
-       }
-
-        pTestString = " abc= ";
-        pObj = Scanner_NewA(pTestString);
-        TINYTEST_FALSE( (OBJ_NIL == pObj) );
-        if (pObj) {
-
-            pObj->sep = '=';
-            pStr = Scanner_ScanStringToAStr(pObj);
-            TINYTEST_FALSE( (OBJ_NIL == pStr) );
-            fprintf(stderr, "\t%s == \"%s\" scan: %d\n",
-                    pTestString,
-                    AStr_getData(pStr),
-                    obj_getMisc(pObj)
-            );
-            TINYTEST_TRUE( (6 == obj_getMisc(pObj)) );
-            TINYTEST_TRUE( (0 == strcmp("abc=", AStr_getData(pStr))) );
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-
-        //             1234567
-        pTestString = " 'abc' ";
-        pObj = Scanner_NewA(pTestString);
-        TINYTEST_FALSE( (OBJ_NIL == pObj) );
-        if (pObj) {
-
-            pStr = OBJ_NIL;
-            pStr = Scanner_ScanStringToAStr(pObj);
-            TINYTEST_FALSE( (OBJ_NIL == pStr) );
-            fprintf(stderr, "\t%s == \"%s\" scan: %d\n",
-                    pTestString,
-                    AStr_getData(pStr),
-                    obj_getMisc(pObj)
-            );
-            TINYTEST_TRUE( (7 == obj_getMisc(pObj)) );
-            TINYTEST_TRUE( (0 == strcmp("abc", AStr_getData(pStr))) );
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-
-        pTestString = " \"abc\" ";
-        pObj = Scanner_NewA(pTestString);
-        TINYTEST_FALSE( (OBJ_NIL == pObj) );
-        if (pObj) {
-
-            pStr = OBJ_NIL;
-            pStr = Scanner_ScanStringToAStr(pObj);
-            TINYTEST_FALSE( (OBJ_NIL == pStr) );
-            fprintf(stderr, "\t%s == \"%s\" scan: %d\n",
-                    pTestString,
-                    AStr_getData(pStr),
-                    obj_getMisc(pObj)
-            );
-            TINYTEST_TRUE( (7 == obj_getMisc(pObj)) );
-            TINYTEST_TRUE( (0 == strcmp("abc", AStr_getData(pStr))) );
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-
-        pTestString = " \"abc\\n\\r\" ";
-        pObj = Scanner_NewA(pTestString);
-        TINYTEST_FALSE( (OBJ_NIL == pObj) );
-        if (pObj) {
-
-            pStr = OBJ_NIL;
-            pStr = Scanner_ScanStringToAStr(pObj);
-            TINYTEST_FALSE( (OBJ_NIL == pStr) );
-            fprintf(stderr, "\t%s == \"%s\" scan: %d\n",
-                    pTestString,
-                    AStr_getData(pStr),
-                    obj_getMisc(pObj)
-            );
-            TINYTEST_TRUE( (11 == obj_getMisc(pObj)) );
-            TINYTEST_TRUE( (0 == strcmp("abc\n\r", AStr_getData(pStr))) );
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-
-        pTestString = " \"abc\\x0A\" ";
-        pObj = Scanner_NewA(pTestString);
-        TINYTEST_FALSE( (OBJ_NIL == pObj) );
-        if (pObj) {
-
-            pStr = OBJ_NIL;
-            pStr = Scanner_ScanStringToAStr(pObj);
-            TINYTEST_FALSE( (OBJ_NIL == pStr) );
-            fprintf(stderr, "\t%s == \"%s\" scan: %d\n",
-                    pTestString,
-                    AStr_getData(pStr),
-                    obj_getMisc(pObj)
-            );
-            TINYTEST_TRUE( (11 == obj_getMisc(pObj)) );
-            TINYTEST_TRUE( (0 == strcmp("abc\n", AStr_getData(pStr))) );
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
-    return 1;
-}
-
-
-
-int             test_Scanner_ScanAstrArray01(
-    const
-    char            *pTestName
-)
-{
-    ERESULT         eRc;
-    SCANNER_DATA    *pObj = OBJ_NIL;
-    ASTRARRAY_DATA  *pArray = OBJ_NIL;
-    char            *pTestString;
-    bool            fDebug = true;
-
-    fprintf(stderr, "Performing: %s\n", pTestName);
-
-    pTestString = " a ";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        pArray = OBJ_NIL;
-        pArray = Scanner_ScanStringToAstrArray(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        fprintf(stderr, "\tscan: %d\n", obj_getMisc(pObj));
-        TINYTEST_TRUE( (4 == obj_getMisc(pObj)) );
-        TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        TINYTEST_TRUE( (2 == AStrArray_getSize(pArray)) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "a");
-        TINYTEST_TRUE( (0 == eRc) );
-        obj_Release(pArray);
-        pArray = OBJ_NIL;
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " a,b";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        pArray = OBJ_NIL;
-        pArray = Scanner_ScanStringToAstrArray(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        fprintf(stderr, "\tscan: %d\n", obj_getMisc(pObj));
-        TINYTEST_TRUE( (5 == obj_getMisc(pObj)) );
-        TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        TINYTEST_TRUE( (3 == AStrArray_getSize(pArray)) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "a");
-        TINYTEST_TRUE( (0 == eRc) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 3), "b");
-        TINYTEST_TRUE( (0 == eRc) );
-        obj_Release(pArray);
-        pArray = OBJ_NIL;
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = " a b";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        pArray = OBJ_NIL;
-        pArray = Scanner_ScanStringToAstrArray(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        fprintf(stderr, "\tscan: %d\n", obj_getMisc(pObj));
-        TINYTEST_TRUE( (5 == obj_getMisc(pObj)) );
-        TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        TINYTEST_TRUE( (3 == AStrArray_getSize(pArray)) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "a");
-        TINYTEST_TRUE( (0 == eRc) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 3), "b");
-        TINYTEST_TRUE( (0 == eRc) );
-        obj_Release(pArray);
-        pArray = OBJ_NIL;
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    //             0 000000 00111
-    //             1 234567 89012
-    pTestString = "\"yy yy\" abc";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        pArray = OBJ_NIL;
-        pArray = Scanner_ScanStringToAstrArray(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        fprintf(stderr, "\tscan: %d\n", obj_getMisc(pObj));
-        if (fDebug) {
-            ASTR_DATA       *pDump;
-            pDump = AStrArray_ToDebugString(pArray, 0);
-            if (pDump) {
-                fprintf(stderr, "%s\n", AStr_getData(pDump));
-                obj_Release(pDump);
-            }
-        }
-        TINYTEST_TRUE( (12 == obj_getMisc(pObj)) );
-        TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        TINYTEST_TRUE( (3 == AStrArray_getSize(pArray)) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 1), "");
-        TINYTEST_TRUE( (0 == eRc) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "yy yy");
-        TINYTEST_TRUE( (0 == eRc) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 3), "abc");
-        TINYTEST_TRUE( (0 == eRc) );
-        obj_Release(pArray);
-        pArray = OBJ_NIL;
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    //             00000000011111 111112 22222
-    //             12345678901234 567890 12345
-    pTestString = " --define xx=\"yy yy\" abc";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        pObj->sep = '=';
-        pArray = OBJ_NIL;
-        pArray = Scanner_ScanStringToAstrArray(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        fprintf(stderr, "\tscan: %d\n", obj_getMisc(pObj));
-        if (fDebug) {
-            ASTR_DATA       *pDump;
-            pDump = AStrArray_ToDebugString(pArray, 0);
-            if (pDump) {
-                fprintf(stderr, "%s\n", AStr_getData(pDump));
-                obj_Release(pDump);
-            }
-        }
-        TINYTEST_TRUE( (25 == obj_getMisc(pObj)) );
-        TINYTEST_FALSE( (OBJ_NIL == pArray) );
-        TINYTEST_TRUE( (5 == AStrArray_getSize(pArray)) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 1), "");
-        TINYTEST_TRUE( (0 == eRc) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 2), "--define");
-        TINYTEST_TRUE( (0 == eRc) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 3), "xx=");
-        TINYTEST_TRUE( (0 == eRc) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 4), "yy yy");
-        TINYTEST_TRUE( (0 == eRc) );
-        eRc = AStr_CompareA(AStrArray_Get(pArray, 5), "abc");
-        TINYTEST_TRUE( (0 == eRc) );
-        obj_Release(pArray);
-        pArray = OBJ_NIL;
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
-    return 1;
-}
-
-
-
-int             test_Scanner_ScanIdentifier01(
-    const
-    char            *pTestName
-)
-{
-    SCANNER_DATA    *pObj = OBJ_NIL;
-    char            *pTestString;
-    ASTR_DATA       *pStr = OBJ_NIL;
-
-    fprintf(stderr, "Performing: %s\n", pTestName);
-
-    pTestString = " abc";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        pStr = OBJ_NIL;
-        pStr = Scanner_ScanIdentifierToAStr(pObj);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        fprintf(stderr, "\t%s == \"%s\" scan: %d\n",
-                pTestString,
-                AStr_getData(pStr),
-                obj_getMisc(pObj)
-        );
-        TINYTEST_TRUE( (4 == obj_getMisc(pObj)) );
-        TINYTEST_TRUE( (0 == strcmp("abc", AStr_getData(pStr))) );
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-       pTestString = " abc+def";
-       pObj = Scanner_NewA(pTestString);
-       TINYTEST_FALSE( (OBJ_NIL == pObj) );
-       if (pObj) {
-
-           pStr = OBJ_NIL;
-           pStr = Scanner_ScanIdentifierToAStr(pObj);
-           TINYTEST_FALSE( (OBJ_NIL == pStr) );
-           fprintf(stderr, "\t%s == \"%s\" scan: %d\n",
-                   pTestString,
-                   AStr_getData(pStr),
-                   obj_getMisc(pObj)
-           );
-           TINYTEST_TRUE( (4 == obj_getMisc(pObj)) );
-           TINYTEST_TRUE( (0 == strcmp("abc", AStr_getData(pStr))) );
-           obj_Release(pStr);
-           pStr = OBJ_NIL;
-
-           obj_Release(pObj);
-           pObj = OBJ_NIL;
-       }
-
-       pTestString = " abc,";
-       pObj = Scanner_NewA(pTestString);
-       TINYTEST_FALSE( (OBJ_NIL == pObj) );
-       if (pObj) {
-
-           pStr = OBJ_NIL;
-           pStr = Scanner_ScanIdentifierToAStr(pObj);
-           TINYTEST_FALSE( (OBJ_NIL == pStr) );
-           fprintf(stderr, "\t%s == \"%s\" scan: %d\n",
-                   pTestString,
-                   AStr_getData(pStr),
-                   obj_getMisc(pObj)
-           );
-           TINYTEST_TRUE( (4 == obj_getMisc(pObj)) );
-           TINYTEST_TRUE( (0 == strcmp("abc", AStr_getData(pStr))) );
-           obj_Release(pStr);
-           pStr = OBJ_NIL;
-
-           obj_Release(pObj);
-           pObj = OBJ_NIL;
-       }
-
-        pTestString = " abc= ";
-        pObj = Scanner_NewA(pTestString);
-        TINYTEST_FALSE( (OBJ_NIL == pObj) );
-        if (pObj) {
-
-            pStr = Scanner_ScanIdentifierToAStr(pObj);
-            TINYTEST_FALSE( (OBJ_NIL == pStr) );
-            fprintf(stderr, "\t%s == \"%s\" scan: %d\n",
-                    pTestString,
-                    AStr_getData(pStr),
-                    obj_getMisc(pObj)
-            );
-            TINYTEST_TRUE( (4 == obj_getMisc(pObj)) );
-            TINYTEST_TRUE( (0 == strcmp("abc", AStr_getData(pStr))) );
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-
-        //             1234567
-        pTestString = " 'abc' ";
-        pObj = Scanner_NewA(pTestString);
-        TINYTEST_FALSE( (OBJ_NIL == pObj) );
-        if (pObj) {
-
-            pStr = OBJ_NIL;
-            pStr = Scanner_ScanIdentifierToAStr(pObj);
-            TINYTEST_TRUE( (OBJ_NIL == pStr) );
-            fprintf(stderr, "\tscan: %d\n", Scanner_getIndex(pObj));
-            TINYTEST_TRUE( (1 == Scanner_getIndex(pObj)) );
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-
-        pTestString = " \"abc\" ";
-        pObj = Scanner_NewA(pTestString);
-        TINYTEST_FALSE( (OBJ_NIL == pObj) );
-        if (pObj) {
-
-            pStr = OBJ_NIL;
-            pStr = Scanner_ScanIdentifierToAStr(pObj);
-            TINYTEST_TRUE( (OBJ_NIL == pStr) );
-            fprintf(stderr, "\tscan: %d\n", Scanner_getIndex(pObj));
-            TINYTEST_TRUE( (1 == Scanner_getIndex(pObj)) );
-            obj_Release(pStr);
-            pStr = OBJ_NIL;
-
-            obj_Release(pObj);
-            pObj = OBJ_NIL;
-        }
-
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
-    return 1;
-}
-
-
-
-int             test_Scanner_Calc01(
+ERESULT         Test_Scanner_Test01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
     SCANNER_DATA    *pObj = OBJ_NIL;
-    char            *pTestString;
-    int32_t         iRc;
+    bool            fRc;
+    const
+    char            *pTest01A = " 100";
+    const
+    char            *pTest02A = "-123";
+    const
+    char            *pTest03A = "+123";
+    const
+    char            *pTest04A = "0x0A";
+    const
+    char            *pTest05A = " 100 ";
+    const
+    char            *pTest06A = " 10,";
+    const
+    char            *pTest07A = " 0x,";
+    const
+    char            *pTest08A = " x,";
+    const
+    char            *pTest09A = " 0277 ";
+    int32_t         value = 0;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "\tTest the signed integer 32-bit method...\n");
+
+    pObj = Scanner_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SCANNER);
+        TestForTrue(fRc, "Failed Ident Test");
+
+        value = 0;
+        eRc = Scanner_SetupA(pObj, pTest01A);
+        TestForSuccess("");
+        fRc = Scanner_ScanInteger32(pObj, &value);
+        TestForTrue(fRc, "");
+        TestForTrue((4 == obj_getMisc(pObj)), "");
+        TestForTrue((100 == value), "");
+
+        value = 0;
+        eRc = Scanner_SetupA(pObj, pTest02A);
+        TestForSuccess("");
+        fRc = Scanner_ScanInteger32(pObj, &value);
+        TestForTrue(fRc, "");
+        TestForTrue((4 == obj_getMisc(pObj)), "");
+        TestForTrue((-123 == value), "");
+
+        value = 0;
+        eRc = Scanner_SetupA(pObj, pTest03A);
+        TestForSuccess("");
+        fRc = Scanner_ScanInteger32(pObj, &value);
+        TestForTrue(fRc, "");
+        TestForTrue((4 == obj_getMisc(pObj)), "");
+        TestForTrue((123 == value), "");
+
+        value = 0;
+        eRc = Scanner_SetupA(pObj, pTest04A);
+        TestForSuccess("");
+        fRc = Scanner_ScanInteger32(pObj, &value);
+        TestForTrue(fRc, "");
+        TestForTrue((4 == obj_getMisc(pObj)), "");
+        TestForTrue((10 == value), "");
+
+        value = 0;
+        eRc = Scanner_SetupA(pObj, pTest05A);
+        TestForSuccess("");
+        fRc = Scanner_ScanInteger32(pObj, &value);
+        TestForTrue(fRc, "");
+        TestForTrue((4 == obj_getMisc(pObj)), "");
+        TestForTrue((100 == value), "");
+
+        value = 0;
+        eRc = Scanner_SetupA(pObj, pTest06A);
+        TestForSuccess("");
+        fRc = Scanner_ScanInteger32(pObj, &value);
+        TestForTrue(fRc, "");
+        //fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((3 == obj_getMisc(pObj)), "");
+        TestForTrue((10 == value), "");
+
+        value = 0;
+        eRc = Scanner_SetupA(pObj, pTest07A);
+        TestForSuccess("");
+        fRc = Scanner_ScanInteger32(pObj, &value);
+        TestForTrue(!fRc, "");
+        //fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((1 == obj_getMisc(pObj)), "");
+        TestForTrue((0 == value), "");
+
+        value = 0;
+        eRc = Scanner_SetupA(pObj, pTest08A);
+        TestForSuccess("");
+        fRc = Scanner_ScanInteger32(pObj, &value);
+        TestForTrue(!fRc, "");
+        //fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((1 == obj_getMisc(pObj)), "");
+        TestForTrue((0 == value), "");
+
+        value = 0;
+        eRc = Scanner_SetupA(pObj, pTest09A);
+        TestForSuccess("");
+        fRc = Scanner_ScanInteger32(pObj, &value);
+        TestForTrue(fRc, "");
+        //fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((5 == obj_getMisc(pObj)), "");
+        TestForTrue((191 == value), "");
+
+        value = 0;
+        eRc = Scanner_SetupA(pObj, " 0123 ");
+        TestForSuccess("");
+        fRc = Scanner_ScanInteger32(pObj, &value);
+        TestForTrue(fRc, "");
+        //fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((5 == obj_getMisc(pObj)), "");
+        TestForTrue((83 == value), "");
+
+        {
+            ASTR_DATA       *pStr = Scanner_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_Scanner_Test02 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SCANNER_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "\tTest the internal string scan method...\n");
+
+    pObj = Scanner_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        eRc = Scanner_SetupA(pObj, " abc ");
+        TestForSuccess("");
+        pStr = Scanner_ScanStringToAStrInt(pObj, false);
+        TestForNotNull(pStr, "");
+        //fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((5 == obj_getMisc(pObj)), "");
+        TestForTrue((0 == AStr_CompareA(pStr, "abc ")), "");
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        eRc = Scanner_SetupA(pObj, " abc ");
+        TestForSuccess("");
+        pStr = Scanner_ScanStringToAStrInt(pObj, true);
+        TestForNotNull(pStr, "");
+        //fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((5 == obj_getMisc(pObj)), "");
+        TestForTrue((0 == AStr_CompareA(pStr, "abc")), "");
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        eRc = Scanner_SetupA(pObj, " \"abc \" ");
+        TestForSuccess("");
+        pStr = Scanner_ScanStringToAStrInt(pObj, false);
+        TestForNotNull(pStr, "");
+        //fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((7 == obj_getMisc(pObj)), "");
+        TestForTrue((0 == AStr_CompareA(pStr, "abc ")), "");
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        eRc = Scanner_SetupA(pObj, " \"abc \" ");
+        TestForSuccess("");
+        pStr = Scanner_ScanStringToAStrInt(pObj, true);
+        TestForNotNull(pStr, "");
+        //fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((8 == obj_getMisc(pObj)), "");
+        TestForTrue((0 == AStr_CompareA(pStr, "abc ")), "");
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SCANNER);
+        TestForTrue(fRc, "Failed Ident Test");
+
+        {
+            ASTR_DATA       *pStr = Scanner_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_Scanner_Test03 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SCANNER_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "\tTest the idenifier scan method...\n");
+
+    pObj = Scanner_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SCANNER);
+        TestForTrue(fRc, "Failed Ident Test");
+
+        eRc = Scanner_SetupA(pObj, " abc123 ");
+        TestForSuccess("");
+        pStr = Scanner_ScanIdentifierToAStr(pObj);
+        TestForNotNull(pStr, "");
+        fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((7 == obj_getMisc(pObj)), "");
+        TestForTrue((0 == AStr_CompareA(pStr, "abc123")), "");
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        eRc = Scanner_SetupA(pObj, " 0abc123 ");
+        TestForSuccess("");
+        pStr = Scanner_ScanIdentifierToAStr(pObj);
+        TestForNull(pStr, "");
+        fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((1 == obj_getMisc(pObj)), "");
+        //TestForTrue((0 == AStr_CompareA(pStr, "abc123")), "");
+        //obj_Release(pStr);
+        //pStr = OBJ_NIL;
+
+        {
+            ASTR_DATA       *pStr = Scanner_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_Scanner_Test04 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SCANNER_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    ASTRARRAY_DATA  *pArray = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "\tTest the AStr Array method...\n");
+
+    pObj = Scanner_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SCANNER);
+        TestForTrue(fRc, "Failed Ident Test");
+
+        fprintf(stderr, "\tTest:\"%s\"\n", " a b ");
+        eRc = Scanner_SetupA(pObj, " a b ");
+        TestForSuccess("");
+        pArray = Scanner_ScanStringToAstrArray(pObj);
+        TestForNotNull(pArray, "");
+        fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((5 == obj_getMisc(pObj)), "");
+        fprintf(stderr, "\tArray size: %d\n", AStrArray_getSize(pArray));
+        TestForTrue((3 == AStrArray_getSize(pArray)), "");
+        pStr = AStrArray_Get(pArray, 1);
+        TestForNotNull(pStr, "");
+        fprintf(stderr, "\tArray 1: \"%s\"\n", AStr_getData(pStr));
+        TestForTrue((0 == AStr_CompareA(pStr, "")), "");
+        pStr = AStrArray_Get(pArray, 2);
+        TestForNotNull(pStr, "");
+        fprintf(stderr, "\tArray 2: \"%s\"\n", AStr_getData(pStr));
+        TestForTrue((0 == AStr_CompareA(pStr, "a")), "");
+        pStr = AStrArray_Get(pArray, 3);
+        TestForNotNull(pStr, "");
+        fprintf(stderr, "\tArray 3: \"%s\"\n", AStr_getData(pStr));
+        TestForTrue((0 == AStr_CompareA(pStr, "b")), "");
+        obj_Release(pArray);
+        pArray = OBJ_NIL;
+
+        {
+            ASTR_DATA       *pStr = Scanner_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_Scanner_Test05 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SCANNER_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
+    int32_t         value;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "\tTesting Expression scanning...\n");
+
+    pObj = Scanner_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SCANNER);
+        TestForTrue(fRc, "Failed Ident Test");
+
+        value = 0;
+        fprintf(stderr, "\tInput: \"%s\"\n", "2*5+1");
+        eRc = Scanner_SetupA(pObj, "2*5+1,");
+        TestForSuccess("");
+        eRc = Scanner_ScanExpr(pObj, &value);
+        TestForSuccess("");
+        fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((5 == obj_getMisc(pObj)), "");
+        fprintf(stderr, "\tValue: %d\n\n", value);
+        TestForTrue((11 == value), "");
+
+        value = 0;
+        fprintf(stderr, "\tInput: \"%s\"\n", "1+2*5");
+        eRc = Scanner_SetupA(pObj, "1+2*5 ");
+        TestForSuccess("");
+        eRc = Scanner_ScanExpr(pObj, &value);
+        TestForSuccess("");
+        fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((5 == obj_getMisc(pObj)), "");
+        fprintf(stderr, "\tValue: %d\n\n", value);
+        TestForTrue((11 == value), "");
+
+        value = 0;
+        fprintf(stderr, "\tInput: \"%s\"\n", "1+(2*5)");
+        eRc = Scanner_SetupA(pObj, "1+(2*5) ");
+        TestForSuccess("");
+        eRc = Scanner_ScanExpr(pObj, &value);
+        TestForSuccess("");
+        fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((7 == obj_getMisc(pObj)), "");
+        fprintf(stderr, "\tValue: %d\n\n", value);
+        TestForTrue((11 == value), "");
+
+        value = 0;
+        fprintf(stderr, "\tInput: \"%s\"\n", "(1+2)*5,");
+        eRc = Scanner_SetupA(pObj, "(1+2)*5 ");
+        TestForSuccess("");
+        eRc = Scanner_ScanExpr(pObj, &value);
+        TestForSuccess("");
+        fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
+        TestForTrue((7 == obj_getMisc(pObj)), "");
+        fprintf(stderr, "\tValue: %d\n\n", value);
+        TestForTrue((15 == value), "");
+
+        {
+            ASTR_DATA       *pStr = Scanner_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_Scanner_Test06 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    SCANNER_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pTestString = "1+1";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = Scanner_New( );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
-        iRc = 0;
-        eRc = Scanner_Calc(pObj, &iRc);
-        TINYTEST_TRUE(ERESULT_OK(eRc));
-        fprintf(stderr, "\t%s == %d scan: %d\n",
-                pTestString,
-                iRc,
-                obj_getMisc(pObj)
-        );
-        TINYTEST_TRUE( (2 == iRc) );
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SCANNER);
+        TestForTrue(fRc, "Failed Ident Test");
+
+        {
+            ASTR_DATA       *pStr = Scanner_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
-    pTestString = "2*5+1";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        iRc = 0;
-        eRc = Scanner_Calc(pObj, &iRc);
-        TINYTEST_TRUE(ERESULT_OK(eRc));
-        fprintf(stderr, "\t%s == %d scan: %d\n",
-                pTestString,
-                iRc,
-                obj_getMisc(pObj)
-        );
-        TINYTEST_TRUE( (11 == iRc) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    pTestString = "1+2*5";
-    pObj = Scanner_NewA(pTestString);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        iRc = 0;
-        eRc = Scanner_Calc(pObj, &iRc);
-        TINYTEST_TRUE(ERESULT_OK(eRc));
-        fprintf(stderr, "\t%s == %d scan: %d\n",
-                pTestString,
-                iRc,
-                obj_getMisc(pObj)
-        );
-        TINYTEST_TRUE( (11 == iRc) );
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
-    return 1;
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
 }
 
 
 
 
-TINYTEST_START_SUITE(test_Scanner);
-    TINYTEST_ADD_TEST(test_Scanner_Calc01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Scanner_ScanIdentifier01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Scanner_ScanAstrArray01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Scanner_ScanAstr01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Scanner_ScanInteger01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Scanner_Test01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Scanner_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_Scanner_OpenClose,setUp,tearDown);
-TINYTEST_END_SUITE();
+int     main (
+    int         cArgs,
+    const
+    char        *ppArgs[],
+    const
+    char        *ppEnv[]
+)
+{
+    ERESULT     eRc;
+    TEST_DATA   test = {0};
+    TEST_DATA   *pTest = OBJ_NIL;
+    int         i;
+    const
+    char        *pTestNameA = NULL;
 
-TINYTEST_MAIN_SINGLE_SUITE(test_Scanner);
+    pTest = Test_Init(&test);
+    if (OBJ_NIL == pTest) {
+        fprintf(
+                stderr,
+                "\x1b[1m\x1b[31mFATAL\x1b[0m: Could not create Test object!\n\n\n"
+        );
+        exit(201);
+    }
 
+    // Scan args.
+    for (i=0; i<cArgs; i++) {
+        if (0 == strcmp("--no_int3", ppArgs[i])) {
+            Test_setAllowInt3(pTest, false);
+        }
+    }
 
+    // Execute tests.
+    TestExec("OpenClose", Test_Scanner_OpenClose, NULL, NULL);
+    //TestExec("Copy01", Test_Scanner_Copy01, NULL, NULL);
+    TestExec("Test01", Test_Scanner_Test01, NULL, NULL);
+    TestExec("Test02", Test_Scanner_Test02, NULL, NULL);
+    TestExec("Test03", Test_Scanner_Test03, NULL, NULL);
+    TestExec("Test04", Test_Scanner_Test04, NULL, NULL);
+    TestExec("Test05", Test_Scanner_Test05, NULL, NULL);
+    TestExec("Test06", Test_Scanner_Test06, NULL, NULL);
+
+    obj_Release(pTest);
+    pTest = OBJ_NIL;
+
+    // Return to Operating System.
+    return 0;
+}
 
 
 

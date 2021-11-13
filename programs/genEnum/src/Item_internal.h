@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   Exec_internal.h
- *  Generated 10/31/2021 18:53:12
+ * File:   Item_internal.h
+ *  Generated 11/12/2021 13:39:34
  *
  * Notes:
  *  --  N/A
@@ -39,16 +39,12 @@
 
 
 
-#include        <Exec.h>
-#include        <AStrArray.h>
 #include        <Item.h>
 #include        <JsonIn.h>
-#include        <TextIn.h>
-#include        <U16Array.h>
 
 
-#ifndef EXEC_INTERNAL_H
-#define EXEC_INTERNAL_H
+#ifndef ITEM_INTERNAL_H
+#define ITEM_INTERNAL_H
 
 
 
@@ -66,30 +62,28 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct Exec_data_s  {
+struct Item_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    ASTR_DATA       *pStart;
-    ASTR_DATA       *pStr;
-    ASTRARRAY_DATA  *pArray;
-    ASTRARRAY_DATA  *pSorted;
-    U16ARRAY_DATA   *pIndex;
-    uint32_t        maxIndex;
-    OBJARRAY_DATA   *pItems;
+    ASTR_DATA       *pName;
+    ASTR_DATA       *pDesc;
+    uint32_t        value;
+    uint8_t         fValue;         // true == Value was supplied
+    uint8_t         rsvd8[3];
 
 };
 #pragma pack(pop)
 
     extern
-    struct Exec_class_data_s  Exec_ClassObj;
+    struct Item_class_data_s  Item_ClassObj;
 
     extern
     const
-    EXEC_VTBL         Exec_Vtbl;
+    ITEM_VTBL         Item_Vtbl;
 
 
 
@@ -97,13 +91,13 @@ struct Exec_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  EXEC_SINGLETON
-    EXEC_DATA *     Exec_getSingleton (
+#ifdef  ITEM_SINGLETON
+    ITEM_DATA *     Item_getSingleton (
         void
     );
 
-    bool            Exec_setSingleton (
-     EXEC_DATA       *pValue
+    bool            Item_setSingleton (
+     ITEM_DATA       *pValue
 );
 #endif
 
@@ -113,46 +107,40 @@ struct Exec_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool            Exec_setStart (
-        EXEC_DATA       *this,
-        ASTR_DATA       *pValue
+    OBJ_IUNKNOWN *  Item_getSuperVtbl (
+        ITEM_DATA     *this
     );
 
 
-    OBJ_IUNKNOWN *  Exec_getSuperVtbl (
-        EXEC_DATA     *this
+    ERESULT         Item_Assign (
+        ITEM_DATA    *this,
+        ITEM_DATA    *pOther
     );
 
 
-    ERESULT         Exec_Assign (
-        EXEC_DATA    *this,
-        EXEC_DATA    *pOther
+    ITEM_DATA *       Item_Copy (
+        ITEM_DATA     *this
     );
 
 
-    EXEC_DATA *       Exec_Copy (
-        EXEC_DATA     *this
-    );
-
-
-    void            Exec_Dealloc (
+    void            Item_Dealloc (
         OBJ_ID          objId
     );
 
 
-    EXEC_DATA *     Exec_DeepCopy (
-        EXEC_DATA       *this
+    ITEM_DATA *     Item_DeepCopy (
+        ITEM_DATA       *this
     );
 
 
-#ifdef  EXEC_JSON_SUPPORT
+#ifdef  ITEM_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    EXEC_DATA *       Exec_ParseJsonObject (
+    ITEM_DATA *       Item_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -166,46 +154,35 @@ struct Exec_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Exec_ParseJsonFields (
+    ERESULT         Item_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        EXEC_DATA     *pObject
+        ITEM_DATA     *pObject
     );
 #endif
 
 
-    void *          Exec_QueryInfo (
+    void *          Item_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-    /*!
-     Read the input file into an array.
-     @param     this    object pointer
-     @return    if successful, the AStrArray with data.  Otherwise, OBJ_NIL.
-     */
-    ASTRARRAY_DATA * Exec_ReadFileOld (
-        EXEC_DATA       *this,
-        TEXTIN_DATA     *pIn
-    );
-
-
-#ifdef  EXEC_JSON_SUPPORT
+#ifdef  ITEM_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Exec_ToJson(this);
+     ASTR_DATA      *pDesc = Item_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Exec_ToJson (
-        EXEC_DATA      *this
+    ASTR_DATA *     Item_ToJson (
+        ITEM_DATA      *this
     );
 
 
@@ -218,30 +195,21 @@ struct Exec_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Exec_ToJsonFields (
-        EXEC_DATA       *this,
+    ERESULT         Item_ToJsonFields (
+        ITEM_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
 
 
+
+
 #ifdef NDEBUG
 #else
-    bool            Exec_Validate (
-        EXEC_DATA       *this
+    bool            Item_Validate (
+        ITEM_DATA       *this
     );
 #endif
-
-
-    /*!
-     Write out the enum arrays.
-     @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
-     */
-    ERESULT         Exec_WriteFile (
-        EXEC_DATA       *this
-    );
 
 
 
@@ -249,5 +217,5 @@ struct Exec_data_s  {
 }
 #endif
 
-#endif  /* EXEC_INTERNAL_H */
+#endif  /* ITEM_INTERNAL_H */
 
