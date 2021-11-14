@@ -345,6 +345,7 @@ ERESULT         Test_Scanner_Test02 (
     SCANNER_DATA    *pObj = OBJ_NIL;
     bool            fRc;
     ASTR_DATA       *pStr = OBJ_NIL;
+    W32CHR_T        chrw32;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     fprintf(stderr, "\tTest the internal string scan method...\n");
@@ -368,10 +369,12 @@ ERESULT         Test_Scanner_Test02 (
         pStr = Scanner_ScanStringToAStrInt(pObj, true);
         TestForNotNull(pStr, "");
         //fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
-        TestForTrue((5 == obj_getMisc(pObj)), "");
+        TestForTrue((4 == obj_getMisc(pObj)), "");
         TestForTrue((0 == AStr_CompareA(pStr, "abc")), "");
         obj_Release(pStr);
         pStr = OBJ_NIL;
+        chrw32 = Scanner_LookAhead(pObj, 1);
+        TestForTrue((' ' == chrw32), "");
 
         eRc = Scanner_SetupA(pObj, " \"abc \" ");
         TestForSuccess("");
@@ -383,28 +386,17 @@ ERESULT         Test_Scanner_Test02 (
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
-        eRc = Scanner_SetupA(pObj, " \"abc \" ");
+        eRc = Scanner_SetupA(pObj, " \"abc \",");
         TestForSuccess("");
         pStr = Scanner_ScanStringToAStrInt(pObj, true);
         TestForNotNull(pStr, "");
         //fprintf(stderr, "\tScan end: %d\n", obj_getMisc(pObj));
-        TestForTrue((8 == obj_getMisc(pObj)), "");
+        TestForTrue((7 == obj_getMisc(pObj)), "");
         TestForTrue((0 == AStr_CompareA(pStr, "abc ")), "");
         obj_Release(pStr);
         pStr = OBJ_NIL;
-
-        //obj_TraceSet(pObj, true);
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SCANNER);
-        TestForTrue(fRc, "Failed Ident Test");
-
-        {
-            ASTR_DATA       *pStr = Scanner_ToDebugString(pObj, 4);
-            if (pStr) {
-                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
+        chrw32 = Scanner_LookAhead(pObj, 1);
+        TestForTrue((',' == chrw32), "");
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

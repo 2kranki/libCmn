@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include        <Exec_internal.h>
 #include        <JsonIn.h>
+#include        <Scanner.h>
 #include        <TextIn.h>
 #include        <TextOut.h>
 #include        <trace.h>
@@ -137,7 +138,7 @@ extern "C" {
     //                          A r r a y
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * Exec_getArray (
+    OBJARRAY_DATA * Exec_getArray (
         EXEC_DATA     *this
     )
     {
@@ -157,7 +158,7 @@ extern "C" {
 
     bool            Exec_setArray (
         EXEC_DATA       *this,
-        ASTRARRAY_DATA  *pValue
+        OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
@@ -339,7 +340,7 @@ extern "C" {
     //                   S o r t e d  A r r a y
     //---------------------------------------------------------------
 
-    ASTRARRAY_DATA * Exec_getSorted (
+    OBJARRAY_DATA * Exec_getSorted (
         EXEC_DATA     *this
     )
     {
@@ -359,7 +360,7 @@ extern "C" {
 
     bool            Exec_setSorted (
         EXEC_DATA       *this,
-        ASTRARRAY_DATA  *pValue
+        OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
@@ -586,6 +587,88 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                   B u i l d  I n d e x
+    //---------------------------------------------------------------
+
+    /*!
+     Build the index that cross-references the enumeeration number to
+     the sorted table number.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Exec_BuildIndex (
+        EXEC_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        i;
+        uint32_t        iMax;
+        U16ARRAY_DATA   *pIndex = OBJ_NIL;
+
+        // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!Exec_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pIndex = U16Array_New();
+        if (OBJ_NIL == pIndex) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+
+        iMax = ObjArray_getSize(this->pSorted);
+        if (pIndex) {
+            for (i=0; i<iMax; i++) {
+                ITEM_DATA       *pItem = ObjArray_Get(this->pSorted, i+1);
+                uint16_t        value = i+1;
+                uint16_t        old;
+                if (pItem) {
+                    if (ERESULT_OK((Item_IsValue(pItem)))) {
+                        value = Item_getValue(pItem) + 1;
+                    }
+                    if (U16Array_getSize(pIndex) < value) {
+                        eRc = U16Array_Extend(pIndex, value);
+                        if (ERESULT_FAILED(eRc)) {
+                            DEBUG_BREAK();
+                            obj_Release(pIndex);
+                            pIndex = OBJ_NIL;
+                            return ERESULT_FAILURE;
+                        }
+                    }
+                    old = U16Array_Get(pIndex, value);
+                    if (old) {
+                        fprintf(
+                                stderr,
+                                "FATAL - line %d with Index %d, overwrites %d\n",
+                                i+1,
+                                value,
+                                old
+                        );
+                        DEBUG_BREAK();
+                        obj_Release(pIndex);
+                        pIndex = OBJ_NIL;
+                        return ERESULT_DATA_ALREADY_EXISTS;
+                    }
+                    TRC_OBJ(this,"\tIndex(%d): %d\n", value, i+1);
+                    eRc = U16Array_Put(pIndex, value, i+1);
+                }
+            }
+        }
+        if (ERESULT_OK(eRc))
+            this->pIndex = pIndex;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
@@ -874,8 +957,8 @@ extern "C" {
         ERESULT         eRc = ERESULT_SUCCESS;
         TEXTIN_DATA     *pIn = OBJ_NIL;
         //TEXTOUT_DATA    *pOut;
-        ASTRARRAY_DATA  *pArray = OBJ_NIL;
-        ASTRARRAY_DATA  *pSorted = OBJ_NIL;
+        OBJARRAY_DATA   *pArray = OBJ_NIL;
+        OBJARRAY_DATA   *pSorted = OBJ_NIL;
         uint32_t        i;
         uint32_t        iMax;
         bool            fJson = false;
@@ -912,35 +995,27 @@ extern "C" {
         }
 #endif
 
-        pArray = Exec_ReadFileOld(this, pIn);
+        pArray = Exec_ReadFile(this, pIn);
         obj_Release(pIn);
         pIn = OBJ_NIL;
         if (OBJ_NIL == pArray) {
             return ERESULT_GENERAL_FAILURE;
         }
 
-        pSorted = AStrArray_Copy(pArray);
+        pSorted = ObjArray_Copy(pArray);
         if (OBJ_NIL == pSorted) {
             obj_Release(pArray);
             pArray = OBJ_NIL;
             return ERESULT_GENERAL_FAILURE;
         }
-        eRc = AStrArray_SortAscending(pSorted);
+        eRc = ObjArray_SortAscending(pSorted, (OBJ_COMPARE)Item_Compare);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
         this->pArray = pArray;
         this->pSorted = pSorted;
-        iMax = AStrArray_getSize(pSorted);
-        this->pIndex = U16Array_NewMinSize(this->maxIndex);
-        if (this->pIndex) {
-            for (i=0; i<iMax; i++) {
-                ASTR_DATA       *pStr = AStrArray_Get(this->pSorted, i+1);
-                if (pStr) {
-                    eRc = U16Array_Put(this->pIndex, obj_getMisc(pStr)+1, i+1);
-                }
-            }
-        }
+
+        eRc = Exec_BuildIndex(this);
 
         eRc = Exec_GenEnum(this, pInputPath, pPrefixA, pNameA);
         eRc = Exec_GenTables(this, pInputPath, pPrefixA, pNameA);
@@ -1003,29 +1078,41 @@ extern "C" {
         fprintf(pOut, "\t * regenerate using genEnum!\n");
         fprintf(pOut, "\t */\n\n");
         fprintf(pOut, "\ttypedef enum %s_%s_e {\n", pPrefixA, pNameA);
-        iMax = AStrArray_getSize(this->pArray);
+        iMax = ObjArray_getSize(this->pArray);
         for (i=0; i<iMax; i++) {
-            ASTR_DATA       *pLine = AStrArray_Get(this->pArray, i+1);
-            if (pLine) {
+            ITEM_DATA           *pItem = ObjArray_Get(this->pArray, i+1);
+            const
+            char                *pDescA = NULL;
+            ASTR_DATA           *pDesc = OBJ_NIL;
+            if (pItem) {
+                if (Item_getDesc(pItem)) {
+                    pDesc = Item_getDesc(pItem);
+                    pDescA = AStr_getData(pDesc);
+                }
                 if (this->pStart) {
                     fprintf(
                             pOut,
-                            "\t\t%s_%s_%s=%s+%d,\n",
+                            "\t\t%s_%s_%s=%s+%d,",
                             AStr_getData(pCapsPrefix),
                             AStr_getData(pCapsName),
-                            AStr_getData(pLine),
+                            AStr_getData(Item_getName(pItem)),
                             AStr_getData(this->pStart),
-                            obj_getMisc(pLine)
+                            Item_getValue(pItem)
                     );
                 } else {
                     fprintf(
                             pOut,
-                            "\t\t%s_%s_%s=%d,\n",
+                            "\t\t%s_%s_%s=%d,",
                             AStr_getData(pCapsPrefix),
                             AStr_getData(pCapsName),
-                            AStr_getData(pLine),
-                            obj_getMisc(pLine)
+                            AStr_getData(Item_getName(pItem)),
+                            Item_getValue(pItem)
                     );
+                }
+                if (pDescA) {
+                    fprintf(pOut, "\t\t// %s\n", pDescA);
+                } else {
+                    fprintf(pOut, "\n");
                 }
             }
         }
@@ -1088,7 +1175,7 @@ extern "C" {
 
         fprintf(pOut, "\t// Given an enum value, return its character format.\n");
         fprintf(pOut, "\tconst\n");
-        fprintf(pOut, "\tchar *\t\t\t%s_%sToDesc (\n", pPrefixA, pNameA);
+        fprintf(pOut, "\tchar *\t\t\t%s_%sToEnum (\n", pPrefixA, pNameA);
         fprintf(pOut, "\t\tuint32_t\t\tvalue\n");
         fprintf(pOut, "\t)\n");
         fprintf(pOut, "\t{\n");
@@ -1105,9 +1192,6 @@ extern "C" {
         }
         fprintf(pOut, "\t\t\treturn \"<<<Unknown Enum Value>>>\";\n");
         fprintf(pOut, "\t\t}\n");
-#ifdef XYZZY
-        fprintf(pOut, "\t\treturn p%s_%s_desc[value];\n", pPrefixA, pNameA);
-#else
         if (this->pStart) {
             fprintf(
                     pOut,
@@ -1118,7 +1202,7 @@ extern "C" {
             );
             fprintf(
                     pOut,
-                    "\t\t\treturn %s_%s_entries[%s_%s_index[value - %s] - 1].pDesc;\n",
+                    "\t\t\treturn %s_%s_entries[%s_%s_index[value - %s] - 1].pEnum;\n",
                     pPrefixA,
                     pNameA,
                     pPrefixA,
@@ -1134,7 +1218,7 @@ extern "C" {
             );
             fprintf(
                     pOut,
-                    "\t\t\treturn %s_%s_entries[%s_%s_index[value] - 1].pDesc;\n",
+                    "\t\t\treturn %s_%s_entries[%s_%s_index[value] - 1].pEnum;\n",
                     pPrefixA,
                     pNameA,
                     pPrefixA,
@@ -1144,7 +1228,6 @@ extern "C" {
         fprintf(pOut, "\t\t} else {\n");
         fprintf(pOut, "\t\t\treturn \"<<<Unknown Enum Value>>>\";\n");
         fprintf(pOut, "\t\t}\n");
-#endif
         fprintf(pOut, "\t}\n\n");
 
         fprintf(pOut, "\t// Given an enum value, return its name.\n");
@@ -1216,7 +1299,7 @@ extern "C" {
         fprintf(pOut, "\t// Given an enum description, return its value + 1 or\n");
         fprintf(pOut, "\t// 0 for not found.\n");
         fprintf(pOut, "\tconst\n");
-        fprintf(pOut, "\tuint32_t\t\t%s_DescTo%s (\n", pPrefixA, pNameA);
+        fprintf(pOut, "\tuint32_t\t\t%s_EnumTo%s (\n", pPrefixA, pNameA);
         fprintf(pOut, "\t\tchar\t\t\t*pDesc\n");
         fprintf(pOut, "\t)\n");
         fprintf(pOut, "\t{\n");
@@ -1230,7 +1313,7 @@ extern "C" {
         fprintf(pOut, "\t\t\tfor (i=0; i<iMax; i++) {\n");
         fprintf(
                 pOut,
-                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pDesc);\n",
+                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pEnum);\n",
                 pPrefixA,
                 pNameA
         );
@@ -1253,7 +1336,7 @@ extern "C" {
         fprintf(pOut, "\t\t\t\ti = mid + 1;\n");
         fprintf(
                 pOut,
-                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pDesc);\n",
+                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pEnum);\n",
                 pPrefixA,
                 pNameA
         );
@@ -1274,7 +1357,7 @@ extern "C" {
         fprintf(pOut, "\t\t\t\ti = low;\n");
         fprintf(
                 pOut,
-                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pDesc);\n",
+                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pEnum);\n",
                 pPrefixA,
                 pNameA
         );
@@ -1352,6 +1435,7 @@ extern "C" {
         fprintf(pOut, "\t * regenerate using genEnum!\n");
         fprintf(pOut, "\t */\n\n");
 
+        iMax = U16Array_getSize(this->pIndex);
         fprintf(pOut, "\t// This table is in enum order and provides\n");
         fprintf(pOut, "\t// the index + 1 into the %s_%s_entries\n", pPrefixA, pNameA);
         fprintf(pOut, "\t// table. 0 means no enum entry.\n");
@@ -1361,9 +1445,8 @@ extern "C" {
                 "\tuint16_t\t%s_%s_index[%d] = {\n",
                 pPrefixA,
                 pNameA,
-                this->maxIndex
+                iMax
         );
-        iMax = this->maxIndex;
         j = 0;
         fprintf(pOut, "\t\t");
         for (i=0; i<iMax; i++) {
@@ -1387,6 +1470,7 @@ extern "C" {
 
         fprintf(pOut, "\ttypedef struct {\n");
         fprintf(pOut, "\t\tconst\n");
+        fprintf(pOut, "\t\tchar\t\t\t*pEnum;\n");
         fprintf(pOut, "\t\tchar\t\t\t*pDesc;\n");
         fprintf(pOut, "\t\tchar\t\t\t*pName;\n");
         fprintf(pOut, "\t\tuint32_t\t\tvalue;\n");
@@ -1395,20 +1479,21 @@ extern "C" {
         fprintf(pOut, "\t// with a sequential or binary search by description.\n\n");
         fprintf(pOut, "\tconst\n");
         fprintf(pOut, "\t%s_%s_entry\t%s_%s_entries[] = {\n", pPrefixA, pNameA, pPrefixA, pNameA);
-        iMax = AStrArray_getSize(this->pSorted);
+        iMax = ObjArray_getSize(this->pSorted);
         for (i=0; i<iMax; i++) {
-            ASTR_DATA       *pLine = AStrArray_Get(this->pSorted, i+1);
-            if (pLine) {
+            ITEM_DATA       *pItem = ObjArray_Get(this->pSorted, i+1);
+            if (pItem) {
                 if (this->pStart) {
                     fprintf(
                             pOut,
-                            "\t\t{\"%s_%s_%s\", \"%s\", %s+%d},\n",
+                            "\t\t{\"%s_%s_%s\", \"%s\", \"%s\", %s+%d},\n",
                             AStr_getData(pCapsPrefix),
                             AStr_getData(pCapsName),
-                            AStr_getData(pLine),
-                            AStr_getData(pLine),
+                            AStr_getData(Item_getName(pItem)),
+                            Item_getDesc(pItem) ? AStr_getData(Item_getDesc(pItem)) : "",
+                            AStr_getData(Item_getName(pItem)),
                             AStr_getData(this->pStart),
-                            obj_getMisc(pLine)
+                            Item_getValue(pItem)
                     );
                 } else {
                     fprintf(
@@ -1416,9 +1501,9 @@ extern "C" {
                             "\t\t{\"%s_%s_%s\", \"%s\", %d},\n",
                             AStr_getData(pCapsPrefix),
                             AStr_getData(pCapsName),
-                            AStr_getData(pLine),
-                            AStr_getData(pLine),
-                            obj_getMisc(pLine)
+                            AStr_getData(Item_getName(pItem)),
+                            AStr_getData(Item_getName(pItem)),
+                            Item_getValue(pItem)
                     );
                 }
             }
@@ -1695,7 +1780,7 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ASTRARRAY_DATA * Exec_ReadFileOld (
+    OBJARRAY_DATA * Exec_ReadFile (
         EXEC_DATA       *this,
         TEXTIN_DATA     *pIn
     )
@@ -1704,8 +1789,8 @@ extern "C" {
         ASTR_DATA       *pLine = OBJ_NIL;
         SRCLOC          loc = {0};
         uint32_t        lineNo = 0;
-        W32CHR_T        chrW;
-        ASTRARRAY_DATA  *pArray = OBJ_NIL;
+        OBJARRAY_DATA   *pArray = OBJ_NIL;
+        SCANNER_DATA    *pScan = OBJ_NIL;
 
         // Do initialization.
         TRC_OBJ(this,"%s:\n", __func__);
@@ -1717,9 +1802,16 @@ extern "C" {
             return pArray;
         }
 #endif
-        pArray = AStrArray_New();
+        pArray = ObjArray_New();
         if (OBJ_NIL == pArray) {
             //return ERESULT_OUT_OF_MEMORY;
+            return pArray;
+        }
+
+        pScan = Scanner_New();
+        if (OBJ_NIL == pScan) {
+            obj_Release(pArray);
+            pArray = OBJ_NIL;
             return pArray;
         }
 
@@ -1736,32 +1828,70 @@ extern "C" {
                         AStr_getLength(pLine),
                         AStr_getData(pLine)
                 );
-                if ( AStr_getLength(pLine) && (AStr_CharGetFirstW32(pLine) == '#')) {
+                if (AStr_getLength(pLine) && (AStr_CharGetFirstW32(pLine) == '#')) {
                     obj_Release(pLine);
                     pLine = OBJ_NIL;
                     continue;
                 }
                 if (AStr_getLength(pLine) > 0) {
+                    ITEM_DATA       *pItem = OBJ_NIL;
                     ASTR_DATA       *pStr = OBJ_NIL;
-                    chrW = AStr_CharGetLastW32(pLine);
-                    if (',' == chrW) {
-                        eRc = AStr_Truncate(pLine, (AStr_getLength(pLine) - 1));
+                    ASTR_DATA       *pName = OBJ_NIL;
+                    ASTR_DATA       *pDesc = OBJ_NIL;
+                    uint32_t        value = 0;
+                    bool            fValue = false;
+
+                    pItem = Item_New();
+                    if (OBJ_NIL == pItem) {
+                        obj_Release(pArray);
+                        pArray = OBJ_NIL;
+                        goto exit00;
                     }
-                    pStr = AStr_ToUpper(pLine);
-                    obj_setMisc(pStr, lineNo);
-                    TRC_OBJ(
-                            this,
-                            "\tAppend %d : (%d)%s\n",
-                            lineNo,
-                            AStr_getLength(pStr),
-                            AStr_getData(pStr)
-                    );
-                    if (AStr_getLength(pStr)) {
-                        eRc = AStrArray_AppendStr(pArray, pStr, NULL);
+                    eRc = Scanner_SetupA(pScan, AStr_getData(pLine));
+                    pStr = Scanner_ScanIdentifierToAStr(pScan);
+                    if (OBJ_NIL == pStr) {
+                        obj_Release(pItem);
+                        continue;
                     }
-                    lineNo++;
+                    pName = AStr_ToUpper(pStr);
                     obj_Release(pStr);
-                    //pStr = OBJ_NIL;
+                    pStr = OBJ_NIL;
+                    Item_setName(pItem, pName);
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
+                    if (Scanner_MatchChrW32(pScan, ',')) {
+                        pDesc = Scanner_ScanStringToAStr(pScan);
+                        if (pDesc && (AStr_getLength(pDesc) > 0)) {
+                            Item_setDesc(pItem, pDesc);
+                        }
+                        obj_Release(pDesc);
+                        pDesc = OBJ_NIL;
+                        if (Scanner_MatchChrW32(pScan, ',')) {
+                            if (Scanner_ScanUnsigned32(pScan, &value)) {
+                                fValue = true;
+                            }
+                        }
+                    }
+                    if (fValue)
+                        Item_setValue(pItem, value);
+                    else
+                        Item_setValue(pItem, lineNo);
+                    if (pItem) {
+                        TRC_OBJ(
+                                this,
+                                "\titem:%s : \"%s\" %d\n",
+                                AStr_getData(Item_getName(pItem)),
+                                Item_getDesc(pItem)
+                                    ? AStr_getData(Item_getDesc(pItem)) : "",
+                                Item_getValue(pItem)
+                        );
+                        eRc = ObjArray_AppendObj(pArray, (void *)pItem, NULL);
+                        obj_Release(pItem);
+                        pItem = OBJ_NIL;
+                    }
+                    if (!fValue) {
+                        lineNo++;
+                    }
                 } else {
                     lineNo++;
                 }
@@ -1772,6 +1902,10 @@ extern "C" {
         this->maxIndex = lineNo;
 
         // Return to caller.
+    exit00:
+        if (pScan) {
+            obj_Release(pScan);
+        }
         return pArray;
     }
 

@@ -417,10 +417,10 @@ extern "C" {
      */
     ERESULT         Item_Assign (
         ITEM_DATA       *this,
-        ITEM_DATA     *pOther
+        ITEM_DATA       *pOther
     )
     {
-        ERESULT     eRc;
+        ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -446,35 +446,31 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
-#ifdef  XYZZY
-        if (pOther->pArray) {
-            obj_Release(pOther->pArray);
-            pOther->pArray = OBJ_NIL;
+        if (pOther->pName) {
+            obj_Release(pOther->pName);
+            pOther->pName = OBJ_NIL;
         }
-#endif
+        if (pOther->pDesc) {
+            obj_Release(pOther->pDesc);
+            pOther->pDesc = OBJ_NIL;
+        }
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-#ifdef  XYZZY
-        if (this->pArray) {
-            if (obj_getVtbl(this->pArray)->pCopy) {
-                pOther->pArray = obj_getVtbl(this->pArray)->pCopy(this->pArray);
-            }
-            else {
-                obj_Retain(this->pArray);
-                pOther->pArray = this->pArray;
-            }
+        if (this->pName) {
+            pOther->pName = AStr_Copy(this->pName);
         }
-#endif
+        if (this->pDesc) {
+            pOther->pDesc = AStr_Copy(this->pDesc);
+        }
 
         // Copy other data from this object to other.
-        //pOther->x     = this->x; 
+        pOther->fValue = this->fValue;
+        pOther->value = this->value;
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
     eom:
-        //FIXME: Implement the assignment.        
-        eRc = ERESULT_NOT_IMPLEMENTED;
         return eRc;
     }
     
@@ -522,7 +518,7 @@ extern "C" {
         }
 #endif
 
-        //TODO: iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+        iRc = AStr_Compare(Item_getName(this), Item_getName(pOther));
      
         return iRc;
     }
@@ -1084,11 +1080,14 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d retain=%d\n",
+                    "{%p(%s) size=%d retain=%d name=\"%s\" desc=\"%s\" value=%d\n",
                     this,
                     pInfo->pClassName,
                     Item_getSize(this),
-                    obj_getRetainCount(this)
+                    obj_getRetainCount(this),
+                    this->pName ? AStr_getData(this->pName) : "",
+                    this->pDesc ? AStr_getData(this->pDesc) : "",
+                    this->value
             );
 
 #ifdef  XYZZY        

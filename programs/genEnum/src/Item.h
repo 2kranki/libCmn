@@ -180,12 +180,67 @@ extern "C" {
     );
 
 
+    uint32_t        Item_getValue (
+        ITEM_DATA       *this
+    );
+
+    bool            Item_setValue (
+        ITEM_DATA       *this,
+        uint32_t        value
+    );
 
 
     
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = Item_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another ITEM object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         Item_Assign (
+        ITEM_DATA       *this,
+        ITEM_DATA       *pOther
+    );
+
+
+    /*!
+     Compare the two provided objects.
+     @return    0  if this == other
+                <0 if this < other
+                >0 if this > other
+     */
+    int             Item_Compare (
+        ITEM_DATA     *this,
+        ITEM_DATA     *pOther
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        Item      *pCopy = Item_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a ITEM object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    ITEM_DATA *     Item_Copy (
+        ITEM_DATA       *this
+    );
+
 
     ITEM_DATA *     Item_Init (
         ITEM_DATA       *this

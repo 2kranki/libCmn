@@ -264,7 +264,7 @@ ERESULT         Test_Exec_Read01 (
         TestForSuccess("");
 
         {
-            ASTR_DATA       *pStr = AStrArray_ToDebugString(pObj->pArray, 4);
+            ASTR_DATA       *pStr = ObjArray_ToDebugString(pObj->pArray, 4);
             if (pStr) {
                 fprintf(stderr, "Array: %s\n\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -272,18 +272,9 @@ ERESULT         Test_Exec_Read01 (
             }
         }
         {
-            ASTR_DATA       *pStr = AStrArray_ToDebugString(pObj->pSorted, 4);
+            ASTR_DATA       *pStr = ObjArray_ToDebugString(pObj->pSorted, 4);
             if (pStr) {
                 fprintf(stderr, "Sorted: %s\n\n\n", AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
-
-        {
-            ASTR_DATA       *pStr = Exec_ToDebugString(pObj, 4);
-            if (pStr) {
-                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }
@@ -314,7 +305,7 @@ ERESULT         Test_Exec_Read02 (
     PATH_DATA       *pPath = OBJ_NIL;
     ASTR_DATA       *pStart = OBJ_NIL;
     const
-    char            *pPathA = TEST_FILES_DIR "/enum_test_old.txt";
+    char            *pPathA = TEST_FILES_DIR "/enum_test_new.txt";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -341,7 +332,7 @@ ERESULT         Test_Exec_Read02 (
         TestForSuccess("");
 
         {
-            ASTR_DATA       *pStr = AStrArray_ToDebugString(pObj->pArray, 4);
+            ASTR_DATA       *pStr = ObjArray_ToDebugString(pObj->pArray, 4);
             if (pStr) {
                 fprintf(stderr, "Array: %s\n\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -349,18 +340,9 @@ ERESULT         Test_Exec_Read02 (
             }
         }
         {
-            ASTR_DATA       *pStr = AStrArray_ToDebugString(pObj->pSorted, 4);
+            ASTR_DATA       *pStr = ObjArray_ToDebugString(pObj->pSorted, 4);
             if (pStr) {
                 fprintf(stderr, "Sorted: %s\n\n\n", AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
-
-        {
-            ASTR_DATA       *pStr = Exec_ToDebugString(pObj, 4);
-            if (pStr) {
-                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
                 pStr = OBJ_NIL;
             }

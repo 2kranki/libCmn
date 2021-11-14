@@ -190,7 +190,7 @@ extern "C" {
 
 
     ERESULT         U16Array_AppendFile (
-        U16ARRAY_DATA    *this,
+        U16ARRAY_DATA   *this,
         PATH_DATA       *pPath
     );
 
@@ -254,6 +254,20 @@ extern "C" {
 
     uint16_t        U16Array_DeleteLast (
         U16ARRAY_DATA    *this
+    );
+
+
+    /*!
+     Extend the array to minimum size provided if possible.
+     The new entries added (if any) are zeroed.
+     @param     this    Object Pointer
+     @param     min     minimum number of array elements needed
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error.
+     */
+    ERESULT         U16Array_Extend (
+        U16ARRAY_DATA   *this,
+        uint16_t        min
     );
 
 

@@ -166,16 +166,18 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     Exec_Disable (
+    /*!
+     Build the index that cross-references the enumeeration number to
+     the sorted table number.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Exec_BuildIndex (
         EXEC_DATA       *this
     );
 
 
-    ERESULT     Exec_Enable (
-        EXEC_DATA       *this
-    );
-
-   
     /*!
      Create the document.
      @param     this        object pointer
@@ -253,16 +255,11 @@ extern "C" {
     );
 
 
-EXEC_DATA *   Exec_Init (
-        EXEC_DATA     *this
-    );
-
-
-    ERESULT     Exec_IsEnabled (
+    EXEC_DATA *     Exec_Init (
         EXEC_DATA       *this
     );
-    
- 
+
+
 #ifdef  EXEC_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in

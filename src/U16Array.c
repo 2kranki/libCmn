@@ -792,6 +792,45 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          E x t e n d
+    //---------------------------------------------------------------
+
+    ERESULT         U16Array_Extend (
+        U16ARRAY_DATA   *this,
+        uint16_t        min
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        offset = 0;
+        uint32_t        needed = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !U16Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        
+        if (min > U16Array_getSize(this)) {
+            offset = U16Array_getSize(this);
+            if (0 == offset) {
+                offset++;
+                needed = min;
+            } else {
+                needed = min - offset;
+            }
+            eRc = array_InsertSpacing((ARRAY_DATA *)this, offset, needed);
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                         G e t
     //---------------------------------------------------------------
 

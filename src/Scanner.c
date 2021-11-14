@@ -696,8 +696,10 @@ extern "C" {
                 // Handle Non-Quoted Arguments.
                 for (;;) {
                     chr  = Scanner_LookAhead(this, len+1);
-                    if (Scanner_IsSeparator(chr, fTermWS) || ('"' == chr) || ('\'' == chr)) {
+                    if (Scanner_IsSeparator(chr, fTermWS)) {
                         break;
+                    } else if (('"' == chr) || ('\'' == chr)) {
+                        break;      // ???
                     } else {
                         AStr_AppendCharW32(pStr, chr);
                         len += 1;
@@ -705,10 +707,13 @@ extern "C" {
                     }
                 }
             }
+#ifdef XYZZY
             chr  = Scanner_LookAhead(this, len+1);
             if (chr && Scanner_IsTerminator(this, chr, fTermWS)) {
                 len += 1;
             }
+#endif
+
         }
 
 

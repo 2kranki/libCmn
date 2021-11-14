@@ -75,8 +75,8 @@ struct Exec_data_s  {
     // Common Data
     ASTR_DATA       *pStart;
     ASTR_DATA       *pStr;
-    ASTRARRAY_DATA  *pArray;
-    ASTRARRAY_DATA  *pSorted;
+    OBJARRAY_DATA   *pArray;        // An array of Items
+    OBJARRAY_DATA   *pSorted;       // A sorted array of Items
     U16ARRAY_DATA   *pIndex;
     uint32_t        maxIndex;
     OBJARRAY_DATA   *pItems;
@@ -185,7 +185,7 @@ struct Exec_data_s  {
      @param     this    object pointer
      @return    if successful, the AStrArray with data.  Otherwise, OBJ_NIL.
      */
-    ASTRARRAY_DATA * Exec_ReadFileOld (
+    OBJARRAY_DATA * Exec_ReadFile (
         EXEC_DATA       *this,
         TEXTIN_DATA     *pIn
     );

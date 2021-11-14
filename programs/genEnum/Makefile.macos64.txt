@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (11/12/2021  3:37:22.000)
+# (11/14/2021  2:03:21.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -66,6 +66,16 @@ OBJS += $(OBJDIR)/Exec_object.o
 $(OBJDIR)/Exec_object.o: $(SRCDIR)/Exec_object.c $(SRCDIR)/Exec.h $(SRCDIR)/Exec_internal.h $(SRCDIR)/Main_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/Item.o
+
+$(OBJDIR)/Item.o: $(SRCDIR)/Item.c $(SRCDIR)/Item.h $(SRCDIR)/Item_internal.h $(SRCDIR)/Main_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Item_object.o
+
+$(OBJDIR)/Item_object.o: $(SRCDIR)/Item_object.c $(SRCDIR)/Item.h $(SRCDIR)/Item_internal.h $(SRCDIR)/Main_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/Main.o
 
 $(OBJDIR)/Main.o: $(SRCDIR)/Main.c $(SRCDIR)/Main.h $(SRCDIR)/Main_internal.h $(SRCDIR)/Main_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
@@ -88,6 +98,12 @@ $(OBJDIR)/Main_object.o: $(SRCDIR)/Main_object.c $(SRCDIR)/Main.h $(SRCDIR)/Main
 TESTS += Exec_test
 
 Exec_test: $(TEST_SRC)/Exec_test.c $(SRCDIR)/Exec.h $(SRCDIR)/Exec_internal.h $(SRCDIR)/Main_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += Item_test
+
+Item_test: $(TEST_SRC)/Item_test.c $(SRCDIR)/Item.h $(SRCDIR)/Item_internal.h $(SRCDIR)/Main_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

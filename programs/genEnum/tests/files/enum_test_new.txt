@@ -1,9 +1,8 @@
 # This should not affect anything!
-# Trailing ',' is no longer allowed!
-        UNKNOWN
-        CHAR
-        UCHAR
-        HALF
+        UNKNOWN, 	Unknown
+        CHAR,		Character,	22
+        UCHAR,		Unsigned Character,
+        HALF,		Signed Half Word
 
         UHALF
         WORD
