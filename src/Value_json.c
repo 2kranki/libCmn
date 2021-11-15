@@ -91,6 +91,13 @@ extern "C" {
         //uint32_t        len;
 
         (void)JsonIn_FindU16NodeInHashA(pParser, "misc16", &pObject->misc16);
+        eRc = JsonIn_SubObjectInHash(pParser, "other");
+        if (ERESULT_OK(eRc)) {
+            // Note: this will require that Other's class be preregistered
+            //      with JsonIn!
+            pObject->pOther = JsonIn_ParseObject(pParser);
+            JsonIn_SubObjectEnd(pParser);
+        }
         (void)JsonIn_FindU16NodeInHashA(pParser, "type", &pObject->type);
         (void)JsonIn_FindU32NodeInHashA(pParser, "user", &pObject->user);
 
@@ -341,6 +348,7 @@ extern "C" {
         ASTR_DATA       *pWrk;
 
         JsonOut_Append_u16("misc16", this->misc16, pStr);
+        JsonOut_Append_Object("other", this->pOther, pStr);
         JsonOut_Append_u32("user", this->user, pStr);
 
         switch (this->type) {

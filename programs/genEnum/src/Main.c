@@ -1536,11 +1536,43 @@ extern "C" {
         );
         fprintf(
                 pOutput,
-                "  added to make the enumerations unique. A blank line will be\n"
+                "  added to make the enumerations unique. Optionally, a descrip-\n"
         );
         fprintf(
                 pOutput,
-                "  counted for the enum value, but will not have an enum entry.\n"
+                "  tion and constant can be added. The line format is now:\n"
+        );
+        fprintf(
+                pOutput,
+                "  enum_name [',' [description] [',' enum_value]]\n"
+        );
+        fprintf(
+                pOutput,
+                "  The description can contain blanks, but if it contains\n"
+        );
+        fprintf(
+                pOutput,
+                "  a comma or special characters, then it must be surrouned\n"
+        );
+        fprintf(
+                pOutput,
+                "  with double quoates. The optional enum_value will be in\n"
+        );
+        fprintf(
+                pOutput,
+                "  lieu of the normal generated number and must be unique\n"
+        );
+        fprintf(
+                pOutput,
+                "  within the enumeration.\n"
+        );
+        fprintf(
+                pOutput,
+                "  A blank line will be counted for the enum value, but will not\n"
+        );
+        fprintf(
+                pOutput,
+                "   have an enum entry.\n"
         );
         fprintf(
                 pOutput,

@@ -428,8 +428,8 @@ extern "C" {
 
 
     /*! @property: other    Other is an object which can be associated
-                        with this object, but is separate from the value's
-                        actual data.
+                            with this object, but is separate from the value's
+                            actual data.
      */
     OBJ_ID          Value_getOther (
         VALUE_DATA      *this

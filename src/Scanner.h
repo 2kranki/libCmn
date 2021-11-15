@@ -192,6 +192,13 @@ extern "C" {
     );
 
 
+    bool            Scanner_setLabelChars(
+        SCANNER_DATA    *this,
+        bool            (*pIsLabelCharW32)(W32CHR_T chr),
+        bool            (*pIsLabel1stCharW32)(W32CHR_T chr)
+    );
+
+
     /*! @property Separator is an optional seperator which if present
         will influence how strings are separated. For command line
         scanning, this should be set to '='.

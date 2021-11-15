@@ -915,6 +915,32 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                          L a b e l
+    //---------------------------------------------------------------
+
+    bool            Scanner_setLabelChars(
+        SCANNER_DATA    *this,
+        bool            (*pIsLabelCharW32)(W32CHR_T chr),
+        bool            (*pIsLabel1stCharW32)(W32CHR_T chr)
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Scanner_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pIsLabelCharW32    = pIsLabelCharW32;
+        this->pIsLabel1stCharW32 = pIsLabel1stCharW32;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                     S c a n  I n d e x
     //---------------------------------------------------------------
 

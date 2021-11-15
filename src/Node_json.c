@@ -106,19 +106,17 @@ extern "C" {
         }
 
         eRc = JsonIn_SubObjectInHash(pParser, "data");
-        if (ERESULT_FAILED(eRc)) {
-            ;
-        }
-        else {
+        if (ERESULT_OK(eRc)) {
+            // Note: this will require that Data's class be preregistered
+            //      with JsonIn!
             pObject->pData = JsonIn_ParseObject(pParser);
             JsonIn_SubObjectEnd(pParser);
         }
 
         eRc = JsonIn_SubObjectInHash(pParser, "other");
-        if (ERESULT_FAILED(eRc)) {
-            ;
-        }
-        else {
+        if (ERESULT_OK(eRc)) {
+            // Note: this will require that Other's class be preregistered
+            //      with JsonIn!
             pObject->pOther = JsonIn_ParseObject(pParser);
             JsonIn_SubObjectEnd(pParser);
         }
