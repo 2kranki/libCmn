@@ -55,6 +55,7 @@
 #include        <genObject_defs.h>
 #include        <AStr.h>
 #include        <Dict.h>
+#include        <GenItem.h>
 #include        <NodeClass.h>
 
 
@@ -66,6 +67,7 @@
 //#define   GEN_JSON_SUPPORT     1
 //#define   GEN_SINGLETON        1
 
+#define GEN_LINE_LENGTH 71
 
 #ifdef	__cplusplus
 extern "C" {

@@ -1,3 +1,5 @@
+// vi: nu:noai:ts=4:sw=4
+
 //
 //  c_defs
 //
@@ -35,9 +37,10 @@
 
 #include    <cmn_defs.h>
 #include    <AStr.h>
-#include    <dbCsv.h>
-#include    <path.h>
+#include    <CsvFile.h>
+#include    <Path.h>
 #include    <trace.h>
+#include    <uuid/uuid.h>
 
 
 
@@ -52,7 +55,16 @@ int             main(
     char *          argv[]
 )
 {
-    bool            fRc;
+    //bool            fRc;
+    uint8_t			uuid[16];
+	uint32_t		i;
+	char			*pUUID = "A63EA833-7B46-45DD-B63D-4B9446ED845A";
+	int				iRc;
+	uuid_t			uuid2 = {	0xA6, 0x3E, 0xA8, 0x33, 0x7B, 0x46, 0x45,
+	   							0xDD, 0xB6, 0x3D, 0x4B, 0x94, 0x46, 0xED, 
+								0x84, 0x5A
+	};
+	uuid_string_t	uuid2str;	// Internally seems to be char [37]
     
         fprintf(stdout, "size of ptr: %d\n", (int)sizeof(long *));
         fprintf(stdout, "size of long: %d\n", (int)sizeof(long));
@@ -61,6 +73,20 @@ int             main(
         fprintf(stdout, "size of uint64_t: %d\n", (int)sizeof(uint64_t));
         fprintf(stdout, "size of uint32_t: %d\n", (int)sizeof(uint32_t));
         fprintf(stdout, "size of uint16_t: %d\n", (int)sizeof(uint16_t));
+
+		// This is MacOS's way of dealing with UUIDs/GUIDs.
+		iRc = uuid_parse(pUUID, uuid);
+		fprintf(stdout, "parse ret=%d\n", iRc);
+		fprintf(stdout, "%s -> ", pUUID);
+		for (i=0; i<16; i++) {
+			fprintf(stdout, "0x%02X, ", uuid[i]);
+		}
+		fprintf(stdout, "\n");
+		uuid_unparse(uuid, uuid2str);
+		fprintf(stdout, "uuid:  %s\n", uuid2str);
+		uuid_unparse(uuid2, uuid2str);
+		fprintf(stdout, "uuid2: %s\n", uuid2str);
+		fprintf(stdout, "\n\n\n");
 
     return 0;
 }

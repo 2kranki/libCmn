@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		C459806721B1DF1C001B8375 /* libCmn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C459806621B1DF1C001B8375 /* libCmn.a */; };
+		C4689278274AA93C005933F3 /* GenItem.c in Sources */ = {isa = PBXBuildFile; fileRef = C4689276274AA93C005933F3 /* GenItem.c */; };
+		C4689279274AA93C005933F3 /* GenItem_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4689277274AA93C005933F3 /* GenItem_object.c */; };
 		C47CB62C23ABB950005C90C1 /* Main.c in Sources */ = {isa = PBXBuildFile; fileRef = C47CB62A23ABB94F005C90C1 /* Main.c */; };
 		C47CB62D23ABB950005C90C1 /* Main_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47CB62B23ABB94F005C90C1 /* Main_object.c */; };
 		C47D7BD52651AD7C00E2A280 /* Gen_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C47D7BD42651AD7C00E2A280 /* Gen_test.c */; };
@@ -40,6 +42,10 @@
 		C459806621B1DF1C001B8375 /* libCmn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCmn.a; path = ../../../../../Support/lib/macosx/libCmn/libCmn.a; sourceTree = "<group>"; };
 		C459808821B1EABC001B8375 /* genObject_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genObject_defs.h; sourceTree = "<group>"; };
 		C46892612735B0E1005933F3 /* test_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = test_defs.h; sourceTree = "<group>"; };
+		C4689274274AA93B005933F3 /* GenItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenItem.h; sourceTree = "<group>"; };
+		C4689275274AA93B005933F3 /* GenItem_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenItem_internal.h; sourceTree = "<group>"; };
+		C4689276274AA93C005933F3 /* GenItem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = GenItem.c; sourceTree = "<group>"; };
+		C4689277274AA93C005933F3 /* GenItem_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = GenItem_object.c; sourceTree = "<group>"; };
 		C47CB62823ABB94E005C90C1 /* Main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
 		C47CB62923ABB94F005C90C1 /* Main_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main_internal.h; sourceTree = "<group>"; };
 		C47CB62A23ABB94F005C90C1 /* Main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Main.c; sourceTree = "<group>"; };
@@ -117,6 +123,10 @@
 				C4EF2A6B24620ECA0074544A /* Gen_object.c */,
 				C4EF2A662461AE5C0074544A /* Gen.c */,
 				C4EF2A692461AE5E0074544A /* Gen.h */,
+				C4689275274AA93B005933F3 /* GenItem_internal.h */,
+				C4689277274AA93C005933F3 /* GenItem_object.c */,
+				C4689276274AA93C005933F3 /* GenItem.c */,
+				C4689274274AA93B005933F3 /* GenItem.h */,
 				C47CB62923ABB94F005C90C1 /* Main_internal.h */,
 				C47CB62B23ABB94F005C90C1 /* Main_object.c */,
 				C47CB62A23ABB94F005C90C1 /* Main.c */,
@@ -200,9 +210,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4689279274AA93C005933F3 /* GenItem_object.c in Sources */,
 				C4EF2A4F2456364A0074544A /* NodeClass.c in Sources */,
 				C47CB62D23ABB950005C90C1 /* Main_object.c in Sources */,
 				C4EF2A6C24620ECA0074544A /* Gen_object.c in Sources */,
+				C4689278274AA93C005933F3 /* GenItem.c in Sources */,
 				C47D7BD52651AD7C00E2A280 /* Gen_test.c in Sources */,
 				C4EF2A4E2456364A0074544A /* NodeProp.c in Sources */,
 				C4EF2A512456364A0074544A /* NodeClass_json.c in Sources */,

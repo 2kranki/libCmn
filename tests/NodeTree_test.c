@@ -1455,11 +1455,11 @@ int         test_NodeTree_NodeLinkChild(
         pNode = NodeTree_Node(pObj, nodeA);
         XCTAssertTrue( (pNodeA == pNode) );
 
-        nodeB = NodeTree_NodeNewUTF8(pObj, 10, "B", OBJ_NIL);
+        nodeB = NodeTree_NodeNewUTF8(pObj, 10, "B", OBJ_NIL, 0, 0);
         XCTAssertTrue( (nodeB == 2) );
-        nodeC = NodeTree_NodeNewUTF8(pObj, 20, "C", OBJ_NIL);
+        nodeC = NodeTree_NodeNewUTF8(pObj, 20, "C", OBJ_NIL, 0, 0);
         XCTAssertTrue( (nodeC == 3) );
-        nodeD = NodeTree_NodeNewUTF8(pObj, 30, "D", OBJ_NIL);
+        nodeD = NodeTree_NodeNewUTF8(pObj, 30, "D", OBJ_NIL, 0, 0);
         XCTAssertTrue( (nodeD == 4) );
 
         eRc = NodeTree_NodeLinkChild(pObj, nodeA, nodeB);

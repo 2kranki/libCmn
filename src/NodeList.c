@@ -208,6 +208,49 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                         O t h e r
+    //---------------------------------------------------------------
+
+    OBJ_ID          NodeList_getOther (
+        NODELIST_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeList_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return ObjList_getOther((OBJLIST_DATA *)this);
+    }
+
+
+    bool            NodeList_setOther (
+        NODELIST_DATA   *this,
+        OBJ_ID          pValue
+    )
+    {
+        bool            fRc;
+#ifdef NDEBUG
+#else
+        if (!NodeList_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        fRc = ObjList_setOther((OBJLIST_DATA *)this, pValue);
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
@@ -323,6 +366,25 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
+    OBJLIST_DATA *  NodeList_getSuper (
+        NODELIST_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!NodeList_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+
+        return (OBJLIST_DATA *)this;
+    }
+
+
     OBJ_IUNKNOWN *  NodeList_getSuperVtbl (
         NODELIST_DATA     *this
     )
@@ -1027,7 +1089,10 @@ extern "C" {
         obj_setSize(this, cbSize);                              // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeList_Vtbl);
-        
+#ifdef  NODELIST_JSON_SUPPORT
+        JsonIn_RegisterClass(NodeList_Class());
+#endif
+
         /*
         this->pArray = objArray_New( );
         if (OBJ_NIL == this->pArray) {

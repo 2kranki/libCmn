@@ -10,6 +10,13 @@
  *              points at the Data associated with an Entry.
  *  ---         Add routines to provide a doubly-linked list capability.
  *              See LLD.h for details.
+ *  ---         Finish COM support. Maybe move it out to its own
+ *              obj, COM, because it works differently. We use one
+ *              vtbl only which needs to be swapped out if we change
+ *              interfaces. This will not work in multi-processing.
+ *              We need to go back to the more normal situation,
+ *              with genObject or some other program generating those
+ *              objects.
  * Remarks
  *  1.          None
  */
@@ -59,7 +66,19 @@
 extern	"C" {
 #endif
 
-    
+    // CLSID - DE51C3D0-1FAB-42F0-BCEA-8DF924878FA9
+    const
+    uuid_t          obj_uuid_clsid = {  0xDE, 0x51, 0xC3, 0xD0, 0x1F, 0xAB,
+                                        0x42, 0xF0, 0xBC, 0xEA, 0x8D, 0xF9,
+                                        0x24, 0x87, 0x8F, 0xA9
+    };
+    // IID - EEB592E0-AA2F-47A4-913C-CDE9C2366F88
+    const
+    uuid_t          obj_uuid_iid = {    0xEE, 0xB5, 0x92, 0xE0, 0xAA, 0x2F,
+                                        0x47, 0xA4, 0x91, 0x3C, 0xCD, 0xE9,
+                                        0xC2, 0x36, 0x6F, 0x88
+    };
+
     static
     const
     OBJ_INFO        obj_Info;
@@ -672,6 +691,33 @@ extern	"C" {
 
 
     //---------------------------------------------------------------
+    //                          A d d R e f
+    //---------------------------------------------------------------
+
+#ifdef OBJ_COM_SUPPORT
+    uint32_t        obj_AddRef(
+        OBJ_ID          objId
+    )
+    {
+        OBJ_DATA        *this = objId;
+
+        // objId may be an Interface which is not pointing to OBJ_DATA.
+        // So, we have to be careful to just forward on if we can.
+        if (OBJ_NIL == this) {
+            return -1;
+        }
+        if (OBJ_NIL == this) {
+            return -1;
+        }
+        if (this->pVtbl->pRetain) {
+            this->pVtbl->pRetain(this);
+        }
+        return this->cbRetainCount;
+    }
+#endif
+
+
+    //---------------------------------------------------------------
     //                      D e a l l o c
     //---------------------------------------------------------------
     
@@ -1094,7 +1140,7 @@ extern	"C" {
     
 
     //---------------------------------------------------------------
-    //                     Q u e r y  I n f o
+    //                      Q u e r y
     //---------------------------------------------------------------
     
     void *          obj_QueryInfo(
@@ -1220,17 +1266,103 @@ extern	"C" {
     }
 
     
-    
+    ERESULT     obj_QueryInterface (
+        OBJ_DATA    *this,
+        const
+        uuid_t      *pIID,
+        void        **pInterface
+    )
+    {
+        ERESULT     eRc = ERESULT_SUCCESS;
+        //OBJ_DATA    *pObj = OBJ_NIL;
+
+        if (0 == uuid_compare(*pIID, obj_uuid_iid)) {
+            *pInterface = this;
+        } else {
+            *pInterface = NULL;
+            eRc = ERESULT_DATA_NOT_FOUND;
+        }
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      R e l e a s e
     //---------------------------------------------------------------
     
-    OBJ_ID          obj_Release(
+#ifdef OBJ_COM_SUPPORT
+    uint32_t        obj_Release(
         OBJ_ID          objId
     )
     {
         OBJ_DATA        *this = objId;
         
+        // objId may be an Interface which is not pointing to OBJ_DATA.
+        // So, we have to be careful to just forward on if we can.
+        if (OBJ_NIL == this) {
+            return -1;
+        }
+        if (NULL == this->pVtbl) {
+            return -1;
+        }
+        if (this->pVtbl->pRelease) {
+            this->pVtbl->pRelease(this);
+        }
+        return this->cbRetainCount;
+    }
+    
+    
+    uint32_t        obj_ReleaseNull(
+        OBJ_ID          objId
+    )
+    {
+        OBJ_DATA        *this = objId;
+        
+#ifdef NDEBUG
+#else
+        if (0 == this->cbRetainCount) {
+            DEBUG_BREAK();
+        }
+#endif
+        
+        return this->cbRetainCount;
+    }
+    
+    
+    uint32_t        obj_ReleaseStandard(
+        OBJ_ID          objId
+    )
+    {
+        OBJ_DATA        *this = objId;
+        
+        if (OBJ_NIL == this) {
+            return -1;
+        }
+#ifdef NDEBUG
+#else
+        if (0 == this->cbRetainCount) {
+            DEBUG_BREAK();
+            return -1;
+        }
+#endif
+        
+        --this->cbRetainCount;
+        if (0 == this->cbRetainCount) {
+            // Release/destroy this object.
+            (*this->pVtbl->pDealloc)(objId);
+            this = OBJ_NIL;
+        }
+        
+        return this ? this->cbRetainCount : -1 ;
+    }
+#else
+    OBJ_ID          obj_Release(
+        OBJ_ID          objId
+    )
+    {
+        OBJ_DATA        *this = objId;
+
         // objId may be an Interface which is not pointing to OBJ_DATA.
         // So, we have to be careful to just forward on if we can.
         if (OBJ_NIL == this) {
@@ -1242,33 +1374,33 @@ extern	"C" {
         if (this->pVtbl->pRelease) {
             this->pVtbl->pRelease(this);
         }
-        return objId;
+        return this;
     }
-    
-    
+
+
     OBJ_ID          obj_ReleaseNull(
         OBJ_ID          objId
     )
     {
         OBJ_DATA        *this = objId;
-        
+
 #ifdef NDEBUG
 #else
         if (0 == this->cbRetainCount) {
             DEBUG_BREAK();
         }
 #endif
-        
-        return objId;
+
+        return this;
     }
-    
-    
+
+
     OBJ_ID          obj_ReleaseStandard(
         OBJ_ID          objId
     )
     {
         OBJ_DATA        *this = objId;
-        
+
         if (OBJ_NIL == this) {
             return OBJ_NIL;
         }
@@ -1279,16 +1411,17 @@ extern	"C" {
             return OBJ_NIL;
         }
 #endif
-        
+
         --this->cbRetainCount;
         if (0 == this->cbRetainCount) {
             // Release/destroy this object.
             (*this->pVtbl->pDealloc)(objId);
-            objId = OBJ_NIL;
+            this = OBJ_NIL;
         }
-        
-        return objId;
+
+        return this;
     }
+#endif
     
     
     

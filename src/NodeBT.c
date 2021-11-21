@@ -1349,6 +1349,9 @@ extern "C" {
         obj_setSize(this, cbSize);                              // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeBT_Vtbl);
+#ifdef  NODEBT_JSON_SUPPORT
+        JsonIn_RegisterClass(NodeBT_Class());
+#endif
 
         // Set up Blocks to hold tree data.
         eRc = Blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(NODEBT_RECORD));

@@ -411,6 +411,8 @@ extern "C" {
         OBJ_IDENT_OBJCB_CLASS,
         OBJ_IDENT_OBJENUM,              // Object Enumeration
         OBJ_IDENT_OBJENUM_CLASS,
+        OBJ_IDENT_OBJGEN,               // Object Generation Helpers
+        OBJ_IDENT_OBJGEN_CLASS,
         OBJ_IDENT_OBJHASH,              // Hash Dictionary of Objects
         OBJ_IDENT_OBJHASH_CLASS,
         OBJ_IDENT_OBJLIST,              // List of Objects

@@ -98,11 +98,46 @@ extern "C" {
         //bool        (*pIsEnabled)(NODEPROP_DATA *);
     } NODEPROP_CLASS_VTBL;
 
-    typedef enum NodeProp_Vis_e {
+
+
+    /* The following enum was generated from:
+     * "nodeprop_vis.txt"
+     * If you want to change this enum, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    typedef enum NodeProp_vis_e {
         NODEPROP_VIS_NONE=0,
-        NODEPROP_VIS_PUBLIC,
-        NODEPROP_VIS_READ_ONLY
-    } NODEPROP_VIS;
+        NODEPROP_VIS_PUBLIC=1,
+        NODEPROP_VIS_READ_ONLY=2,
+    } NODEPROP_VISS;
+
+
+    /* The following enum was generated from:
+     * "nodeprop_types.txt"
+     * If you want to change this enum, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    typedef enum NodeProp_type_e {
+        NODEPROP_TYPE_ASTR=0,
+        NODEPROP_TYPE_FLAG8=1,
+        NODEPROP_TYPE_FLAG16=2,
+        NODEPROP_TYPE_FLAG32=3,
+        NODEPROP_TYPE_INT8=4,
+        NODEPROP_TYPE_INT16=5,
+        NODEPROP_TYPE_INT32=6,
+        NODEPROP_TYPE_INT64=7,
+        NODEPROP_TYPE_OBJECT=8,
+        NODEPROP_TYPE_UINT8=9,
+        NODEPROP_TYPE_UINT16=10,
+        NODEPROP_TYPE_UINT32=11,
+        NODEPROP_TYPE_UINT64=12,
+    } NODEPROP_TYPES;
+
+
 
 
 

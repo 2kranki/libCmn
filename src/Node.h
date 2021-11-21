@@ -33,7 +33,7 @@
  *  11/25/2016  Removed children property redefining Node to simply
  *              be named data. Node structuring was moved to NodeATree,
  *              NodeGraph, NodeList, NodeMatrix and NodeTree.
- *  02/18/2018  Chaged Node's child and sibling indices to left and
+ *  02/18/2018  Changed Node's child and sibling indices to left and
  *              right indices respectively which mirrors Knuth's
  *              definition and is frankly more eloquent.
  *	01/12/2020 Regenerated

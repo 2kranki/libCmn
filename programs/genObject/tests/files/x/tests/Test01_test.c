@@ -96,6 +96,9 @@ ERESULT         Test_Test01_OpenClose (
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_TEST01);
         TestForTrue(fRc, "Failed Ident Test");
+#ifdef   TEST01_MSGS
+        Test01_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
         
         // Test something.
         TestForSuccess("test failed");
@@ -134,6 +137,9 @@ ERESULT         Test_Test01_Copy01 (
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_TEST01);
         TestForTrue(fRc, "Failed Ident Test");
+#ifdef   TEST01_MSGS
+        Test01_setMsg(pObj1, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
         
         // Test assign.
         pObj2 = Test01_New();
@@ -210,7 +216,10 @@ ERESULT         Test_Test01_Test01 (
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_TEST01);
         TestForTrue(fRc, "Failed Ident Test");
-        
+#ifdef   TEST01_MSGS
+        Test01_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
+                
         {
             ASTR_DATA       *pStr = Test01_ToDebugString(pObj, 4);
             if (pStr) {

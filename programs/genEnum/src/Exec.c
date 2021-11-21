@@ -1498,10 +1498,11 @@ extern "C" {
                 } else {
                     fprintf(
                             pOut,
-                            "\t\t{\"%s_%s_%s\", \"%s\", %d},\n",
+                            "\t\t{\"%s_%s_%s\", \"%s\", \"%s\", %d},\n",
                             AStr_getData(pCapsPrefix),
                             AStr_getData(pCapsName),
                             AStr_getData(Item_getName(pItem)),
+                            Item_getDesc(pItem) ? AStr_getData(Item_getDesc(pItem)) : "",
                             AStr_getData(Item_getName(pItem)),
                             Item_getValue(pItem)
                     );

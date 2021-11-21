@@ -51,6 +51,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <Node.h>
+#include        <SrcLoc.h>
 
 
 #ifndef         SYM_H
@@ -165,12 +166,12 @@ extern "C" {
         #define SYM_FLGS1_ACT       0x80        // Active Entry
         #define SYM_FLGS1_ABS       0x40        // Absolute Address
         #define SYM_FLGS1_REL       0x20        // Relocatable Address
-        #define SYM_FLGS1_UNUSED4   0x10        // Unused Flag 1
-        #define SYM_FLGS1_UNUSED5   0x08        // Unused Flag 2
-        #define SYM_FLGS1_UNUSED6   0x04        // Unused Flag 3
-        #define SYM_FLGS1_UNUSED7   0x02        // Unused Flag 4
-        #define SYM_FLGS1_UNUSED8   0x01        // Unused Flag 5
-        uint8_t         fFlgs2;             // Flags
+        #define SYM_FLGS1_RSVD1     0x10        // Reserved Flag 1
+        #define SYM_FLGS1_RSVD2     0x08        // Reserved Flag 2
+        #define SYM_FLGS1_RSVD3     0x04        // Reserved Flag 3
+        #define SYM_FLGS1_RSVD4     0x02        // Reserved Flag 4
+        #define SYM_FLGS1_RSVD5     0x01        // Reserved Flag 5
+        uint8_t         fFlgs2;             // Flags - Used as needed
         #define SYM_FLGS2_UNUSED1   0x10        // Unused Flag
         #define SYM_FLGS2_UNUSED2   0x10        // Unused Flag
         #define SYM_FLGS2_UNUSED3   0x10        // Unused Flag
@@ -180,6 +181,7 @@ extern "C" {
         #define SYM_FLGS2_UNUSED7   0x02        // Unused Flag
         #define SYM_FLGS2_UNUSED8   0x01        // Unused Flag
         uint8_t         extra1;             // Used as needed
+        SRCLOC          loc;                // Source Definition Location
         uint32_t        hash;               // Hash Code for name
         uint32_t        token;              // unique token for name
         int32_t         cls;                // User Defined Class
@@ -539,6 +541,17 @@ extern "C" {
     bool            Sym_setLen (
         SYM_DATA        *this,
         uint16_t        value
+    );
+
+
+    SRCLOC *        Sym_getLoc(
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setLoc (
+        SYM_DATA        *this,
+        const
+        SRCLOC          *pValue
     );
 
 

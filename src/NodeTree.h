@@ -5,7 +5,7 @@
 //****************************************************************
 /*
  * Program
- *			an Unordered Tree of Nodes (NodeTree)
+ *			an Unordered Tree of NodeLinks (NodeTree)
  * Purpose
  *          This object provides for an un-ordered tree of nodes.
  *          Un-ordered means that the tree nodes are not in order
@@ -16,9 +16,12 @@
  *          "Fundamental Algorithms" (3rd Ed), Donald Knuth.
  *
  * Remarks
- *  1,      The left pointer of nodeEntry is used for nextSibling
+ *  1.      This tree uses object, NodeLink, not Node, because it
+ *          uses the links provided by NodeLink rather than having
+ *          them be internal.
+ *  2,      The left pointer of nodeEntry is used for nextSibling
  *          and the right index for nextChild.
- *  2.      By using NodeNew() and NodeLinkChild() together, one
+ *  3.      By using NodeNew() and NodeLinkChild() together, one
  *          can build a tree from the bottom up which is consist-
  *          ent with recursive descent parsing. In this case, you
  *          must add the root first before using NodeNew() and
@@ -283,7 +286,7 @@ extern "C" {
     ERESULT         NodeTree_ChildrenAdd (
         NODETREE_DATA   *this,
         uint32_t        parent,
-        ...                         // NULL Terminated list
+        ...                         // NULL Terminated list of Nodes
     );
 
 
@@ -371,6 +374,9 @@ extern "C" {
      @param     cls     Node class
      @param     pData   Optional Object to be associated with the new
                         Node
+     @param     child1  optional child index if non-zero to be added
+     @param     child2  optional child index if non-zero to be added,
+                        but is only added if there is a child1 as well.
      @return    If successful, a Node index, otherwise 0.
      @warning   If we fail to add this node into the main tree, then
                 we will lose it and its subtree for other processing.
@@ -380,7 +386,9 @@ extern "C" {
         int32_t         cls,
         const
         char            *pName,
-        OBJ_ID          pData
+        OBJ_ID          pData,
+        uint32_t        child1,
+        uint32_t        child2
     );
 
 

@@ -1,7 +1,14 @@
 # vi:nu:et:sts=4 ts=4 sw=4
 
-*   Merge in genGetterSetter.
-    *   JSON -  (???) properties:[[int,uint32_t,name],[ptr,int8_t,name],[object,ObjName,name]]
+*   Change fundamental operation to be a work queue type system where Gen has a queue to
+    generate from.  It should allow for individual generation (ie genEnum like operation
+    for properties/enums) or integrated generation (ie genObject with properties and enums
+    intregated).
+*   Merge in genEnum.
+*   Finish merge properties allowing them to be generated stand-alone or integrated within
+    an object.
+*   Using the new preproc, look at generating from model files being used like macros.
+*   Document properties.
 *   Change Gen to create an AStr instead of a file ???
 *   Think about separating each method into its own AStr
     which would be stored by type (internal, class, property, 

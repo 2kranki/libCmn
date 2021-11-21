@@ -1405,7 +1405,10 @@ extern "C" {
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeTree_Vtbl);
-        
+#ifdef  NODETREE_JSON_SUPPORT
+        JsonIn_RegisterClass(NodeTree_Class());
+#endif
+
         this->pNodeArrayClass = ObjArray_Class( );
         this->pArray = ObjArray_New();
         if (OBJ_NIL == this->pArray) {
@@ -1688,10 +1691,12 @@ extern "C" {
         int32_t         cls,
         const
         char            *pName,
-        OBJ_ID          pData
+        OBJ_ID          pData,
+        uint32_t        child1,
+        uint32_t        child2
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc;
         //NODEENTRY_DATA  *pEntry;
         uint32_t        index = 0;
         NODELINK_DATA   *pNode;
@@ -1712,6 +1717,14 @@ extern "C" {
         }
 
         index = NodeTree_NodeNew(this, pNode);
+        if (index) {
+            if (child1) {
+                eRc = NodeTree_NodeLinkChild(this, index, child1);
+                if (child2) {
+                    eRc = NodeTree_NodeLinkChild(this, index, child2);
+                }
+            }
+        }
 
         obj_Release(pNode);
         pNode = OBJ_NIL;

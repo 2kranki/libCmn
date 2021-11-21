@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (11/14/2021  0:26:05.000)
+# (11/19/2021 20:34:43.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -896,6 +896,16 @@ $(OBJDIR)/ObjEnum.o: $(SRCDIR)/ObjEnum.c $(SRCDIR)/ObjEnum.h $(SRCDIR)/ObjEnum_i
 OBJS += $(OBJDIR)/ObjEnum_object.o
 
 $(OBJDIR)/ObjEnum_object.o: $(SRCDIR)/ObjEnum_object.c $(SRCDIR)/ObjEnum.h $(SRCDIR)/ObjEnum_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ObjGen.o
+
+$(OBJDIR)/ObjGen.o: $(SRCDIR)/ObjGen.c $(SRCDIR)/ObjGen.h $(SRCDIR)/ObjGen_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/ObjGen_object.o
+
+$(OBJDIR)/ObjGen_object.o: $(SRCDIR)/ObjGen_object.c $(SRCDIR)/ObjGen.h $(SRCDIR)/ObjGen_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/ObjHash.o
@@ -2494,6 +2504,12 @@ ObjCb_test: $(TEST_SRC)/ObjCb_test.c $(SRCDIR)/ObjCb.h $(SRCDIR)/ObjCb_internal.
 TESTS += ObjEnum_test
 
 ObjEnum_test: $(TEST_SRC)/ObjEnum_test.c $(SRCDIR)/ObjEnum.h $(SRCDIR)/ObjEnum_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += ObjGen_test
+
+ObjGen_test: $(TEST_SRC)/ObjGen_test.c $(SRCDIR)/ObjGen.h $(SRCDIR)/ObjGen_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

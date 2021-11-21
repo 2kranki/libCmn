@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (11/ 6/2021 19:49:14.000)
+# (11/21/2021 16:19:14.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -71,6 +71,16 @@ OBJS += $(OBJDIR)/Gen.o
 $(OBJDIR)/Gen.o: $(SRCDIR)/Gen.c $(SRCDIR)/Gen.h $(SRCDIR)/Gen_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/GenItem.o
+
+$(OBJDIR)/GenItem.o: $(SRCDIR)/GenItem.c $(SRCDIR)/GenItem.h $(SRCDIR)/GenItem_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/GenItem_object.o
+
+$(OBJDIR)/GenItem_object.o: $(SRCDIR)/GenItem_object.c $(SRCDIR)/GenItem.h $(SRCDIR)/GenItem_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/Gen_object.o
 
 $(OBJDIR)/Gen_object.o: $(SRCDIR)/Gen_object.c $(SRCDIR)/Gen.h $(SRCDIR)/Gen_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
@@ -128,6 +138,12 @@ $(OBJDIR)/NodeProp_object.o: $(SRCDIR)/NodeProp_object.c $(SRCDIR)/NodeProp.h $(
 TESTS += Dict_test
 
 Dict_test: $(TEST_SRC)/Dict_test.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += GenItem_test
+
+GenItem_test: $(TEST_SRC)/GenItem_test.c $(SRCDIR)/GenItem.h $(SRCDIR)/GenItem_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

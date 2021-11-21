@@ -249,8 +249,8 @@ main( ) {
         done
     fi
 
-    doCmd "${CC} ${CFLAGS} -D__MACOS64_ENV__ ${srcDir}/${project}.c -o ${project}"
-    doCmd "./${project} ./tests/files/dcl01.txt"
+    doCmd "${CC} ${CFLAGS} -D__MACOS64_ENV__ ${srcDir}/${project}.c -o /tmp/${project}"
+    doCmd "/tmp/${project}"
     
     return $?
 }

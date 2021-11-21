@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   Test01_internal.h
- *  Generated 11/06/2021 15:49:17
+ *  Generated 11/21/2021 11:19:18
  *
  * Notes:
  *  --  N/A
@@ -73,6 +73,12 @@ struct Test01_data_s  {
     uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
 
+#ifdef   TEST01_MSGS
+    // Informational and Warning Log Messages
+    void            (*pMsgInfo)(OBJ_ID, const char *, ...);
+    void            (*pMsgWarn)(OBJ_ID, uint16_t, const char *, ...);
+    OBJ_ID          pMsgObj;
+#endif
 };
 #pragma pack(pop)
 

@@ -1461,7 +1461,10 @@ extern "C" {
         obj_setSize(this, cbSize);                              // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeHash_Vtbl);
-        
+#ifdef  NODEHASH_JSON_SUPPORT
+        JsonIn_RegisterClass(NodeHash_Class());
+#endif
+
     #ifdef NDEBUG
     #else
         if (!NodeHash_Validate(this)) {

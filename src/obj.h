@@ -67,6 +67,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <uuid/uuid.h>
 
 #ifndef         OBJ_H
 #define         OBJ_H	1
@@ -125,6 +126,7 @@ extern	"C" {
 #define OBJ_FLAG_ENABLED    2               /* Object is enabled. */
 #define OBJ_FLAG_TRACE      3               /* Object tracing */
 #define OBJ_FLAG_RO         4               /* Object is Read-Only (ie immutable). */
+#define OBJ_FLAG_COM        5               /* Object is COM compatible. */
 // Reserved 5-7
 #define OBJ_FLAG_USER1      8               /* First User Useable flag */
 #define OBJ_FLAG_USER2      9
@@ -185,8 +187,8 @@ extern	"C" {
         const
         char            *pBase;             // Base Structure/Pointer
         uint32_t        offset;             // Offset into Base
-        // If property is part of a combined field, we can generate a mask and shift amount to
-        // add, extract or delete the property from the combined field.
+        // If property is part of a combined field, we can generate a mask and shift
+        // amount to add, extract or delete the property from the combined field.
         uint32_t        sizeInBits;         // Size of property in bits if integer
         uint32_t        shiftAmt;           // Amount to shift right to put in lowest bits
         uint8_t         fObject;            // true == object
@@ -246,6 +248,59 @@ extern	"C" {
 //#pragma pack(pop)
     
     
+//#pragma pack(push, 1)
+struct obj_iunknown_com_s {
+    // The first three methods are consistant with Microsoft's
+    // COM iUnknown.
+    ERESULT     (*pQueryInterface)(const uuid_t *, void **);
+    uint32_t    (*pAddRef)(OBJ_ID);
+    uint32_t    (*pRelease)(OBJ_ID);
+    const
+    OBJ_INFO    *pInfo;                 // (Optional for Now)
+    bool        (*pIsKindOf)(uint16_t);
+    void        (*pDealloc)(OBJ_ID);
+    // Return the Class Object for this object. If the object is already
+    // a Class Object, then it simply returns itself. The Info address
+    // then allows you to find Super objects if needed.
+    OBJ_ID      (*pClassObject)(void);
+    uint16_t    (*pWhoAmI)(void);
+    // Everything before this is required and does not need to be
+    // tested to see if it exists.  Everything after this must be
+    // tested to see if it exists, because it may not be implemented
+    // (ie NULL).
+    // ------- Beginning of Methods likely to be in all objects -------
+    // Query an object for specific data including object size,
+    // method name(s) in character format, etc.  See obj_QueryInfoType_e
+    // for more information.
+    void *      (*pQueryInfo)(OBJ_ID, uint32_t, void *);
+    OBJ_ID      (*pToDebugString)(OBJ_ID, int);
+    // ------- End of Methods likely to be in all objects -------
+    bool        (*pEnable)(OBJ_ID);
+    bool        (*pDisable)(OBJ_ID);
+    // Assigns data within 1st object to 2nd object.
+    ERESULT     (*pAssign)(OBJ_ID, OBJ_ID);  // P_OBJ_ASSIGN
+    // Compares 1st object to 2nd object.
+    // Returns:
+    //          ERESULT_SUCCESS_LESS_THAN        1st <  2nd
+    //          ERESULT_SUCCESS_EQUAL            1st == 2nd
+    //          ERESULT_SUCCESS_GREATER_THAN     1st >  2nd
+    int         (*pCompare)(OBJ_ID, OBJ_ID); // P_OBJ_COMPARE
+    // Creates a new copy of the object. If the object is
+    // immmutable (ie can not be changed) then it just returns
+    // a retained self. Objects within this object will simply
+    // be retained.
+    OBJ_ID      (*pCopy)(OBJ_ID);           // P_OBJ_COPY
+    // Creates a new copy of the object. If the object is
+    // immmutable (ie can not be changed) then it just returns
+    // a retained self. Objects within this object will be
+    // recreated in a new object unless they are read-only.
+    OBJ_ID      (*pDeepCopy)(OBJ_ID);       // P_OBJ_DEEPCOPY
+    // Creates hash of this object.
+    uint32_t    (*pHash)(OBJ_ID);           // P_OBJ_HASH
+};
+//#pragma pack(pop)
+
+
     typedef enum obj_QueryInfoType_e {
         OBJ_QUERYINFO_TYPE_UNKNOWN=0,
         OBJ_QUERYINFO_TYPE_OBJECT_SIZE,     // Return size of object
@@ -465,6 +520,13 @@ extern	"C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
     
+#ifdef OBJ_COM_SUPPORT
+    uint32_t        obj_AddRef(
+        OBJ_ID          objId
+    );
+#endif
+
+
     void            obj_Dealloc(
         OBJ_ID          objId
     );
@@ -586,6 +648,19 @@ extern	"C" {
     );
     
     
+#ifdef OBJ_COM_SUPPORT
+    uint32_t        obj_Release(
+        OBJ_ID          objId
+    );
+
+    uint32_t        obj_ReleaseNull(
+        OBJ_ID          objId
+    );
+    
+    uint32_t        obj_ReleaseStandard(
+        OBJ_ID          objId
+    );
+#else
     OBJ_ID          obj_Release(
         OBJ_ID          objId
     );
@@ -593,10 +668,11 @@ extern	"C" {
     OBJ_ID          obj_ReleaseNull(
         OBJ_ID          objId
     );
-    
+
     OBJ_ID          obj_ReleaseStandard(
         OBJ_ID          objId
     );
+#endif
     
     
     OBJ_ID          obj_Retain(

@@ -1146,7 +1146,10 @@ extern "C" {
         //obj_setSize(this, cbSize);                        // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&NodeArray_Vtbl);
-        
+#ifdef  NODEARRAY_JSON_SUPPORT
+        JsonIn_RegisterClass(NodeArray_Class());
+#endif
+
         this->pCompare = &Node_Compare;
         /*
         this->pArray = objArray_New( );

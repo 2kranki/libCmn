@@ -1,3 +1,4 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 //
 //  genGetterSetter
 //
@@ -49,7 +50,7 @@ typedef struct options_s {
     int             fQuiet;
     int             verbose;
     int             fGenHeader;
-    int             fSPN;
+    int             fSPN;			// ???
     const
     char            *pArg1;
     const

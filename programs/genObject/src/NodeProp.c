@@ -54,35 +54,103 @@ extern "C" {
 #endif
     
 
-    typedef struct Type_Def_s {
-        uint16_t        num;
+    /* The following tables were generated from:
+     * "nodeprop_types.txt"
+     * If you want to change this enum, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // This table is in enum order and provides
+    // the index + 1 into the NodeProp_type_entries
+    // table. 0 means no enum entry.
+    const
+    uint16_t    NodeProp_type_index[13] = {
+        1, 4, 2, 3, 8, 5, 6, 7,
+        9, 13, 10, 11, 12,
+    };
+
+
+    const
+    uint32_t    cNodeProp_type_index = 13;
+
+
+
+
+    typedef struct {
         const
         char            *pEnum;
-        const
-        char            *pExternal;
-    } TYPE_DEF;
+        char            *pDesc;
+        char            *pName;
+        uint32_t        value;
+    } NodeProp_type_entry;
 
-#ifdef XYZZY
-    static
-    TYPE_DEF        typeDefs[] = {
-        {NODEPROP_TYPE_ASTR,    "NODEPROP_TYPE_ASTR",   "ASTR"},
-        {NODEPROP_TYPE_FLAG8,   "NODEPROP_TYPE_FLAG8",  "FLAG8"},
-        {NODEPROP_TYPE_FLAG16,  "NODEPROP_TYPE_FLAG16", "FLAG16"},
-        {NODEPROP_TYPE_FLAG32,  "NODEPROP_TYPE_FLAG8",  "FLAG32"},
-        {NODEPROP_TYPE_INT8,    "NODEPROP_TYPE_INT8",   "INT8"},
-        {NODEPROP_TYPE_INT16,   "NODEPROP_TYPE_INT16",  "INT16"},
-        {NODEPROP_TYPE_INT32,   "NODEPROP_TYPE_INT32",  "INT32"},
-        {NODEPROP_TYPE_INT64,   "NODEPROP_TYPE_INT64",  "INT64"},
-        {NODEPROP_TYPE_OBJECT,  "NODEPROP_TYPE_OBJECT", "OBJECT"},
-        {NODEPROP_TYPE_UINT8,   "NODEPROP_TYPE_UINT8",  "UINT8"},
-        {NODEPROP_TYPE_UINT16,  "NODEPROP_TYPE_UINT16", "UINT16"},
-        {NODEPROP_TYPE_UINT32,  "NODEPROP_TYPE_UINT32", "UINT32"},
-        {NODEPROP_TYPE_UINT64,  "NODEPROP_TYPE_UINT64", "UINT64"},
-    };
-    static
+    // This table is in alphanumeric order to be searched
+    // with a sequential or binary search by description.
+
     const
-    uint32_t        cTypeDefs = sizeof(typeDefs) / sizeof(TYPE_DEF);
-#endif
+    NodeProp_type_entry    NodeProp_type_entries[] = {
+        {"NODEPROP_TYPE_ASTR", "", "ASTR", 0},
+        {"NODEPROP_TYPE_FLAG16", "", "FLAG16", 2},
+        {"NODEPROP_TYPE_FLAG32", "", "FLAG32", 3},
+        {"NODEPROP_TYPE_FLAG8", "", "FLAG8", 1},
+        {"NODEPROP_TYPE_INT16", "", "INT16", 5},
+        {"NODEPROP_TYPE_INT32", "", "INT32", 6},
+        {"NODEPROP_TYPE_INT64", "", "INT64", 7},
+        {"NODEPROP_TYPE_INT8", "", "INT8", 4},
+        {"NODEPROP_TYPE_OBJECT", "", "OBJECT", 8},
+        {"NODEPROP_TYPE_UINT16", "", "UINT16", 10},
+        {"NODEPROP_TYPE_UINT32", "", "UINT32", 11},
+        {"NODEPROP_TYPE_UINT64", "", "UINT64", 12},
+        {"NODEPROP_TYPE_UINT8", "", "UINT8", 9},
+    };
+    uint32_t    cNodeProp_type_entries = 13;
+
+
+
+
+
+    /* The following tables were generated from:
+     * "nodeprop_vis.txt"
+     * If you want to change this enum, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // This table is in enum order and provides
+    // the index + 1 into the NodeProp_vis_entries
+    // table. 0 means no enum entry.
+    const
+    uint16_t    NodeProp_vis_index[3] = {
+        1, 2, 3,
+    };
+
+
+    const
+    uint32_t    cNodeProp_vis_index = 3;
+
+
+
+
+    typedef struct {
+        const
+        char            *pEnum;
+        char            *pDesc;
+        char            *pName;
+        uint32_t        value;
+    } NodeProp_vis_entry;
+
+    // This table is in alphanumeric order to be searched
+    // with a sequential or binary search by description.
+
+    const
+    NodeProp_vis_entry    NodeProp_vis_entries[] = {
+        {"NODEPROP_VIS_NONE", "", "NONE", 0},
+        {"NODEPROP_VIS_PUBLIC", "", "PUBLIC", 1},
+        {"NODEPROP_VIS_READ_ONLY", "", "READ_ONLY", 2},
+    };
+    uint32_t    cNodeProp_vis_entries = 3;
+
 
 
 
@@ -91,44 +159,201 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    uint16_t        NodeProp_TypeDefFromExternal (
-        const
-        char            *pStrA
-    )
-    {
-        uint32_t            i;
+    /* The following routine was generated from:
+     * "nodeprop_types.txt"
+     * If you want to change it, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
 
-        if (pStrA) {
-            for (i=0; i<cTypeDefs; i++) {
-                if (0 == strcmp(pStrA, typeDefs[i].pExternal)) {
-                    return typeDefs[i].num;
-                }
-            }
-        }
-        return 0;
-    }
-
-
+    // Given an enum value, return its character format.
     const
-    char *          NodeProp_TypeDefToExternal (
-        uint16_t        num
+    char *            NodeProp_typeToEnum (
+        uint32_t        value
     )
     {
-        uint32_t        i;
+        if (value >= cNodeProp_type_index) {
+            return "<<<Unknown Enum Value>>>";
+        }
+        if (NodeProp_type_index[value]) {
+            return NodeProp_type_entries[NodeProp_type_index[value] - 1].pEnum;
+        } else {
+            return "<<<Unknown Enum Value>>>";
+        }
+    }
 
-        if (num) {
-            for (i=0; i<cTypeDefs; i++) {
-                if (num == typeDefs[i].num) {
-                    return typeDefs[i].pExternal;
+    // Given an enum value, return its name.
+    const
+    char *            NodeProp_typeToName (
+        uint32_t        value
+    )
+    {
+        if (value >= cNodeProp_type_index) {
+            return NULL;
+        }
+        if (NodeProp_type_index[value]) {
+            return NodeProp_type_entries[NodeProp_type_index[value] - 1].pName;
+        } else {
+            return NULL;
+        }
+    }
+
+
+
+    /* The following routine was generated from:
+     * "nodeprop_types.txt"
+     * If you want to change it, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // Given an enum description, return its value + 1 or
+    // 0 for not found.
+    const
+    uint32_t        NodeProp_EnumTotype (
+        char            *pDesc
+    )
+    {
+        int            iRc;
+        uint32_t        iMax = cNodeProp_type_entries;
+        uint32_t        i    = 0;
+        uint32_t        high = 0;
+        uint32_t        low  = 0;
+        uint32_t        mid  = 0;
+
+        if (iMax > 10) {
+            for (i=0; i<iMax; i++) {
+                iRc = strcmp(pDesc, NodeProp_type_entries[i].pEnum);
+                if (0 == iRc) {
+                    return NodeProp_type_entries[i].value + 1;
+                }
+                if (iRc < 0) {
+                    break;
+                }
+            }
+        } else {
+            high = iMax - 1;
+            while (low < high) {
+                mid = (high + low) / 2;
+                i = mid + 1;
+                iRc = strcmp(pDesc, NodeProp_type_entries[i].pEnum);
+                if (iRc < 0) {
+                    high = mid;
+                } else if (iRc == 0) {
+                    return NodeProp_type_entries[i].value + 1;
+                } else {
+                    low = mid + 1;
+                }
+            }
+            if( high == low ) {
+                i = low;
+                iRc = strcmp(pDesc, NodeProp_type_entries[i].pEnum);
+                if (0 == iRc) {
+                    return NodeProp_type_entries[i].value + 1;
                 }
             }
         }
         return 0;
     }
-#endif
 
 
+
+    /* The following routine was generated from:
+     * "nodeprop_vis.txt"
+     * If you want to change it, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // Given an enum value, return its character format.
+    const
+    char *            NodeProp_visToEnum (
+        uint32_t        value
+    )
+    {
+        if (value >= cNodeProp_vis_index) {
+            return "<<<Unknown Enum Value>>>";
+        }
+        if (NodeProp_vis_index[value]) {
+            return NodeProp_vis_entries[NodeProp_vis_index[value] - 1].pEnum;
+        } else {
+            return "<<<Unknown Enum Value>>>";
+        }
+    }
+
+    // Given an enum value, return its name.
+    const
+    char *            NodeProp_visToName (
+        uint32_t        value
+    )
+    {
+        if (value >= cNodeProp_vis_index) {
+            return NULL;
+        }
+        if (NodeProp_vis_index[value]) {
+            return NodeProp_vis_entries[NodeProp_vis_index[value] - 1].pName;
+        } else {
+            return NULL;
+        }
+    }
+
+
+
+    /* The following routine was generated from:
+     * "nodeprop_vis.txt"
+     * If you want to change it, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // Given an enum description, return its value + 1 or
+    // 0 for not found.
+    const
+    uint32_t        NodeProp_EnumTovis (
+        char            *pDesc
+    )
+    {
+        int            iRc;
+        uint32_t        iMax = cNodeProp_vis_entries;
+        uint32_t        i    = 0;
+        uint32_t        high = 0;
+        uint32_t        low  = 0;
+        uint32_t        mid  = 0;
+
+        if (iMax > 10) {
+            for (i=0; i<iMax; i++) {
+                iRc = strcmp(pDesc, NodeProp_vis_entries[i].pEnum);
+                if (0 == iRc) {
+                    return NodeProp_vis_entries[i].value + 1;
+                }
+                if (iRc < 0) {
+                    break;
+                }
+            }
+        } else {
+            high = iMax - 1;
+            while (low < high) {
+                mid = (high + low) / 2;
+                i = mid + 1;
+                iRc = strcmp(pDesc, NodeProp_vis_entries[i].pEnum);
+                if (iRc < 0) {
+                    high = mid;
+                } else if (iRc == 0) {
+                    return NodeProp_vis_entries[i].value + 1;
+                } else {
+                    low = mid + 1;
+                }
+            }
+            if( high == low ) {
+                i = low;
+                iRc = strcmp(pDesc, NodeProp_vis_entries[i].pEnum);
+                if (0 == iRc) {
+                    return NodeProp_vis_entries[i].value + 1;
+                }
+            }
+        }
+        return 0;
+    }
 
 
 

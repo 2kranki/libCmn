@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   Test01.c
- *  Generated 11/06/2021 15:49:17
+ *  Generated 11/21/2021 11:19:18
  *
  */
 
@@ -130,6 +130,36 @@ extern "C" {
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
+
+    //---------------------------------------------------------------
+    //                      M e s s a g e s
+    //---------------------------------------------------------------
+
+#ifdef   TEST01_MSGS
+    bool            Test01_setMsgs (
+        TEST01_DATA    *this,
+        void            (*pMsgInfo)(OBJ_ID, const char *, ...),
+        void            (*pMsgWarn)(OBJ_ID, uint16_t, const char *, ...),
+        OBJ_ID          pObj
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Test01_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pMsgInfo = pMsgInfo;
+        this->pMsgWarn = pMsgWarn;
+        this->pMsgObj = pObj;
+
+        return true;
+    }
+#endif
+
+
 
     //---------------------------------------------------------------
     //                          P r i o r i t y
@@ -633,6 +663,11 @@ extern "C" {
 #endif
         
         TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
+#ifdef   TEST01_MSGS
+        if (this->pMsgInfo) {
+            this->pMsgInfo(this->pMsgObj, "Enabling object!\n");
+        }
+#endif
         obj_Enable(this);
 
         // Put code here...

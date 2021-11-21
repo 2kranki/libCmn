@@ -122,6 +122,13 @@ struct Sym_data_s	{
     );
 
 
+    bool            Sym_setNameW32 (
+        SYM_DATA        *this,
+        const
+        W32CHR_T        *pValue
+    );
+
+
     OBJ_IUNKNOWN *  Sym_getSuperVtbl (
         SYM_DATA        *this
     );

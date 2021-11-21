@@ -689,8 +689,10 @@ ERESULT         Test_Gen_Test06 (
         TestForNotNull(pStr, "");
         eRc = Dict_AddAStr(pObj->pDict, "LNAME", pStr);
         TestForSuccess("");
+        fprintf(stderr, "\tLNAMEl = \"Xyzzy\"\n");
         eRc = Dict_AddAStr(pObj->pDict, "UNAME", pStr);
         TestForSuccess("");
+        fprintf(stderr, "\tUNAMEl = \"Xyzzy\"\n");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         eRc = Gen_SetDefaults(pObj);
@@ -744,23 +746,29 @@ ERESULT         Test_Gen_Test06 (
         fprintf(stderr, "\tiRc: %d\n", iRc);
         TestForTrue((iRc == 1), "");
 
-        pInput1A = mem_StrDup("%ifdef UNAME\nxyzzy\n%else\nXYZZY\n%endif\n");
+        pInput1A = mem_StrDup("\n%ifdef UNAME\nxyzzy\n%else\nXYZZY\n%endif\n");
         fprintf(stderr, "\tPreProc: \"%s\"\n", pInput1A);
-        Gen_PreprocInput(pObj, pInput1A);
+        pStr = Gen_PreprocInput(pObj, pInput1A);
         fprintf(stderr, "\tiRc: %d\n", iRc);
         TestForTrue((iRc == 1), "");
         fprintf(stderr, "\tResult: \"%s\"\n", pInput1A);
         mem_Free(pInput1A);
         pInput1A = NULL;
+        fprintf(stderr, "\tResultStr: \"%s\"\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
 
-        pInput1A = mem_StrDup("%ifdef !UNAME\nxyzzy\n%else\nXYZZY\n%endif\n");
+        pInput1A = mem_StrDup("\n%ifdef !UNAME\nxyzzy\n%else\nXYZZY\n%endif\n");
         fprintf(stderr, "\tPreProc: \"%s\"\n", pInput1A);
-        Gen_PreprocInput(pObj, pInput1A);
+        pStr = Gen_PreprocInput(pObj, pInput1A);
         fprintf(stderr, "\tiRc: %d\n", iRc);
         TestForTrue((iRc == 1), "");
         fprintf(stderr, "\tResult: \"%s\"\n", pInput1A);
         mem_Free(pInput1A);
         pInput1A = NULL;
+        fprintf(stderr, "\tResultStr: \"%s\"\n", AStr_getData(pStr));
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
 
         obj_Release(pObj);
         pObj = OBJ_NIL;

@@ -107,6 +107,8 @@ extern "C" {
         OBJ_IDENT_DICT_CLASS,
         OBJ_IDENT_GEN,
         OBJ_IDENT_GEN_CLASS,
+        OBJ_IDENT_GENITEM,
+        OBJ_IDENT_GENITEM_CLASS,
         //OBJ_IDENT_MAIN,                   // Defined in cmn_defs
         //OBJ_IDENT_MAIN_CLASS
         OBJ_IDENT_NODEBASE,

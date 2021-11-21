@@ -7,8 +7,7 @@
  * Program
  *			 A List of Nodes (NodeList)
  * Purpose
- *          This object provides a hash table keyed by the
- *          node name with the node as the data.
+ *          This object provides a list of nodes.
  *
  * Remarks
  *    1.      None
@@ -169,9 +168,28 @@ extern "C" {
 
 
     /*!
+        Other is a property to hold any object that the user of this
+        object may want to put in it.
+     */
+    OBJ_ID          NodeList_getOther (
+        NODELIST_DATA   *this
+    );
+
+    bool            NodeList_setOther (
+        NODELIST_DATA   *this,
+        OBJ_ID          pValue
+    );
+
+
+    /*!
      Size property is the numbers of objects on the list.
      */
     uint32_t        NodeList_getSize (
+        NODELIST_DATA   *this
+    );
+
+
+    OBJLIST_DATA *  NodeList_getSuper (
         NODELIST_DATA   *this
     );
 

@@ -16,7 +16,7 @@
  *  1.      None
  *
  * History
- *  11/06/2021 Generated
+ *  11/21/2021 Generated
  */
 
 
@@ -62,6 +62,7 @@
 //#define   TEST01_IS_IMMUTABLE     1
 #define   TEST01_JSON_SUPPORT       1
 //#define   TEST01_SINGLETON        1
+//#define       TEST01_MSGS   1
 
 
 
@@ -160,6 +161,17 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+#ifdef TEST01_MSGS
+    /*! @property   Messages
+        Allows information and warning messages to be issued.
+     */
+    bool            Test01_setMsgs (
+        TEST01_DATA    *this,
+        void            (*pMsgInfo)(OBJ_ID, const char *, ...),
+        void            (*pMsgWarn)(OBJ_ID, uint16_t, const char *, ...),
+        OBJ_ID          pObj
+    );
+#endif
 
 
     

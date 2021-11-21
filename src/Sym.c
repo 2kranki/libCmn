@@ -273,6 +273,29 @@ extern "C" {
 
 
 
+    SYM_DATA *     Sym_NewW32(
+        int32_t         cls,
+        const
+        W32CHR_T        *pNameW32
+    )
+    {
+        SYM_DATA        *this;
+
+        if (OBJ_NIL == pNameW32) {
+            return OBJ_NIL;
+        }
+
+        this = Sym_New( );
+        if (this) {
+            Sym_setNameW32(this, pNameW32);
+            Sym_getEntry(this)->cls = cls;
+        }
+
+        return this;
+    }
+
+
+
     SYM_DATA *     Sym_NewEntry(
         SYM_ENTRY       *pEntry
     )
@@ -704,7 +727,7 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                    U n u s e d  F l a g 1
+    //                   R e s e r v e d  F l a g 1
     //---------------------------------------------------------------
 
     bool            Sym_getFlg1 (
@@ -722,7 +745,7 @@ extern "C" {
 #endif
 
         //return this->priority;
-        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_UNUSED6) ? true : false;
+        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_RSVD1) ? true : false;
     }
 
 
@@ -740,9 +763,9 @@ extern "C" {
 #endif
 
         if (value) {
-            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_UNUSED6;
+            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_RSVD1;
         } else {
-            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_UNUSED6;
+            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_RSVD1;
         }
 
         return true;
@@ -751,7 +774,7 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                    U n u s e d  F l a g 2
+    //                  R e s e r v e d  F l a g 2
     //---------------------------------------------------------------
 
     bool            Sym_getFlg2 (
@@ -769,7 +792,7 @@ extern "C" {
 #endif
 
         //return this->priority;
-        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_UNUSED7) ? true : false;
+        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_RSVD2) ? true : false;
     }
 
 
@@ -787,9 +810,9 @@ extern "C" {
 #endif
 
         if (value) {
-            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_UNUSED7;
+            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_RSVD2;
         } else {
-            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_UNUSED7;
+            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_RSVD2;
         }
 
         return true;
@@ -798,7 +821,7 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                    U n u s e d  F l a g 3
+    //                    R e s e r v e d  F l a g 3
     //---------------------------------------------------------------
 
     bool            Sym_getFlg3 (
@@ -816,7 +839,7 @@ extern "C" {
 #endif
 
         //return this->priority;
-        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_UNUSED8) ? true : false;
+        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_RSVD3) ? true : false;
     }
 
 
@@ -834,9 +857,9 @@ extern "C" {
 #endif
 
         if (value) {
-            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_UNUSED8;
+            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_RSVD3;
         } else {
-            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_UNUSED8;
+            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_RSVD3;
         }
 
         return true;
@@ -845,7 +868,7 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                    U n u s e d  F l a g 4
+    //                    R e s e r v e d  F l a g 4
     //---------------------------------------------------------------
 
     bool            Sym_getFlg4 (
@@ -863,7 +886,7 @@ extern "C" {
 #endif
 
         //return this->priority;
-        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS2_UNUSED1) ? true : false;
+        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_RSVD4) ? true : false;
     }
 
 
@@ -881,9 +904,9 @@ extern "C" {
 #endif
 
         if (value) {
-            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS2_UNUSED1;
+            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_RSVD4;
         } else {
-            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS2_UNUSED1;
+            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_RSVD4;
         }
 
         return true;
@@ -892,7 +915,7 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                    U n u s e d  F l a g 5
+    //                    R e s e r v e d  F l a g 5
     //---------------------------------------------------------------
 
     bool            Sym_getFlg5 (
@@ -910,7 +933,7 @@ extern "C" {
 #endif
 
         //return this->priority;
-        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS2_UNUSED2) ? true : false;
+        return (Sym_getEntry(this)->fFlgs1 & SYM_FLGS1_RSVD5) ? true : false;
     }
 
 
@@ -928,9 +951,9 @@ extern "C" {
 #endif
 
         if (value) {
-            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS2_UNUSED2;
+            Sym_getEntry(this)->fFlgs1 |= SYM_FLGS1_RSVD5;
         } else {
-            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS2_UNUSED2;
+            Sym_getEntry(this)->fFlgs1 &= ~SYM_FLGS1_RSVD5;
         }
 
         return true;
@@ -1305,6 +1328,55 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                       L o c a t i o n
+    //---------------------------------------------------------------
+
+    SRCLOC *        Sym_getLoc(
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Sym_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return &this->entry.loc;
+    }
+
+
+    bool            Sym_setLoc (
+        SYM_DATA        *this,
+        const
+        SRCLOC          *pValue
+    )
+    {
+        //uint32_t        len;
+
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+        if (NULL == pValue) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        memmove(&this->entry.loc, pValue, sizeof(SRCLOC));
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          N a m e
     //---------------------------------------------------------------
 
@@ -1351,6 +1423,39 @@ extern "C" {
                  (char *)Sym_getEntry(this)->nameA,
                  sizeof(Sym_getEntry(this)->nameA),
                  pValue
+        );
+        Sym_getEntry(this)->hash = str_HashAcmA(Sym_getEntry(this)->nameA, NULL);
+
+        return true;
+    }
+
+
+    bool            Sym_setNameW32 (
+        SYM_DATA        *this,
+        const
+        W32CHR_T        *pValue
+    )
+    {
+        //uint32_t        len;
+
+
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+        if (NULL == pValue) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        utf8_W32StrToUtf8Str(
+                             0,
+                             pValue,
+                             sizeof(Sym_getEntry(this)->nameA),
+                             Sym_getEntry(this)->nameA
         );
         Sym_getEntry(this)->hash = str_HashAcmA(Sym_getEntry(this)->nameA, NULL);
 

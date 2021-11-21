@@ -79,12 +79,14 @@ struct misc_data_s	{
         OBJ_ID          objId
     );
 
+
     void *          misc_QueryInfo(
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
-    
+
+
 #ifdef NDEBUG
 #else
     bool			misc_Validate(

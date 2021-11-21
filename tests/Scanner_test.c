@@ -343,7 +343,7 @@ ERESULT         Test_Scanner_Test02 (
 {
     ERESULT         eRc = ERESULT_SUCCESS;
     SCANNER_DATA    *pObj = OBJ_NIL;
-    bool            fRc;
+    //bool            fRc;
     ASTR_DATA       *pStr = OBJ_NIL;
     W32CHR_T        chrw32;
 

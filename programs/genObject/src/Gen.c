@@ -44,6 +44,7 @@
 #include        <Gen_internal.h>
 #include        <ascii.h>
 #include        <trace.h>
+#include        <utf8.h>
 
 
 
@@ -111,6 +112,130 @@ extern "C" {
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
+
+    //---------------------------------------------------------------
+    //                      H e a d e r  L i n e
+    //---------------------------------------------------------------
+
+    /*!
+     Return a header comment line as used in headings where the
+     line is a single line comment followed by a fixed number of
+     chr's.
+     @param     this        object pointer
+     @param     fAddOffset  true == prefix line with "\t"
+     @param     chrW32      the character to appeend after the
+                            single-line comment. Normally, this
+                            is '*', '-' or '='.
+     @return    if successful, an AStr object containing the header line.
+                Otherwise, OBJ_NIL.
+     */
+    ASTR_DATA *     Gen_HeaderLine(
+        GEN_DATA        *this,
+        bool            fAddOffset,
+        W32CHR_T        chrW32
+    )
+    {
+        ASTR_DATA       *pStr = OBJ_NIL;
+        int32_t         iRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pStr = AStr_NewFromPrint("%s//", fAddOffset ? "\t" : "");
+        if (pStr) {
+            iRc = GEN_LINE_LENGTH - AStr_getLength(pStr);
+            if (fAddOffset)
+                iRc -= 4;
+            if (iRc > 0) {
+                AStr_AppendCharRepeatW32(pStr, iRc, chrW32);
+            }
+            AStr_AppendA(pStr, "\n");
+        }
+
+        return pStr;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  S p a c e d  C o m m e n t
+    //---------------------------------------------------------------
+
+    /*!
+     Return a spaced comment line as used in headings where each
+     comment character is followed by a space and the comment is
+     centered.
+     @param     this    object pointer
+     @param     pStrA   UTF-8 Comment to be spaced
+     @return    if successful, an AStr object containing the header line.
+                Otherwise, OBJ_NIL.
+     */
+    ASTR_DATA *     Gen_SpacedComment(
+        GEN_DATA        *this,
+        const
+        char            *pStrA
+    )
+    {
+        ASTR_DATA       *pNew = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        int32_t         iRc;
+        uint32_t        i;
+        uint32_t        len;
+        uint32_t        off = 0;
+        W32CHR_T        chr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Gen_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        if (NULL == pStrA) {
+            return pNew;
+        }
+        len = utf8_StrLenA(pStrA);
+        if (0 == len) {
+            return pStr;
+        }
+        pNew = AStr_New( );
+
+        for(i=0; i<(len-1); ++i) {
+            off = utf8_StrOffset(pStrA, i);
+            utf8_Utf8ToW32((pStrA + off), &chr);
+            AStr_AppendCharW32(pNew, ' ');
+            if (('A' <= chr) && (chr <= 'Z')) {
+                AStr_AppendCharW32(pNew, ' ');
+            }
+            AStr_AppendCharW32(pNew, chr);
+        }
+        utf8_Utf8ToW32((pStrA + off), &chr);
+        AStr_AppendCharW32(pNew, chr);
+
+        // Now center.
+        pStr = AStr_NewA("// ");
+        if (pStr) {
+            iRc = GEN_LINE_LENGTH - AStr_getLength(pNew) - AStr_getLength(pStr);
+            iRc /= 2;
+            if (iRc > 0) {
+                AStr_AppendCharRepeatA(pStr, iRc, ' ');
+            }
+            AStr_Append(pStr, pNew);
+            AStr_AppendA(pStr, "\n");
+        }
+
+        obj_Release(pNew);
+        return pStr;
+    }
+
+
 
 
 
@@ -1357,8 +1482,7 @@ extern "C" {
      The text in the input is part of the argument to an %ifdef or %ifndef.
      Evaluate the text as a boolean expression.  Return true or false.
      @param     this    object pointer
-     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
-                error code.
+     @return    exprssion evaluates to a true (1+) or false (0).
      */
     int             Gen_PreProcBoolEval (
         GEN_DATA        *this,
@@ -1388,14 +1512,14 @@ extern "C" {
             if (ascii_isWhiteSpaceA(z[i]))
                 continue;
             // !term
-            if (z[i]=='!') {
+            if (z[i] == '!') {
                 if (!okTerm)
                     goto syntax_error;
                 neg = !neg;
                 continue;
             }
             // term || term
-            if (z[i]=='|' && z[i+1]=='|') {
+            if ((z[i] == '|') && (z[i+1] == '|')) {
                 if (okTerm)
                     goto syntax_error;
                 if (res)
@@ -1405,7 +1529,7 @@ extern "C" {
                 continue;
             }
             // term && term
-            if (z[i]=='&' && z[i+1]=='&') {
+            if ((z[i] == '&') && (z[i+1] == '&')) {
                 if (okTerm)
                     goto syntax_error;
                 if (!res)
@@ -1419,8 +1543,10 @@ extern "C" {
                 int         k;
                 int         n = 1;
 
-                if( !okTerm )
+                if (!okTerm) {
                     goto syntax_error;
+                }
+
                 for (k=i+1; z[k]; k++) {
                     if (z[k] == ')') {
                         n--;
@@ -1435,28 +1561,30 @@ extern "C" {
                             i = k;
                             break;
                         }
-                    }else if( z[k]=='(' ){
+                    } else if (z[k] == '(') {
                         n++;
-                    }else if( z[k]==0 ){
+                    } else if (z[k] == 0) {
                         i = k;
                         goto syntax_error;
                     }
                 }
-                if( neg ){
+                if (neg) {
                     res = !res;
                     neg = 0;
                 }
                 okTerm = 0;
                 continue;
             }
+
             // term := (bool)found define_name
-            if (ascii_isAlphaA(z[i])){
+            if (ascii_isAlphaA(z[i])) {
                 int         k;
                 int         n;
 
                 if (!okTerm)
                     goto syntax_error;
-                for (k=i+1; ascii_isAlphanumericA(z[k]) || z[k]=='_'; k++){}
+                for (k=i+1; ascii_isAlphanumericA(z[k]) || z[k]=='_'; k++) {
+                }
                 n = k - i;
                 if (n > DICT_NAME_MAXLEN)
                     n = DICT_NAME_MAXLEN;
@@ -1472,7 +1600,7 @@ extern "C" {
                     pStrDef = OBJ_NIL;
                 }
                 i = k-1;
-                if( neg ){
+                if (neg) {
                     res = !res;
                     neg = 0;
                 }
@@ -1496,87 +1624,191 @@ extern "C" {
     }
 
 
-    /* Run the preprocessor over the input file text.  The global variables
-    ** azDefine[0] through azDefine[nDefine-1] contains the names of all defined
-    ** macros.  This routine looks for "%ifdef" and "%ifndef" and "%endif" and
-    ** comments them out.  Text in between is also commented out as appropriate.
+    /*!
+     Run the preprocessor over the input file text.  The global variables
+     azDefine[0] through azDefine[nDefine-1] contains the names of all defined
+     macros.  This routine looks for "%ifdef" and "%ifndef" and "%endif" and
+     comments them out.  Text in between is also commented out as appropriate.
+     The initial version of this preprocessor was taken from "lemon" by
+     by Richard Hipp which is part of SQLite, a great SQL tool. SQLite and
+     this code was placed in the Public Domain by its author.
+     @param     this    object pointer
+     @param     z       a NUL-terminated character string containing all lines
+                        of text that need to be scanned. On output, the lines
+                        that need to be removed will be replaced with blank
+                        lines including the %ifdef, %if, %ifndef, %else and
+                        %endif lines.
+     @return    If succesful, an AStr object which has the lines not needed
+                removed.
     */
-    void            Gen_PreprocInput (
+    ASTR_DATA *     Gen_PreprocInput (
         GEN_DATA        *this,
         char            *z
     )
     {
         int             i, j, k;
-        int             exclude = 0;
+        int             exclude = 0;        // Exclude source until %else or %endif
         int             start = 0;
         int             lineno = 1;
         int             start_lineno = 1;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        const
+        int             maxRemoveList = 100;
+        struct remove_list_s {
+            int         start;
+            int         len;
+        }               removeList[100];
+        int             cRemoveList = 0;
 
+        pStr = AStr_NewA(z);
+        if (OBJ_NIL == pStr) {
+            fprintf(stderr,
+                    "FATAL - could not allocate AStr object,"
+                    " out of memory!\n"
+            );
+            exit(1);
+        }
         // Scan line 1 char at a time until NUL-terminator.
-        for(i=0; z[i]; i++){
-            if( z[i]=='\n' )
+        start = 0;
+        for (i=0; z[i]; i++) {
+            if (z[i] == '\n')
                 lineno++;
-            if ((z[i] != '%') || ((i > 0) && (z[i-1] != '\n')) )
+            if ((z[i] != '%') || ((i > 0) && (z[i-1] != '\n'))) {
                 continue;
-            if ((strncmp(&z[i],"%endif",6) == 0) && ascii_isWhiteSpaceA(z[i+6]) ){
+            }
+            if ((strncmp(&z[i],"%endif",6) == 0)
+                && ascii_isWhiteSpaceA(z[i+6])) {
                 if (exclude) {
                     exclude--;
                     if (exclude == 0) {
-                        // Blank out all data from 0 to i.
-                        for(j=start; j<i; j++) {
+                        // Remove from start to i.
+                        // Blank out all data from previous start to i.
+                        for (j=start; j<i; j++) {
                             if (z[j] != '\n')
                                 z[j] = ' ';
                         }
+                        // Push (start, i-1)
+                        if (cRemoveList < maxRemoveList) {
+                            removeList[cRemoveList].start = start;
+                            removeList[cRemoveList].len = i-start;
+                            cRemoveList++;
+                        } else {
+                            fprintf(stderr,
+                                    "FATAL - removal list overflow!\n"
+                            );
+                            exit(1);
+                        }
                     }
                 }
+                // Remove remainder of line.
                 // Blank out from i until NUL-terminator.
-                for(j=i; (z[j] && (z[j] != '\n')); j++)
+                for (j=i; (z[j] && (z[j] != '\n')); j++)
                     z[j] = ' ';
-            }else if( strncmp(&z[i],"%else",5)==0 && ascii_isWhiteSpaceA(z[i+5]) ){
-                if( exclude==1){
+                // Push (i, j-1)
+                if (cRemoveList < maxRemoveList) {
+                    removeList[cRemoveList].start = i;
+                    removeList[cRemoveList].len = j - i + 1;
+                    cRemoveList++;
+                } else {
+                    fprintf(stderr,
+                            "FATAL - removal list overflow!\n"
+                    );
+                    exit(1);
+                }
+            } else if ((strncmp(&z[i],"%else",5) == 0)
+                       && ascii_isWhiteSpaceA(z[i+5])) {
+                if (exclude == 1) {
                     exclude = 0;
-                    for(j=start; j<i; j++) if( z[j]!='\n' )
-                        z[j] = ' ';
-                }else if( exclude==0 ){
+                    // Remove from start to i.
+                    for (j=start; j<i; j++) {
+                        if (z[j] != '\n')
+                            z[j] = ' ';
+                    }
+                    // Push (start, i-1)
+                    if (cRemoveList < maxRemoveList) {
+                        removeList[cRemoveList].start = start;
+                        removeList[cRemoveList].len = i-start;
+                        cRemoveList++;
+                    } else {
+                        fprintf(stderr,
+                                "FATAL - removal list overflow!\n"
+                        );
+                        exit(1);
+                    }
+                } else if (exclude == 0) {
                     exclude = 1;
                     start = i;
                     start_lineno = lineno;
                 }
-                for(j=i; z[j] && z[j]!='\n'; j++)
+                // Remove line.
+                for (j=i; z[j] && (z[j] != '\n'); j++)
                     z[j] = ' ';
-            } else if (strncmp(&z[i],"%ifdef ",7)==0
-                       || strncmp(&z[i],"%if ",4)==0
-                       || strncmp(&z[i],"%ifndef ",8)==0) {
+                // Push (i, j-1)
+                if (cRemoveList < maxRemoveList) {
+                    removeList[cRemoveList].start = i;
+                    removeList[cRemoveList].len = j - i + 1;
+                    cRemoveList++;
+                } else {
+                    fprintf(stderr,
+                            "FATAL - removal list overflow!\n"
+                    );
+                    exit(1);
+                }
+            } else if ((strncmp(&z[i],"%ifdef ",7) == 0)
+                       || (strncmp(&z[i],"%if ",4) == 0)
+                       || (strncmp(&z[i],"%ifndef ",8) == 0)) {
                 if (exclude) {
                     exclude++;
                 } else {
                     int         isNot;
                     int         iBool;
-                    for(j=i; z[j] && !ascii_isSpaceA(z[j]); j++){}
+                    // Skip leading white-space.
+                    for (j=i; z[j] && !ascii_isSpaceA(z[j]); j++) {
+                    }
                     iBool = j;
-                    isNot = (j==i+7);
-                    while( z[j] && z[j]!='\n' ){
+                    isNot = (j == (i + 7));
+                    // Skip to EOL.
+                    while (z[j] && (z[j] != '\n')) {
                         j++;
                     }
                     k = z[j];
-                    z[j] = 0;
+                    z[j] = '\0';
                     exclude = Gen_PreProcBoolEval(this, &z[iBool], lineno);
                     z[j] = k;
-                    if( !isNot )
+                    if (!isNot)
                         exclude = !exclude;
-                    if( exclude ){
+                    if (exclude) {
                         start = i;
                         start_lineno = lineno;
                     }
                 }
-                for(j=i; z[j] && z[j]!='\n'; j++)
+                // Remove line.
+                for (j=i; z[j] && z[j]!='\n'; j++)
                     z[j] = ' ';
+                // Push (i, j-1)
+                if (cRemoveList < maxRemoveList) {
+                    removeList[cRemoveList].start = i;
+                    removeList[cRemoveList].len = j - i + 1;
+                    cRemoveList++;
+                } else {
+                    fprintf(stderr,
+                            "FATAL - removal list overflow!\n"
+                    );
+                    exit(1);
+                }
             }
         }
-        if( exclude ){
-            fprintf(stderr,"unterminated %%ifdef starting on line %d\n", start_lineno);
+        if (exclude) {
+            fprintf(stderr,"FATAL - unterminated %%ifdef starting on line %d\n", start_lineno);
             exit(1);
         }
+
+        // Remove skipped text.
+        for (i=cRemoveList; i; i--) {
+            AStr_Remove(pStr, removeList[i-1].start, removeList[i-1].len);
+        }
+
+        return pStr;
     }
 
 

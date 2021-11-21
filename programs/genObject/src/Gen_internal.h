@@ -186,6 +186,25 @@ struct Gen_data_s	{
     );
 
 
+    /*!
+     Return a header comment line as used in headings where the
+     line is a single line comment followed by a fixed number of
+     chr's.
+     @param     this        object pointer
+     @param     fAddOffset  true == prefix line with "\t"
+     @param     chrW32      the character to appeend after the
+                            single-line comment. Normally, this
+                            is '*', '-' or '='.
+     @return    if successful, an AStr object containing the header line.
+                Otherwise, OBJ_NIL.
+     */
+    ASTR_DATA *     Gen_HeaderLine(
+        GEN_DATA        *this,
+        bool            fAddOffset,
+        W32CHR_T        chrW32
+    );
+
+
 #ifdef  GEN_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
@@ -221,7 +240,24 @@ struct Gen_data_s	{
     );
 
 
-    void            Gen_PreprocInput (
+    /*!
+     Run the preprocessor over the input file text.  The global variables
+     azDefine[0] through azDefine[nDefine-1] contains the names of all defined
+     macros.  This routine looks for "%ifdef" and "%ifndef" and "%endif" and
+     comments them out.  Text in between is also commented out as appropriate.
+     The initial version of this preprocessor was taken from "lemon" by
+     by Richard Hipp which is part of SQLite, a great SQL tool. SQLite and
+     this code was placed in the Public Domain by its author.
+     @param     this    object pointer
+     @param     z       a NUL-terminated character string containing all lines
+                        of text that need to be scanned. On output, the lines
+                        that need to be removed will be replaced with blank
+                        lines including the %ifdef, %if, %ifndef, %else and
+                        %endif lines.
+     @return    If succesful, an AStr object which has the lines not needed
+                removed.
+    */
+    ASTR_DATA *     Gen_PreprocInput (
         GEN_DATA        *this,
         char            *z
     );
@@ -231,6 +267,22 @@ struct Gen_data_s	{
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
+    );
+
+
+    /*!
+     Return a spaced comment line as used in headings where each
+     comment character is followed by a space and the comment is
+     centered.
+     @param     this    object pointer
+     @param     pStrA   UTF-8 Comment to be spaced
+     @return    if successful, an AStr object containing the header line.
+                Otherwise, OBJ_NIL.
+     */
+    ASTR_DATA *     Gen_SpacedComment(
+        GEN_DATA        *this,
+        const
+        char            *pStrA
     );
 
 

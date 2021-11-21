@@ -9,7 +9,8 @@
  * Purpose
  *          This object provides a version of Rob Pike's recursive
  *          regex code. Primary, it checks to see if the regex pat-
- *          tern exists in the supplied text.
+ *          tern exists in the supplied text. If so, it returns an
+ *          an offset into the string and a length of the substring.
  *
  *          Mini regex-module inspired by Rob Pike's regex code described in:
  *          http://www.cs.princeton.edu/courses/archive/spr09/cos333/beautiful.html

@@ -763,7 +763,8 @@ extern "C" {
             const
             W32CHR_T    *pText,
             int         i,
-            Modifiers   modifiers)
+            Modifiers   modifiers
+        )
         {
             UNUSED(modifiers);
             if (!ascii_isWhiteSpaceA(pText[i])) {

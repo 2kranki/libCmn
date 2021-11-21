@@ -110,7 +110,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  OBJLIST_SINGLETON
-    OBJLIST_DATA *     ObjList_Shared (
+    OBJLIST_DATA *  ObjList_Shared (
         void
     );
 
@@ -141,12 +141,12 @@ extern "C" {
     );
     
     
-    OBJLIST_DATA *   ObjList_NewFromJsonString(
+    OBJLIST_DATA *  ObjList_NewFromJsonString(
         ASTR_DATA       *pString
     );
 
 
-    OBJLIST_DATA * ObjList_NewFromJsonStringA(
+    OBJLIST_DATA *  ObjList_NewFromJsonStringA(
         const
         char            *pString
     );
