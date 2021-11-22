@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include        <Blocks_internal.h>
-#include        <enum_internal.h>
+#include        <Enum_internal.h>
 #include        <trace.h>
 
 
@@ -828,7 +828,7 @@ extern "C" {
         }
 #endif
 
-        pEnum = enum_New( );
+        pEnum = Enum_New( );
         if (pEnum) {
         }
         else {
@@ -840,7 +840,7 @@ extern "C" {
 
         pBlock = listdl_Head(&this->blocks);
         for (; pBlock; ) {
-            enum_Append(pEnum, (void *)pBlock->data, NULL);
+            Enum_Append(pEnum, (void *)pBlock->data, NULL);
             pBlock = listdl_Next(&this->blocks, pBlock);
         }
 

@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include    <szHash_internal.h>
-#include    <enum_internal.h>
+#include    <Enum_internal.h>
 #include    <ascii.h>
 #include    <stdio.h>
 #include    <str.h>
@@ -582,7 +582,7 @@ extern "C" {
         }
 #endif
         
-        pEnum = enum_New( );
+        pEnum = Enum_New( );
         if (pEnum)
             ;
         else {
@@ -593,7 +593,7 @@ extern "C" {
             pNodeList = &this->pHash[i];
             pNode = listdl_Head(pNodeList);
             while (pNode) {
-                enum_Append(pEnum, (void *)pNode->pszKey, NULL);
+                Enum_Append(pEnum, (void *)pNode->pszKey, NULL);
                 pNode = listdl_Next(pNodeList, pNode);
             }
         }

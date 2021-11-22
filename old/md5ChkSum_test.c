@@ -113,7 +113,7 @@ int         test_md5ChkSum_Read01(
     FILEIO_DATA     *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     const
-    char            *pPathA = "/Users/bob/Support/testFiles/test_ebcdic.txt";
+    char            *pPathA = TEST_FILES_DIR "/test_ebcdic.txt";
     int64_t         fileSize = 0;
     uint8_t         *pBuffer = NULL;
     const
@@ -202,7 +202,7 @@ int         test_md5ChkSum_Read02(
     FILEIO_DATA     *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     const
-    char            *pPathA = "/Users/bob/Support/testFiles/test_ebcdic.txt";
+    char            *pPathA = TEST_FILES_DIR "/test_ebcdic.txt";
     int64_t         fileSize = 0;
     uint8_t         *pBuffer = NULL;
     const
@@ -302,7 +302,7 @@ int         test_md5ChkSum_Read03(
     MD5CHKSUM_DATA  *pObj = OBJ_NIL;
     PATH_DATA       *pPath = OBJ_NIL;
     const
-    char            *pPathA = "/Users/bob/Support/testFiles/test_ebcdic.txt";
+    char            *pPathA = TEST_FILES_DIR "/test_ebcdic.txt";
     const
     uint8_t         *pDigest = NULL;
     int             iRc;

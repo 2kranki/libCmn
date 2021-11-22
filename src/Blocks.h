@@ -61,7 +61,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
-#include        <enum.h>
+#include        <Enum.h>
 #include        <listdl.h>
 
 

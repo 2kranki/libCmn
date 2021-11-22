@@ -9,10 +9,13 @@
     },
     "objects":[
         {name:"Dict",       desc:"Main Dictionary for Program"},
+        {name:"Enum",       desc:"Enum Item"},
+        {name:"Enums",      desc:"Enum File Generation"},
         {name:"Gen",        desc:"Generate a file"},
         {name:"GenItem",    desc:"An Item to be generated"},
         {name:"Main"},
         {name:"NodeClass",  desc:"Class Definition", json:true},
         {name:"NodeProp",   desc:"Class Property Definition", json:true},
+        {name:"Props",      desc:"Property File Generation"},
     ],
 }

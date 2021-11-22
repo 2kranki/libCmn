@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (11/21/2021 16:19:14.000)
+# (11/21/2021 18:47:19.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -66,6 +66,26 @@ OBJS += $(OBJDIR)/Dict_object.o
 $(OBJDIR)/Dict_object.o: $(SRCDIR)/Dict_object.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/Enum.o
+
+$(OBJDIR)/Enum.o: $(SRCDIR)/Enum.c $(SRCDIR)/Enum.h $(SRCDIR)/Enum_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Enum_object.o
+
+$(OBJDIR)/Enum_object.o: $(SRCDIR)/Enum_object.c $(SRCDIR)/Enum.h $(SRCDIR)/Enum_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Enums.o
+
+$(OBJDIR)/Enums.o: $(SRCDIR)/Enums.c $(SRCDIR)/Enums.h $(SRCDIR)/Enums_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Enums_object.o
+
+$(OBJDIR)/Enums_object.o: $(SRCDIR)/Enums_object.c $(SRCDIR)/Enums.h $(SRCDIR)/Enums_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 OBJS += $(OBJDIR)/Gen.o
 
 $(OBJDIR)/Gen.o: $(SRCDIR)/Gen.c $(SRCDIR)/Gen.h $(SRCDIR)/Gen_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
@@ -126,6 +146,16 @@ OBJS += $(OBJDIR)/NodeProp_object.o
 $(OBJDIR)/NodeProp_object.o: $(SRCDIR)/NodeProp_object.c $(SRCDIR)/NodeProp.h $(SRCDIR)/NodeProp_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
+OBJS += $(OBJDIR)/Props.o
+
+$(OBJDIR)/Props.o: $(SRCDIR)/Props.c $(SRCDIR)/Props.h $(SRCDIR)/Props_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Props_object.o
+
+$(OBJDIR)/Props_object.o: $(SRCDIR)/Props_object.c $(SRCDIR)/Props.h $(SRCDIR)/Props_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
 
 
 
@@ -138,6 +168,18 @@ $(OBJDIR)/NodeProp_object.o: $(SRCDIR)/NodeProp_object.c $(SRCDIR)/NodeProp.h $(
 TESTS += Dict_test
 
 Dict_test: $(TEST_SRC)/Dict_test.c $(SRCDIR)/Dict.h $(SRCDIR)/Dict_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += Enum_test
+
+Enum_test: $(TEST_SRC)/Enum_test.c $(SRCDIR)/Enum.h $(SRCDIR)/Enum_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += Enums_test
+
+Enums_test: $(TEST_SRC)/Enums_test.c $(SRCDIR)/Enums.h $(SRCDIR)/Enums_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
@@ -168,6 +210,12 @@ NodeClass_test: $(TEST_SRC)/NodeClass_test.c $(SRCDIR)/NodeClass.h $(SRCDIR)/Nod
 TESTS += NodeProp_test
 
 NodeProp_test: $(TEST_SRC)/NodeProp_test.c $(SRCDIR)/NodeProp.h $(SRCDIR)/NodeProp_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += Props_test
+
+Props_test: $(TEST_SRC)/Props_test.c $(SRCDIR)/Props.h $(SRCDIR)/Props_internal.h $(SRCDIR)/genObject_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

@@ -52,7 +52,7 @@
 
 
 #include        <cmn_defs.h>
-#include        <enum.h>
+#include        <Enum.h>
 
 
 #ifndef         PTRARRAY_H

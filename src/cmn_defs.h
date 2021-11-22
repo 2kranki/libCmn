@@ -217,6 +217,8 @@ extern "C" {
         OBJ_IDENT_CB32_CLASS,
         OBJ_IDENT_CFA,                  // C Fixed Array
         OBJ_IDENT_CFA_CLASS,
+        OBJ_IDENT_CHKSUMMD5,            // MD5 Check Sum Support
+        OBJ_IDENT_CHKSUMMD5_CLASS,
         OBJ_IDENT_CMD,                  // Command Base
         OBJ_IDENT_CMD_CLASS,
         OBJ_IDENT_CMDPROC,              // Command Processor
@@ -335,8 +337,6 @@ extern "C" {
         OBJ_IDENT_LISTDL_CLASS,
         OBJ_IDENT_LRU,                  // Least Recently Used Caching
         OBJ_IDENT_LRU_CLASS,
-        OBJ_IDENT_MD5CHKSUM,            // MD5 Check Sum Calculation
-        OBJ_IDENT_MD5CHKSUM_CLASS,
         OBJ_IDENT_MEMMSC,               // Memory Debug for MS C
         OBJ_IDENT_MEMMSC_CLASS,
         OBJ_IDENT_MEMMAC64,             // Memory Debug for MacOS 64-bit

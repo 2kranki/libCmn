@@ -31,7 +31,7 @@
 #   include    <SrcErrors.h>
 #   include    <szTbl.h>
 #endif
-#include    <enum_internal.h>
+#include    <Enum_internal.h>
 #include    <sys/stat.h>
 #include    <sys/types.h>
 

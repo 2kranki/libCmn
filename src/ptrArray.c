@@ -42,7 +42,7 @@
 
 /* Header File Inclusion */
 #include        <ptrArray_internal.h>
-#include        <enum_internal.h>
+#include        <Enum_internal.h>
 
 
 
@@ -369,7 +369,7 @@ extern "C" {
         }
 #endif
         
-        pEnum = enum_New( );
+        pEnum = Enum_New( );
         if (pEnum) {
         }
         else {
@@ -381,7 +381,7 @@ extern "C" {
         
         for (i=0; i<this->size; ++i) {
             if (this->ppArray[i]) {
-                enum_Append(pEnum, (void *)this->ppArray[i], NULL);
+                Enum_Append(pEnum, (void *)this->ppArray[i], NULL);
             }
         }
         

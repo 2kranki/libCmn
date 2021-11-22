@@ -80,7 +80,7 @@
 #include        <cmn_defs.h>
 #include        <szTbl.h>
 #include        <AStr.h>
-#include        <enum.h>
+#include        <Enum.h>
 
 
 #ifndef         SZHASH_H
