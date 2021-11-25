@@ -1276,6 +1276,101 @@ extern "C" {
     //                       M e s s a g e s
     //---------------------------------------------------------------
 
+    ERESULT         Test_MsgClose (
+        TEST_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this,"%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if (!Test_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        // Return to caller.
+        return eRc;
+    }
+
+    
+    void            Test_MsgDebug(
+        TEST_DATA       *this,
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+
+        // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Test_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+
+        if (!this->fQuiet) {
+            va_start( argsp, fmt );
+            fprintf( stderr, "Msg:  " );
+            vfprintf( stderr, fmt, argsp );
+            va_end( argsp );
+            fprintf( stderr, "\n" );
+        }
+
+    }
+
+
+
+    void            Test_MsgFatal(
+        TEST_DATA       *this,
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+
+        // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Test_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+
+        if (!this->fQuiet) {
+            va_start( argsp, fmt );
+            fprintf( stderr, "Fatal:  " );
+            vfprintf( stderr, fmt, argsp );
+            va_end( argsp );
+            fprintf( stderr, "\n" );
+        }
+        DEBUG_BREAK();
+        // Normally, we would exit(8) here.
+
+    }
+
+
+
     void            Test_MsgInfo(
         TEST_DATA       *this,
         const

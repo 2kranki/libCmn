@@ -476,8 +476,12 @@ TEST_VTBL     Test_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //Test_IsEnabled,
- 
+    (void *)Test_MsgDebug,
+    (void *)Test_MsgFatal,
+    (void *)Test_MsgInfo,
+    (void *)Test_MsgWarn,
+    (void *)Test_MsgClose,
+
 };
 
 

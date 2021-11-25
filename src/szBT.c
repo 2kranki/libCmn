@@ -723,6 +723,7 @@ extern "C" {
         }
 
         // Release objects and areas in other object.
+        szBT_DeleteAll(this);
 #ifdef  XYZZY
         if (pOther->pArray) {
             obj_Release(pOther->pArray);
@@ -745,6 +746,8 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
+        pOther->pDeleteExit = this->pDeleteExit;
+        pOther->pDeleteObj = this->pDeleteObj;
         
         //goto eom;
 
@@ -882,7 +885,7 @@ extern "C" {
 #endif
 
         // Not needed since all the data is stored in Blocks object
-        // whisch will free it.
+        // which will free it.
         //szBT_DeleteAll(this);
 
         obj_setVtbl(this, this->pSuperVtbl);

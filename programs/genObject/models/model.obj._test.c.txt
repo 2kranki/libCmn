@@ -65,7 +65,7 @@
 #include    <test_defs.h>
 #include    <Test_internal.h>
 #include    <trace.h>
-#include    <${LNAME}_internal.h>
+#include    <${NAMEL}_internal.h>
 #include    <JsonIn.h>
 #include    <SrcErrors.h>
 #include    <szTbl.h>
@@ -75,29 +75,29 @@
 
 
 
-ERESULT         Test_${LNAME}_OpenClose (
+ERESULT         Test_${NAMEL}_OpenClose (
     TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    ${UNAME}_DATA	    *pObj = OBJ_NIL;
+    ${NAMEU}_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = ${LNAME}_Alloc( );
+    pObj = ${NAMEL}_Alloc( );
     TestForNotNull(pObj, "Missing Test Alloc() object");
-    pObj = ${LNAME}_Init( pObj );
+    pObj = ${NAMEL}_Init( pObj );
     TestForNotNull(pObj, "Missing Test Init() object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_${UNAME});
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_${NAMEU});
         TestForTrue(fRc, "Failed Ident Test");
-#ifdef   ${UNAME}_MSGS
-        ${LNAME}_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#ifdef   ${NAMEU}_MSGS
+        ${NAMEL}_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
 #endif
         
         // Test something.
@@ -113,43 +113,43 @@ ERESULT         Test_${LNAME}_OpenClose (
 
 
 
-ERESULT         Test_${LNAME}_Copy01 (
+ERESULT         Test_${NAMEL}_Copy01 (
     TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    ${UNAME}_DATA	    *pObj1 = OBJ_NIL;
-    ${UNAME}_DATA	    *pObj2 = OBJ_NIL;
+    ${NAMEU}_DATA	    *pObj1 = OBJ_NIL;
+    ${NAMEU}_DATA	    *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(${UNAME}_JSON_SUPPORT) && defined(XYZZY)
+#if defined(${NAMEU}_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA	    *pStr = OBJ_NIL;
 #endif
     //int             iRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = ${LNAME}_New( );
+    pObj1 = ${NAMEL}_New( );
     TestForNotNull(pObj1, "Missing Test object");
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
-        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_${UNAME});
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_${NAMEU});
         TestForTrue(fRc, "Failed Ident Test");
-#ifdef   ${UNAME}_MSGS
-        ${LNAME}_setMsg(pObj1, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#ifdef   ${NAMEU}_MSGS
+        ${NAMEL}_setMsg(pObj1, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
 #endif
         
         // Test assign.
-        pObj2 = ${LNAME}_New();
+        pObj2 = ${NAMEL}_New();
         TestForNotNull(pObj2, "Missing copied object");
-        eRc = ${LNAME}_Assign(pObj1, pObj2);
+        eRc = ${NAMEL}_Assign(pObj1, pObj2);
         TestForFalse((ERESULT_FAILED(eRc)), "Assignment failed");
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_${UNAME});
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_${NAMEU});
         TestForTrue(fRc, "Failed Ident Test");
-        //iRc = ${LNAME}_Compare(pObj1, pObj2);
+        //iRc = ${NAMEL}_Compare(pObj1, pObj2);
         //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
@@ -157,12 +157,12 @@ ERESULT         Test_${LNAME}_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = ${LNAME}_Copy(pObj1);
+        pObj2 = ${NAMEL}_Copy(pObj1);
         TestForNotNull(pObj2, "Missing copied object");
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_${UNAME});
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_${NAMEU});
         TestForTrue(fRc, "Failed Ident Test");
-        //iRc = ${LNAME}_Compare(pObj1, pObj2);
+        //iRc = ${NAMEL}_Compare(pObj1, pObj2);
         //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
@@ -170,17 +170,17 @@ ERESULT         Test_${LNAME}_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(${UNAME}_JSON_SUPPORT) && defined(XYZZY)
-        pStr = ${LNAME}_ToJson(pObj1);
+#if defined(${NAMEU}_JSON_SUPPORT) && defined(XYZZY)
+        pStr = ${NAMEL}_ToJson(pObj1);
         TestForNotNull(pStr, "Missing JSON output");
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = ${LNAME}_NewFromJsonString(pStr);
+        pObj2 = ${NAMEL}_NewFromJsonString(pStr);
         TestForNotNull(pObj2, "Missing JSON created object");
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_${UNAME});
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_${NAMEU});
         TestForTrue(fRc, "Failed Ident Test");
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //iRc = ${LNAME}_Compare(pObj1, pObj2);
+        //iRc = ${NAMEL}_Compare(pObj1, pObj2);
         //TestForTrue((0 == iRc), "Failed Compare");
 
         obj_Release(pObj2);
@@ -197,31 +197,31 @@ ERESULT         Test_${LNAME}_Copy01 (
 
 
 
-ERESULT         Test_${LNAME}_Test01 (
+ERESULT         Test_${NAMEL}_Test01 (
     TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    ${UNAME}_DATA	    *pObj = OBJ_NIL;
+    ${NAMEU}_DATA	    *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = ${LNAME}_New( );
+    pObj = ${NAMEL}_New( );
     TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_${UNAME});
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_${NAMEU});
         TestForTrue(fRc, "Failed Ident Test");
-#ifdef   ${UNAME}_MSGS
-        ${LNAME}_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#ifdef   ${NAMEU}_MSGS
+        ${NAMEL}_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
 #endif
                 
         {
-            ASTR_DATA       *pStr = ${LNAME}_ToDebugString(pObj, 4);
+            ASTR_DATA       *pStr = ${NAMEL}_ToDebugString(pObj, 4);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -272,9 +272,9 @@ int     main (
     }
 
     // Execute tests.
-    TestExec("OpenClose", Test_${LNAME}_OpenClose, NULL, NULL);
-    //TestExec("Copy01", Test_${LNAME}_Copy01, NULL, NULL);
-    TestExec("Test01", Test_${LNAME}_Test01, NULL, NULL);
+    TestExec("OpenClose", Test_${NAMEL}_OpenClose, NULL, NULL);
+    //TestExec("Copy01", Test_${NAMEL}_Copy01, NULL, NULL);
+    TestExec("Test01", Test_${NAMEL}_Test01, NULL, NULL);
 
     obj_Release(pTest);
     pTest = OBJ_NIL;

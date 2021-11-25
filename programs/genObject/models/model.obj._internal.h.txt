@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   ${LNAME}_internal.h
+ * File:   ${NAMEL}_internal.h
  *	Generated ${DATE} ${TIME}
  *
  * Notes:
@@ -39,12 +39,12 @@
 
 
 
-#include        <${LNAME}.h>
+#include        <${NAMEL}.h>
 #include        <JsonIn.h>
 
 
-#ifndef ${UNAME}_INTERNAL_H
-#define	${UNAME}_INTERNAL_H
+#ifndef ${NAMEU}_INTERNAL_H
+#define	${NAMEU}_INTERNAL_H
 
 
 
@@ -62,7 +62,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct ${LNAME}_data_s	{
+struct ${NAMEL}_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
     OBJ_DATA        super;
@@ -73,7 +73,7 @@ struct ${LNAME}_data_s	{
     uint16_t        size;		    // maximum number of elements
     uint16_t        rsvd16;
 
-#ifdef   ${UNAME}_MSGS
+#ifdef   ${NAMEU}_MSGS
     // Informational and Warning Log Messages
     void            (*pMsgInfo)(OBJ_ID, const char *, ...);
     void            (*pMsgWarn)(OBJ_ID, uint16_t, const char *, ...);
@@ -83,11 +83,11 @@ struct ${LNAME}_data_s	{
 #pragma pack(pop)
 
     extern
-    struct ${LNAME}_class_data_s  ${LNAME}_ClassObj;
+    struct ${NAMEL}_class_data_s  ${NAMEL}_ClassObj;
 
     extern
     const
-    ${UNAME}_VTBL         ${LNAME}_Vtbl;
+    ${NAMEU}_VTBL         ${NAMEL}_Vtbl;
 
 
 
@@ -95,13 +95,13 @@ struct ${LNAME}_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  ${UNAME}_SINGLETON
-    ${UNAME}_DATA *     ${LNAME}_getSingleton (
+#ifdef  ${NAMEU}_SINGLETON
+    ${NAMEU}_DATA *     ${NAMEL}_getSingleton (
         void
     );
 
-    bool            ${LNAME}_setSingleton (
-     ${UNAME}_DATA       *pValue
+    bool            ${NAMEL}_setSingleton (
+     ${NAMEU}_DATA       *pValue
 );
 #endif
 
@@ -111,40 +111,40 @@ struct ${LNAME}_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  ${LNAME}_getSuperVtbl (
-        ${UNAME}_DATA     *this
+    OBJ_IUNKNOWN *  ${NAMEL}_getSuperVtbl (
+        ${NAMEU}_DATA     *this
     );
 
 
-    ERESULT         ${LNAME}_Assign (
-        ${UNAME}_DATA    *this,
-        ${UNAME}_DATA    *pOther
+    ERESULT         ${NAMEL}_Assign (
+        ${NAMEU}_DATA    *this,
+        ${NAMEU}_DATA    *pOther
     );
 
 
-    ${UNAME}_DATA *       ${LNAME}_Copy (
-        ${UNAME}_DATA     *this
+    ${NAMEU}_DATA *       ${NAMEL}_Copy (
+        ${NAMEU}_DATA     *this
     );
 
 
-    void            ${LNAME}_Dealloc (
+    void            ${NAMEL}_Dealloc (
         OBJ_ID          objId
     );
 
 
-    ${UNAME}_DATA *     ${LNAME}_DeepCopy (
-        ${UNAME}_DATA       *this
+    ${NAMEU}_DATA *     ${NAMEL}_DeepCopy (
+        ${NAMEU}_DATA       *this
     );
 
 
-#ifdef  ${UNAME}_JSON_SUPPORT
+#ifdef  ${NAMEU}_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    ${UNAME}_DATA *       ${LNAME}_ParseJsonObject (
+    ${NAMEU}_DATA *       ${NAMEL}_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -158,35 +158,35 @@ struct ${LNAME}_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ${LNAME}_ParseJsonFields (
+    ERESULT         ${NAMEL}_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        ${UNAME}_DATA     *pObject
+        ${NAMEU}_DATA     *pObject
     );
 #endif
 
 
-    void *          ${LNAME}_QueryInfo (
+    void *          ${NAMEL}_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  ${UNAME}_JSON_SUPPORT
+#ifdef  ${NAMEU}_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = ${LNAME}_ToJson(this);
+     ASTR_DATA      *pDesc = ${NAMEL}_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ${LNAME}_ToJson (
-        ${UNAME}_DATA      *this
+    ASTR_DATA *     ${NAMEL}_ToJson (
+        ${NAMEU}_DATA      *this
     );
 
 
@@ -199,8 +199,8 @@ struct ${LNAME}_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ${LNAME}_ToJsonFields (
-        ${UNAME}_DATA     *this,
+    ERESULT         ${NAMEL}_ToJsonFields (
+        ${NAMEU}_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -210,8 +210,8 @@ struct ${LNAME}_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			${LNAME}_Validate (
-        ${UNAME}_DATA       *this
+    bool			${NAMEL}_Validate (
+        ${NAMEU}_DATA       *this
     );
 #endif
 
@@ -221,5 +221,5 @@ struct ${LNAME}_data_s	{
 }
 #endif
 
-#endif	/* ${UNAME}_INTERNAL_H */
+#endif	/* ${NAMEU}_INTERNAL_H */
 

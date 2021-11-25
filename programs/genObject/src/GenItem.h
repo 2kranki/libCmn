@@ -1,16 +1,19 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  An Item to be generated (GenItem) Header
+//           An Item to be generated (GenItem) Header
 //****************************************************************
 /*
  * Program
  *          An Item to be generated (GenItem)
  * Purpose
- *          This object provides a standardized way of handling
- *          a separate GenItem to run things without complications
- *          of interfering with the main GenItem. A GenItem may be 
- *          called a GenItem on other O/S's.
+ *          This object provides a base class for each unit of work
+ *          to be executed.  All information for it is self-con-
+ *          tained allowing it be run as a separate thread if
+ *          necessary.
+ *
+ *          This object should only be responsible for generating
+ *          one file.
  *
  * Remarks
  *  1.      None
@@ -53,6 +56,7 @@
 
 #include        <genObject_defs.h>
 #include        <AStr.h>
+#include        <Dict.h>
 
 
 #ifndef         GENITEM_H
@@ -64,6 +68,7 @@
 //#define   GENITEM_SINGLETON        1
 
 
+#define GEN_LINE_LENGTH 71
 
 
 
@@ -98,6 +103,18 @@ extern "C" {
         // Methods:
         //bool        (*pIsEnabled)(GENITEM_DATA *);
     } GENITEM_CLASS_VTBL;
+
+
+    typedef struct Gen_object_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in GenItem_object.c.
+        // Properties:
+        // Methods:
+        const
+        char *      (*pDictLookupA)(OBJ_ID, const char *);
+        ERESULT     (*pGen)(OBJ_ID, const char *, ASTR_DATA *);
+    } GEN_OBJECT_VTBL;
 
 
     /* The following enum was generated from:
@@ -174,6 +191,35 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    DICT_DATA *     GenItem_getDict (
+        GENITEM_DATA    *this
+    );
+
+    bool            GenItem_setDict (
+        GENITEM_DATA    *this,
+        DICT_DATA       *pValue
+    );
+
+
+    bool            GenItem_setMsg (
+        GENITEM_DATA    *this,
+        void            (*pMsgInfo)(
+            APPL_DATA       *this,
+            const
+            char            *fmt,
+            ...
+        ),
+        void            (*pMsgWarn)(
+            APPL_DATA       *this,
+            uint16_t        iVerbose,
+            const
+            char            *fmt,
+            ...
+        ),
+        OBJ_ID       pObj
+    );
+
+
     PATH_DATA *     GenItem_getModel (
         GENITEM_DATA    *this
     );
@@ -184,7 +230,19 @@ extern "C" {
     );
 
 
-    
+    PATH_DATA *     GenItem_getOutput (
+        GENITEM_DATA    *this
+    );
+
+    bool            GenItem_setOutput (
+        GENITEM_DATA    *this,
+        PATH_DATA       *pValue
+    );
+
+
+
+
+
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
@@ -209,6 +267,43 @@ extern "C" {
     );
     
  
+    /*!
+     Run the preprocessor over the input file text.  The supplied dictionary
+     contains the names of all defined macros or preprocess variables.
+     This routine looks for "%ifdef" and "%ifndef" and "%endif" and removes
+     them in the returned AStr object. Text in between is also commented out
+     as appropriate.
+     This preprocessor was originally taken from "lemon" by Richard Hipp
+     which is part of SQLite, a great SQL tool. SQLite and this code was
+     placed in the Public Domain by its author(s).
+     @param     this    object pointer
+     @param     prefixA preprocess statement identifier
+     @param     z       a NUL-terminated character string containing all lines
+                        of text that need to be scanned. On output, the lines
+                        that need to be removed will be replaced with blank
+                        lines including the %ifdef, %if, %ifndef, %else and
+                        %endif lines.
+     @return    If succesful, an AStr object which has the lines not needed
+                removed.
+    */
+    ASTR_DATA *     GenItem_Preproc (
+        GENITEM_DATA    *this,
+        const
+        char            prefixA,
+        char            *z
+    );
+
+
+    /*! Set default values needed to process the model.
+     @param     this    object pointer
+     @return    If successful, then ERESULT_SUCESS. Otherwise, an ERESULT_*
+                error. Note: this is ignored in Appl.
+     */
+    ERESULT         GenItem_SetDefaults (
+        GENITEM_DATA    *this
+    );
+
+
 #ifdef  GENITEM_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in

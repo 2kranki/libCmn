@@ -41,6 +41,7 @@
 
 #include        <Test.h>
 #include        <JsonIn.h>
+#include        <logInterface.h>
 
 
 #ifndef TEST_INTERNAL_H

@@ -666,7 +666,7 @@ ERESULT         Test_Gen_Test06 (
     char            *pInput1A;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
-    fprintf(stderr, "Test Gen_CreateModelPath().\n");
+    fprintf(stderr, "Test Gen_Preproc().\n");
 
     pDict = Dict_New( );
     TestForNotNull(pDict, "OBJECT_NAME");

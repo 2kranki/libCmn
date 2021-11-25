@@ -154,6 +154,7 @@
                                 desc:"Keyword Lexical Scanner"},
         {name:"LexTri",         desc:"C Trigraph Lexical Scanner"},
         {name:"LineIndex",      desc:"Line Index into File or Buffer", deps:["SrcLoc.h"], json:true},
+        {name:"Log",            desc:"Log File Support", deps:["Appl.h","FileIO.h"]},
         {name:"lru",            deps:["listdl.h"]},
         {name:"memMac64",       deps:["listdl.h"], os:["macos64"]},
         {name:"memWin32",       deps:["memWin32.h","memWin32_internal.h"], os:["win32"], test:false},

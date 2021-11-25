@@ -1,16 +1,16 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  ${DESC} (${LNAME}) Header
+//                  ${DESC} (${NAMEL}) Header
 //****************************************************************
 /*
  * Program
- *			${DESC} (${LNAME})
+ *			${DESC} (${NAMEL})
  * Purpose
  *			This object provides a standardized way of handling
- *          a separate ${LNAME} to run things without complications
- *          of interfering with the main ${LNAME}. A ${LNAME} may be 
- *          called a ${LNAME} on other O/S's.
+ *          a separate ${NAMEL} to run things without complications
+ *          of interfering with the main ${NAMEL}. A ${NAMEL} may be 
+ *          called a ${NAMEL} on other O/S's.
  *
  * Remarks
  *	1.      None
@@ -55,14 +55,14 @@
 #include        <AStr.h>
 
 
-#ifndef         ${UNAME}_H
-#define         ${UNAME}_H
+#ifndef         ${NAMEU}_H
+#define         ${NAMEU}_H
 
 
 ${DEF_IMMUTABLE}
 ${DEF_JSON}
 ${DEF_SINGLETON}
-//#define       ${UNAME}_MSGS   1
+//#define       ${NAMEU}_MSGS   1
 
 
 
@@ -78,27 +78,27 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct ${LNAME}_data_s	${UNAME}_DATA;          // Inherits from ${USUPER}
-    typedef struct ${LNAME}_class_data_s ${UNAME}_CLASS_DATA;  // Inherits from OBJ
+    typedef struct ${NAMEL}_data_s	${NAMEU}_DATA;          // Inherits from ${SUPERU}
+    typedef struct ${NAMEL}_class_data_s ${NAMEU}_CLASS_DATA;  // Inherits from OBJ
 
-    typedef struct ${LNAME}_vtbl_s	{
+    typedef struct ${NAMEL}_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        //${LSUPER}_VTBL    iVtbl;              // Inherited Vtbl.
+        //${SUPERL}_VTBL    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in ${LNAME}_object.c.
+        // method names to the vtbl definition in ${NAMEL}_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(${UNAME}_DATA *);
-    } ${UNAME}_VTBL;
+        //bool        (*pIsEnabled)(${NAMEU}_DATA *);
+    } ${NAMEU}_VTBL;
 
-    typedef struct ${LNAME}_class_vtbl_s	{
+    typedef struct ${NAMEL}_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in ${LNAME}_object.c.
+        // method names to the vtbl definition in ${NAMEL}_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(${UNAME}_DATA *);
-    } ${UNAME}_CLASS_VTBL;
+        //bool        (*pIsEnabled)(${NAMEU}_DATA *);
+    } ${NAMEU}_CLASS_VTBL;
 
 
 
@@ -112,12 +112,12 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-#ifdef  ${UNAME}_SINGLETON
-    ${UNAME}_DATA *     ${LNAME}_Shared (
+#ifdef  ${NAMEU}_SINGLETON
+    ${NAMEU}_DATA *     ${NAMEL}_Shared (
         void
     );
 
-    void            ${LNAME}_SharedReset (
+    void            ${NAMEL}_SharedReset (
         void
     );
 #endif
@@ -127,29 +127,29 @@ extern "C" {
      Allocate a new Object and partially initialize. Also, this sets an
      indicator that the object was alloc'd which is tested when the object is
      released.
-     @return    pointer to ${LNAME} object if successful, otherwise OBJ_NIL.
+     @return    pointer to ${NAMEL} object if successful, otherwise OBJ_NIL.
      */
-    ${UNAME}_DATA *     ${LNAME}_Alloc (
+    ${NAMEU}_DATA *     ${NAMEL}_Alloc (
         void
     );
     
     
-    OBJ_ID          ${LNAME}_Class (
+    OBJ_ID          ${NAMEL}_Class (
         void
     );
     
     
-    ${UNAME}_DATA *     ${LNAME}_New (
+    ${NAMEU}_DATA *     ${NAMEL}_New (
         void
     );
     
     
-#ifdef  ${UNAME}_JSON_SUPPORT
-    ${UNAME}_DATA *   ${LNAME}_NewFromJsonString (
+#ifdef  ${NAMEU}_JSON_SUPPORT
+    ${NAMEU}_DATA *   ${NAMEL}_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    ${UNAME}_DATA *   ${LNAME}_NewFromJsonStringA (
+    ${NAMEU}_DATA *   ${NAMEL}_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -161,12 +161,12 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-#ifdef ${UNAME}_MSGS
+#ifdef ${NAMEU}_MSGS
     /*! @property   Messages
         Allows information and warning messages to be issued.
      */
-    bool            ${LNAME}_setMsgs (
-        ${UNAME}_DATA    *this,
+    bool            ${NAMEL}_setMsgs (
+        ${NAMEU}_DATA    *this,
         void            (*pMsgInfo)(OBJ_ID, const char *, ...),
         void            (*pMsgWarn)(OBJ_ID, uint16_t, const char *, ...),
         OBJ_ID          pObj
@@ -179,41 +179,41 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     ${LNAME}_Disable (
-        ${UNAME}_DATA		*this
+    ERESULT     ${NAMEL}_Disable (
+        ${NAMEU}_DATA		*this
     );
 
 
-    ERESULT     ${LNAME}_Enable (
-        ${UNAME}_DATA		*this
+    ERESULT     ${NAMEL}_Enable (
+        ${NAMEU}_DATA		*this
     );
 
    
-    ${UNAME}_DATA *   ${LNAME}_Init (
-        ${UNAME}_DATA     *this
+    ${NAMEU}_DATA *   ${NAMEL}_Init (
+        ${NAMEU}_DATA     *this
     );
 
 
-    ERESULT     ${LNAME}_IsEnabled (
-        ${UNAME}_DATA		*this
+    ERESULT     ${NAMEL}_IsEnabled (
+        ${NAMEU}_DATA		*this
     );
     
  
-#ifdef  ${UNAME}_JSON_SUPPORT
+#ifdef  ${NAMEU}_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = ${LNAME}_ToJson(this);
+     ASTR_DATA      *pDesc = ${NAMEL}_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ${LNAME}_ToJson (
-        ${UNAME}_DATA   *this
+    ASTR_DATA *     ${NAMEL}_ToJson (
+        ${NAMEU}_DATA   *this
     );
 #endif
 
@@ -222,7 +222,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = ${LNAME}_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = ${NAMEL}_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -230,8 +230,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ${LNAME}_ToDebugString (
-        ${UNAME}_DATA     *this,
+    ASTR_DATA *     ${NAMEL}_ToDebugString (
+        ${NAMEU}_DATA     *this,
         int             indent
     );
     
@@ -242,5 +242,5 @@ extern "C" {
 }
 #endif
 
-#endif	/* ${UNAME}_H */
+#endif	/* ${NAMEU}_H */
 

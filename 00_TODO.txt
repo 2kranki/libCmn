@@ -3,22 +3,6 @@
 The following are things that are being thought about. Whether they get done or not
 will depend upon time and resources.
 
--- genObject 
-    --  Insure that one object within it can accept a dictionary, input file and
-        generate a supplied name/destination for the output file.
-        --  Add the simple preprocessor from Lemon using '%' so that it does not
-            interfere with the C preprocessor and convert "%%" to "%".
-    --  Add ability to define a property name, type and r/w status and include it
-        in the object generation phase. See "genGetterSetter".
-    --  Create a subdirectory in the model for the "Main" object and generate it
-        along with "mainProgram.c". Use an option of "--main" maybe.
-    --  Create a subdirectory in the model for the "Dict" object and generate it
-        when option, "--dict", is found.
-    --  Look into having insert points within a model where code can be brought in
-        from the dictionary or subdirectory optionally.
-    --  Look into being able to format the output to specific standards such as
-        if/while/switch, properties, method definitions, etc.
-
 --  CmdUtl
     --  For BOOL options, disregard '=' and anything after, but allow the long option
         name to be prefixed with "not_" to turn it off.

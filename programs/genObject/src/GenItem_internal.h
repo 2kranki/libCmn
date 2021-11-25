@@ -41,6 +41,7 @@
 
 #include        <GenItem.h>
 #include        <JsonIn.h>
+#include        <logInterface.h>
 
 
 #ifndef GENITEM_INTERNAL_H
@@ -69,11 +70,21 @@ struct GenItem_data_s  {
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    DICT_DATA       *pDict;
     PATH_DATA       *pModel;
     PATH_DATA       *pOutput;
     uint16_t        size;           // maximum number of elements
     uint16_t        rsvd16;
+    ASTR_DATA       *pFile;
 
+    const char *    (*pDictLookupA)(OBJ_ID, const char *);
+    OBJ_ID          pDictObj;
+
+    ERESULT         (*pGen)(OBJ_ID, const char *);
+    OBJ_ID          pGenObj;
+
+    LOG_INTERFACE   pLog;
+    
 };
 #pragma pack(pop)
 
@@ -91,7 +102,7 @@ struct GenItem_data_s  {
     //---------------------------------------------------------------
 
 #ifdef  GENITEM_SINGLETON
-    GENITEM_DATA *     GenItem_getSingleton (
+    GENITEM_DATA *  GenItem_getSingleton (
         void
     );
 
@@ -107,7 +118,7 @@ struct GenItem_data_s  {
     //---------------------------------------------------------------
 
     OBJ_IUNKNOWN *  GenItem_getSuperVtbl (
-        GENITEM_DATA     *this
+        GENITEM_DATA    *this
     );
 
 
@@ -117,8 +128,8 @@ struct GenItem_data_s  {
     );
 
 
-    GENITEM_DATA *       GenItem_Copy (
-        GENITEM_DATA     *this
+    GENITEM_DATA *  GenItem_Copy (
+        GENITEM_DATA    *this
     );
 
 
@@ -127,8 +138,8 @@ struct GenItem_data_s  {
     );
 
 
-    GENITEM_DATA *     GenItem_DeepCopy (
-        GENITEM_DATA       *this
+    GENITEM_DATA *  GenItem_DeepCopy (
+        GENITEM_DATA    *this
     );
 
 
@@ -139,7 +150,7 @@ struct GenItem_data_s  {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    GENITEM_DATA *       GenItem_ParseJsonObject (
+    GENITEM_DATA *  GenItem_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -155,9 +166,22 @@ struct GenItem_data_s  {
      */
     ERESULT         GenItem_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        GENITEM_DATA     *pObject
+        GENITEM_DATA    *pObject
     );
 #endif
+
+
+    /*!
+     The text in the input is part of the argument to an %ifdef or %ifndef.
+     Evaluate the text as a boolean expression.  Return true or false.
+     @param     this    object pointer
+     @return    exprssion evaluates to a true (1+) or false (0).
+     */
+    int             GenItem_PreProcBoolEval (
+        GENITEM_DATA    *this,
+        char            *z,
+        int             lineno
+    );
 
 
     void *          GenItem_QueryInfo (
@@ -181,7 +205,7 @@ struct GenItem_data_s  {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     GenItem_ToJson (
-        GENITEM_DATA      *this
+        GENITEM_DATA    *this
     );
 
 
@@ -195,7 +219,7 @@ struct GenItem_data_s  {
                 error code.
      */
     ERESULT         GenItem_ToJsonFields (
-        GENITEM_DATA     *this,
+        GENITEM_DATA    *this,
         ASTR_DATA       *pStr
     );
 #endif

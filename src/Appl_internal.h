@@ -42,6 +42,7 @@
 #include        <Appl.h>
 #include        <AStrCArray.h>
 #include        <JsonIn.h>
+#include        <Log.h>
 #include        <NodeHash.h>
 
 
@@ -87,6 +88,7 @@ struct Appl_data_s	{
     ASTRARRAY_DATA  *pEnv;
     PATH_DATA       *pProgramPath;
     CMDUTL_OPTION   *pPgmOptDefns;
+    LOG_DATA        *pLog;
 
     OBJ_ID          pObjPrs;
     ERESULT         (*pParseArgsDefaults)(OBJ_ID);

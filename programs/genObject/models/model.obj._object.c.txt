@@ -1,6 +1,6 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for '${LNAME}'
+//	Class Object Metods and Tables for '${NAMEL}'
 //	Generated ${DATE} ${TIME}
 
 
@@ -34,9 +34,9 @@
 
 
 
-#define			${UNAME}_OBJECT_C	    1
-#include        <${LNAME}_internal.h>
-#ifdef  ${UNAME}_SINGLETON
+#define			${NAMEU}_OBJECT_C	    1
+#include        <${NAMEL}_internal.h>
+#ifdef  ${NAMEU}_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct ${LNAME}_class_data_s	{
+struct ${NAMEL}_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  ${UNAME}_SINGLETON
+#ifdef  ${NAMEU}_SINGLETON
     volatile
-    ${UNAME}_DATA       *pSingleton;
+    ${NAMEU}_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct ${LNAME}_class_data_s	{
 
 
 static
-void *          ${LNAME}Class_QueryInfo (
+void *          ${NAMEL}Class_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          ${LNAME}Class_QueryInfo (
 
 static
 const
-OBJ_INFO        ${LNAME}_Info;            // Forward Reference
+OBJ_INFO        ${NAMEL}_Info;            // Forward Reference
 
 
 
 
 static
-bool            ${LNAME}Class_IsKindOf (
+bool            ${NAMEL}Class_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_${UNAME}_CLASS == classID) {
+    if (OBJ_IDENT_${NAMEU}_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(${LNAME}_Class())->pClassSuperObject;
+    pObj = obj_getInfo(${NAMEL}_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            ${LNAME}Class_IsKindOf (
 
 
 static
-uint16_t		${LNAME}Class_WhoAmI (
+uint16_t		${NAMEL}Class_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_${UNAME}_CLASS;
+    return OBJ_IDENT_${NAMEU}_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		${LNAME}Class_WhoAmI (
 
 static
 const
-${UNAME}_CLASS_VTBL    class_Vtbl = {
+${NAMEU}_CLASS_VTBL    class_Vtbl = {
     {
-        &${LNAME}_Info,
-        ${LNAME}Class_IsKindOf,
+        &${NAMEL}_Info,
+        ${NAMEL}Class_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        ${LNAME}_Class,
-        ${LNAME}Class_WhoAmI,
-        (P_OBJ_QUERYINFO)${LNAME}Class_QueryInfo,
-        NULL                        // ${LNAME}Class_ToDebugString
+        ${NAMEL}_Class,
+        ${NAMEL}Class_WhoAmI,
+        (P_OBJ_QUERYINFO)${NAMEL}Class_QueryInfo,
+        NULL                        // ${NAMEL}Class_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ ${UNAME}_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-${UNAME}_CLASS_DATA  ${LNAME}_ClassObj = {
+${NAMEU}_CLASS_DATA  ${NAMEL}_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(${UNAME}_CLASS_DATA),                  // cbSize
+        sizeof(${NAMEU}_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,22 +162,22 @@ ${UNAME}_CLASS_DATA  ${LNAME}_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  ${UNAME}_SINGLETON
+#ifdef  ${NAMEU}_SINGLETON
 extern
 const
-${UNAME}_VTBL       ${LNAME}_VtblShared;
+${NAMEU}_VTBL       ${NAMEL}_VtblShared;
 
 
-${UNAME}_DATA *     ${LNAME}_getSingleton (
+${NAMEU}_DATA *     ${NAMEL}_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(${LNAME}_ClassObj.pSingleton);
+    return (OBJ_ID)(${NAMEL}_ClassObj.pSingleton);
 }
 
 
-bool            ${LNAME}_setSingleton (
-    ${UNAME}_DATA       *pValue
+bool            ${NAMEL}_setSingleton (
+    ${NAMEU}_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -197,10 +197,10 @@ bool            ${LNAME}_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (${LNAME}_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(${LNAME}_ClassObj.pSingleton));
+    if (${NAMEL}_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(${NAMEL}_ClassObj.pSingleton));
     }
-    ${LNAME}_ClassObj.pSingleton = pValue;
+    ${NAMEL}_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -210,18 +210,18 @@ bool            ${LNAME}_setSingleton (
 
 
 
-${UNAME}_DATA *     ${LNAME}_Shared (
+${NAMEU}_DATA *     ${NAMEL}_Shared (
     void
 )
 {
-    ${UNAME}_DATA       *this = (OBJ_ID)(${LNAME}_ClassObj.pSingleton);
+    ${NAMEU}_DATA       *this = (OBJ_ID)(${NAMEL}_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = ${LNAME}_New( );
-        obj_setVtbl(this, (void *)&${LNAME}_VtblShared);
-        ${LNAME}_setSingleton(this);
+        this = ${NAMEL}_New( );
+        obj_setVtbl(this, (void *)&${NAMEL}_VtblShared);
+        ${NAMEL}_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // ${LNAME}_ClassObj.pSingleton = OBJ_NIL;
+        // ${NAMEL}_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -229,16 +229,16 @@ ${UNAME}_DATA *     ${LNAME}_Shared (
 
 
 
-void            ${LNAME}_SharedReset (
+void            ${NAMEL}_SharedReset (
     void
 )
 {
-    ${UNAME}_DATA       *this = (OBJ_ID)(${LNAME}_ClassObj.pSingleton);
+    ${NAMEU}_DATA       *this = (OBJ_ID)(${NAMEL}_ClassObj.pSingleton);
     
     if (this) {
-        obj_setVtbl(this, (void *)&${LNAME}_Vtbl);
+        obj_setVtbl(this, (void *)&${NAMEL}_Vtbl);
         obj_Release(this);
-        ${LNAME}_ClassObj.pSingleton = OBJ_NIL;
+        ${NAMEL}_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -254,13 +254,13 @@ void            ${LNAME}_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          ${LNAME}Class_QueryInfo (
+void *          ${NAMEL}Class_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    ${UNAME}_CLASS_DATA *this = objId;
+    ${NAMEU}_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -271,7 +271,7 @@ void *          ${LNAME}Class_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(${UNAME}_DATA);
+            return (void *)sizeof(${NAMEU}_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -284,13 +284,13 @@ void *          ${LNAME}Class_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&${LNAME}_Info;
+                        return (void *)&${NAMEL}_Info;
                     }
                     break;
                     
                 case 'S':
                     if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                        return (void *)&${LNAME}_Info.pClassSuperObject;
+                        return (void *)&${NAMEL}_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -308,35 +308,35 @@ void *          ${LNAME}Class_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return ${LNAME}_New;
+                        return ${NAMEL}_New;
                     }
                     break;
                     
 				case 'P':
-#ifdef  ${UNAME}_JSON_SUPPORT
+#ifdef  ${NAMEU}_JSON_SUPPORT
 					if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-						return ${LNAME}_ParseJsonFields;
+						return ${NAMEL}_ParseJsonFields;
 					}
 					if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-						return ${LNAME}_ParseJsonObject;
+						return ${NAMEL}_ParseJsonObject;
 					}
 #endif
 					break;
 
 				case 'T':
-#ifdef  ${UNAME}_JSON_SUPPORT
+#ifdef  ${NAMEU}_JSON_SUPPORT
 					if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-						return ${LNAME}_ToJsonFields;
+						return ${NAMEL}_ToJsonFields;
 					}
 					if (str_Compare("ToJson", (char *)pStr) == 0) {
-						return ${LNAME}_ToJson;
+						return ${NAMEL}_ToJson;
 					}
 #endif
 					break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return ${LNAME}Class_WhoAmI;
+                        return ${NAMEL}Class_WhoAmI;
                     }
                     break;
                     
@@ -356,7 +356,7 @@ void *          ${LNAME}Class_QueryInfo (
 
 
 static
-bool            ${LNAME}_IsKindOf (
+bool            ${NAMEL}_IsKindOf (
     uint16_t		classID
 )
 {
@@ -364,14 +364,14 @@ bool            ${LNAME}_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_${UNAME} == classID) {
+    if (OBJ_IDENT_${NAMEU} == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(${LNAME}_Class())->pClassSuperObject;
+    pObj = obj_getInfo(${NAMEL}_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -385,25 +385,25 @@ bool            ${LNAME}_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            ${LNAME}_Dealloc (
+void            ${NAMEL}_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          ${LNAME}_Class (
+OBJ_ID          ${NAMEL}_Class (
     void
 )
 {
-    return (OBJ_ID)&${LNAME}_ClassObj;
+    return (OBJ_ID)&${NAMEL}_ClassObj;
 }
 
 
 static
-uint16_t		${LNAME}_WhoAmI (
+uint16_t		${NAMEL}_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_${UNAME};
+    return OBJ_IDENT_${NAMEU};
 }
 
 
@@ -414,35 +414,35 @@ uint16_t		${LNAME}_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
-#ifdef  ${UNAME}_SINGLETON
+#ifdef  ${NAMEU}_SINGLETON
 // A Shared object ignores Retain() and Release() except for
 // initialization and termination. So, there must be an
 // independent VTbl from the normal which does support Retain()
 // and Release().
 const
-${UNAME}_VTBL     ${LNAME}_VtblShared = {
+${NAMEU}_VTBL     ${NAMEL}_VtblShared = {
     {
-        &${LNAME}_Info,
-        ${LNAME}_IsKindOf,
+        &${NAMEL}_Info,
+        ${NAMEL}_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        ${LNAME}_Dealloc,
-        ${LNAME}_Class,
-        ${LNAME}_WhoAmI,
-        (P_OBJ_QUERYINFO)${LNAME}_QueryInfo,
-        (P_OBJ_TOSTRING)${LNAME}_ToDebugString,
-        NULL,			// ${LNAME}_Enable,
-        NULL,			// ${LNAME}_Disable,
-        NULL,			// (P_OBJ_ASSIGN)${LNAME}_Assign,
-        NULL,			// (P_OBJ_COMPARE)${LNAME}_Compare,
-        NULL, 			// (P_OBJ_PTR)${LNAME}_Copy,
-        NULL, 			// (P_OBJ_PTR)${LNAME}_DeepCopy,
-        NULL 			// (P_OBJ_HASH)${LNAME}_Hash,
+        ${NAMEL}_Dealloc,
+        ${NAMEL}_Class,
+        ${NAMEL}_WhoAmI,
+        (P_OBJ_QUERYINFO)${NAMEL}_QueryInfo,
+        (P_OBJ_TOSTRING)${NAMEL}_ToDebugString,
+        NULL,			// ${NAMEL}_Enable,
+        NULL,			// ${NAMEL}_Disable,
+        NULL,			// (P_OBJ_ASSIGN)${NAMEL}_Assign,
+        NULL,			// (P_OBJ_COMPARE)${NAMEL}_Compare,
+        NULL, 			// (P_OBJ_PTR)${NAMEL}_Copy,
+        NULL, 			// (P_OBJ_PTR)${NAMEL}_DeepCopy,
+        NULL 			// (P_OBJ_HASH)${NAMEL}_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //${LNAME}_IsEnabled,
+    //${NAMEL}_IsEnabled,
  
 };
 #endif
@@ -454,29 +454,29 @@ ${UNAME}_VTBL     ${LNAME}_VtblShared = {
 // just that they are deleted when their usage count
 // goes to zero.
 const
-${UNAME}_VTBL     ${LNAME}_Vtbl = {
+${NAMEU}_VTBL     ${NAMEL}_Vtbl = {
     {
-        &${LNAME}_Info,
-        ${LNAME}_IsKindOf,
+        &${NAMEL}_Info,
+        ${NAMEL}_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        ${LNAME}_Dealloc,
-        ${LNAME}_Class,
-        ${LNAME}_WhoAmI,
-        (P_OBJ_QUERYINFO)${LNAME}_QueryInfo,
-        (P_OBJ_TOSTRING)${LNAME}_ToDebugString,
-        NULL,			// ${LNAME}_Enable,
-        NULL,			// ${LNAME}_Disable,
-        NULL,			// (P_OBJ_ASSIGN)${LNAME}_Assign,
-        NULL,			// (P_OBJ_COMPARE)${LNAME}_Compare,
-        NULL, 			// (P_OBJ_PTR)${LNAME}_Copy,
-        NULL, 			// (P_OBJ_PTR)${LNAME}_DeepCopy,
-        NULL 			// (P_OBJ_HASH)${LNAME}_Hash,
+        ${NAMEL}_Dealloc,
+        ${NAMEL}_Class,
+        ${NAMEL}_WhoAmI,
+        (P_OBJ_QUERYINFO)${NAMEL}_QueryInfo,
+        (P_OBJ_TOSTRING)${NAMEL}_ToDebugString,
+        NULL,			// ${NAMEL}_Enable,
+        NULL,			// ${NAMEL}_Disable,
+        NULL,			// (P_OBJ_ASSIGN)${NAMEL}_Assign,
+        NULL,			// (P_OBJ_COMPARE)${NAMEL}_Compare,
+        NULL, 			// (P_OBJ_PTR)${NAMEL}_Copy,
+        NULL, 			// (P_OBJ_PTR)${NAMEL}_DeepCopy,
+        NULL 			// (P_OBJ_HASH)${NAMEL}_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //${LNAME}_IsEnabled,
+    //${NAMEL}_IsEnabled,
  
 };
 
@@ -484,13 +484,13 @@ ${UNAME}_VTBL     ${LNAME}_Vtbl = {
 
 static
 const
-OBJ_INFO        ${LNAME}_Info = {
-    "${LNAME}",
+OBJ_INFO        ${NAMEL}_Info = {
+    "${NAMEL}",
     "${DESC}",
-    (OBJ_DATA *)&${LNAME}_ClassObj,
-    (OBJ_DATA *)&${LSUPER}_ClassObj,
-    (OBJ_IUNKNOWN *)&${LNAME}_Vtbl,
-    sizeof(${UNAME}_DATA)
+    (OBJ_DATA *)&${NAMEL}_ClassObj,
+    (OBJ_DATA *)&${SUPERL}_ClassObj,
+    (OBJ_IUNKNOWN *)&${NAMEL}_Vtbl,
+    sizeof(${NAMEU}_DATA)
 };
 
 

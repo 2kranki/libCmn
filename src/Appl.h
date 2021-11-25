@@ -79,6 +79,7 @@
 #include        <AStrCArray.h>
 #include        <CmdUtl.h>
 #include        <DateTime.h>
+#include        <Log.h>
 #include        <Node.h>
 
 
@@ -113,7 +114,11 @@ extern "C" {
         // method names to the vtbl definition in Appl_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(APPL_DATA *);
+        bool        (*pGetDebug)(OBJ_ID);
+        bool        (*pGetForce)(OBJ_ID);
+        bool        (*pGetQuiet)(OBJ_ID);
+        int         (*pGetVerbose)(OBJ_ID);
+        void        (*pExit)(OBJ_ID, int);
     } APPL_VTBL;
 
     typedef struct Appl_class_vtbl_s	{
@@ -311,6 +316,11 @@ extern "C" {
     );
 
 
+    LOG_DATA *      Appl_getLog (
+        APPL_DATA       *this
+    );
+
+
     PATH_DATA *     Appl_getProgramPath (
         APPL_DATA       *this
     );
@@ -374,6 +384,18 @@ extern "C" {
      */
     bool            Appl_IsMore (
         APPL_DATA       *this
+    );
+
+
+    /*!
+     Issue a Fatal message and quit with exit code of 8.
+     @param     this        Object Pointer
+     @param     fmt         fprint type format     */
+    void            Appl_MsgFatal(
+        APPL_DATA       *this,
+        const
+        char            *fmt,
+        ...
     );
 
 

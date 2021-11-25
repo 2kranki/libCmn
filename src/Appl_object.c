@@ -420,8 +420,12 @@ APPL_VTBL     Appl_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //Appl_IsEnabled,
- 
+    (void *)Appl_getDebug,
+    (void *)Appl_getForce,
+    (void *)Appl_getQuiet,
+    (void *)Appl_getVerbose,
+    (void *)Appl_Exit,
+
 };
 
 

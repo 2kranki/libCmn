@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (11/22/2021 15:44:26.000)
+# (11/25/2021  8:24:49.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -601,6 +601,16 @@ $(OBJDIR)/LineIndex_json.o: $(SRCDIR)/LineIndex_json.c $(SRCDIR)/LineIndex.h $(S
 OBJS += $(OBJDIR)/LineIndex_object.o
 
 $(OBJDIR)/LineIndex_object.o: $(SRCDIR)/LineIndex_object.c $(SRCDIR)/LineIndex.h $(SRCDIR)/LineIndex_internal.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Log.o
+
+$(OBJDIR)/Log.o: $(SRCDIR)/Log.c $(SRCDIR)/Appl.h $(SRCDIR)/FileIO.h $(SRCDIR)/Log.h $(SRCDIR)/Log_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Log_object.o
+
+$(OBJDIR)/Log_object.o: $(SRCDIR)/Log_object.c $(SRCDIR)/Appl.h $(SRCDIR)/FileIO.h $(SRCDIR)/Log.h $(SRCDIR)/Log_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Money64.o
@@ -2382,6 +2392,12 @@ Lex_test: $(TEST_SRC)/Lex_test.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex_internal.h $(SRCD
 TESTS += LineIndex_test
 
 LineIndex_test: $(TEST_SRC)/LineIndex_test.c $(SRCDIR)/LineIndex.h $(SRCDIR)/LineIndex_internal.h $(SRCDIR)/SrcLoc.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += Log_test
+
+Log_test: $(TEST_SRC)/Log_test.c $(SRCDIR)/Log.h $(SRCDIR)/Log_internal.h $(SRCDIR)/Appl.h $(SRCDIR)/FileIO.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

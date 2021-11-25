@@ -810,6 +810,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          L o g
+    //---------------------------------------------------------------
+
+    LOG_DATA *      Appl_getLog (
+        APPL_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if( !Appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pLog;
+    }
+
+
+    bool            Appl_setLog (
+        APPL_DATA       *this,
+        LOG_DATA        *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pLog) {
+            obj_Release(this->pLog);
+        }
+        this->pLog = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      P a r s e  A r g s
     //---------------------------------------------------------------
 
@@ -1319,12 +1365,19 @@ extern "C" {
         }
 #endif
 
+        if (this->pLog) {
+            Log_setAppl(this->pLog, OBJ_NIL);
+        }
         Appl_setArgs(this, OBJ_NIL);
         Appl_setCmd(this, OBJ_NIL);
         Appl_setDateTime(this, OBJ_NIL);
         Appl_setEnv(this, OBJ_NIL);
+        Appl_setLog(this, OBJ_NIL);
         Appl_setProgramPath(this, OBJ_NIL);
         Appl_setProperties(this, OBJ_NIL);
+        // We close log last so that the other objects have an oppurtunity to
+        // issue messages if needed.
+        Appl_setLog(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1635,6 +1688,14 @@ extern "C" {
             return OBJ_NIL;
         }
 
+        this->pLog = Log_New();
+        if (OBJ_NIL == this->pLog) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        }
+        Log_setAppl(this->pLog, this);
+
 #ifdef NDEBUG
 #else
         if (!Appl_Validate(this)) {
@@ -1726,6 +1787,42 @@ extern "C" {
     //---------------------------------------------------------------
     //                       M e s s a g e s
     //---------------------------------------------------------------
+
+    void            Appl_MsgFatal(
+        APPL_DATA       *this,
+        const
+        char            *fmt,
+        ...
+    )
+    {
+        va_list         argsp;
+
+        // Do initialization.
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Appl_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return;
+        }
+#endif
+
+        va_start( argsp, fmt );
+        fprintf( stderr, "FATAL:  " );
+        vfprintf( stderr, fmt, argsp );
+        va_end( argsp );
+        fprintf( stderr, "\n\n\n\n" );
+
+        DEBUG_BREAK();
+        exit(8);
+    }
+
+
 
     void            Appl_MsgInfo(
         APPL_DATA       *this,

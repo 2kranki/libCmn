@@ -1,0 +1,15 @@
+# genEnum --prefix=PropItem --name=type misc/propitem_types.txt
+        astr
+        flag8
+        flag16
+	flag32
+	int8
+	int16
+	int32
+	int64
+	object
+	uint8
+	uint16
+	uint32
+	uint64
+

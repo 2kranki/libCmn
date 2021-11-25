@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   ${LNAME}_json.c
+ * File:   ${NAMEL}_json.c
  *
  *	Generated ${DATE} ${TIME}
  *
@@ -42,7 +42,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include    <${LNAME}_internal.h>
+#include    <${NAMEL}_internal.h>
 #include    <stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -79,9 +79,9 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT     ${LNAME}_ParseJsonFields (
+    ERESULT     ${NAMEL}_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        ${UNAME}_DATA     *pObject
+        ${NAMEU}_DATA     *pObject
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -105,7 +105,7 @@ extern "C" {
         if (ERESULT_OK(eRc)) {
             ASTR_DATA       *pWrk = AStr_ParseJsonObject(pParser);
             if (pWrk) {
-                ${LNAME}_setErrorStr(pObject, pWrk);
+                ${NAMEL}_setErrorStr(pObject, pWrk);
                 obj_Release(pWrk);
             }
             JsonIn_SubObjectEnd(pParser);
@@ -125,32 +125,32 @@ extern "C" {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    ${UNAME}_DATA * ${LNAME}_ParseJsonObject (
+    ${NAMEU}_DATA * ${NAMEL}_ParseJsonObject (
         JSONIN_DATA     *pParser
     )
     {
         ERESULT         eRc;
-        ${UNAME}_DATA   *pObject = OBJ_NIL;
+        ${NAMEU}_DATA   *pObject = OBJ_NIL;
         const
         OBJ_INFO        *pInfo;
         //int64_t         intIn;
         //ASTR_DATA       *pWrk;
 
-        JsonIn_RegisterClass(${LNAME}_Class());
+        JsonIn_RegisterClass(${NAMEL}_Class());
 
-        pInfo = obj_getInfo(${LNAME}_Class());
+        pInfo = obj_getInfo(${NAMEL}_Class());
         eRc = JsonIn_ConfirmObjectTypeA(pParser, pInfo->pClassName);
         if (ERESULT_FAILED(eRc)) {
             fprintf(stderr, "ERROR - objectType is invalid!\n");
             goto exit00;
         }
 
-        pObject = ${LNAME}_New( );
+        pObject = ${NAMEL}_New( );
         if (OBJ_NIL == pObject) {
             goto exit00;
         }
         
-        eRc =  ${LNAME}_ParseJsonFields(pParser, pObject);
+        eRc =  ${NAMEL}_ParseJsonFields(pParser, pObject);
         if (ERESULT_FAILED(eRc)) {
             obj_Release(pObject);
             pObject = OBJ_NIL;
@@ -176,13 +176,13 @@ extern "C" {
     //===============================================================
     
 
-    ${UNAME}_DATA *   ${LNAME}_NewFromJsonString (
+    ${NAMEU}_DATA *   ${NAMEL}_NewFromJsonString (
         ASTR_DATA       *pString
     )
     {
         JSONIN_DATA     *pParser;
         ERESULT         eRc;
-        ${UNAME}_DATA   *pObject = OBJ_NIL;
+        ${NAMEU}_DATA   *pObject = OBJ_NIL;
         
         pParser = JsonIn_New();
         eRc = JsonIn_ParseAStr(pParser, pString);
@@ -191,7 +191,7 @@ extern "C" {
             goto exit00;
         }
         
-        pObject = ${LNAME}_ParseJsonObject(pParser);
+        pObject = ${NAMEL}_ParseJsonObject(pParser);
         
         // Return to caller.
     exit00:
@@ -204,17 +204,17 @@ extern "C" {
     
     
 
-    ${UNAME}_DATA * ${LNAME}_NewFromJsonStringA (
+    ${NAMEU}_DATA * ${NAMEL}_NewFromJsonStringA (
         const
         char            *pStringA
     )
     {
         ASTR_DATA       *pStr = OBJ_NIL;
-        ${UNAME}_DATA   *pObject = OBJ_NIL;
+        ${NAMEU}_DATA   *pObject = OBJ_NIL;
         
         if (pStringA) {
             pStr = AStr_NewA(pStringA);
-            pObject = ${LNAME}_NewFromJsonString(pStr);
+            pObject = ${NAMEL}_NewFromJsonString(pStr);
             obj_Release(pStr);
             pStr = OBJ_NIL;
         }
@@ -230,7 +230,7 @@ extern "C" {
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = ${LNAME}_ToJson(this);
+     ASTR_DATA      *pDesc = ${NAMEL}_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
@@ -238,8 +238,8 @@ extern "C" {
                 ERESULT_* error code.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ${LNAME}_ToJson (
-        ${UNAME}_DATA   *this
+    ASTR_DATA *     ${NAMEL}_ToJson (
+        ${NAMEU}_DATA   *this
     )
     {
         ASTR_DATA       *pStr;
@@ -249,7 +249,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if( !${LNAME}_Validate(this) ) {
+        if( !${NAMEL}_Validate(this) ) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -263,7 +263,7 @@ extern "C" {
                               pInfo->pClassName
              );
      
-            eRc = ${LNAME}_ToJsonFields(this, pStr);      
+            eRc = ${NAMEL}_ToJsonFields(this, pStr);      
 
             AStr_AppendPrint(pStr, "}\t/* %s */\n", pInfo->pClassName);
         }
@@ -281,8 +281,8 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ${LNAME}_ToJsonFields (
-        ${UNAME}_DATA     *this,
+    ERESULT         ${NAMEL}_ToJsonFields (
+        ${NAMEU}_DATA     *this,
         ASTR_DATA       *pStr
     )
     {

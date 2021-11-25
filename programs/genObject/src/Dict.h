@@ -203,7 +203,7 @@ extern "C" {
     /*!
      Substitute environment variables into the current string using a BASH-like
      syntax.  Variable names should have the syntax of:
-     '$' '{'[a-zA-Z_][a-zA-Z0-9_]* '}'.
+     '$' '{' [a-zA-Z_][a-zA-Z0-9_]* '}'.
      Substitutions are not rescanned after insertion.
      @param     this    object pointer
      @param     pStr    String to be expanded in-place

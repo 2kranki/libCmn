@@ -52,7 +52,6 @@
 #include        <genObject_defs.h>
 #include        <AStr.h>
 #include        <Dict.h>
-#include        <NodeProp.h>
 #include        <ObjArray.h>
 
 

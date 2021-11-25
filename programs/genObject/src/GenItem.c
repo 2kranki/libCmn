@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <GenItem_internal.h>
+#include        <ascii.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -271,6 +272,122 @@ extern "C" {
     //===============================================================
     //                      P r o p e r t i e s
     //===============================================================
+
+    //---------------------------------------------------------------
+    //                      D i c t i o n a r y
+    //---------------------------------------------------------------
+
+    DICT_DATA *     GenItem_getDict (
+        GENITEM_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!GenItem_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pDict;
+    }
+
+
+    bool            GenItem_setDict (
+        GENITEM_DATA    *this,
+        DICT_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!GenItem_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pDict) {
+            obj_Release(this->pDict);
+        }
+        this->pDict = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          M o d e l
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     GenItem_getFile (
+        GENITEM_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!GenItem_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pFile;
+    }
+
+
+    bool            GenItem_setFile (
+        GENITEM_DATA    *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!GenItem_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pFile) {
+            obj_Release(this->pFile);
+        }
+        this->pFile = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          L o g
+    //---------------------------------------------------------------
+
+    bool            GenItem_setMsg (
+        GENITEM_DATA    *this,
+        LOG_INTERFACE   pObj
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!GenItem_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pLog = pObj;
+
+        return true;
+    }
+
+
 
     //---------------------------------------------------------------
     //                          M o d e l
@@ -687,6 +804,8 @@ extern "C" {
         }
 #endif
 
+        GenItem_setDict(this, OBJ_NIL);
+        GenItem_setFile(this, OBJ_NIL);
         GenItem_setModel(this, OBJ_NIL);
         GenItem_setOutput(this, OBJ_NIL);
 
@@ -832,6 +951,180 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                 E x p a n d  V a r i a b l e s
+    //---------------------------------------------------------------
+
+    /*! Expand the ${} variables in a line until there are no more. When
+        a variable is found, look it up in the dictionary and then the
+        program environment.  If it exists in one of those, replace the
+        ${} variable with the text found. If it is not found, simply
+        remove the ${} variable and note it to the log.
+     */
+    ERESULT         GenItem_ExpandVars(
+        GENITEM_DATA    *this,
+        ASTR_DATA       *pInOut
+    )
+    {
+        ERESULT         eRc;
+        uint32_t        i = 0;
+        uint32_t        j;
+        uint32_t        len;
+        int32_t         chr;
+        bool            fMore = true;
+        //PATH_DATA       *pPath = OBJ_NIL;
+        ASTR_DATA       *pName = OBJ_NIL;
+        const
+        char            *pEnvVar = NULL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !GenItem_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (0 == AStr_getLength(pInOut)) {
+            return ERESULT_SUCCESS;
+        }
+
+        // Expand Environment variables.
+        while (fMore) {
+            fMore = false;
+            eRc = AStr_CharFindNextW32(pInOut, &i, '$');
+            if (ERESULT_FAILED(eRc)) {
+                break;
+            }
+            else {
+                chr = AStr_CharGetW32(pInOut, i+1);
+                if (chr == '{') {
+                    j = i + 2;
+                    eRc = AStr_CharFindNextW32(pInOut, &j, '}');
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_PARSE_ERROR;
+                    }
+                    len = j - (i + 2);
+                    eRc = AStr_Mid(pInOut, i+2, len, &pName);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+
+                    // See if we can find the variable in the dictionary
+                    // or program environment.
+                    pEnvVar = NULL;
+                    if (this->pDictLookupA) {
+                        pEnvVar = this->pDictLookupA(this->pDictObj, AStr_getData(pName));
+                    }
+                    if (NULL == pEnvVar) {
+                        pEnvVar = getenv(AStr_getData(pName));
+                        if (NULL == pEnvVar) {
+                            obj_Release(pName);
+                            if (this->pMsgWarn) {
+                                this->pMsgWarn(
+                                        this->pMsgObj,
+                                        0,
+                                        "Could not find variable, %s, skipped!",
+                                        AStr_getData(pName)
+                                );
+                            }
+                        }
+                    }
+                    obj_Release(pName);
+                    pName = OBJ_NIL;
+
+                    // Remove the ${} variable.
+                    eRc = AStr_Remove(pInOut, i, len+3);
+                    if (ERESULT_FAILED(eRc)) {
+                        return ERESULT_OUT_OF_MEMORY;
+                    }
+
+                    // Insert the variable's text if it exists.
+                    if (pEnvVar) {
+                        eRc = AStr_InsertA(pInOut, i, pEnvVar);
+                        if (ERESULT_FAILED(eRc)) {
+                            return ERESULT_OUT_OF_MEMORY;
+                        }
+                    }
+                    pEnvVar = NULL;
+                    fMore = true;
+                }
+                else {
+                    ++i;
+                    fMore = true;
+                    continue;
+                }
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       G e n e r a t e
+    //---------------------------------------------------------------
+
+    /*!
+     Generate various phases for this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         GenItem_Generate (
+        GENITEM_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  GENITEM_SINGLETON
+        if (OBJ_NIL == this) {
+            this = GenItem_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!GenItem_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->pGen) {
+            eRc = this->pGen(this->pGen, "a");
+            if (ERESULT_FAILED(eRc)) {
+                goto exit00;
+            }
+            eRc = this->pGen(this->pGen, "b");
+            if (ERESULT_FAILED(eRc)) {
+                goto exit00;
+            }
+            eRc = this->pGen(this->pGen, "c");
+            if (ERESULT_FAILED(eRc)) {
+                goto exit00;
+            }
+            eRc = this->pGen(this->pGen, "d");
+            if (ERESULT_FAILED(eRc)) {
+                goto exit00;
+            }
+            eRc = this->pGen(this->pGen, "c_props");
+            if (ERESULT_FAILED(eRc)) {
+                goto exit00;
+            }
+        }
+
+        // Return to caller.
+    exit00:
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          I n i t
     //---------------------------------------------------------------
 
@@ -939,6 +1232,410 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                     T e x t  P r e p r o c
+    //---------------------------------------------------------------
+
+    /*!
+     The text in the input is part of the argument to an %ifdef or %ifndef.
+     Evaluate the text as a boolean expression.  Return true or false.
+     @param     this    object pointer
+     @return    exprssion evaluates to a true (1+) or false (0).
+     */
+    int             GenItem_PreProcBoolEval (
+        GENITEM_DATA    *this,
+        char            *z,
+        int             lineno
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        int             neg = 0;
+        int             res = 0;
+        int             okTerm = 1;
+        int             i;
+        const
+        char            *pStrDef = NULL;
+        char            nameA[DICT_NAME_MAXLEN+1];
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!GenItem_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
+        }
+#endif
+
+        for (i=0; z[i]!=0; i++) {
+            if (ascii_isWhiteSpaceA(z[i]))
+                continue;
+            // !term
+            if (z[i] == '!') {
+                if (!okTerm)
+                    goto syntax_error;
+                neg = !neg;
+                continue;
+            }
+            // term || term
+            if ((z[i] == '|') && (z[i+1] == '|')) {
+                if (okTerm)
+                    goto syntax_error;
+                if (res)
+                    return 1;
+                i++;
+                okTerm = 1;
+                continue;
+            }
+            // term && term
+            if ((z[i] == '&') && (z[i+1] == '&')) {
+                if (okTerm)
+                    goto syntax_error;
+                if (!res)
+                    return 0;
+                i++;
+                okTerm = 1;
+                continue;
+            }
+            // ( terms )
+            if( z[i]=='(' ) {
+                int         k;
+                int         n = 1;
+
+                if (!okTerm) {
+                    goto syntax_error;
+                }
+
+                for (k=i+1; z[k]; k++) {
+                    if (z[k] == ')') {
+                        n--;
+                        if (n == 0) {
+                            z[k] = 0;
+                            res = GenItem_PreProcBoolEval(this, &z[i+1], -1);
+                            z[k] = ')';
+                            if (res < 0) {
+                                i = i-res;
+                                goto syntax_error;
+                            }
+                            i = k;
+                            break;
+                        }
+                    } else if (z[k] == '(') {
+                        n++;
+                    } else if (z[k] == 0) {
+                        i = k;
+                        goto syntax_error;
+                    }
+                }
+                if (neg) {
+                    res = !res;
+                    neg = 0;
+                }
+                okTerm = 0;
+                continue;
+            }
+
+            // term := (bool)found define_name
+            if (ascii_isAlphaA(z[i])) {
+                int         k;
+                int         n;
+
+                if (!okTerm)
+                    goto syntax_error;
+                for (k=i+1; ascii_isAlphanumericA(z[k]) || z[k]=='_'; k++) {
+                }
+                n = k - i;
+                if (n > DICT_NAME_MAXLEN)
+                    n = DICT_NAME_MAXLEN;
+                strncpy(nameA, &z[i], n);
+                nameA[n] = '\0';
+
+                // Search the defines to see if the one that we scanned exists.
+                // Set res=1 if found
+                res = 0;
+                if (this->pDictLookupA) {
+                    pStrDef = this->pDictLookupA(this->pDictObj, nameA);
+                } else {
+                    fprintf(stderr,
+                            "FATAL - Missing Dictionary Lookup for %s!\n",
+                            nameA
+                    );
+                    exit(1);
+                }
+                if (pStrDef) {
+                    res = 1;
+                    pStrDef = NULL;
+                }
+                i = k-1;
+                if (neg) {
+                    res = !res;
+                    neg = 0;
+                }
+                okTerm = 0;
+                continue;
+            }
+            goto syntax_error;
+        }
+
+        // Return to caller.
+        return res;
+    syntax_error:
+        if (lineno > 0) {
+            fprintf(stderr, "%%if syntax error on line %d.\n", lineno);
+            fprintf(stderr, "  %.*s <-- syntax error here\n", i+1, z);
+            exit(1);
+        } else {
+            return -(i+1);
+        }
+
+    }
+
+
+    /*!
+     Run the preprocessor over the input file text.  The global variables
+     azDefine[0] through azDefine[nDefine-1] contains the names of all defined
+     macros.  This routine looks for "%ifdef" and "%ifndef" and "%endif" and
+     comments them out.  Text in between is also commented out as appropriate.
+     The initial version of this preprocessor was taken from "lemon" by
+     by Richard Hipp which is part of SQLite, a great SQL tool. SQLite and
+     this code was placed in the Public Domain by its author.
+     @param     this    object pointer
+     @param     prefixA preprocess statement identifier
+     @param     z       a NUL-terminated character string containing all lines
+                        of text that need to be scanned. On output, the lines
+                        that need to be removed will be replaced with blank
+                        lines including the %ifdef, %if, %ifndef, %else and
+                        %endif lines.
+     @return    If succesful, an AStr object which has the lines not needed
+                removed.
+    */
+    ASTR_DATA *     GenItem_Preproc (
+        GENITEM_DATA    *this,
+        const
+        char            prefixA,
+        char            *z
+    )
+    {
+        int             i, j, k;
+        int             exclude = 0;        // Exclude source until %else or %endif
+        int             start = 0;
+        int             lineno = 1;
+        int             start_lineno = 1;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        struct remove_list_s {
+            int         start;
+            int         len;
+        }               removeList[100];
+        const
+        int             maxRemoveList = 100;
+        int             cRemoveList = 0;
+
+        pStr = AStr_NewA(z);
+        if (OBJ_NIL == pStr) {
+            fprintf(stderr,
+                    "FATAL - could not allocate AStr object,"
+                    " out of memory!\n"
+            );
+            exit(1);
+        }
+        // Scan line 1 char at a time until NUL-terminator.
+        start = 0;
+        for (i=0; z[i]; i++) {
+            if (z[i] == '\n')
+                lineno++;
+            if ((z[i] != '%') || ((i > 0) && (z[i-1] != '\n'))) {
+                continue;
+            }
+            if (prefixA == z[i]) {
+                i++;
+                if ((strncmp(&z[i],"endif",5) == 0) && ascii_isWhiteSpaceA(z[i+5])) {
+                    if (exclude) {
+                        exclude--;
+                        if (exclude == 0) {
+                            // Push (start, i-1)
+                            if (cRemoveList < maxRemoveList) {
+                                removeList[cRemoveList].start = start;
+                                removeList[cRemoveList].len = i-start;
+                                cRemoveList++;
+                            } else {
+                                fprintf(stderr,
+                                        "FATAL - Too many code deletions!\n"
+                                );
+                                exit(1);
+                            }
+                        }
+                    }
+                    // Remove remainder of line.
+                    for (j=i; (z[j] && (z[j] != '\n')); j++)
+                        ;
+                    // Push (i, j-1)
+                    if (cRemoveList < maxRemoveList) {
+                        removeList[cRemoveList].start = i;
+                        removeList[cRemoveList].len = j - i + 1;
+                        cRemoveList++;
+                    } else {
+                        fprintf(stderr,
+                                "FATAL - Too many code deletions!\n"
+                        );
+                        exit(1);
+                    }
+                } else if ((strncmp(&z[i],"else",4) == 0)
+                            && ascii_isWhiteSpaceA(z[i+4])
+                           ) {
+                    if (exclude == 1) {
+                        exclude = 0;
+                        // Push (start, i-1)
+                        if (cRemoveList < maxRemoveList) {
+                            removeList[cRemoveList].start = start;
+                            removeList[cRemoveList].len = i-start;
+                            cRemoveList++;
+                        } else {
+                            fprintf(stderr,
+                                    "FATAL - Too many code deletions!\n"
+                            );
+                            exit(1);
+                        }
+                    } else if (exclude == 0) {
+                        exclude = 1;
+                        start = i;
+                        start_lineno = lineno;
+                    }
+                    // Remove remainder of line.
+                    for (j=i; z[j] && (z[j] != '\n'); j++)
+                        ;
+                    // Push (i, j-1)
+                    if (cRemoveList < maxRemoveList) {
+                        removeList[cRemoveList].start = i;
+                        removeList[cRemoveList].len = j - i + 1;
+                        cRemoveList++;
+                    } else {
+                        fprintf(stderr,
+                                "FATAL - Too many code deletions!\n"
+                        );
+                        exit(1);
+                    }
+                } else if ((strncmp(&z[i],"ifdef ",6) == 0)
+                           || (strncmp(&z[i],"if ",3) == 0)
+                           || (strncmp(&z[i],"ifndef ",7) == 0)) {
+                    if (exclude) {
+                        exclude++;
+                    } else {
+                        int         isNot;
+                        int         iBool;
+                        // Skip leading white-space.
+                        for (j=i; z[j] && !ascii_isSpaceA(z[j]); j++) {
+                        }
+                        iBool = j;
+                        isNot = (j == (i + 7));
+                        // Skip to EOL.
+                        while (z[j] && (z[j] != '\n')) {
+                            j++;
+                        }
+                        k = z[j];
+                        z[j] = '\0';
+                        exclude = GenItem_PreProcBoolEval(this, &z[iBool], lineno);
+                        z[j] = k;
+                        if (!isNot)
+                            exclude = !exclude;
+                        if (exclude) {
+                            start = i;
+                            start_lineno = lineno;
+                        }
+                    }
+                    // Remove remainder of line.
+                    for (j=i; z[j] && z[j]!='\n'; j++)
+                        ;
+                    // Push (i, j-1)
+                    if (cRemoveList < maxRemoveList) {
+                        removeList[cRemoveList].start = i;
+                        removeList[cRemoveList].len = j - i + 1;
+                        cRemoveList++;
+                    } else {
+                        fprintf(stderr,
+                                "FATAL - Too many code deletions!\n"
+                        );
+                        exit(1);
+                    }
+                }
+            }
+        }
+        if (exclude) {
+            fprintf(stderr,"FATAL - unterminated %%ifdef starting on line %d\n", start_lineno);
+            exit(1);
+        }
+
+        // Remove skipped text.
+        for (i=cRemoveList; i; i--) {
+            AStr_Remove(pStr, removeList[i-1].start, removeList[i-1].len);
+        }
+
+        return pStr;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                P r o c e s s  F i l e
+    //---------------------------------------------------------------
+
+    ERESULT         GenItem_ProcessFile (
+        GENITEM_DATA    *this,
+        bool            fVerbose
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        cnt = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!GenItem_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+
+        // Read in the file.
+        if (OBJ_NIL == this->pModel) {
+            fprintf(stderr, "FATAL - Missing Model Path!");
+            exit(4);
+        }
+        this->pFile = AStr_NewFromUtf8File(this->pModel);
+        if (OBJ_NIL == this->pFile) {
+            fprintf(
+                    stderr,
+                    "FATAL - Could not read file, %s!",
+                    Path_getData(this->pModel)
+            );
+            exit(4);
+        }
+
+        if (this->pMsgInfo && fVerbose) {
+            this->pMsgInfo(
+                    this->pMsgObj,
+                    "Processing %s...",
+                    Path_getData(this->pModel)
+            );
+        }
+        cnt = 0;
+        //FIXME: eRc = Gen_ExpandData(this, pInput, pOutput, &cnt);
+        if (this->pMsgInfo) {
+            this->pMsgInfo(this->pMsgObj, "%d lines", cnt);
+        }
+        if (this->pMsgInfo && fVerbose) {
+            this->pMsgInfo(
+                    this->pMsgObj,
+                    "Completed %s Processing.",
+                    Path_getData(this->pModel)
+            );
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -1077,6 +1774,71 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      S e t  D e f a u l t s
+    //---------------------------------------------------------------
+
+    /*! Set default values needed to process the model.
+     @return    If successful, then ERESULT_SUCESS. Otherwise, an ERESULT_*
+                error. Note: this is ignored in Appl.
+     */
+    ERESULT         GenItem_SetDefaults (
+        GENITEM_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        long            clock;
+        struct tm       *now;
+        char            str[32];
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !GenItem_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        // Set up DATE and TIME.
+        (void) time (&clock);
+        now = localtime (&clock);
+        snprintf(
+                       str,
+                       sizeof(str),
+                       "%2.2d/%2.2d/%2.2d",
+                       now->tm_mon+1,
+                       now->tm_mday,
+                       now->tm_year+1900
+        );
+        pStr = AStr_NewA(str);
+        if (pStr) {
+            eRc = Dict_AddAStr(this->pDict, GEN_DATE, pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+        snprintf(
+                 str,
+                 sizeof(str),
+                 "%2.2d:%2.2d:%2.2d",
+                 now->tm_hour,
+                 now->tm_min,
+                 now->tm_sec
+        );
+        pStr = AStr_NewA(str);
+        if (pStr) {
+            eRc = Dict_AddAStr(this->pDict, GEN_TIME, pStr);
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

@@ -1,6 +1,6 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   ${LNAME}.c
+ * File:   ${NAMEL}.c
  *	Generated ${DATE} ${TIME}
  *
  */
@@ -41,7 +41,7 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <${LNAME}_internal.h>
+#include        <${NAMEL}_internal.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -78,11 +78,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            ${LNAME}_task_body (
+    void            ${NAMEL}_task_body (
         void            *pData
     )
     {
-        //${UNAME}_DATA  *this = pData;
+        //${NAMEU}_DATA  *this = pData;
         
     }
 #endif
@@ -93,12 +93,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    ${UNAME}_DATA *     ${LNAME}_Alloc (
+    ${NAMEU}_DATA *     ${NAMEL}_Alloc (
         void
     )
     {
-        ${UNAME}_DATA       *this;
-        uint32_t        cbSize = sizeof(${UNAME}_DATA);
+        ${NAMEU}_DATA       *this;
+        uint32_t        cbSize = sizeof(${NAMEU}_DATA);
         
         // Do initialization.
         
@@ -110,15 +110,15 @@ extern "C" {
 
 
 
-    ${UNAME}_DATA *     ${LNAME}_New (
+    ${NAMEU}_DATA *     ${NAMEL}_New (
         void
     )
     {
-        ${UNAME}_DATA       *this;
+        ${NAMEU}_DATA       *this;
         
-        this = ${LNAME}_Alloc( );
+        this = ${NAMEL}_Alloc( );
         if (this) {
-            this = ${LNAME}_Init(this);
+            this = ${NAMEL}_Init(this);
         } 
         return this;
     }
@@ -135,9 +135,9 @@ extern "C" {
     //                      M e s s a g e s
     //---------------------------------------------------------------
 
-#ifdef   ${UNAME}_MSGS
-    bool            ${LNAME}_setMsgs (
-        ${UNAME}_DATA    *this,
+#ifdef   ${NAMEU}_MSGS
+    bool            ${NAMEL}_setMsgs (
+        ${NAMEU}_DATA    *this,
         void            (*pMsgInfo)(OBJ_ID, const char *, ...),
         void            (*pMsgWarn)(OBJ_ID, uint16_t, const char *, ...),
         OBJ_ID          pObj
@@ -145,7 +145,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -165,15 +165,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        ${LNAME}_getPriority (
-        ${UNAME}_DATA     *this
+    uint16_t        ${NAMEL}_getPriority (
+        ${NAMEU}_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -184,14 +184,14 @@ extern "C" {
     }
 
 
-    bool            ${LNAME}_setPriority (
-        ${UNAME}_DATA     *this,
+    bool            ${NAMEL}_setPriority (
+        ${NAMEU}_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -208,13 +208,13 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        ${LNAME}_getSize (
-        ${UNAME}_DATA       *this
+    uint32_t        ${NAMEL}_getSize (
+        ${NAMEU}_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -229,15 +229,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * ${LNAME}_getStr (
-        ${UNAME}_DATA     *this
+    ASTR_DATA * ${NAMEL}_getStr (
+        ${NAMEU}_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -247,14 +247,14 @@ extern "C" {
     }
     
     
-    bool        ${LNAME}_setStr (
-        ${UNAME}_DATA     *this,
+    bool        ${NAMEL}_setStr (
+        ${NAMEU}_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -275,15 +275,15 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  ${LNAME}_getSuperVtbl (
-        ${UNAME}_DATA     *this
+    OBJ_IUNKNOWN *  ${NAMEL}_getSuperVtbl (
+        ${NAMEU}_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -294,22 +294,22 @@ extern "C" {
     }
     
   
-    ${USUPER}_DATA *  ${LNAME}_getSuper (
-        ${UNAME}_DATA     *this
+    ${SUPERU}_DATA *  ${NAMEL}_getSuper (
+        ${NAMEU}_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
         
-        return (${USUPER}_DATA *)this;
+        return (${SUPERU}_DATA *)this;
     }
 
     
@@ -329,16 +329,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = ${LNAME}_Assign(this,pOther);
+        ERESULT eRc = ${NAMEL}_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another ${UNAME} object
+     @param     pOther  a pointer to another ${NAMEU} object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         ${LNAME}_Assign (
-        ${UNAME}_DATA		*this,
-        ${UNAME}_DATA     *pOther
+    ERESULT         ${NAMEL}_Assign (
+        ${NAMEU}_DATA		*this,
+        ${NAMEU}_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -346,11 +346,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!${LNAME}_Validate(pOther)) {
+        if (!${NAMEL}_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -411,9 +411,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             ${LNAME}_Compare (
-        ${UNAME}_DATA     *this,
-        ${UNAME}_DATA     *pOther
+    int             ${NAMEL}_Compare (
+        ${NAMEU}_DATA     *this,
+        ${NAMEU}_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -424,19 +424,19 @@ extern "C" {
         char            *pStr2;
 #endif
         
-#ifdef  ${UNAME}_SINGLETON
+#ifdef  ${NAMEU}_SINGLETON
         if (OBJ_NIL == this) {
-            this = ${LNAME}_Shared();
+            this = ${NAMEL}_Shared();
         }
 #endif
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!${LNAME}_Validate(pOther)) {
+        if (!${NAMEL}_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -458,36 +458,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        ${LNAME}      *pCopy = ${LNAME}_Copy(this);
+        ${NAMEL}      *pCopy = ${NAMEL}_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ${UNAME} object which must be 
+     @return    If successful, a ${NAMEU} object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ${UNAME}_DATA *     ${LNAME}_Copy (
-        ${UNAME}_DATA       *this
+    ${NAMEU}_DATA *     ${NAMEL}_Copy (
+        ${NAMEU}_DATA       *this
     )
     {
-        ${UNAME}_DATA       *pOther = OBJ_NIL;
+        ${NAMEU}_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef ${UNAME}_IS_IMMUTABLE
+#ifdef ${NAMEU}_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = ${LNAME}_New( );
+        pOther = ${NAMEL}_New( );
         if (pOther) {
-            eRc = ${LNAME}_Assign(this, pOther);
+            eRc = ${NAMEL}_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -505,11 +505,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            ${LNAME}_Dealloc (
+    void            ${NAMEL}_Dealloc (
         OBJ_ID          objId
     )
     {
-        ${UNAME}_DATA   *this = objId;
+        ${NAMEU}_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -518,7 +518,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -526,11 +526,11 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((${UNAME}_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((${NAMEU}_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        ${LNAME}_setStr(this, OBJ_NIL);
+        ${NAMEL}_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -551,32 +551,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        ${LNAME}      *pDeepCopy = ${LNAME}_Copy(this);
+        ${NAMEL}      *pDeepCopy = ${NAMEL}_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ${UNAME} object which must be 
+     @return    If successful, a ${NAMEU} object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ${UNAME}_DATA *     ${LNAME}_DeepCopy (
-        ${UNAME}_DATA       *this
+    ${NAMEU}_DATA *     ${NAMEL}_DeepCopy (
+        ${NAMEU}_DATA       *this
     )
     {
-        ${UNAME}_DATA       *pOther = OBJ_NIL;
+        ${NAMEU}_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = ${LNAME}_New( );
+        pOther = ${NAMEL}_New( );
         if (pOther) {
-            eRc = ${LNAME}_Assign(this, pOther);
+            eRc = ${NAMEL}_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -599,22 +599,22 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ${LNAME}_Disable (
-        ${UNAME}_DATA		*this
+    ERESULT         ${NAMEL}_Disable (
+        ${NAMEU}_DATA		*this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
         TRC_OBJ(this, "%s:\n", __func__);
-#ifdef  ${UNAME}_SINGLETON
+#ifdef  ${NAMEU}_SINGLETON
         if (OBJ_NIL == this) {
-            this = ${LNAME}_Shared();
+            this = ${NAMEL}_Shared();
         }
 #endif
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -641,29 +641,29 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ${LNAME}_Enable (
-        ${UNAME}_DATA		*this
+    ERESULT         ${NAMEL}_Enable (
+        ${NAMEU}_DATA		*this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
         TRC_OBJ(this, "%s:\n", __func__);
-#ifdef  ${UNAME}_SINGLETON
+#ifdef  ${NAMEU}_SINGLETON
         if (OBJ_NIL == this) {
-            this = ${LNAME}_Shared();
+            this = ${NAMEL}_Shared();
         }
 #endif
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
-#ifdef   ${UNAME}_MSGS
+#ifdef   ${NAMEU}_MSGS
         if (this->pMsgInfo) {
             this->pMsgInfo(this->pMsgObj, "Enabling object!\n");
         }
@@ -682,11 +682,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    ${UNAME}_DATA *   ${LNAME}_Init (
-        ${UNAME}_DATA       *this
+    ${NAMEU}_DATA *   ${NAMEL}_Init (
+        ${NAMEU}_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(${UNAME}_DATA);
+        uint32_t        cbSize = sizeof(${NAMEU}_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -703,10 +703,10 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)${LSUPER}_Init((${USUPER}_DATA *)this);   // Needed for Inheritance
+        //this = (OBJ_ID)${SUPERL}_Init((${SUPERU}_DATA *)this);   // Needed for Inheritance
         // If you use inheritance, remember to change the obj_ClassObj reference 
-        // in the OBJ_INFO at the end of ${LNAME}_object.c
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_${UNAME});
+        // in the OBJ_INFO at the end of ${NAMEL}_object.c
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_${NAMEU});
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -714,9 +714,9 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&${LNAME}_Vtbl);
-#ifdef  ${UNAME}_JSON_SUPPORT
-        JsonIn_RegisterClass(${LNAME}_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&${NAMEL}_Vtbl);
+#ifdef  ${NAMEU}_JSON_SUPPORT
+        JsonIn_RegisterClass(${NAMEL}_Class());
 #endif
         
         /*
@@ -730,7 +730,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -739,11 +739,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "${LNAME}::sizeof(${UNAME}_DATA) = %lu\n", 
-                sizeof(${UNAME}_DATA)
+                "${NAMEL}::sizeof(${NAMEU}_DATA) = %lu\n", 
+                sizeof(${NAMEU}_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(${UNAME}_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(${NAMEU}_DATA));
 #endif
 
         return this;
@@ -755,22 +755,22 @@ extern "C" {
     //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         ${LNAME}_IsEnabled (
-        ${UNAME}_DATA		*this
+    ERESULT         ${NAMEL}_IsEnabled (
+        ${NAMEU}_DATA		*this
     )
     {
         //ERESULT         eRc;
         
         // Do initialization.
         TRC_OBJ(this, "%s:\n", __func__);
-#ifdef  ${UNAME}_SINGLETON
+#ifdef  ${NAMEU}_SINGLETON
         if (OBJ_NIL == this) {
-            this = ${LNAME}_Shared();
+            this = ${NAMEL}_Shared();
         }
 #endif
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -797,14 +797,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = ${LNAME}_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = ${NAMEL}_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "${LNAME}", prefix,
+                        the object name, "${NAMEL}", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -812,13 +812,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          ${LNAME}_QueryInfo (
+    void *          ${NAMEL}_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        ${UNAME}_DATA     *this = objId;
+        ${NAMEU}_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -827,7 +827,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -836,11 +836,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(${UNAME}_DATA);
+                return (void *)sizeof(${NAMEU}_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)${LNAME}_Class();
+                return (void *)${NAMEL}_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -866,37 +866,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return ${LNAME}_Disable;
+                            return ${NAMEL}_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return ${LNAME}_Enable;
+                            return ${NAMEL}_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  ${UNAME}_JSON_SUPPORT
+#ifdef  ${NAMEU}_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return ${LNAME}_ParseJsonFields;
+                            return ${NAMEL}_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return ${LNAME}_ParseJsonObject;
+                            return ${NAMEL}_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return ${LNAME}_ToDebugString;
+                            return ${NAMEL}_ToDebugString;
                         }
-#ifdef  ${UNAME}_JSON_SUPPORT
+#ifdef  ${NAMEU}_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return ${LNAME}_ToJsonFields;
+                            return ${NAMEL}_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return ${LNAME}_ToJson;
+                            return ${NAMEL}_ToJson;
                         }
 #endif
                         break;
@@ -907,10 +907,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == ${LNAME}_ToDebugString)
+                if (pData == ${NAMEL}_ToDebugString)
                     return "ToDebugString";
-#ifdef  ${UNAME}_JSON_SUPPORT
-                if (pData == ${LNAME}_ToJson)
+#ifdef  ${NAMEU}_JSON_SUPPORT
+                if (pData == ${NAMEL}_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -932,7 +932,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = ${LNAME}_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = ${NAMEL}_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -940,8 +940,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ${LNAME}_ToDebugString (
-        ${UNAME}_DATA      *this,
+    ASTR_DATA *     ${NAMEL}_ToDebugString (
+        ${NAMEU}_DATA      *this,
         int             indent
     )
     {
@@ -956,7 +956,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!${LNAME}_Validate(this)) {
+        if (!${NAMEL}_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -977,7 +977,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    ${LNAME}_getSize(this),
+                    ${NAMEL}_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1017,15 +1017,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            ${LNAME}_Validate (
-        ${UNAME}_DATA      *this
+    bool            ${NAMEL}_Validate (
+        ${NAMEU}_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_${UNAME}))
+            if (obj_IsKindOf(this, OBJ_IDENT_${NAMEU}))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1041,7 +1041,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(${UNAME}_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(${NAMEU}_DATA))) {
             return false;
         }
 

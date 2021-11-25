@@ -1,5 +1,0 @@
-# genEnum --prefix=NodeProp --name=vis misc/nodeprop_vis.txt
-        none
-        public
-        read_only
-

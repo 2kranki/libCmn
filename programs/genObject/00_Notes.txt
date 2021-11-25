@@ -15,3 +15,9 @@ The program has the following classes for performing certain jobs:
     "NodeProp" contains the Class properties such as ???.
     "Gen" generates a file given "Dict" and ??? to use for substitution or ???.
 
+We have redefined the classes and built a different structure:
+
+                            Main
+                              |
+                            
+

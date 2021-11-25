@@ -1,0 +1,41 @@
+%ifdef XYZZY
+// vi:nu:et:sts=4 ts=4 sw=4
+
+This assumes the following dictionary elements:
+NAMEL                   required
+NAMEU                   required
+PROPITEM_VIS_PUBLIC     optoinal
+PROPITEM_VIS_READ_ONLY  optional
+one only of the following must be present:
+TYPE_INTEGER
+TYPE_OBJECT
+TYPE_POINTER            Assumes a pointer to a struct of some sort
+%endif
+
+    /*! @property   Messages
+        Allows information and warning messages to be issued.
+     */
+
+%ifdef PROPITEM_VIS_PUBLIC || PROPITEM_VIS_READ_ONLY
+%ifdef TYPE_INTEGER
+    bool            ${NAMEL}_setMsgs (
+%else ifdef TYPE_OBJECT
+%else ifdef TYPE_POINTER
+%endif
+        ${NAMEU}_DATA    *this,
+        void            (*pMsgInfo)(OBJ_ID, const char *, ...),
+        void            (*pMsgWarn)(OBJ_ID, uint16_t, const char *, ...),
+        OBJ_ID          pObj
+    );
+%endif
+
+%ifdef PROPITEM_VIS_PUBLIC
+    bool            ${NAMEL}_setMsgs (
+        ${NAMEU}_DATA    *this,
+        void            (*pMsgInfo)(OBJ_ID, const char *, ...),
+        void            (*pMsgWarn)(OBJ_ID, uint16_t, const char *, ...),
+        OBJ_ID          pObj
+    );
+
+%endif
+

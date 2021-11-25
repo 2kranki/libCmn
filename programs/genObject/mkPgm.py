@@ -218,30 +218,27 @@ def         parse_args(listArgV=None):
     # Parse the command line.
     szUsage = "usage: %prog [options] sourceDirectoryPath [destinationDirectoryPath]"
     cmd_prs = argparse.ArgumentParser( )
+    cmd_prs.add_argument('--bin', action='store_true', dest='bin',
+                         default=False, help='Update binary and models in Support'
+                        )
     cmd_prs.add_argument('-d', '--debug', action='store_true', dest='debug',
                          default=False, help='Set debug mode'
-                         )
+                        )
     cmd_prs.add_argument('-f', '--force', action='store_true', dest='force',
                          default=False, help='Set force mode'
-                         )
-    cmd_prs.add_argument('-i', '--install', action='store_false', dest='install',
-                         default=True, help='Skip Install mode'
-                         )
+                        )
     cmd_prs.add_argument('-m', '--make', action='store_false', dest='make',
                          default=True, help='Skip Make mode'
-                         )
-    cmd_prs.add_argument('-n', '--models', action='store_false', dest='models',
-                         default=True, help='Skip rebuild of Models Directory'
-                         )
+                        )
     cmd_prs.add_argument('-o', '--ostype', action='store', dest='ostype',
                          default='macos64', help='Makefile Type (macos64 | win64)'
-                         )
+                        )
     cmd_prs.add_argument('-t', '--test', action='store_false', dest='test',
                          default=True, help='Skip Test mode'
-                         )
+                        )
     cmd_prs.add_argument('-v', '--verbose', action='count', default=1,
                          dest='verbose', help='increase output verbosity'
-                         )
+                        )
     cmd_prs.add_argument('args', nargs=argparse.REMAINDER, default=[])
     args = cmd_prs.parse_args(listArgV)
     if args.debug:
@@ -295,14 +292,14 @@ def         perform_actions():
             return 4
 
     # Install the library.
-    if args.install:
+    if args.bin:
         rc = do_cmd("make -f Makefile.%s.txt install" % args.ostype)
         if rc != 0:
             print('ERROR - make test failed!')
             return 4
 
     # Install the models.
-    if args.models:
+    if args.bin:
         rc = do_cmd("rm -fr ~/git/Support/genObject")
         if rc != 0:
             print('ERROR - make test failed!')

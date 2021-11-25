@@ -53,6 +53,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <logInterface.h>
 
 
 #ifndef         TEST_H
@@ -99,13 +100,18 @@ extern "C" {
     typedef struct Test_data_s  TEST_DATA;            // Inherits from OBJ
     typedef struct Test_class_data_s TEST_CLASS_DATA;   // Inherits from OBJ
 
+    // NOTE: This must conform to the logInterface!
     typedef struct Test_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in Test_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(TEST_DATA *);
+        void        (*pLogDebug)(OBJ_ID, const char *, ...);
+        void        (*pLogFatal)(OBJ_ID, const char *, ...);
+        void        (*pLogInfo)(OBJ_ID, const char *, ...);
+        void        (*pLogWarn)(OBJ_ID, const char *, ...);
+        ERESULT     (*pClose)(OBJ_ID);
     } TEST_VTBL;
 
     typedef struct Test_class_vtbl_s    {
@@ -314,6 +320,27 @@ extern "C" {
         TEST_DATA       *this
     );
     
+
+    ERESULT         Test_MsgClose (
+        TEST_DATA       *this
+    );
+
+
+    void            Test_MsgDebug(
+        TEST_DATA       *this,
+        const
+        char            *fmt,
+        ...
+    );
+
+
+    void            Test_MsgFatal(
+        TEST_DATA       *this,
+        const
+        char            *fmt,
+        ...
+    );
+
 
     void            Test_MsgInfo(
         TEST_DATA       *this,

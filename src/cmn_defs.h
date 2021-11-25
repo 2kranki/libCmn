@@ -335,6 +335,8 @@ extern "C" {
         OBJ_IDENT_LINEINDEX_CLASS,
         OBJ_IDENT_LISTDL,               // Generic Doubly-linked List
         OBJ_IDENT_LISTDL_CLASS,
+        OBJ_IDENT_LOG,                  // Log File Support
+        OBJ_IDENT_LOG_CLASS,
         OBJ_IDENT_LRU,                  // Least Recently Used Caching
         OBJ_IDENT_LRU_CLASS,
         OBJ_IDENT_MEMMSC,               // Memory Debug for MS C
