@@ -77,7 +77,19 @@ typedef struct log_interface_vtbl_s    {
 #define LOG_INTERFACE_DATA(data,obj_id,interface)\
             (data *)(((uint8_t *)objId)-offsetof(data,interface))
 
-    
+#define iLog_Debug(pLog,pFormatA,...)\
+        if (pLog)\
+            ((LOG_INTERFACE *)(pLog))->pVtbl->pLogDebug(pLog,pFormatA,__VA_ARGS__)
+#define iLog_Fatal(pLog,pFormatA,...)\
+        if (pLog)\
+            ((LOG_INTERFACE *)(pLog))->pVtbl->pLogFatal(pLog,pFormatA,__VA_ARGS__)
+#define iLog_Info(pLog,pFormatA,...)\
+        if (pLog)\
+            ((LOG_INTERFACE *)(pLog))->pVtbl->pLogInfo(pLog,pFormatA,__VA_ARGS__)
+#define iLog_Warn(pLog,pFormatA,...)\
+        if (pLog)\
+            ((LOG_INTERFACE *)(pLog))->pVtbl->pLogWarn(pLog,pFormatA,__VA_ARGS__)
+
 #endif  // LOGINTERFACE_H
 
 

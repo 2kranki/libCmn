@@ -57,6 +57,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <laInterface.h>
 #include        <Lex.h>
 
 

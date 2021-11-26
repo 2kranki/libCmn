@@ -41,7 +41,6 @@
 
 #include        <GenItem.h>
 #include        <JsonIn.h>
-#include        <logInterface.h>
 
 
 #ifndef GENITEM_INTERNAL_H
@@ -77,13 +76,16 @@ struct GenItem_data_s  {
     uint16_t        rsvd16;
     ASTR_DATA       *pFile;
 
+    // Look up an item in the dictionary. If it is not found,
+    // look it up in the Environment Variables. Return the first
+    // one found or NULL.
     const char *    (*pDictLookupA)(OBJ_ID, const char *);
     OBJ_ID          pDictObj;
 
     ERESULT         (*pGen)(OBJ_ID, const char *);
     OBJ_ID          pGenObj;
 
-    LOG_INTERFACE   pLog;
+    OBJ_ID          pLog;
     
 };
 #pragma pack(pop)

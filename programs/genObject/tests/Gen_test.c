@@ -452,7 +452,7 @@ ERESULT         Test_Gen_Test03 (
 
 
 
-ERESULT         Test_Gen_Test04 (
+ERESULT         Test_Gen_Test04_DONT_USE (
     TEST_DATA       *this,
     const
     char            *pTestName
@@ -553,7 +553,7 @@ ERESULT         Test_Gen_Test04 (
 
 
 
-ERESULT         Test_Gen_Test05 (
+ERESULT         Test_Gen_Test05_DONT_USE (
     TEST_DATA       *this,
     const
     char            *pTestName
@@ -651,137 +651,6 @@ ERESULT         Test_Gen_Test05 (
 
 
 
-ERESULT         Test_Gen_Test06 (
-    TEST_DATA       *this,
-    const
-    char            *pTestName
-)
-{
-    ERESULT         eRc = ERESULT_SUCCESS;
-    GEN_DATA       *pObj = OBJ_NIL;
-    bool            fRc;
-    DICT_DATA       *pDict = OBJ_NIL;
-    ASTR_DATA       *pStr  = OBJ_NIL;
-    int             iRc;
-    char            *pInput1A;
-
-    fprintf(stderr, "Performing: %s\n", pTestName);
-    fprintf(stderr, "Test Gen_Preproc().\n");
-
-    pDict = Dict_New( );
-    TestForNotNull(pDict, "OBJECT_NAME");
-
-    pObj = Gen_New( );
-    TestForNotNull(pObj, "Missing Test object");
-    if (pObj) {
-
-        //obj_TraceSet(pObj, true);
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_GEN);
-        TestForTrue(fRc, "Failed Ident Test");
-        Test_setVerbose(this, 1);
-        Gen_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
-        Gen_setDict(pObj, pDict);
-
-        // Override default file locations.
-        Gen_SetDefaults(pObj);
-
-        pStr = AStr_NewA("Xyzzy");
-        TestForNotNull(pStr, "");
-        eRc = Dict_AddAStr(pObj->pDict, "LNAME", pStr);
-        TestForSuccess("");
-        fprintf(stderr, "\tLNAMEl = \"Xyzzy\"\n");
-        eRc = Dict_AddAStr(pObj->pDict, "UNAME", pStr);
-        TestForSuccess("");
-        fprintf(stderr, "\tUNAMEl = \"Xyzzy\"\n");
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        eRc = Gen_SetDefaults(pObj);
-        TestForSuccess("");
-
-        pInput1A = "";
-        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
-        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
-        fprintf(stderr, "\tiRc: %d\n", iRc);
-        TestForTrue((iRc == 0), "");
-
-        pInput1A = "LNAME";
-        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
-        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
-        fprintf(stderr, "\tiRc: %d\n", iRc);
-        TestForTrue((iRc == 1), "");
-
-        pInput1A = "!LNAME";
-        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
-        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
-        fprintf(stderr, "\tiRc: %d\n", iRc);
-        TestForTrue((iRc == 0), "");
-
-        pInput1A = "!LNAMEX";
-        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
-        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
-        fprintf(stderr, "\tiRc: %d\n", iRc);
-        TestForTrue((iRc == 1), "");
-
-        pInput1A = "LNAME && UNAME";
-        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
-        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
-        fprintf(stderr, "\tiRc: %d\n", iRc);
-        TestForTrue((iRc == 1), "");
-
-        pInput1A = "LNAME && UNAMEX";
-        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
-        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
-        fprintf(stderr, "\tiRc: %d\n", iRc);
-        TestForTrue((iRc == 0), "");
-
-        pInput1A = "LNAME || UNAME";
-        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
-        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
-        fprintf(stderr, "\tiRc: %d\n", iRc);
-        TestForTrue((iRc == 1), "");
-
-        pInput1A = "LNAMEX || UNAME";
-        fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
-        iRc = Gen_PreProcBoolEval(pObj, (char *)pInput1A, 1);
-        fprintf(stderr, "\tiRc: %d\n", iRc);
-        TestForTrue((iRc == 1), "");
-
-        pInput1A = mem_StrDup("\n%ifdef UNAME\nxyzzy\n%else\nXYZZY\n%endif\n");
-        fprintf(stderr, "\tPreProc: \"%s\"\n", pInput1A);
-        pStr = Gen_PreprocInput(pObj, pInput1A);
-        fprintf(stderr, "\tiRc: %d\n", iRc);
-        TestForTrue((iRc == 1), "");
-        fprintf(stderr, "\tResult: \"%s\"\n", pInput1A);
-        mem_Free(pInput1A);
-        pInput1A = NULL;
-        fprintf(stderr, "\tResultStr: \"%s\"\n", AStr_getData(pStr));
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-
-        pInput1A = mem_StrDup("\n%ifdef !UNAME\nxyzzy\n%else\nXYZZY\n%endif\n");
-        fprintf(stderr, "\tPreProc: \"%s\"\n", pInput1A);
-        pStr = Gen_PreprocInput(pObj, pInput1A);
-        fprintf(stderr, "\tiRc: %d\n", iRc);
-        TestForTrue((iRc == 1), "");
-        fprintf(stderr, "\tResult: \"%s\"\n", pInput1A);
-        mem_Free(pInput1A);
-        pInput1A = NULL;
-        fprintf(stderr, "\tResultStr: \"%s\"\n", AStr_getData(pStr));
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    obj_Release(pDict);
-    pDict = OBJ_NIL;
-    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return eRc;
-}
-
-
-
 
 int     main (
     int         cArgs,
@@ -820,9 +689,6 @@ int     main (
     TestExec("Test01", Test_Gen_Test01, NULL, NULL);
     TestExec("Test02", Test_Gen_Test02, NULL, NULL);
     TestExec("Test03", Test_Gen_Test03, NULL, NULL);
-    TestExec("Test04", Test_Gen_Test04, NULL, NULL);
-    TestExec("Test05", Test_Gen_Test05, NULL, NULL);
-    TestExec("Test06", Test_Gen_Test06, NULL, NULL);
 
     obj_Release(pTest);
     pTest = OBJ_NIL;

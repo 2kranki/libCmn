@@ -67,6 +67,7 @@
 
 
 #include        <cmn_defs.h>
+#include        <Token.h>
 
 
 
@@ -89,41 +90,6 @@ typedef struct la_vtbl_s    {
             uint16_t        num
     );
 
-    // Properties:
-    // Methods:
-    // Close() closes the current file source.
-    ERESULT         (*pAdvance)(
-            OBJ_ID,
-            uint16_t        num
-    );
-    // Flush() writes any pending buffered data to the file output if
-    // write() is active.
-    ERESULT         (*pFlush)(OBJ_ID);
-    // Read() attempts to read the amount of data specified from the
-    // data source.  It returns the amount actually read which might
-    // be less than the amount requested. It will return -1 if an
-    // error or EOF is encountered.
-    int32_t         (*pRead)(
-            OBJ_ID,
-            uint8_t     *,              // Data Buffer Pointer
-            int32_t                     // Requested Amount to Read
-    );
-    // Seek() alters the current file_offset within the data source so that
-    // the next read or write will occur at the specified offset.
-    off_t       (*pSeek)(
-            OBJ_ID,
-            off_t,                      // File Offset in Bytes
-            uint8_t
-#define                     IO_SEEK_SET  1   // Set to given offset
-#define                     IO_SEEK_CUR  2   // Use file_offset plus given offset
-#define                     IO_SEEK_END  3   // Use eof_offset plus given offset
-    );
-    off_t       (*pTell)(OBJ_ID);
-    // Write() attempts to write the amount of data specified from the
-    // data source.  It returns the amount actually written which might
-    // be less than the amount requested. It will return -1 if an
-    // error or EOF is encountered.
-    int32_t     (*pWrite)(OBJ_ID, uint8_t *, int32_t);
 } LA_VTBL;
 
 typedef struct la_interface_s    {
@@ -133,7 +99,11 @@ typedef struct la_interface_s    {
 #define LA_INTERFACE_DATA(data,obj_id,interface)\
             (data *)(((uint8_t *)objId)-offsetof(data,interface))
 
-    
+#define iLA_Advance(pLA,size)\
+        ((LA_INTERFACE *)(pLA))->pVtbl->pAdvance(pLA, size)
+#define iLA_LookAhead(pLA,size)\
+        ((LA_INTERFACE *)(pLA))->pVtbl->pLookAhead(pLA, size)
+
 #endif  // LAINTERFACE_H
 
 

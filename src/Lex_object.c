@@ -476,8 +476,9 @@ LEX_VTBL     Lex_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //Lex_IsEnabled,
- 
+    (void *)Lex_TokenAdvance,
+    (void *)Lex_TokenLookAhead,
+
 };
 
 

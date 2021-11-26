@@ -69,6 +69,8 @@
 #include    <JsonIn.h>
 #include    <SrcErrors.h>
 #include    <szTbl.h>
+#include    <TextIn.h>
+#include    <TextOut.h>
 
 
 
@@ -243,6 +245,10 @@ ERESULT         Test_GenItem_Test02 (
     ASTR_DATA       *pStr  = OBJ_NIL;
     int             iRc;
     char            *pInput1A;
+    const
+    char            *pNameL = "Abcde";
+    const
+    char            *pNameU = "ABCDE";
 
     fprintf(stderr, "Performing: %s\n", pTestName);
     fprintf(stderr, "Test Gen_Preproc().\n");
@@ -256,22 +262,28 @@ ERESULT         Test_GenItem_Test02 (
 
         //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_GEN);
+        TestForFalse(fRc, "Failed Ident Test");
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_GENITEM);
         TestForTrue(fRc, "Failed Ident Test");
         Test_setVerbose(this, 1);
-        GenItem_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+        GenItem_setLog(pObj, (void *)this);
         GenItem_setDict(pObj, pDict);
 
         // Override default file locations.
         GenItem_SetDefaults(pObj);
 
-        pStr = AStr_NewA("Xyzzy");
+        pStr = AStr_NewA(pNameL);
         TestForNotNull(pStr, "");
-        eRc = Dict_AddAStr(pObj->pDict, "LNAME", pStr);
+        eRc = Dict_AddAStr(pObj->pDict, "NAMEL", pStr);
         TestForSuccess("");
-        fprintf(stderr, "\tLNAMEl = \"Xyzzy\"\n");
-        eRc = Dict_AddAStr(pObj->pDict, "UNAME", pStr);
+        fprintf(stderr, "\tNAMEL = \"%s\"\n", pNameL);
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        pStr = AStr_NewA(pNameU);
+        TestForNotNull(pStr, "");
+        eRc = Dict_AddAStr(pObj->pDict, "NAMEU", pStr);
         TestForSuccess("");
-        fprintf(stderr, "\tUNAMEl = \"Xyzzy\"\n");
+        fprintf(stderr, "\tNAMEU = \"%s\"\n", pNameU);
         obj_Release(pStr);
         pStr = OBJ_NIL;
         eRc = GenItem_SetDefaults(pObj);
@@ -283,69 +295,69 @@ ERESULT         Test_GenItem_Test02 (
         fprintf(stderr, "\tiRc: %d\n", iRc);
         TestForTrue((iRc == 0), "");
 
-        pInput1A = "LNAME";
+        pInput1A = "NAMEL";
         fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
         iRc = GenItem_PreProcBoolEval(pObj, (char *)pInput1A, 1);
         fprintf(stderr, "\tiRc: %d\n", iRc);
         TestForTrue((iRc == 1), "");
 
-        pInput1A = "!LNAME";
+        pInput1A = "!NAMEL";
         fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
         iRc = GenItem_PreProcBoolEval(pObj, (char *)pInput1A, 1);
         fprintf(stderr, "\tiRc: %d\n", iRc);
         TestForTrue((iRc == 0), "");
 
-        pInput1A = "!LNAMEX";
+        pInput1A = "!NAMEX";
         fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
         iRc = GenItem_PreProcBoolEval(pObj, (char *)pInput1A, 1);
         fprintf(stderr, "\tiRc: %d\n", iRc);
         TestForTrue((iRc == 1), "");
 
-        pInput1A = "LNAME && UNAME";
+        pInput1A = "NAMEL && NAMEU";
         fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
         iRc = GenItem_PreProcBoolEval(pObj, (char *)pInput1A, 1);
         fprintf(stderr, "\tiRc: %d\n", iRc);
         TestForTrue((iRc == 1), "");
 
-        pInput1A = "LNAME && UNAMEX";
+        pInput1A = "NAMEL && NAMEX";
         fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
         iRc = GenItem_PreProcBoolEval(pObj, (char *)pInput1A, 1);
         fprintf(stderr, "\tiRc: %d\n", iRc);
         TestForTrue((iRc == 0), "");
 
-        pInput1A = "LNAME || UNAME";
+        pInput1A = "NAMEL || NAMEL";
         fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
         iRc = GenItem_PreProcBoolEval(pObj, (char *)pInput1A, 1);
         fprintf(stderr, "\tiRc: %d\n", iRc);
         TestForTrue((iRc == 1), "");
 
-        pInput1A = "LNAMEX || UNAME";
+        pInput1A = "NAMEX || NAMEU";
         fprintf(stderr, "\tPreProcBoolEval: \"%s\"\n", pInput1A);
         iRc = GenItem_PreProcBoolEval(pObj, (char *)pInput1A, 1);
         fprintf(stderr, "\tiRc: %d\n", iRc);
         TestForTrue((iRc == 1), "");
 
-        pInput1A = mem_StrDup("\n%ifdef UNAME\nxyzzy\n%else\nXYZZY\n%endif\n");
+        pInput1A = mem_StrDup("\n%ifdef NAMEU\nxyzzy\n%else\nXYZZY\n%endif\n");
         fprintf(stderr, "\tPreProc: \"%s\"\n", pInput1A);
         pStr = GenItem_Preproc(pObj, '%', pInput1A);
-        fprintf(stderr, "\tiRc: %d\n", iRc);
-        TestForTrue((iRc == 1), "");
         fprintf(stderr, "\tResult: \"%s\"\n", pInput1A);
         mem_Free(pInput1A);
         pInput1A = NULL;
         fprintf(stderr, "\tResultStr: \"%s\"\n", AStr_getData(pStr));
+        iRc = AStr_CompareA(pStr, "\n\nxyzzy\n\n");
+        TestForTrue((iRc == 0), "");
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
-        pInput1A = mem_StrDup("\n%ifdef !UNAME\nxyzzy\n%else\nXYZZY\n%endif\n");
+        pInput1A = mem_StrDup("\n%ifdef !NAMEU\nxyzzy\n%else\nXYZZY\n%endif\n");
         fprintf(stderr, "\tPreProc: \"%s\"\n", pInput1A);
         pStr = GenItem_Preproc(pObj, '%', pInput1A);
-        fprintf(stderr, "\tiRc: %d\n", iRc);
-        TestForTrue((iRc == 1), "");
         fprintf(stderr, "\tResult: \"%s\"\n", pInput1A);
         mem_Free(pInput1A);
         pInput1A = NULL;
         fprintf(stderr, "\tResultStr: \"%s\"\n", AStr_getData(pStr));
+        iRc = AStr_CompareA(pStr, "\n\nXYZZY\n\n");
+        TestForTrue((iRc == 0), "");
         obj_Release(pStr);
         pStr = OBJ_NIL;
 
@@ -369,10 +381,18 @@ ERESULT         Test_GenItem_Test03 (
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    GENITEM_DATA       *pObj = OBJ_NIL;
+    GENITEM_DATA    *pObj = OBJ_NIL;
     bool            fRc;
+    int             iRc;
+    ASTR_DATA       *pStrHome = OBJ_NIL;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    DICT_DATA       *pDict = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+    fprintf(stderr, "Testing: Gen_ExpandVars()\n");
+
+    pDict = Dict_New( );
+    TestForNotNull(pDict, "");
 
     pObj = GenItem_New( );
     TestForNotNull(pObj, "Missing Test object");
@@ -381,19 +401,38 @@ ERESULT         Test_GenItem_Test03 (
         //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_GENITEM);
         TestForTrue(fRc, "Failed Ident Test");
+        Test_setVerbose(this, 1);
+        GenItem_setLog(pObj, (void *)this);
+        GenItem_setDict(pObj, pDict);
 
-        {
-            ASTR_DATA       *pStr = GenItem_ToDebugString(pObj, 4);
-            if (pStr) {
-                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
+        pStrHome = AStr_NewA("${HOME}");
+        TestForNotNull(pStrHome, "");
+        eRc = AStr_ExpandVars(pStrHome, NULL, OBJ_NIL);
+        TestForSuccess("");
+        fprintf(stderr, "\tStrHome: \"%s\"\n", AStr_getData(pStrHome));
+
+        pStr = AStr_NewA("${HOME}");
+        TestForNotNull(pStr, "");
+        if (pStr) {
+
+            eRc = GenItem_ExpandVars(pObj, pStr);
+            TestForSuccess("");
+            fprintf(stderr, "\tStr(1): \"%s\"\n", AStr_getData(pStr));
+            TestForTrue((AStr_getLength(pStrHome) == AStr_getLength(pStr)), "");
+            TestForTrue((0 == AStr_Compare(pStrHome, pStr)), "");
+
+            obj_Release(pStr);
+            pStr = OBJ_NIL;
         }
 
+        obj_Release(pStrHome);
+        pStrHome = OBJ_NIL;
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+
+    obj_Release(pDict);
+    pDict = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return eRc;
@@ -408,10 +447,14 @@ ERESULT         Test_GenItem_Test04 (
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    GENITEM_DATA       *pObj = OBJ_NIL;
+    GENITEM_DATA    *pObj = OBJ_NIL;
     bool            fRc;
+    DICT_DATA       *pDict = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pDict = Dict_New( );
+    TestForNotNull(pDict, "");
 
     pObj = GenItem_New( );
     TestForNotNull(pObj, "Missing Test object");
@@ -420,6 +463,9 @@ ERESULT         Test_GenItem_Test04 (
         //obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_GENITEM);
         TestForTrue(fRc, "Failed Ident Test");
+        Test_setVerbose(this, 1);
+        GenItem_setLog(pObj, (void *)this);
+        GenItem_setDict(pObj, pDict);
 
         {
             ASTR_DATA       *pStr = GenItem_ToDebugString(pObj, 4);
@@ -433,6 +479,9 @@ ERESULT         Test_GenItem_Test04 (
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+
+    obj_Release(pDict);
+    pDict = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return eRc;

@@ -98,13 +98,24 @@ extern "C" {
     typedef struct Lex_data_s  LEX_DATA;            // Inherits from OBJ
     typedef struct Lex_class_data_s LEX_CLASS_DATA;   // Inherits from OBJ
 
+    // NOTE: This VTBL must be kept in compliance with the laInterface.
     typedef struct Lex_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in Lex_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(LEX_DATA *);
+        // Advance() advances the current input source num elements.
+        TOKEN_DATA *     (*pAdvance)(
+                OBJ_ID,
+                uint16_t        num
+        );
+
+        // Advance() advances the current input source num elements.
+        TOKEN_DATA *     (*pLookAhead)(
+                OBJ_ID,
+                uint16_t        num
+        );
     } LEX_VTBL;
 
     typedef struct Lex_class_vtbl_s    {

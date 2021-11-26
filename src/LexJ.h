@@ -60,6 +60,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <laInterface.h>
 #include        <Lex.h>
 #include        <Token.h>
 
@@ -86,7 +87,7 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct LexJ_data_s  LEXJ_DATA;            // Inherits from OBJ
+    typedef struct LexJ_data_s  LEXJ_DATA;            // Inherits from LEX
     typedef struct LexJ_class_data_s LEXJ_CLASS_DATA;   // Inherits from OBJ
 
     typedef struct LexJ_vtbl_s  {

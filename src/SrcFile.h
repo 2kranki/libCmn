@@ -66,6 +66,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <laInterface.h>
 #include        <Path.h>
 #include        <TextIn.h>
 #include        <Token.h>
@@ -96,13 +97,25 @@ extern "C" {
     typedef struct SrcFile_data_s  SRCFILE_DATA;            // Inherits from OBJ
     typedef struct SrcFile_class_data_s SRCFILE_CLASS_DATA;   // Inherits from OBJ
 
+    // NOTE: This VTBL must be kept in compliance with the laInterface.
     typedef struct SrcFile_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in SrcFile_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SRCFILE_DATA *);
+        // Advance() advances the current input source num elements.
+        TOKEN_DATA *     (*pAdvance)(
+                OBJ_ID,
+                uint16_t        num
+        );
+
+        // Advance() advances the current input source num elements.
+        TOKEN_DATA *     (*pLookAhead)(
+                OBJ_ID,
+                uint16_t        num
+        );
+
     } SRCFILE_VTBL;
 
     typedef struct SrcFile_class_vtbl_s    {

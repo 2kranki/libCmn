@@ -16,7 +16,7 @@
  *  1.      None
  *
  * History
- *  11/22/2021 Generated
+ *  11/26/2021 Generated
  */
 
 
@@ -59,9 +59,9 @@
 #define         TEST01_H
 
 
-//#define   TEST01_IS_IMMUTABLE     1
-#define   TEST01_JSON_SUPPORT       1
-//#define   TEST01_SINGLETON        1
+//#define   _IS_IMMUTABLE     1
+#define   _JSON_SUPPORT       1
+//#define   _SINGLETON        1
 //#define       TEST01_MSGS   1
 
 

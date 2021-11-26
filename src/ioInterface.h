@@ -118,7 +118,19 @@ typedef struct io_vtbl_s    {
 #define IO_INTERFACE_DATA(data,obj_id,interface)\
             (data *)(((uint8_t *)objId)-offsetof(data,interface))
 
-    
+#define iIO_Close(pIO)\
+        ((IO_INTERFACE *)(pIO))->pVtbl->pClose(pIO)
+#define iIO_Flush(pIO)\
+        ((IO_INTERFACE *)(pIO))->pVtbl->pFlush(pIO)
+#define iIO_Read(pIO,pBuffer,size)\
+        ((IO_INTERFACE *)(pIO))->pVtbl->pRead(pIO, pBuffer, size)
+#define iIO_Seek(pIO,offset,type)\
+        ((IO_INTERFACE *)(pIO))->pVtbl->pSeek(pIO, offset, type)
+#define iIO_Tell(pIO)\
+        ((IO_INTERFACE *)(pIO))->pVtbl->pTell(pIO)
+#define iIO_Write(pIO,pBuffer,size)\
+        ((IO_INTERFACE *)(pIO))->pVtbl->pWrite(pIO, pBuffer, size)
+
 #endif  // IOINTERFACE_H
 
 

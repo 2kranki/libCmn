@@ -488,7 +488,7 @@ OBJ_INFO        GenItem_Info = {
     "GenItem",
     "An Item to be generated",
     (OBJ_DATA *)&GenItem_ClassObj,
-    (OBJ_DATA *)&GenItem_ClassObj,
+    (OBJ_DATA *)&obj_ClassObj,
     (OBJ_IUNKNOWN *)&GenItem_Vtbl,
     sizeof(GENITEM_DATA)
 };

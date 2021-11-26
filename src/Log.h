@@ -234,7 +234,11 @@ extern "C" {
 
     /*!
      Write the given message and terminate the application with an exit code of 8.
-     @param     this        object pointer
+     Since Fatal is so important, we allow "this" to be OBJ_NIL and we will still
+     issue the message to stderr then exit(8). Normally, we want the termination
+     to go through the application object if possible. That way, it can perform
+     clean up.
+     @param     this        object pointer (may be NULL/OBJ_NIL)
      @param     pFormatA    printf-like message format which should end with '\n'
      */
     void            Log_Fatal(

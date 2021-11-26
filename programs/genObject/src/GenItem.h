@@ -57,6 +57,7 @@
 #include        <genObject_defs.h>
 #include        <AStr.h>
 #include        <Dict.h>
+#include        <logInterface.h>
 
 
 #ifndef         GENITEM_H
@@ -201,22 +202,9 @@ extern "C" {
     );
 
 
-    bool            GenItem_setMsg (
+    bool            GenItem_setLog (
         GENITEM_DATA    *this,
-        void            (*pMsgInfo)(
-            APPL_DATA       *this,
-            const
-            char            *fmt,
-            ...
-        ),
-        void            (*pMsgWarn)(
-            APPL_DATA       *this,
-            uint16_t        iVerbose,
-            const
-            char            *fmt,
-            ...
-        ),
-        OBJ_ID       pObj
+        OBJ_ID          pObj
     );
 
 
@@ -252,8 +240,15 @@ extern "C" {
     );
 
 
-    ERESULT         GenItem_Enable (
-        GENITEM_DATA    *this
+    /*! Expand the ${} variables in a sttring until there are no more. When
+        a variable is found, look it up in the dictionary and then the
+        program environment.  If it exists in one of those, replace the
+        ${} variable with the text found. If it is not found, simply
+        remove the ${} variable and note it to the log.
+     */
+    ERESULT         GenItem_ExpandVars(
+        GENITEM_DATA    *this,
+        ASTR_DATA       *pInOut
     );
 
    

@@ -218,16 +218,26 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
     static
-    void            GenItem_task_body (
-        void            *pData
+    const
+    char *          GenItem_DictLookup (
+        GENITEM_DATA    *this,
+        const
+        char            *pNameA
     )
     {
-        //GENITEM_DATA  *this = pData;
-        
+        ASTR_DATA       *pData = OBJ_NIL;
+        const
+        char            *pDataA = NULL;
+
+        if (this->pDict) {
+            pData = Dict_FindA(this->pDict, pNameA);
+            if (pData)
+                pDataA = AStr_getData(pData);
+        }
+
+        return pDataA;
     }
-#endif
 
 
 
@@ -313,6 +323,9 @@ extern "C" {
             obj_Release(this->pDict);
         }
         this->pDict = pValue;
+        this->pDictObj = pValue;
+        this->pDictLookupA = (void *)Dict_GetA;
+
 
         return true;
     }
@@ -369,9 +382,9 @@ extern "C" {
     //                          L o g
     //---------------------------------------------------------------
 
-    bool            GenItem_setMsg (
+    bool            GenItem_setLog (
         GENITEM_DATA    *this,
-        LOG_INTERFACE   pObj
+        OBJ_ID          pObj
     )
     {
 #ifdef NDEBUG
@@ -954,7 +967,7 @@ extern "C" {
     //                 E x p a n d  V a r i a b l e s
     //---------------------------------------------------------------
 
-    /*! Expand the ${} variables in a line until there are no more. When
+    /*! Expand the ${} variables in a string until there are no more. When
         a variable is found, look it up in the dictionary and then the
         program environment.  If it exists in one of those, replace the
         ${} variable with the text found. If it is not found, simply
@@ -1017,17 +1030,13 @@ extern "C" {
                         pEnvVar = this->pDictLookupA(this->pDictObj, AStr_getData(pName));
                     }
                     if (NULL == pEnvVar) {
-                        pEnvVar = getenv(AStr_getData(pName));
-                        if (NULL == pEnvVar) {
-                            obj_Release(pName);
-                            if (this->pMsgWarn) {
-                                this->pMsgWarn(
-                                        this->pMsgObj,
-                                        0,
-                                        "Could not find variable, %s, skipped!",
-                                        AStr_getData(pName)
-                                );
-                            }
+                        if (this->pLog) {
+                            ((LOG_INTERFACE *)(this->pLog))->pVtbl->pLogWarn(
+                                    this->pLog,
+                                    0,
+                                    "Could not find variable, %s, skipped!",
+                                    AStr_getData(pName)
+                            );
                         }
                     }
                     obj_Release(pName);
@@ -1164,7 +1173,7 @@ extern "C" {
 #ifdef  GENITEM_JSON_SUPPORT
         JsonIn_RegisterClass(GenItem_Class());
 #endif
-        
+
         /*
         this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {
@@ -1611,25 +1620,19 @@ extern "C" {
             exit(4);
         }
 
-        if (this->pMsgInfo && fVerbose) {
-            this->pMsgInfo(
-                    this->pMsgObj,
-                    "Processing %s...",
-                    Path_getData(this->pModel)
-            );
-        }
+        iLog_Info(
+                this->pLog,
+                "Processing %s...",
+                Path_getData(this->pModel)
+        );
         cnt = 0;
         //FIXME: eRc = Gen_ExpandData(this, pInput, pOutput, &cnt);
-        if (this->pMsgInfo) {
-            this->pMsgInfo(this->pMsgObj, "%d lines", cnt);
-        }
-        if (this->pMsgInfo && fVerbose) {
-            this->pMsgInfo(
-                    this->pMsgObj,
-                    "Completed %s Processing.",
-                    Path_getData(this->pModel)
-            );
-        }
+        iLog_Info(this->pLog, "%d lines", cnt);
+        iLog_Info(
+                this->pLog,
+                "Completed %s Processing.",
+                Path_getData(this->pModel)
+        );
 
         // Return to caller.
         return eRc;

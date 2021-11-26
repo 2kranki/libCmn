@@ -86,16 +86,7 @@ extern "C" {
     {
         ERESULT         eRc;
 
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Log_Validate(this)) {
-            DEBUG_BREAK();
-            return;
-        }
-#endif
-
-        if (this->pLog) {
+        if (this && this->pLog) {
             eRc = FileIO_Write(this->pLog, cBuffer, pBuffer);
         } else {
             fwrite(pBuffer, cBuffer, 1, stderr);
@@ -1034,23 +1025,18 @@ extern "C" {
         APPL_VTBL       *pAppl = OBJ_NIL;
 
         // Do initialization.
-#ifdef  LOG_SINGLETON
-        if (OBJ_NIL == this) {
-            this = Log_Shared();
-        }
-#endif
 #ifdef NDEBUG
 #else
-        if (!Log_Validate(this)) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return;
+        if (this) {
+            if (!Log_Validate(this)) {
+                DEBUG_BREAK();
+                //return ERESULT_INVALID_OBJECT;
+                return;
+            }
         }
 #endif
-        if (this->pAppl) {
+        if (this && this->pAppl) {
             pAppl = (APPL_VTBL *)obj_getVtbl(this->pAppl);
-        } else {
-            Log_Fatal(this, "Missing Application Interface!\n");
         }
 
         va_start( arg_ptr, pFormatA );

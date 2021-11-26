@@ -58,6 +58,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <laInterface.h>
 #include        <Lex.h>
 
 
@@ -83,7 +84,7 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct LexTri_data_s  LEXTRI_DATA;            // Inherits from OBJ
+    typedef struct LexTri_data_s  LEXTRI_DATA;            // Inherits from Lex
     typedef struct LexTri_class_data_s LEXTRI_CLASS_DATA;   // Inherits from OBJ
 
     typedef struct LexTri_vtbl_s  {
