@@ -353,6 +353,23 @@ extern "C" {
 
 
 
+    uint32_t        Blocks_getMaxRecords (
+        BLOCKS_DATA     *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Blocks_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->cRecordsPerBlock * this->cBlocks;
+    }
+
+
+
     uint32_t        Blocks_getNumActive (
         BLOCKS_DATA     *this
     )

@@ -146,6 +146,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    OBJ_ID          ObjEnum_getArray(
+        OBJENUM_DATA    *this
+    );
+
+
     uint32_t        ObjEnum_getSize (
         OBJENUM_DATA       *this
     );

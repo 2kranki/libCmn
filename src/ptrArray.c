@@ -346,6 +346,73 @@ extern "C" {
     
     
     //----------------------------------------------------------
+    //                        D e q u e u e
+    //----------------------------------------------------------
+
+    void *          ptrArray_Dequeue (
+        PTRARRAY_DATA    *this
+    )
+    {
+        void            *pObj = NULL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ptrArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+        if (this->size)
+            ;
+        else {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+
+        --this->size;
+        if (this->ppArray) {
+            pObj = this->ppArray[this->size];
+            this->ppArray[this->size] = NULL;
+        }
+
+        return pObj;
+    }
+
+
+
+    //----------------------------------------------------------
+    //                        E n q u e u e
+    //----------------------------------------------------------
+
+    ERESULT         ptrArray_Enqueue (
+        PTRARRAY_DATA   *this,
+        void            *pData
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ptrArray_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pData) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        eRc = ptrArray_InsertData(this, 0, pData);
+
+        return eRc;
+    }
+
+
+
+    //----------------------------------------------------------
     //                        E n u m
     //----------------------------------------------------------
     
@@ -571,7 +638,7 @@ extern "C" {
     //                         P o p
     //---------------------------------------------------------------
     
-    void *          ptrArray_PopData (
+    void *          ptrArray_Pop (
         PTRARRAY_DATA   *this
     )
     {
@@ -597,7 +664,7 @@ extern "C" {
     //                         P u s h
     //---------------------------------------------------------------
     
-    ERESULT         ptrArray_PushData (
+    ERESULT         ptrArray_Push (
         PTRARRAY_DATA   *this,
         void            *pData
     )

@@ -154,7 +154,6 @@ extern "C" {
      @param     this    object pointer
      @param     num     a number relative to 1 that indexes into the array
      @return:   If successful, valid enumerator. Otherwise, OBJ_NIL.
-                error code.
      */
     ERESULT         ptrArray_Expand (
         PTRARRAY_DATA   *this,
@@ -168,6 +167,31 @@ extern "C" {
     );
     
     
+    /*!
+     Dequeue() is an alias for DeleteLast() which deletes the last
+     entry and returns the pointer stored in it.
+     @param     this    object pointer
+     @return:   If successful, valid pointer. Otherwise, NULL.
+     */
+    void *          ptrArray_Dequeue (
+        PTRARRAY_DATA   *this
+    );
+
+
+    /*!
+     Enqueue() adds the supplied pointer to the head of array
+     making it the first entry.
+     @param     this    object pointer
+     @param     pData   non-null pointer to be added
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an
+                ERESULT_* error code.
+     */
+    ERESULT         ptrArray_Enqueue (
+        PTRARRAY_DATA   *this,
+        void            *pData
+    );
+
+
     /*!
      Create an Enumerator that will enumerate through all the pointers.
      @return:   If successful, valid enumerator. Otherwise, OBJ_NIL.
@@ -204,12 +228,26 @@ extern "C" {
     );
     
     
-    void *          ptrArray_PopData (
+    /*!
+     Pop() is an alias for DeleteLast() which deletes the last
+     entry and returns the pointer stored in it.
+     @param     this    object pointer
+     @return:   If successful, valid pointer. Otherwise, NULL.
+     */
+    void *          ptrArray_Pop (
         PTRARRAY_DATA   *this
     );
 
 
-    ERESULT         ptrArray_PushData (
+    /*!
+     Push() adds the supplied pointer to the end of the array
+     making it the lasst entry.
+     @param     this    object pointer
+     @param     pData   non-null pointer to be added
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an
+                ERESULT_* error code.
+     */
+    ERESULT         ptrArray_Push (
         PTRARRAY_DATA   *this,
         void            *pData
     );

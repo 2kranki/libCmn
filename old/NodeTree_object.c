@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'ObjArray'
-//	Generated 12/29/2019 20:07:08
+//	Class Object Metods and Tables for 'NodeTree'
+//	Generated 01/10/2020 16:43:19
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define			OBJARRAY_OBJECT_C	    1
-#include        <ObjArray_internal.h>
-#ifdef  OBJARRAY_SINGLETON
+#define			NODETREE_OBJECT_C	    1
+#include        <NodeTree_internal.h>
+#ifdef  NODETREE_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct ObjArray_class_data_s	{
+struct NodeTree_class_data_s	{
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  OBJARRAY_SINGLETON
+#ifdef  NODETREE_SINGLETON
     volatile
-    OBJARRAY_DATA       *pSingleton;
+    NODETREE_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct ObjArray_class_data_s	{
 
 
 static
-void *          ObjArrayClass_QueryInfo (
+void *          NodeTreeClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,26 +78,26 @@ void *          ObjArrayClass_QueryInfo (
 
 static
 const
-OBJ_INFO        ObjArray_Info;            // Forward Reference
+OBJ_INFO        NodeTree_Info;            // Forward Reference
 
 
 
 
 static
-bool            ObjArrayClass_IsKindOf (
+bool            NodeTreeClass_IsKindOf (
     uint16_t		classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_OBJARRAY_CLASS == classID) {
+    if (OBJ_IDENT_NODETREE_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(ObjArray_Class())->pClassSuperObject;
+    pObj = obj_getInfo(NodeTree_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -109,11 +109,11 @@ bool            ObjArrayClass_IsKindOf (
 
 
 static
-uint16_t		ObjArrayClass_WhoAmI (
+uint16_t		NodeTreeClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_OBJARRAY_CLASS;
+    return OBJ_IDENT_NODETREE_CLASS;
 }
 
 
@@ -125,17 +125,17 @@ uint16_t		ObjArrayClass_WhoAmI (
 
 static
 const
-OBJARRAY_CLASS_VTBL    class_Vtbl = {
+NODETREE_CLASS_VTBL    class_Vtbl = {
     {
-        &ObjArray_Info,
-        ObjArrayClass_IsKindOf,
+        &NodeTree_Info,
+        NodeTreeClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        ObjArray_Class,
-        ObjArrayClass_WhoAmI,
-        (P_OBJ_QUERYINFO)ObjArrayClass_QueryInfo,
-        NULL                        // ObjArrayClass_ToDebugString
+        NodeTree_Class,
+        NodeTreeClass_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeTreeClass_QueryInfo,
+        NULL                        // NodeTreeClass_ToDebugString
     },
 };
 
@@ -145,10 +145,10 @@ OBJARRAY_CLASS_VTBL    class_Vtbl = {
 //						Class Object
 //-----------------------------------------------------------
 
-OBJARRAY_CLASS_DATA  ObjArray_ClassObj = {
+NODETREE_CLASS_DATA  NodeTree_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(OBJARRAY_CLASS_DATA),                  // cbSize
+        sizeof(NODETREE_CLASS_DATA),            // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -162,17 +162,17 @@ OBJARRAY_CLASS_DATA  ObjArray_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  OBJARRAY_SINGLETON
-OBJARRAY_DATA *     ObjArray_getSingleton (
+#ifdef  NODETREE_SINGLETON
+NODETREE_DATA *     NodeTree_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(ObjArray_ClassObj.pSingleton);
+    return (OBJ_ID)(NodeTree_ClassObj.pSingleton);
 }
 
 
-bool            ObjArray_setSingleton (
-    OBJARRAY_DATA       *pValue
+bool            NodeTree_setSingleton (
+    NODETREE_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -192,10 +192,10 @@ bool            ObjArray_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (ObjArray_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(ObjArray_ClassObj.pSingleton));
+    if (NodeTree_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(NodeTree_ClassObj.pSingleton));
     }
-    ObjArray_ClassObj.pSingleton = pValue;
+    NodeTree_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -205,17 +205,17 @@ bool            ObjArray_setSingleton (
 
 
 
-OBJARRAY_DATA *     ObjArray_Shared (
+NODETREE_DATA *     NodeTree_Shared (
     void
 )
 {
-    OBJARRAY_DATA       *this = (OBJ_ID)(ObjArray_ClassObj.pSingleton);
+    NODETREE_DATA       *this = (OBJ_ID)(NodeTree_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = ObjArray_New( );
-        ObjArray_setSingleton(this);
+        this = NodeTree_New( );
+        NodeTree_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // ObjArray_ClassObj.pSingleton = OBJ_NIL;
+        // NodeTree_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -223,15 +223,15 @@ OBJARRAY_DATA *     ObjArray_Shared (
 
 
 
-void            ObjArray_SharedReset (
+void            NodeTree_SharedReset (
     void
 )
 {
-    OBJARRAY_DATA       *this = (OBJ_ID)(ObjArray_ClassObj.pSingleton);
+    NODETREE_DATA       *this = (OBJ_ID)(NodeTree_ClassObj.pSingleton);
     
     if (this) {
         obj_Release(this);
-        ObjArray_ClassObj.pSingleton = OBJ_NIL;
+        NodeTree_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -247,13 +247,13 @@ void            ObjArray_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          ObjArrayClass_QueryInfo (
+void *          NodeTreeClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    OBJARRAY_CLASS_DATA *this = objId;
+    NODETREE_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -264,7 +264,7 @@ void *          ObjArrayClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(OBJARRAY_DATA);
+            return (void *)sizeof(NODETREE_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -279,7 +279,7 @@ void *          ObjArrayClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&ObjArray_Info;
+                        return (void *)&NodeTree_Info;
                     }
                     break;
                     
@@ -297,19 +297,19 @@ void *          ObjArrayClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return ObjArray_New;
+                        return NodeTree_New;
                     }
                     break;
                     
                 case 'P':
                     if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return ObjArray_ParseJsonObject;
+                        //return NodeTree_ParseJsonObject;
                     }
                     break;
  
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return ObjArrayClass_WhoAmI;
+                        return NodeTreeClass_WhoAmI;
                     }
                     break;
                     
@@ -329,7 +329,7 @@ void *          ObjArrayClass_QueryInfo (
 
 
 static
-bool            ObjArray_IsKindOf (
+bool            NodeTree_IsKindOf (
     uint16_t		classID
 )
 {
@@ -337,14 +337,14 @@ bool            ObjArray_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_OBJARRAY == classID) {
+    if (OBJ_IDENT_NODETREE == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(ObjArray_Class())->pClassSuperObject;
+    pObj = obj_getInfo(NodeTree_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -358,25 +358,25 @@ bool            ObjArray_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            ObjArray_Dealloc (
+void            NodeTree_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          ObjArray_Class (
+OBJ_ID          NodeTree_Class (
     void
 )
 {
-    return (OBJ_ID)&ObjArray_ClassObj;
+    return (OBJ_ID)&NodeTree_ClassObj;
 }
 
 
 static
-uint16_t		ObjArray_WhoAmI (
+uint16_t		NodeTree_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_OBJARRAY;
+    return OBJ_IDENT_NODETREE;
 }
 
 
@@ -388,51 +388,48 @@ uint16_t		ObjArray_WhoAmI (
 //===========================================================
 
 const
-OBJARRAY_VTBL     ObjArray_Vtbl = {
+NODETREE_VTBL     NodeTree_Vtbl = {
     {
-        &ObjArray_Info,
-        ObjArray_IsKindOf,
-#ifdef  OBJARRAY_IS_SINGLETON
+        &NodeTree_Info,
+        NodeTree_IsKindOf,
+#ifdef  NODETREE_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
 #else
         obj_RetainStandard,
         obj_ReleaseStandard,
 #endif
-        ObjArray_Dealloc,
-        ObjArray_Class,
-        ObjArray_WhoAmI,
-        (P_OBJ_QUERYINFO)ObjArray_QueryInfo,
-        (P_OBJ_TOSTRING)ObjArray_ToDebugString,
-        NULL,			// ObjArray_Enable,
-        NULL,			// ObjArray_Disable,
-        (P_OBJ_ASSIGN)ObjArray_Assign,
-        NULL,			// (P_OBJ_COMPARE)ObjArray_Compare,
-        (P_OBJ_PTR)ObjArray_Copy,
-        (P_OBJ_PTR)ObjArray_DeepCopy,
-        NULL 			// (P_OBJ_HASH)ObjArray_Hash,
+        NodeTree_Dealloc,
+        NodeTree_Class,
+        NodeTree_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeTree_QueryInfo,
+        (P_OBJ_TOSTRING)NodeTree_ToDebugString,
+        NULL,			// NodeTree_Enable,
+        NULL,			// NodeTree_Disable,
+        NULL,			// (P_OBJ_ASSIGN)NodeTree_Assign,
+        NULL,			// (P_OBJ_COMPARE)NodeTree_Compare,
+        NULL, 			// (P_OBJ_PTR)NodeTree_Copy,
+        NULL, 			// (P_OBJ_PTR)NodeTree_DeepCopy,
+        NULL 			// (P_OBJ_HASH)NodeTree_Hash,
     },
     // Put other object method names below this.
     // Properties:
-    (void *)ObjArray_getSize,
     // Methods:
-    (void *)ObjArray_AppendObj,
-    (void *)ObjArray_Delete,
-    (void *)ObjArray_Get,
-
+    //NodeTree_IsEnabled,
+ 
 };
 
 
 
 static
 const
-OBJ_INFO        ObjArray_Info = {
-    "ObjArray",
-    "Array of Objects",
-    (OBJ_DATA *)&ObjArray_ClassObj,
-    (OBJ_DATA *)&array_ClassObj,
-    (OBJ_IUNKNOWN *)&ObjArray_Vtbl,
-    sizeof(OBJARRAY_DATA)
+OBJ_INFO        NodeTree_Info = {
+    "NodeTree",
+    "An Unordered Tree of Nodes",
+    (OBJ_DATA *)&NodeTree_ClassObj,
+    (OBJ_DATA *)&Blocks_ClassObj,
+    (OBJ_IUNKNOWN *)&NodeTree_Vtbl,
+    sizeof(NODETREE_DATA)
 };
 
 

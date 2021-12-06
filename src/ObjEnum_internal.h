@@ -109,7 +109,7 @@ struct ObjEnum_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA * ObjEnum_getArray(
+    OBJ_ID          ObjEnum_getArray(
         OBJENUM_DATA    *this
     );
     

@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//	Class Object Metods and Tables for 'NodeTree'
-//	Generated 01/10/2020 16:43:19
+//  Class Object Metods and Tables for 'NodeTree'
+//  Generated 11/26/2021 19:19:16
 
 
 /*
@@ -34,7 +34,7 @@
 
 
 
-#define			NODETREE_OBJECT_C	    1
+#define         NODETREE_OBJECT_C       1
 #include        <NodeTree_internal.h>
 #ifdef  NODETREE_SINGLETON
 #include        <psxLock.h>
@@ -46,7 +46,7 @@
 //                  Class Object Definition
 //===========================================================
 
-struct NodeTree_class_data_s	{
+struct NodeTree_class_data_s    {
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
@@ -85,7 +85,7 @@ OBJ_INFO        NodeTree_Info;            // Forward Reference
 
 static
 bool            NodeTreeClass_IsKindOf (
-    uint16_t		classID
+    uint16_t        classID
 )
 {
     OBJ_DATA        *pObj;
@@ -109,7 +109,7 @@ bool            NodeTreeClass_IsKindOf (
 
 
 static
-uint16_t		NodeTreeClass_WhoAmI (
+uint16_t        NodeTreeClass_WhoAmI (
     void
 )
 {
@@ -142,7 +142,7 @@ NODETREE_CLASS_VTBL    class_Vtbl = {
 
 
 //-----------------------------------------------------------
-//						Class Object
+//                      Class Object
 //-----------------------------------------------------------
 
 NODETREE_CLASS_DATA  NodeTree_ClassObj = {
@@ -153,7 +153,7 @@ NODETREE_CLASS_DATA  NodeTree_ClassObj = {
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
     },
-	//0
+    //0
 };
 
 
@@ -163,6 +163,11 @@ NODETREE_CLASS_DATA  NodeTree_ClassObj = {
 //---------------------------------------------------------------
 
 #ifdef  NODETREE_SINGLETON
+extern
+const
+NODETREE_VTBL       NodeTree_VtblShared;
+
+
 NODETREE_DATA *     NodeTree_getSingleton (
     void
 )
@@ -213,6 +218,7 @@ NODETREE_DATA *     NodeTree_Shared (
     
     if (NULL == this) {
         this = NodeTree_New( );
+        obj_setVtbl(this, (void *)&NodeTree_VtblShared);
         NodeTree_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
         // NodeTree_ClassObj.pSingleton = OBJ_NIL;
@@ -230,6 +236,7 @@ void            NodeTree_SharedReset (
     NODETREE_DATA       *this = (OBJ_ID)(NodeTree_ClassObj.pSingleton);
     
     if (this) {
+        obj_setVtbl(this, (void *)&NodeTree_Vtbl);
         obj_Release(this);
         NodeTree_ClassObj.pSingleton = OBJ_NIL;
     }
@@ -272,14 +279,18 @@ void *          NodeTreeClass_QueryInfo (
             break;
             
         // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
         case OBJ_QUERYINFO_TYPE_DATA_PTR:
             switch (*pStr) {
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
                         return (void *)&NodeTree_Info;
+                    }
+                    break;
+                    
+                case 'S':
+                    if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                        return (void *)&NodeTree_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -302,11 +313,27 @@ void *          NodeTreeClass_QueryInfo (
                     break;
                     
                 case 'P':
-                    if (str_Compare("ParseJson", (char *)pStr) == 0) {
-                        //return NodeTree_ParseJsonObject;
+#ifdef  NODETREE_JSON_SUPPORT
+                    if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
+                        return NodeTree_ParseJsonFields;
                     }
+                    if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
+                        return NodeTree_ParseJsonObject;
+                    }
+#endif
                     break;
- 
+
+                case 'T':
+#ifdef  NODETREE_JSON_SUPPORT
+                    if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                        return NodeTree_ToJsonFields;
+                    }
+                    if (str_Compare("ToJson", (char *)pStr) == 0) {
+                        return NodeTree_ToJson;
+                    }
+#endif
+                    break;
+
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
                         return NodeTreeClass_WhoAmI;
@@ -330,7 +357,7 @@ void *          NodeTreeClass_QueryInfo (
 
 static
 bool            NodeTree_IsKindOf (
-    uint16_t		classID
+    uint16_t        classID
 )
 {
     OBJ_DATA        *pObj;
@@ -372,7 +399,7 @@ OBJ_ID          NodeTree_Class (
 
 
 static
-uint16_t		NodeTree_WhoAmI (
+uint16_t        NodeTree_WhoAmI (
     void
 )
 {
@@ -387,30 +414,64 @@ uint16_t		NodeTree_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
+#ifdef  NODETREE_SINGLETON
+// A Shared object ignores Retain() and Release() except for
+// initialization and termination. So, there must be an
+// independent VTbl from the normal which does support Retain()
+// and Release().
 const
-NODETREE_VTBL     NodeTree_Vtbl = {
+NODETREE_VTBL     NodeTree_VtblShared = {
     {
         &NodeTree_Info,
         NodeTree_IsKindOf,
-#ifdef  NODETREE_IS_SINGLETON
         obj_RetainNull,
         obj_ReleaseNull,
-#else
-        obj_RetainStandard,
-        obj_ReleaseStandard,
-#endif
         NodeTree_Dealloc,
         NodeTree_Class,
         NodeTree_WhoAmI,
         (P_OBJ_QUERYINFO)NodeTree_QueryInfo,
         (P_OBJ_TOSTRING)NodeTree_ToDebugString,
-        NULL,			// NodeTree_Enable,
-        NULL,			// NodeTree_Disable,
-        NULL,			// (P_OBJ_ASSIGN)NodeTree_Assign,
-        NULL,			// (P_OBJ_COMPARE)NodeTree_Compare,
-        NULL, 			// (P_OBJ_PTR)NodeTree_Copy,
-        NULL, 			// (P_OBJ_PTR)NodeTree_DeepCopy,
-        NULL 			// (P_OBJ_HASH)NodeTree_Hash,
+        NULL,           // NodeTree_Enable,
+        NULL,           // NodeTree_Disable,
+        NULL,           // (P_OBJ_ASSIGN)NodeTree_Assign,
+        NULL,           // (P_OBJ_COMPARE)NodeTree_Compare,
+        NULL,           // (P_OBJ_PTR)NodeTree_Copy,
+        NULL,           // (P_OBJ_PTR)NodeTree_DeepCopy,
+        NULL            // (P_OBJ_HASH)NodeTree_Hash,
+    },
+    // Put other object method names below this.
+    // Properties:
+    // Methods:
+    //NodeTree_IsEnabled,
+ 
+};
+#endif
+
+
+// This VTbl supports Retain() and Release() which is
+// used by objects other than the Shared object. These
+// objects can still be shared among other objects. It
+// just that they are deleted when their usage count
+// goes to zero.
+const
+NODETREE_VTBL     NodeTree_Vtbl = {
+    {
+        &NodeTree_Info,
+        NodeTree_IsKindOf,
+        obj_RetainStandard,
+        obj_ReleaseStandard,
+        NodeTree_Dealloc,
+        NodeTree_Class,
+        NodeTree_WhoAmI,
+        (P_OBJ_QUERYINFO)NodeTree_QueryInfo,
+        (P_OBJ_TOSTRING)NodeTree_ToDebugString,
+        NULL,           // NodeTree_Enable,
+        NULL,           // NodeTree_Disable,
+        NULL,           // (P_OBJ_ASSIGN)NodeTree_Assign,
+        NULL,           // (P_OBJ_COMPARE)NodeTree_Compare,
+        NULL,           // (P_OBJ_PTR)NodeTree_Copy,
+        NULL,           // (P_OBJ_PTR)NodeTree_DeepCopy,
+        NULL            // (P_OBJ_HASH)NodeTree_Hash,
     },
     // Put other object method names below this.
     // Properties:
@@ -425,9 +486,9 @@ static
 const
 OBJ_INFO        NodeTree_Info = {
     "NodeTree",
-    "Tree of Nodes",
+    "An Unordered Tree of Nodes",
     (OBJ_DATA *)&NodeTree_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&Blocks_ClassObj,
     (OBJ_IUNKNOWN *)&NodeTree_Vtbl,
     sizeof(NODETREE_DATA)
 };

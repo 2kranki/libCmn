@@ -587,8 +587,8 @@ extern "C" {
                 ERESULT_* error 
      */
     ERESULT         NodeHash_Assign (
-        NODEHASH_DATA		*this,
-        NODEHASH_DATA     *pOther
+        NODEHASH_DATA   *this,
+        NODEHASH_DATA   *pOther
     )
     {
         ERESULT     eRc;

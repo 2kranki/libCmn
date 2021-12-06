@@ -166,7 +166,7 @@ extern "C" {
     //                          A r r a y
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA *  NodeArray_getArray (
+    IOBJARRAY *     NodeArray_getArray (
         NODEARRAY_DATA  *this
     )
     {
@@ -180,13 +180,13 @@ extern "C" {
         }
 #endif
 
-        return this->pArray;
+        return (IOBJARRAY *)this->pArray;
     }
 
 
     bool            NodeArray_setArray (
         NODEARRAY_DATA  *this,
-        OBJARRAY_DATA   *pValue
+        IOBJARRAY       *pValue
     )
     {
 #ifdef NDEBUG
@@ -196,11 +196,14 @@ extern "C" {
             return false;
         }
 #endif
+        if (obj_IsKindOf(this, OBJ_IDENT_OBJARRAY)) {
+            return false;
+        }
         obj_Retain(pValue);
         if (this->pArray) {
             obj_Release(this->pArray);
         }
-        this->pArray = pValue;
+        this->pArray = (OBJARRAY_DATA *)pValue;
 
         return true;
     }
@@ -227,29 +230,6 @@ extern "C" {
         this->pCompare = pCompare;
 
         return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                     o b j A r r a y
-    //---------------------------------------------------------------
-
-    OBJARRAY_DATA *  NodeArray_getObjArray (
-        NODEARRAY_DATA  *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if( !NodeArray_Validate(this) ) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pArray;
     }
 
 
@@ -422,14 +402,14 @@ extern "C" {
 #endif
 
         if (OBJ_NIL == this->pArray) {
-            this->pArray = ObjArray_New();
+            this->pArray = (void *)ObjArray_New();
             if (OBJ_NIL == this->pArray) {
                 DEBUG_BREAK();
                 return ERESULT_MEMORY_EXCEEDED;
             }
         }
 
-        eRc = ObjArray_AppendObj(this->pArray, pObject, pIndex);
+        eRc = iArray_AppendObj(this->pArray, pObject, pIndex);
 
         // Return to caller.
         return eRc;
@@ -656,20 +636,8 @@ extern "C" {
         }
 #endif
 
-        if (this->pArray) {
-#ifdef NDEBUG
-#else
-            if (obj_getRetainCount(this->pArray) > 1) {
-                DEBUG_BREAK();
-            }
-#endif
-            obj_Release(this->pArray);
-            this->pArray = OBJ_NIL;
-        }
-        if (this->pOther) {
-            obj_Release(this->pOther);
-            this->pOther = OBJ_NIL;
-        }
+        NodeArray_setArray(this, OBJ_NIL);
+        NodeArray_setOther(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -724,7 +692,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     NODE_DATA *     NodeArray_Delete (
-        NODEARRAY_DATA    *this,
+        NODEARRAY_DATA  *this,
         uint32_t        index
     )
     {
@@ -749,7 +717,7 @@ extern "C" {
 
 
     NODE_DATA *     NodeArray_DeleteFirst (
-        NODEARRAY_DATA    *this
+        NODEARRAY_DATA  *this
     )
     {
         NODE_DATA       *pNode = OBJ_NIL;
@@ -764,7 +732,11 @@ extern "C" {
 #endif
 
         if (this->pArray) {
-            pNode = ObjArray_DeleteFirst(this->pArray);
+            pNode = ObjArray_Get(this->pArray, 1);
+            if (pNode) {
+                obj_Retain(pNode);
+                ObjArray_Delete(this->pArray, 1);
+            }
         }
 
         // Return to caller.
@@ -777,6 +749,7 @@ extern "C" {
     )
     {
         NODE_DATA       *pNode = OBJ_NIL;
+        uint32_t        size;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -788,7 +761,14 @@ extern "C" {
 #endif
 
         if (this->pArray) {
-            pNode = ObjArray_DeleteLast(this->pArray);
+            size = NodeArray_getSize(this);
+            if (size) {
+                pNode = ObjArray_Get(this->pArray, size);
+                if (pNode) {
+                    obj_Retain(pNode);
+                    ObjArray_Delete(this->pArray, size);
+                }
+            }
         }
 
         // Return to caller.
@@ -892,7 +872,7 @@ extern "C" {
 
         if (this->pArray) {
             pEnum = NodeEnum_New();
-            size = ObjArray_getSize(this->pArray);
+            size = iArray_getSize(this->pArray);
             for (index = 0; index < size; ++index) {
                 pNode = ObjArray_Get(this->pArray, index+1);
                 eRc = NodeEnum_AppendObj(pEnum, pNode);

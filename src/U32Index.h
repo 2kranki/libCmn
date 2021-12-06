@@ -1,16 +1,18 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  uint32_t Integer Index (U32Index) Header
+//             uint32_t Integer Index (U32Index) Header
 //****************************************************************
 /*
  * Program
  *          uint32_t Integer Index (U32Index)
  * Purpose
- *          This object provides a standardized way of handling
- *          a separate U32Index to run things without complications
- *          of interfering with the main U32Index. A U32Index may be 
- *          called a U32Index on other O/S's.
+ *          This object provides an indexeed list of pointers. The
+ *          index number is not used directly to access the pointer
+ *          value associated with it. Instead, a binary search is
+ *          performed on the index to find the pointer associated
+ *          with the index value.  The list is maintained in numerical
+ *          order.
  *
  * Remarks
  *  1.      None
@@ -111,7 +113,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  U32INDEX_SINGLETON
-    U32INDEX_DATA *     U32Index_Shared (
+    U32INDEX_DATA * U32Index_Shared (
         void
     );
 
@@ -127,7 +129,7 @@ extern "C" {
      released.
      @return    pointer to U32Index object if successful, otherwise OBJ_NIL.
      */
-    U32INDEX_DATA *     U32Index_Alloc (
+    U32INDEX_DATA * U32Index_Alloc (
         void
     );
     
@@ -137,17 +139,17 @@ extern "C" {
     );
     
     
-    U32INDEX_DATA *     U32Index_New (
+    U32INDEX_DATA * U32Index_New (
         void
     );
     
     
 #ifdef  U32INDEX_JSON_SUPPORT
-    U32INDEX_DATA *   U32Index_NewFromJsonString (
+    U32INDEX_DATA * U32Index_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    U32INDEX_DATA *   U32Index_NewFromJsonStringA (
+    U32INDEX_DATA * U32Index_NewFromJsonStringA (
         const
         char            *pStringA
     );

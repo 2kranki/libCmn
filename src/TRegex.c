@@ -645,7 +645,7 @@ modifierFound:
                 ++i;
             }
 
-            ptrArray_PushData(this->pTokenStack, pToken);
+            ptrArray_Push(this->pTokenStack, pToken);
 
             return i;
         case ')':
@@ -655,7 +655,7 @@ modifierFound:
                 errno = EINVAL;
                 return 0;
             }
-            re_Token        *pSavedToken = ptrArray_PopData(this->pTokenStack);
+            re_Token        *pSavedToken = ptrArray_Pop(this->pTokenStack);
             pToken->grouplen = pSavedToken->grouplen
                              = (int)(pToken - pSavedToken);
             return 1;

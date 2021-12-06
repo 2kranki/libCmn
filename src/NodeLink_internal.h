@@ -78,6 +78,7 @@ struct NodeLink_data_s  {
     uint32_t        middleIndex;
     uint32_t        parentIndex;
     uint32_t        rightIndex;
+    uint32_t        rsvd32;
 
 };
 #pragma pack(pop)

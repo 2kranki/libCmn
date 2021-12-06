@@ -55,6 +55,7 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <Node.h>
+#include        <NodeArray.h>
 #include        <NodeTree.h>
 
 
@@ -147,7 +148,7 @@ extern "C" {
     
     NODESCAN_DATA * NodeScan_NewFromArray(
         NODETREE_DATA   *pTree,
-        OBJARRAY_DATA   *pArray     // Tree converted to array with up/down members.
+        NODEARRAY_DATA  *pArray     // Tree converted to array with up/down members.
     );
 
 
@@ -170,17 +171,17 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA * NodeScan_getArray(
+    NODEARRAY_DATA * NodeScan_getArray(
         NODESCAN_DATA   *this
     );
 
     bool            NodeScan_setArray(
         NODESCAN_DATA   *this,
-        OBJARRAY_DATA   *pValue
+        NODEARRAY_DATA  *pValue
     );
 
 
-    NODELINK_DATA * NodeScan_getCloseNode(
+    NODE_DATA *     NodeScan_getNodeClose(
         NODESCAN_DATA   *this
     );
 
@@ -199,7 +200,7 @@ extern "C" {
     );
 
 
-    NODELINK_DATA * NodeScan_getOpenNode(
+    NODE_DATA *     NodeScan_getNodeOpen(
         NODESCAN_DATA   *this
     );
 
@@ -237,7 +238,7 @@ extern "C" {
      @return    If successful, the current node, otherwise OBJ_NIL
                 and Last Error contains an error reason.
      */
-    NODELINK_DATA * NodeScan_InputAdvance(
+    NODE_DATA *     NodeScan_InputAdvance(
         NODESCAN_DATA   *this,
         uint32_t        numChrs
     );
@@ -251,25 +252,25 @@ extern "C" {
      @return    If successful, the node in advance of the current one, otherwise
                 OBJ_NIL and Last Error contains an error reason.
      */
-    NODELINK_DATA * NodeScan_InputLookAhead(
+    NODE_DATA *     NodeScan_InputLookAhead(
         NODESCAN_DATA   *this,
         uint32_t        num
     );
 
     
-    NODELINK_DATA * NodeScan_MatchName(
+    NODE_DATA *     NodeScan_MatchName(
         NODESCAN_DATA   *this,
         char            *pStr
     );
 
     
-    NODELINK_DATA * NodeScan_MatchClass(
+    NODE_DATA *     NodeScan_MatchClass(
         NODESCAN_DATA   *this,
         int32_t         cls
     );
 
     
-    NODELINK_DATA * NodeScan_MatchClasses(
+    NODE_DATA *     NodeScan_MatchClasses(
         NODESCAN_DATA   *this,
         int32_t         *pSet
     );
@@ -283,7 +284,7 @@ extern "C" {
      @return    If successful, a starting index of the match relative to 1,
                 otherwise 0.
      */
-    NODELINK_DATA * NodeScan_MatchClassesRegex(
+    NODE_DATA *     NodeScan_MatchClassesRegex(
         NODESCAN_DATA   *this,
         int32_t         *pRegex             // [in] Zero-terminated array of
                                             //      node types
@@ -298,7 +299,7 @@ extern "C" {
      @return    If successful, an index of the match relative to 1,
                 otherwise 0.
      */
-    NODELINK_DATA * NodeScan_ScanClassUntil(
+    NODE_DATA *     NodeScan_ScanClassUntil(
         NODESCAN_DATA   *this,
         int32_t         cls
     );

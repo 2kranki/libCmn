@@ -61,7 +61,7 @@
 #include        <I32Array.h>
 #include        <Node.h>
 #include        <NodeEnum.h>
-#include        <ObjArray.h>
+#include        <ObjArrayInterface.h>
 #include        <W32Str.h>
 
 
@@ -85,17 +85,21 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
-
+    // Defined in Node.
     //typedef struct NodeArray_data_s	NODEARRAY_DATA;         // Inherits from OBJARRAY
     //typedef struct NodeArray_class_data_s NODEARRAY_CLASS_DATA;
 
+    // This must conform to iObjArray interface.
     typedef struct NodeArray_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in NodeArray_object.c.
         // Properties:
+        uint32_t         (*pGetSize) (OBJ_ID);
         // Methods:
-        //bool        (*pIsEnabled)(NODEARRAY_DATA *);
+        ERESULT         (*pAppendObj) (OBJ_ID, OBJ_ID, uint32_t *);
+        ERESULT         (*pDeleteObj) (OBJ_ID, uint32_t);
+        OBJ_ID          (*pGetObj) (OBJ_ID, uint32_t);
     } NODEARRAY_VTBL;
 
     typedef struct NodeArray_class_vtbl_s	{
@@ -169,14 +173,19 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    bool            NodeArray_setCompare (
+    IOBJARRAY *     NodeArray_getArray (
+        NODEARRAY_DATA  *this
+    );
+
+    bool            NodeArray_setArray (
         NODEARRAY_DATA  *this,
-        int             (*pCompare)(NODE_DATA *,NODE_DATA *)
+        IOBJARRAY       *pValue
     );
 
 
-    OBJARRAY_DATA *  NodeArray_getObjArray (
-        NODEARRAY_DATA  *this
+    bool            NodeArray_setCompare (
+        NODEARRAY_DATA  *this,
+        int             (*pCompare)(NODE_DATA *,NODE_DATA *)
     );
 
 

@@ -461,6 +461,18 @@ extern "C" {
 
 
     /*!
+     Get the current Class Description for this node.
+     @param     this    object pointer
+     @return    if successful, a string representing the class.
+                Otherwise, NULL.
+     */
+    const
+    char *          Node_ClassDesc (
+        NODE_DATA       *this
+    );
+
+
+    /*!
      Compare the two provided objects.
      @return    0  if this == other
                 <0 if this < other

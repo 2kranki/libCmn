@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <ObjBT_internal.h>
+#include        <ObjArray.h>
 #include        <trace.h>
 #include        <utf8.h>
 

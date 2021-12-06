@@ -202,7 +202,8 @@ int             ObjList_SortCompare (
         else
             return false;
     }
-    
+
+
     bool            ObjList_setOrdered (
         OBJLIST_DATA    *this,
         bool            fValue

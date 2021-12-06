@@ -1,10 +1,13 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
  * File:   NodeTree_internal.h
- *  Generated 11/26/2021 19:19:16
+ *	Generated 01/10/2020 16:43:19
  *
  * Notes:
- *  --  N/A
+ *  --	Internally NodeTree uses an ObjArray to keep track of all nodes
+ *      in the tree, but not their relationships.  The relationships are
+ *      maintained in the NODETREE_RECORD(s) which are allocated and kept
+ *      in the Blocks part of the object.
  *
  */
 
@@ -42,19 +45,24 @@
 #include        <NodeTree.h>
 #include        <Blocks_internal.h>
 #include        <JsonIn.h>
+#include        <Node.h>
+#include        <NodeHash.h>
+#include        <ObjArray.h>
+#include        <szTbl.h>
 
 
 #ifndef NODETREE_INTERNAL_H
-#define NODETREE_INTERNAL_H
+#define	NODETREE_INTERNAL_H
 
 
 
+#define     PROPERTY_STR_OWNED 1
 
 
-#ifdef  __cplusplus
+
+#ifdef	__cplusplus
 extern "C" {
 #endif
-
 
 
 
@@ -63,49 +71,14 @@ extern "C" {
     // This record is in memory. It can be written/reead using
     // JSON by translating the pointers to ObjArray indices.
 
+    #pragma pack(push, 1)
     typedef struct  NodeTree_record_s {
-        NODE_DATA       *pNode;
-        uint32_t        unique;             // Index into objArray
+        uint32_t        objIndex;           // Index into objArray
         uint32_t        childIndex;         // Index into this tree
         uint32_t        parentIndex;        // Index into this tree
         uint32_t        siblingIndex;       // Index into this tree
     } NODETREE_RECORD;
-
-
-typedef struct  NodeTree_visit_s {
-    // Visit the node associated with pRcd;
-    void            (*pVisitor)(
-        OBJ_ID          ,               // Object supplied below
-        NODETREE_DATA   *,              // Our Tree
-        NODE_DATA       *,              // Current Node
-        uint16_t        ,               // Indent level
-        void            *
-    );
-    OBJ_ID          pObjectVisit;
-    // Optionally execute this before descending in the child chain.
-    void            (*pChildOpen)(
-        OBJ_ID          ,               // Object supplied below
-        NODETREE_DATA   *,              // Our Tree
-        NODE_DATA       *,              // Current Node
-        uint32_t        ,               // Indent level
-        void            *
-    );
-    OBJ_ID          pObjectOpen;
-    // Optionally execute this after descending in the child chain.
-    void            (*pChildClose)(
-        OBJ_ID          ,               // Object supplied below
-        NODETREE_DATA   *,              // Our Tree
-        NODE_DATA       *,              // Current Node
-        uint16_t        ,               // Indent level
-        void            *
-    );
-    OBJ_ID          pObjectClose;
-    void            *pOther;
-    NODETREE_RECORD *pRcd;
-    uint32_t        index;
-    uint32_t        level;
-} NODETREE_VISIT;
-
+    #pragma pack(pop)
 
 
 
@@ -114,29 +87,21 @@ typedef struct  NodeTree_visit_s {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct NodeTree_data_s  {
+struct NodeTree_data_s	{
     /* Warning - OBJ_DATA must be first in this object!
      */
-    // Blocks just allocates large blocks of memory and subdivides
-    // them into smaller paquets.  Hopefully, this minimizes wasteful
-    // memory usage. It also means that the paquets are allocated in
-    // memory and stay there until deleted.
     BLOCKS_DATA     super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-#define NODETREE_FLAG_UNIQUE OBJ_FLAG_USER1
 
     // Common Data
+    OBJARRAY_DATA   *pArray;        // Root
     uint32_t        root;           // Normally 1
     uint32_t        size;           // Maximum number of elements
-    NODE_DATA       *pOpen;
-    NODE_DATA       *pClose;
-    IOBJARRAY       *pNodeArrayClass;
+    NODELINK_DATA   *pOpen;
+    NODELINK_DATA   *pClose;
+    OBJ_ID          pNodeArrayClass;
     OBJ_ID          pOther;
 
-#ifdef   NODETREE_LOG
-    // Informational and Warning Log Messages
-    OBJ_ID          *pLog;
-#endif
 };
 #pragma pack(pop)
 
@@ -154,7 +119,7 @@ struct NodeTree_data_s  {
     //---------------------------------------------------------------
 
 #ifdef  NODETREE_SINGLETON
-    NODETREE_DATA *     NodeTree_getSingleton (
+    NODETREE_DATA * NodeTree_getSingleton (
         void
     );
 
@@ -169,18 +134,27 @@ struct NodeTree_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    bool            NodeTree_setCloseNode (
+        NODETREE_DATA   *this,
+        NODELINK_DATA   *pValue
+    );
+
+    bool            NodeTree_setDownNode (
+        NODETREE_DATA   *cbp,
+        NODE_DATA       *pValue
+    );
+
+    bool            NodeTree_setOpenNode (
+        NODETREE_DATA   *this,
+        NODELINK_DATA   *pValue
+    );
+
+    bool            NodeTree_setUpNode (
+        NODETREE_DATA   *cbp,
+        NODE_DATA       *pValue
+    );
+
     OBJ_IUNKNOWN *  NodeTree_getSuperVtbl (
-        NODETREE_DATA     *this
-    );
-
-
-    ERESULT         NodeTree_Assign (
-        NODETREE_DATA    *this,
-        NODETREE_DATA    *pOther
-    );
-
-
-    NODETREE_DATA *       NodeTree_Copy (
         NODETREE_DATA     *this
     );
 
@@ -190,7 +164,37 @@ struct NodeTree_data_s  {
     );
 
 
-    NODETREE_DATA *     NodeTree_DeepCopy (
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = NodeTree_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another NODETREE object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         NodeTree_Assign (
+        NODETREE_DATA   *this,
+        NODETREE_DATA   *pOther
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        NodeTree      *pCopy = NodeTree_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a NODETREE object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    NODETREE_DATA *     NodeTree_Copy (
         NODETREE_DATA       *this
     );
 
@@ -223,6 +227,8 @@ struct NodeTree_data_s  {
 #endif
 
 
+
+
     void *          NodeTree_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
@@ -250,7 +256,7 @@ struct NodeTree_data_s  {
 
     /*!
      Append the json representation of the object's fields to the given
-     string. This helps facilitate parsing the fields from an inheriting 
+     string. This helps facilitate parsing the fields from an inheriting
      object.
      @param this        Object Pointer
      @param pStr        String Pointer to be appended to.
@@ -268,16 +274,16 @@ struct NodeTree_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            NodeTree_Validate (
+    bool			NodeTree_Validate (
         NODETREE_DATA       *this
     );
 #endif
 
 
 
-#ifdef  __cplusplus
+#ifdef	__cplusplus
 }
 #endif
 
-#endif  /* NODETREE_INTERNAL_H */
+#endif	/* NODETREE_INTERNAL_H */
 

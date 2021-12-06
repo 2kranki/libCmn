@@ -719,6 +719,32 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                         B o t t o m
+    //---------------------------------------------------------------
+
+    void *          array_Bottom (
+        ARRAY_DATA      *this
+    )
+    {
+        void            *pData;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+
+        pData = array_Ptr(this, 1);
+
+        return pData;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          C o p y
     //---------------------------------------------------------------
     
@@ -956,6 +982,71 @@ extern "C" {
     
 
     //---------------------------------------------------------------
+    //                         D e q u e u e
+    //---------------------------------------------------------------
+
+    ERESULT         array_Dequeue (
+        ARRAY_DATA      *this,
+        void            *pData
+    )
+    {
+        ERESULT         eRc = ERESULT_FAILURE;
+        void            *pRcd;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->pArray) {
+            pRcd = array_Ptr(this, this->size);
+            if (pRcd && pData) {
+                memmove(
+                        pData,
+                        pRcd,
+                        this->elemSize
+                );
+            }
+            eRc = array_Delete(this, this->size, 1);
+        }
+
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                         E n q u e u e
+    //---------------------------------------------------------------
+
+    ERESULT         array_Enqueue (
+        ARRAY_DATA      *this,
+        void            *pData
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = array_InsertData(this, 1, 1, pData);
+
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                        E x p a n d
     //---------------------------------------------------------------
     
@@ -1017,6 +1108,32 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                         F i r s t
+    //---------------------------------------------------------------
+
+    void *          array_First (
+        ARRAY_DATA      *this
+    )
+    {
+        void            *pData;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+
+        pData = array_Ptr(this, 1);
+
+        return pData;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      F o r  E a c h
     //---------------------------------------------------------------
@@ -1274,7 +1391,7 @@ extern "C" {
         uint32_t        numElems
     )
     {
-        ERESULT         eRc = ERESULT_INSUFFICIENT_MEMORY;
+        ERESULT         eRc = ERESULT_OUT_OF_MEMORY;
         uint32_t        newSize;
 
         // Do initialization.
@@ -1325,6 +1442,70 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                         L a s t
+    //---------------------------------------------------------------
+
+    void *          array_Last (
+        ARRAY_DATA      *this
+    )
+    {
+        void            *pData;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+
+        pData = array_Ptr(this, this->size);
+
+        return pData;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                         P o p
+    //---------------------------------------------------------------
+
+    ERESULT         array_Pop (
+        ARRAY_DATA      *this,
+        void            *pData
+    )
+    {
+        ERESULT         eRc = ERESULT_FAILURE;
+        void            *pRcd;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->pArray) {
+            pRcd = array_Ptr(this, this->size);
+            if (pRcd && pData) {
+                memmove(
+                        pData,
+                        pRcd,
+                        this->elemSize
+                );
+            }
+            eRc = array_Delete(this, this->size, 1);
+        }
+
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                             P t r
     //---------------------------------------------------------------
     
@@ -1350,12 +1531,38 @@ extern "C" {
         
         pData = this->pArray + array_OffsetOf(this, elem);
         
-        //obj_setLastError(this, ERESULT_SUCCESS);
         return pData;
     }
     
     
     
+    //---------------------------------------------------------------
+    //                         P u s h
+    //---------------------------------------------------------------
+
+    ERESULT         array_Push (
+        ARRAY_DATA      *this,
+        void            *pData
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = array_AppendData(this, 1, pData);
+
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                          P u t
     //---------------------------------------------------------------
@@ -1513,6 +1720,32 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                         T o p
+    //---------------------------------------------------------------
+
+    void *          array_Top (
+        ARRAY_DATA      *this
+    )
+    {
+        void            *pData;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !array_Validate(this) ) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+
+        pData = array_Ptr(this, this->size);
+
+        return pData;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

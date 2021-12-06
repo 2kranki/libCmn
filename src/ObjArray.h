@@ -55,6 +55,7 @@
 #include        <cmn_defs.h>
 #include        <array.h>
 #include        <AStr.h>
+#include        <ObjArrayInterface.h>
 #include        <ObjEnum.h>
 
 
@@ -82,13 +83,17 @@ extern "C" {
     typedef struct ObjArray_data_s	OBJARRAY_DATA;            // Inherits from OBJ
     typedef struct ObjArray_class_data_s OBJARRAY_CLASS_DATA;   // Inherits from OBJ
 
+    // This must conform to iObjArray interface.
     typedef struct ObjArray_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in ObjArray_object.c.
         // Properties:
+        uint32_t         (*pGetSize) (OBJ_ID);
         // Methods:
-        //bool        (*pIsEnabled)(OBJARRAY_DATA *);
+        ERESULT         (*pAppendObj) (OBJ_ID, OBJ_ID, uint32_t *);
+        ERESULT         (*pDeleteObj) (OBJ_ID, uint32_t);
+        OBJ_ID          (*pGetObj) (OBJ_ID, uint32_t);
     } OBJARRAY_VTBL;
 
     typedef struct ObjArray_class_vtbl_s	{

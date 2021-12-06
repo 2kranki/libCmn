@@ -287,7 +287,7 @@ extern "C" {
 
     NODESCAN_DATA *     NodeScan_NewFromArray (
         NODETREE_DATA   *pTree,
-        OBJARRAY_DATA   *pArray     // Tree converted to array with up/down members.
+        NODEARRAY_DATA  *pArray     // Tree converted to array with up/down members.
     )
     {
         NODESCAN_DATA       *this;
@@ -302,8 +302,8 @@ extern "C" {
         this = NodeScan_New( );
         if (this) {
             NodeScan_setTree(this, pTree);
-            NodeScan_setCloseNode(this, NodeTree_getCloseNode(pTree));
-            NodeScan_setOpenNode(this, NodeTree_getOpenNode(pTree));
+            NodeScan_setNodeClose(this, NodeTree_getNodeClose(pTree));
+            NodeScan_setNodeOpen(this, NodeTree_getNodeOpen(pTree));
             NodeScan_setArray(this, pArray);
         }
         return this;
@@ -315,7 +315,7 @@ extern "C" {
     )
     {
         NODESCAN_DATA   *this;
-        OBJARRAY_DATA   *pArray;
+        NODEARRAY_DATA  *pArray;
         
         if (OBJ_NIL == pTree) {
             return OBJ_NIL;
@@ -324,8 +324,8 @@ extern "C" {
         this = NodeScan_New( );
         if (this) {
             NodeScan_setTree(this, pTree);
-            NodeScan_setCloseNode(this, NodeTree_getCloseNode(pTree));
-            NodeScan_setOpenNode(this, NodeTree_getOpenNode(pTree));
+            NodeScan_setNodeClose(this, NodeTree_getNodeClose(pTree));
+            NodeScan_setNodeOpen(this, NodeTree_getNodeOpen(pTree));
             pArray = NodeTree_ToLinearizationPost(pTree);
             NodeScan_setArray(this, pArray);
             if (OBJ_NIL == pArray) {
@@ -344,7 +344,7 @@ extern "C" {
     )
     {
         NODESCAN_DATA   *this;
-        OBJARRAY_DATA   *pArray;
+        NODEARRAY_DATA   *pArray;
         
         if (OBJ_NIL == pTree) {
             return OBJ_NIL;
@@ -353,8 +353,8 @@ extern "C" {
         this = NodeScan_New( );
         if (this) {
             NodeScan_setTree(this, pTree);
-            NodeScan_setCloseNode(this, NodeTree_getCloseNode(pTree));
-            NodeScan_setOpenNode(this, NodeTree_getOpenNode(pTree));
+            NodeScan_setNodeClose(this, NodeTree_getNodeClose(pTree));
+            NodeScan_setNodeOpen(this, NodeTree_getNodeOpen(pTree));
             pArray = NodeTree_ToLinearizationPre(pTree);
             if (OBJ_NIL == pArray) {
                 DEBUG_BREAK();
@@ -379,7 +379,7 @@ extern "C" {
     //                          A r r a y
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA * NodeScan_getArray(
+    NODEARRAY_DATA * NodeScan_getArray(
         NODESCAN_DATA   *this
     )
     {
@@ -399,7 +399,7 @@ extern "C" {
     
     bool            NodeScan_setArray(
         NODESCAN_DATA   *this,
-        OBJARRAY_DATA   *pValue
+        NODEARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
@@ -425,7 +425,7 @@ extern "C" {
     //                    C l o s e  N o d e
     //---------------------------------------------------------------
     
-    NODELINK_DATA * NodeScan_getCloseNode(
+    NODE_DATA *     NodeScan_getNodeClose(
         NODESCAN_DATA   *this
     )
     {
@@ -442,9 +442,9 @@ extern "C" {
     }
     
     
-    bool            NodeScan_setCloseNode(
+    bool            NodeScan_setNodeClose(
         NODESCAN_DATA   *this,
-        NODELINK_DATA   *pValue
+        NODE_DATA       *pValue
     )
     {
 #ifdef NDEBUG
@@ -510,7 +510,7 @@ extern "C" {
     //                    O p e n  N o d e
     //---------------------------------------------------------------
     
-    NODELINK_DATA * NodeScan_getOpenNode(
+    NODE_DATA *     NodeScan_getNodeOpen(
         NODESCAN_DATA   *this
     )
     {
@@ -527,9 +527,9 @@ extern "C" {
     }
     
     
-    bool            NodeScan_setOpenNode(
+    bool            NodeScan_setNodeOpen(
         NODESCAN_DATA   *this,
-        NODELINK_DATA   *pValue
+        NODE_DATA       *pValue
     )
     {
 #ifdef NDEBUG
@@ -867,8 +867,8 @@ extern "C" {
 #endif
 
         NodeScan_setArray(this, OBJ_NIL);
-        NodeScan_setCloseNode(this, OBJ_NIL);
-        NodeScan_setOpenNode(this, OBJ_NIL);
+        NodeScan_setNodeClose(this, OBJ_NIL);
+        NodeScan_setNodeOpen(this, OBJ_NIL);
         NodeScan_setTree(this, OBJ_NIL);
         this->index = 0;
         this->start = 0;
@@ -1046,12 +1046,12 @@ extern "C" {
     //                  I n p u t  A d v a n c e
     //--------------------------------------------------------------
     
-    NODELINK_DATA * NodeScan_InputAdvance(
+    NODE_DATA *     NodeScan_InputAdvance(
         NODESCAN_DATA   *this,
         uint32_t        numChrs
     )
     {
-        NODELINK_DATA   *pNode = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1075,12 +1075,12 @@ extern "C" {
         
         // Shift inputs.
         this->index += numChrs;
-        if (this->index < ObjArray_getSize(this->pArray))
+        if (this->index < NodeArray_getSize(this->pArray))
             ;
         else {
             return OBJ_NIL;
         }
-        pNode = ObjArray_Get(this->pArray, (this->index + 1));
+        pNode = NodeArray_Get(this->pArray, (this->index + 1));
 
         // Return to caller.
         return pNode;
@@ -1092,13 +1092,13 @@ extern "C" {
     //               I n p u t  L o o k  A h e a d
     //--------------------------------------------------------------
     
-    NODELINK_DATA * NodeScan_InputLookAhead(
+    NODE_DATA *     NodeScan_InputLookAhead(
         NODESCAN_DATA   *this,
         uint32_t        num
     )
     {
         uint32_t        idx;
-        NODELINK_DATA   *pNode = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1122,12 +1122,12 @@ extern "C" {
 #endif
         
         idx = this->index + (num - 1);
-        if (idx < ObjArray_getSize(this->pArray))
+        if (idx < NodeArray_getSize(this->pArray))
             ;
         else {
             return OBJ_NIL;
         }
-        pNode = ObjArray_Get(this->pArray, (idx + 1));
+        pNode = NodeArray_Get(this->pArray, (idx + 1));
         
         // Return to caller.
         return pNode;
@@ -1140,12 +1140,12 @@ extern "C" {
     //                 M a t c h  I n p u t  N a m e
     //--------------------------------------------------------------
     
-    NODELINK_DATA * NodeScan_MatchName(
+    NODE_DATA *     NodeScan_MatchName(
         NODESCAN_DATA   *this,
         char            *pStr
     )
     {
-        NODELINK_DATA   *pNode = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
         const
         char            *pName;
         int             cmp;
@@ -1166,7 +1166,7 @@ extern "C" {
         
         pNode = NodeScan_InputLookAhead(this, 1);
         if (pNode) {
-            pName = Node_getNameUTF8(NodeLink_getNode(pNode));
+            pName = Node_getNameUTF8(pNode);
             cmp = strcmp(pName, pStr);
             mem_Free((void *)pName);
             if( 0 == cmp ) {
@@ -1185,12 +1185,12 @@ extern "C" {
     //                 M a t c h  I n p u t  C l a s s
     //--------------------------------------------------------------
     
-    NODELINK_DATA * NodeScan_MatchClass(
+    NODE_DATA *     NodeScan_MatchClass(
         NODESCAN_DATA   *this,
         int32_t         cls
     )
     {
-        NODELINK_DATA   *pNode = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
@@ -1206,14 +1206,14 @@ extern "C" {
 #endif
         this->start = this->index;
 
-        if (this->index < ObjArray_getSize(this->pArray))
+        if (this->index < NodeArray_getSize(this->pArray))
             ;
         else {
             return OBJ_NIL;
         }
 
         pNode = NodeScan_InputLookAhead(this, 1);
-        if( pNode && ((cls == Node_getClass(NodeLink_getNode(pNode)))
+        if( pNode && ((cls == Node_getClass(pNode))
                       || (cls == NODE_CLASS_ANY)) ) {
             (void)NodeScan_InputAdvance(this, 1);
             return pNode;
@@ -1229,12 +1229,12 @@ extern "C" {
     //              M a t c h  I n p u t  C l a s s e s
     //--------------------------------------------------------------
     
-    NODELINK_DATA * NodeScan_MatchClasses(
+    NODE_DATA *     NodeScan_MatchClasses(
         NODESCAN_DATA   *this,
         int32_t         *pSet
     )
     {
-        NODELINK_DATA   *pNode = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
         uint32_t        start;
         
         // Do initialization.
@@ -1277,14 +1277,14 @@ extern "C" {
      @return    If successful, a starting index of the match relative to 1,
                 otherwise 0.
      */
-    NODELINK_DATA * NodeScan_MatchClassesRegex(
+    NODE_DATA *     NodeScan_MatchClassesRegex(
         NODESCAN_DATA   *this,
         int32_t         *pRegex             // [in] Zero-terminated array of
                                             //      node types
     )
     {
-        NODELINK_DATA   *pNode = OBJ_NIL;
-        NODELINK_DATA   *pNodeStart = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
+        NODE_DATA       *pNodeStart = OBJ_NIL;
         uint32_t        regexSize = 0;
         uint32_t        regexSrchLen = 0;   // Minimum search length
         uint32_t        startIndex;
@@ -1326,7 +1326,7 @@ extern "C" {
         // advances by 1 if the search is unsuccessful until EOF.
         startIndex = this->index - 1;
         for (;;) {
-            if ((startIndex + 1) <= ObjArray_getSize(this->pArray))
+            if ((startIndex + 1) <= NodeArray_getSize(this->pArray))
                 ;
             else {
                 break;
@@ -1378,7 +1378,7 @@ extern "C" {
                 }
                 else
                     stopRegex = curRegex;
-                pNode = ObjArray_Get(this->pArray, 1);
+                pNode = NodeArray_Get(this->pArray, 1);
                 if(pNode) {
                     return pNode;
                 }
@@ -1524,13 +1524,13 @@ extern "C" {
     //                       S c a n
     //---------------------------------------------------------------
     
-    NODELINK_DATA * NodeScan_ScanClassUntil(
+    NODE_DATA *     NodeScan_ScanClassUntil(
         NODESCAN_DATA   *this,
         int32_t         cls
     )
     {
         int32_t         curClass;
-        NODELINK_DATA   *pNode = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
 
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1556,22 +1556,22 @@ extern "C" {
         }
 #endif
         
-        if (this->index < ObjArray_getSize(this->pArray))
+        if (this->index < NodeArray_getSize(this->pArray))
             ;
         else {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
         
-        while (this->index < ObjArray_getSize(this->pArray)) {
-            pNode = ObjArray_Get(this->pArray, (this->index + 1));
+        while (this->index < NodeArray_getSize(this->pArray)) {
+            pNode = NodeArray_Get(this->pArray, (this->index + 1));
             if (OBJ_NIL == pNode) {
                 return 0;
             }
             if (cls == NODE_CLASS_ANY) {
                 return pNode;
             }
-            curClass = Node_getClass(NodeLink_getNode(pNode));
+            curClass = Node_getClass(pNode);
             if (cls == curClass) {
                 return pNode;
             }
@@ -1582,11 +1582,11 @@ extern "C" {
     }
     
     
-    NODELINK_DATA * NodeScan_ScanReset(
+    NODE_DATA *     NodeScan_ScanReset(
         NODESCAN_DATA   *this
     )
     {
-        NODELINK_DATA   *pNode = OBJ_NIL;
+        NODE_DATA       *pNode = OBJ_NIL;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1606,7 +1606,7 @@ extern "C" {
 #endif
         
         this->index = 0;
-        pNode = ObjArray_Get(this->pArray, (this->index + 1));
+        pNode = NodeArray_Get(this->pArray, (this->index + 1));
         if (OBJ_NIL == pNode) {
             return OBJ_NIL;
         }
@@ -1674,7 +1674,7 @@ extern "C" {
      @warning  Remember to release the returned AStr object.
      */
     ASTR_DATA *     NodeScan_ToDebugString (
-        NODESCAN_DATA      *this,
+        NODESCAN_DATA   *this,
         int             indent
     )
     {

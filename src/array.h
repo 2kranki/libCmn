@@ -19,6 +19,7 @@
  *
  * History
  *	11/08/2017 Generated
+ *  12/01/2021 Added support for Stack and Queue operations.
  */
 
 
@@ -224,6 +225,15 @@ extern "C" {
     
     
     /*!
+     Bottom() returns the first (lowest) entry in the array.
+     @param     this    object pointer
+     */
+    void *          array_Bottom (
+        ARRAY_DATA      *this
+    );
+
+
+    /*!
      Copy the current object creating a new object.
      Example:
      @code
@@ -262,6 +272,34 @@ extern "C" {
     
     
     /*!
+     Dequeue() removes the last entry from the end of the array.
+     @param     this    object pointer
+     @param     pData   optional non-null pointer where the entry will
+                        be copied to if given
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an
+                ERESULT_* error code.
+     */
+    ERESULT         array_Dequeue (
+        ARRAY_DATA      *this,
+        void            *pData
+    );
+
+
+    /*!
+     Enqueue() adds the supplied entry to the beginning of the array
+     making it the first entry.
+     @param     this    object pointer
+     @param     pData   non-null pointer to be added
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an
+                ERESULT_* error code.
+     */
+    ERESULT         array_Enqueue (
+        ARRAY_DATA      *this,
+        void            *pData
+    );
+
+
+    /*!
      Expand the array to minimum size provided.  Array expansion is done
      by a power of 2 (ie 2, 4, 8, 16, 32, 64, 128, 256, 512, ...). The
      added space is zeroed. The array is expanded, but the usage count
@@ -277,6 +315,15 @@ extern "C" {
     );
     
     
+    /*!
+     First() returns the first (lowest) entry in the array.
+     @param     this    object pointer
+     */
+    void *          array_First (
+        ARRAY_DATA      *this
+    );
+
+
     /*!
      Scan the array applying the given routine to each member of the
      array.  Second parameter to the Scan routine is the actual array
@@ -354,6 +401,43 @@ extern "C" {
     
     
     /*!
+     Last() returns the last (highest) entry in the array.
+     @param     this    object pointer
+     */
+    void *          array_Last (
+        ARRAY_DATA      *this
+    );
+
+
+    /*!
+     Pop() removes the last entry from the end of the array.
+     @param     this    object pointer
+     @param     pData   optional non-null pointer where the entry will
+                        be copied to if given
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an
+                ERESULT_* error code.
+     */
+    ERESULT         array_Pop (
+        ARRAY_DATA      *this,
+        void            *pData
+    );
+
+
+    /*!
+     Push() adds the supplied entry to the end of the array
+     making it the last entry.
+     @param     this    object pointer
+     @param     pData   non-null pointer to be added
+     @return:   If successful, ERESULT_SUCCESS. Otherwise, an
+                ERESULT_* error code.
+     */
+    ERESULT         array_Push (
+        ARRAY_DATA      *this,
+        void            *pData
+    );
+
+
+    /*!
      Copy the given data to the array and adjust array size if needed.
      @return:   If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error.
@@ -366,6 +450,15 @@ extern "C" {
     );
     
     
+    /*!
+     Top() returns the last (highest) entry in the array.
+     @param     this    object pointer
+     */
+    void *          array_Top (
+        ARRAY_DATA      *this
+    );
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:

@@ -98,11 +98,11 @@ struct NodeScan_data_s	{
     // Common Data
     uint32_t        index;      // Scan Index (relative to 0)
     uint32_t        start;      // Scan Start Index (relative to 0)
-    OBJARRAY_DATA   *pArray;    // linearalized Tree converted to an array with
+    NODEARRAY_DATA  *pArray;    // linearalized Tree converted to an array with
     //                          // up/down members.
     NODETREE_DATA   *pTree;     // Tree associated with linearized tree list
-    NODELINK_DATA   *pClose;
-    NODELINK_DATA   *pOpen;
+    NODE_DATA       *pClose;
+    NODE_DATA       *pOpen;
 
     // ScanF Input
     ASTR_DATA       *pScanInput;
@@ -116,7 +116,7 @@ struct NodeScan_data_s	{
     uint32_t        rsvd32_2;
     uint32_t        cLabels;        // Node Labels which are returned Node Pointers if
     //                              // matched
-    NODELINK_DATA   **ppLabels[MAX_SCANNER_LABELS];
+    NODE_DATA       **ppLabels[MAX_SCANNER_LABELS];
 
 };
 #pragma pack(pop)
@@ -150,15 +150,15 @@ struct NodeScan_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    bool            NodeScan_setCloseNode(
+    bool            NodeScan_setNodeClose(
         NODESCAN_DATA   *this,
-        NODELINK_DATA   *pValue
+        NODE_DATA       *pValue
     );
     
     
-    bool            NodeScan_setOpenNode(
+    bool            NodeScan_setNodeOpen(
         NODESCAN_DATA   *this,
-        NODELINK_DATA   *pValue
+        NODE_DATA       *pValue
     );
     
     
@@ -170,6 +170,41 @@ struct NodeScan_data_s	{
     
     OBJ_IUNKNOWN *  NodeScan_getSuperVtbl (
         NODESCAN_DATA     *this
+    );
+
+
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = NodeScan_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another NODESCAN object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         NodeScan_Assign (
+        NODESCAN_DATA   *this,
+        NODESCAN_DATA   *pOther
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        NodeScan      *pCopy = NodeScan_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a NODESCAN object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    NODESCAN_DATA *  NodeScan_Copy (
+        NODESCAN_DATA    *this
     );
 
 

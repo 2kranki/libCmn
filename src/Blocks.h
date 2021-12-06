@@ -201,6 +201,17 @@ extern "C" {
     );
 
 
+    /*! @property MaxRecords
+        returns the current maximum number of
+        records that this object can have. This
+        number will change as more blocks are
+        added.
+     */
+    uint32_t        Blocks_getMaxRecords (
+        BLOCKS_DATA     *this
+    );
+
+
     /*!
     * Number of Active Records
     */
@@ -286,7 +297,8 @@ extern "C" {
 
 
     /*!
-     Return the address of the index'th record.
+     Return the address of the index'th record. This is relatively slow
+     since it searches a doubly-linked list for the index'th entry.
      @param     this    Object Pointer
      @param     index   number of item on the active list (relative to 1)
      @return:   If successful, address of the record. Otherwise, NULL.
@@ -298,7 +310,9 @@ extern "C" {
 
 
     /*!
-     Return the address of the record given its unique number.
+     Return the address of the record given its unique number. This tries
+     to be much faster than RecordGet() since it accesses an index to
+     find the record.
      @param     this    Object Pointer
      @param     unique  record's unique number
      @return:   If successful, address of the record. Otherwise, NULL.

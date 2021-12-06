@@ -414,9 +414,12 @@ NODEARRAY_VTBL     NodeArray_Vtbl = {
     },
     // Put other object method names below this.
     // Properties:
+    (void *)NodeArray_getSize,
     // Methods:
-    //NodeArray_IsEnabled,
- 
+    (void *)NodeArray_AppendNode,
+    (void *)NodeArray_Delete,
+    (void *)NodeArray_Get,
+
 };
 
 

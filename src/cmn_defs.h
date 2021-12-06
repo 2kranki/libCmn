@@ -119,12 +119,12 @@
 #include        <sys/types.h>
 
 
-#include        <str.h>
 
 
 #ifndef     CMN_DEFS_H
 #define     CMN_DEFS_H   1
 
+#include        <str.h>
 
 #ifdef	__cplusplus
 extern "C" {

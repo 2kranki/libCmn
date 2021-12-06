@@ -126,7 +126,7 @@ extern "C" {
     //                          A r r a y
     //---------------------------------------------------------------
     
-    OBJARRAY_DATA * ObjEnum_getArray(
+    OBJ_ID          ObjEnum_getArray(
         OBJENUM_DATA    *this
     )
     {

@@ -1119,6 +1119,43 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //               C l a s s  D e s c r i p t i o n
+    //---------------------------------------------------------------
+
+    /*!
+     Get the current Class Description for this node.
+     @param     this    object pointer
+     @return    if successful, a string representing the class.
+                Otherwise, NULL.
+     */
+    const
+    char *          Node_ClassDesc (
+        NODE_DATA       *this
+    )
+    {
+        //ERESULT         eRc;
+        const
+        char            *pDesc = NULL;
+
+        // Do initialization.
+    #ifdef NDEBUG
+    #else
+        if (!Node_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return NULL;
+        }
+    #endif
+
+        pDesc = Node_FindClassDescription(Node_getClass(this));
+
+        // Return to caller.
+        return pDesc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -1459,7 +1496,7 @@ extern "C" {
                 error code.
      */
     ERESULT         Node_Enable (
-        NODE_DATA		*this
+        NODE_DATA       *this
     )
     {
         //ERESULT         eRc;
@@ -1841,6 +1878,12 @@ extern "C" {
                     case 'A':
                         if (str_Compare("Accept", (char *)pStr) == 0) {
                             return Node_Accept;
+                        }
+                        break;
+
+                    case 'C':
+                        if (str_Compare("ClassDesc", (char *)pStr) == 0) {
+                            return Node_ClassDesc;
                         }
                         break;
 

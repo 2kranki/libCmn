@@ -1,11 +1,11 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//                  An Unordered Tree of Nodes (NodeTree) Header
+//          An Unordered Tree of Nodes (NodeTree) Header
 //****************************************************************
 /*
  * Program
- *          An Unordered Tree of Nodes (NodeTree)
+ *			An Unordered Tree of NodeLinks (NodeTree)
  * Purpose
  *          This object provides for an un-ordered tree of nodes.
  *          Un-ordered means that the tree nodes are not in order
@@ -16,15 +16,12 @@
  *          "Fundamental Algorithms" (3rd Ed), Donald Knuth.
  *
  * Remarks
- *  1.      This object uses OBJ_FLAG_USER1.
- *  2.      Because this implementation uses a parent, child
- *          and sibling pointers, it does support shared sub-
- *          trees (since there is only 1 parent pointer).
- *  3,      The left pointer of the unordered binary tree is
- *          for the child pointer and the right pointer is used
- *          for the next Sibling.  All pointers are numeric
- *          indices starting from 1.
- *  4.      By using NodeNew() and NodeLinkChild() together, one
+ *  1.      This tree uses object, NodeLink, not Node, because it
+ *          uses the links provided by NodeLink rather than having
+ *          them be internal.
+ *  2,      The left pointer of nodeEntry is used for nextSibling
+ *          and the right index for nextChild.
+ *  3.      By using NodeNew() and NodeLinkChild() together, one
  *          can build a tree from the bottom up which is consist-
  *          ent with recursive descent parsing. In this case, you
  *          must add the root first before using NodeNew() and
@@ -44,10 +41,7 @@
  *              tree.
  *  12/13/2018  Removed the inorder traversal of the tree. See p. 336
  *              of "Fundamental Algorithms", Donald Knuth, 3rd Edition.
- *  01/10/2020  Regenerated
- *  11/26/2021  Regenerated and changed to no longer require NodeLink.
- *              The node linkage is internal to the tree now. This
- *              a Node or its derivitive to be used.
+ *	01/10/2020  Regenerated
  */
 
 
@@ -85,26 +79,23 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <Node.h>
-#include        <NodeArray.h>
+#include        <NodeLink.h>
+#include        <ObjArrayInterface.h>
+#include        <szTbl.h>
 
 
 #ifndef         NODETREE_H
 #define         NODETREE_H
 
 
-//#define   NODETREE_IS_IMMUTABLE     1
-#define   NODETREE_JSON_SUPPORT       1
-//#define   NODETREE_SINGLETON        1
-#define       NODETREE_LOG   1
-
-
-#ifdef   NODETREE_LOG
-#include        <logInterface.h>
-#endif
+#define   NODETREE_JSON_SUPPORT 1
+//#define   NODETREE_SINGLETON    1
 
 
 
-#ifdef  __cplusplus
+
+
+#ifdef	__cplusplus
 extern "C" {
 #endif
     
@@ -113,13 +104,12 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
+    // Defined in Node.
+    //typedef struct NodeTree_data_s	NODETREE_DATA;            // Inherits from OBJ
+    //typedef struct NodeTree_class_data_s NODETREE_CLASS_DATA;   // Inherits from OBJ
 
-    typedef struct NodeTree_data_s  NODETREE_DATA;          // Inherits from Blocks
-    typedef struct NodeTree_class_data_s NODETREE_CLASS_DATA;  // Inherits from OBJ
-
-    typedef struct NodeTree_vtbl_s  {
+    typedef struct NodeTree_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
-        //NodeTree_VTBL    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in NodeTree_object.c.
         // Properties:
@@ -127,7 +117,7 @@ extern "C" {
         //bool        (*pIsEnabled)(NODETREE_DATA *);
     } NODETREE_VTBL;
 
-    typedef struct NodeTree_class_vtbl_s    {
+    typedef struct NodeTree_class_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
         // method names to the vtbl definition in NodeTree_object.c.
@@ -140,7 +130,7 @@ extern "C" {
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
     ****************************************************************/
 
 
@@ -180,39 +170,16 @@ extern "C" {
     );
     
     
-#ifdef  NODETREE_JSON_SUPPORT
-    NODETREE_DATA * NodeTree_NewFromJsonString (
-        ASTR_DATA       *pString
-    );
-
-    NODETREE_DATA * NodeTree_NewFromJsonStringA (
-        const
-        char            *pStringA
-    );
-#endif
-
-
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-#ifdef NODETREE_LOG
-    /*! @property   Log
-        Allows information and warning messages to be issued.
-     */
-    bool            NodeTree_setLog (
-        NODETREE_DATA   *this,
-        OBJ_ID          pObj
+    NODELINK_DATA * NodeTree_getCloseNode (
+        NODETREE_DATA   *this
     );
-#endif
 
 
-    /*! @property   Node Array Class
-        provides the class to be used when creating an array of
-        nodes which will be returned to the method caller.  The
-        default is "ObjArray".
-     */
     IOBJARRAY *     NodeTree_getNodeArrayClass (
         NODETREE_DATA   *this
     );
@@ -223,12 +190,7 @@ extern "C" {
     );
 
 
-    NODE_DATA *     NodeTree_getNodeClose (
-        NODETREE_DATA   *this
-    );
-
-
-    NODE_DATA *     NodeTree_getNodeOpen (
+    NODELINK_DATA * NodeTree_getOpenNode (
         NODETREE_DATA   *this
     );
 
@@ -238,30 +200,13 @@ extern "C" {
     );
 
 
-    /*! @property   Size
-        is the count of nodes in the tree.
-     */
     uint32_t        NodeTree_getSize (
         NODETREE_DATA   *this
     );
 
 
-    /*! @property   Unique
-        indicates if the Node's unique property be set
-        with the index number assigned to it in the tree.
-        thiss property defaults to false.
-     */
-    bool            NodeTree_getUnique (
-        NODETREE_DATA    *this
-    );
 
-    bool            NodeTree_setUnique (
-        NODETREE_DATA   *this,
-        bool            fValue
-    );
-
-
-
+    
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
@@ -270,7 +215,7 @@ extern "C" {
      Return the index'th child for the parent node.
      Example:
      @code
-     NODE_DATA      *pNode = NodeTree_Child(this, 1, 0, NULL);
+     NODE_DATA      *pNode = NodeTree_Child(this,1,0);
      @endcode
      Gets first child for root node.
      @param     this    object pointer
@@ -278,7 +223,7 @@ extern "C" {
      @param     index   child index (0 <= index < order)
      @return    If successful, an Node object, otherwise OBJ_NIL.
      */
-    NODE_DATA *     NodeTree_Child (
+    NODELINK_DATA * NodeTree_Child (
         NODETREE_DATA  *this,
         uint32_t       parent,      // Relative to 1
         uint32_t       index,       // Relative to zero
@@ -301,7 +246,7 @@ extern "C" {
     uint32_t        NodeTree_ChildAdd (
         NODETREE_DATA   *this,
         uint32_t        parent,         // Relative to 1
-        NODE_DATA       *pNode
+        NODELINK_DATA   *pNode
     );
 
 
@@ -362,97 +307,25 @@ extern "C" {
     );
 
 
-    ERESULT         NodeTree_Disable (
-        NODETREE_DATA   *this
-    );
-
-
-    ERESULT         NodeTree_Enable (
-        NODETREE_DATA   *this
-    );
-
-   
     NODETREE_DATA * NodeTree_Init (
         NODETREE_DATA   *this
     );
 
 
-    /*!
-     Given a node index return its node.
-     @param     this    NODETREE_DATA object pointer
-     @param     index   node index (relative to 1)
-     @return    If successful, an Node object, otherwise OBJ_NIL.
-     */
-    NODE_DATA *     NodeTree_Node (
+    NODELINK_DATA * NodeTree_Node (
         NODETREE_DATA   *this,
         uint32_t        index       // Relative to 1
     );
 
 
     /*!
-     Delete the given tree node and its children. Any siblings should
-     stay with the parent.
+     Delete the given tree node and its children.
      @param     this    object pointer
      @param     index   node index (relative to 1)
-     @return    If successful, ERESULT_SUCCESS; otherwise an ERESULT_* error code.
+     @return    LastError (If successful, LastError == ERESULT_SUCCESS,
+                otherwise LastError == ERESULT_* error code).
      */
     ERESULT         NodeTree_NodeDelete (
-        NODETREE_DATA   *this,
-        uint32_t        index       // Relative to 1
-    );
-
-
-    /*!
-     Given a node return its node index.
-     Node(), NodeIndex(), NodeIndexChild(), NodeIndexParent(),
-     NodeIndexSibling() allow for complete tree traversal.
-     @param     this    NODETREE_DATA object pointer
-     @param     pNode   Non-null Node pointer
-     @return    If successful, an Node object, otherwise OBJ_NIL.
-     */
-    uint32_t        NodeTree_NodeIndex (
-        NODETREE_DATA   *this,
-        NODE_DATA       *pNode
-    );
-
-
-    /*!
-     Given a node index return its child node index.
-     Node(), NodeIndex(), NodeIndexChild(), NodeIndexParent(),
-     NodeIndexSibling() allow for complete tree traversal.
-     @param     this    NODETREE_DATA object pointer
-     @param     index   node index (relative to 1)
-     @return    If successful, an Node object, otherwise OBJ_NIL.
-     */
-    uint32_t        NodeTree_NodeIndexChild (
-        NODETREE_DATA   *this,
-        uint32_t        index       // Relative to 1
-    );
-
-
-    /*!
-     Given a node index return its parent node index.
-     Node(), NodeIndex(), NodeIndexChild(), NodeIndexParent(),
-     NodeIndexSibling() allow for complete tree traversal.
-     @param     this    NODETREE_DATA object pointer
-     @param     index   node index (relative to 1)
-     @return    If successful, an Node object, otherwise OBJ_NIL.
-     */
-    uint32_t        NodeTree_NodeIndexParent (
-        NODETREE_DATA   *this,
-        uint32_t        index       // Relative to 1
-    );
-
-
-    /*!
-     Given a node index return its parent node index.
-     Node(), NodeIndex(), NodeIndexChild(), NodeIndexParent(),
-     NodeIndexSibling() allow for complete tree traversal.
-     @param     this    NODETREE_DATA object pointer
-     @param     index   node index (relative to 1)
-     @return    If successful, an Node object, otherwise OBJ_NIL.
-     */
-    uint32_t        NodeTree_NodeIndexSibling (
         NODETREE_DATA   *this,
         uint32_t        index       // Relative to 1
     );
@@ -488,7 +361,54 @@ extern "C" {
      */
     uint32_t        NodeTree_NodeNew (
         NODETREE_DATA   *this,
-        NODE_DATA       *pNode
+        NODELINK_DATA   *pNode
+    );
+
+
+    /*!
+     Create a new node and add it to the tree without linking it in
+     the main tree.  This allows us to create a sub-tree that we can
+     then merge back into the main tree using NodeLinkChild().
+     @param     this    object pointer
+     @param     pName   Non-null NAME_DATA pointer
+     @param     cls     Node class
+     @param     pData   Optional Object to be associated with the new
+                        Node
+     @param     child1  optional child index if non-zero to be added
+     @param     child2  optional child index if non-zero to be added,
+                        but is only added if there is a child1 as well.
+     @return    If successful, a Node index, otherwise 0.
+     @warning   If we fail to add this node into the main tree, then
+                we will lose it and its subtree for other processing.
+     */
+    uint32_t        NodeTree_NodeNewUTF8 (
+        NODETREE_DATA   *this,
+        int32_t         cls,
+        const
+        char            *pName,
+        OBJ_ID          pData,
+        uint32_t        child1,
+        uint32_t        child2
+    );
+
+
+    uint32_t        NodeTree_NodeParent (
+        NODETREE_DATA   *this,
+        uint32_t        index
+    );
+
+
+    ERESULT         NodeTree_Nodes (
+        NODETREE_DATA   *this,
+        NODEARRAY_DATA  **ppNodes
+    );
+
+
+    /*!
+     Print the tree to stdout.
+     */
+    ERESULT         NodeTree_PrintTree (
+        NODETREE_DATA    *this
     );
 
 
@@ -512,7 +432,7 @@ extern "C" {
     uint32_t        NodeTree_SiblingAdd (
         NODETREE_DATA   *this,
         uint32_t        sibling,            // Relative to 1
-        NODE_DATA       *pNode
+        NODELINK_DATA   *pNode
     );
 
 
@@ -538,14 +458,14 @@ extern "C" {
      Given a node return its next sibling.
      Example:
      @code
-     NODE_DATA      *pNode = NodeTree_SiblingNext(this, 3);
+     NODE_DATA      *pNode = NodeTree_SiblingNext(this,3);
      @endcode
      Gets the next sibling for node 3.
      @param     this    NODETREE_DATA object pointer
      @param     sibling current sibling node index (relative to 1)
      @return    If successful, an Node object, otherwise OBJ_NIL.
      */
-    NODE_DATA *     NodeTree_SiblingNext (
+    NODELINK_DATA * NodeTree_SiblingNext (
         NODETREE_DATA   *this,
         uint32_t        sibling         // Relative to 1
     );
@@ -571,25 +491,6 @@ extern "C" {
     );
 
 
-#ifdef  NODETREE_JSON_SUPPORT
-    /*!
-     Create a string that describes this object and the objects within it in
-     HJSON formt. (See hjson object for details.)
-     Example:
-     @code
-     ASTR_DATA      *pDesc = NodeTree_ToJson(this);
-     @endcode
-     @param     this    object pointer
-     @return    If successful, an AStr object which must be released containing the
-                JSON text, otherwise OBJ_NIL.
-     @warning   Remember to release the returned AStr object.
-     */
-    ASTR_DATA *     NodeTree_ToJson (
-        NODETREE_DATA   *this
-    );
-#endif
-
-
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -602,10 +503,11 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     NodeTree_ToDebugString (
+    ASTR_DATA *    NodeTree_ToDebugString (
         NODETREE_DATA   *this,
         int             indent
     );
+    
     
 
     /*! Convert the tree to an array with open/close nodes interjected to
@@ -619,7 +521,7 @@ extern "C" {
      @warning   Remember to release the returned ObjArray object.
      */
     NODEARRAY_DATA * NodeTree_ToLinearizationPost (
-        NODETREE_DATA   *this
+        NODETREE_DATA    *this
     );
 
 
@@ -636,7 +538,14 @@ extern "C" {
      @warning   Remember to release the returned ObjArray object.
      */
     NODEARRAY_DATA * NodeTree_ToLinearizationPre (
-        NODETREE_DATA   *this
+        NODETREE_DATA    *this
+    );
+
+
+    ERESULT         NodeTree_Verify (
+        NODETREE_DATA   *this,
+        const
+        char            **pWhy
     );
 
 
@@ -654,15 +563,13 @@ extern "C" {
      */
     ERESULT         NodeTree_VisitBreadthFirst(
         NODETREE_DATA    *this,
-        void            (*pVisitor)(
+        void            (pVisitor)(
             OBJ_ID          ,               // Object supplied below
             NODETREE_DATA   *,              // Our Tree
-            NODE_DATA       *,              // Current Node
-            uint16_t         ,              // Indent level
-            void            *               // other data
+            NODELINK_DATA   *,              // Current Node
+            uint16_t                        // Indent level * 4
         ),
-        OBJ_ID          pObject,
-        void            *pOther
+        OBJ_ID          pObject
     );
 
 
@@ -674,48 +581,44 @@ extern "C" {
      @return    LastError (If successful, LastError == ERESULT_SUCCESS,
                 otherwise LastError == ERESULT_* error code).
      */
-    ERESULT         NodeTree_VisitPostOrder(
+    ERESULT         NodeTree_VisitPostorder(
         NODETREE_DATA    *this,
-        void            (*pVisitor)(
+        void            (pVisitor)(
                                    OBJ_ID,              // Object supplied below
                                    NODETREE_DATA *,     // Our Tree
-                                   NODE_DATA *,         // Current Node
-                                   uint16_t ,           // Indent level
-                                   void *               // other data
+                                   NODELINK_DATA *,     // Current Node
+                                   uint16_t             // Indent level * 4
                                    ),
-        OBJ_ID          pObject,
-        void            *pOther
+        OBJ_ID          pObject
     );
 
 
     /*!
      Visit the root (or current node) then visit each child recursively.
-     This is also known as a depth-first traversal or Dynastic order.
+     This is also known as a depth-first traversal.
      @param     this     object pointer
      @param     pVisitor Function pointer to the routine called as each
                         node is visited
      @return    LastError (If successful, LastError == ERESULT_SUCCESS,
                 otherwise LastError == ERESULT_* error code).
      */
-    ERESULT         NodeTree_VisitPreOrder(
+    ERESULT         NodeTree_VisitPreorder(
         NODETREE_DATA    *this,
-        void            (*pVisitor)(
-                                   OBJ_ID,              // Object supplied below
-                                   NODETREE_DATA *,     // Our Tree
-                                   NODE_DATA *,         // Current Node
-                                   uint16_t ,           // Indent level
-                                   void *               // other data
+        void            (pVisitor)(
+                                   OBJ_ID,             // Object supplied below
+                                   NODETREE_DATA *,    // Our Tree
+                                   NODELINK_DATA *,    // Current Node
+                                   uint16_t            // Indent level
                                   ),
-        OBJ_ID          pObject,
-        void            *pOther
+        OBJ_ID          pObject
     );
 
 
 
 
-#ifdef  __cplusplus
+#ifdef	__cplusplus
 }
 #endif
 
-#endif  /* NODETREE_H */
+#endif	/* NODETREE_H */
 

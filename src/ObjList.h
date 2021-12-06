@@ -11,7 +11,7 @@
  *          for fast addition and deletion of objects.
  *
  * Remarks
- *	1.      None
+ *	1.      This object uses OBJ_FLAG_USER1.
  *
  * History
  *	12/15/2019 Generated
