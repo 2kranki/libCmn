@@ -285,8 +285,6 @@ extern "C" {
         OBJ_IDENT_GENOBJ_CLASS,
         OBJ_IDENT_GREG,                 // Gregorian Date
         OBJ_IDENT_GREG_CLASS,
-        OBJ_IDENT_HASHT,                // Generic Hash Table
-        OBJ_IDENT_HASHT_CLASS,
         OBJ_IDENT_HEX,                  // Hex Input/Output
         OBJ_IDENT_HEX_CLASS,
         OBJ_IDENT_HJSON,                // HJSON (loose JSON) Parser

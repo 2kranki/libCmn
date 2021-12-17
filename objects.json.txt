@@ -117,7 +117,6 @@
         {name:"FileIO",         desc:"Generic Dataset/File Input/Output", deps:["Path.h"]},
         {name:"FileRef"         deps:["AStrC.h","Path.h"]},
         {name:"greg"},
-        //{name:"HashT",          desc:"Generic Hash Table"},
         {name:"hex",            json:true},
         {name:"hjson"},
         {name:"HtmlOut",        deps:["TextOut.h"], 
