@@ -28,7 +28,6 @@
 #include    <trace.h>
 #include    <I16Array.h>
 #include    <NodeArray.h>
-#include    <NodeLink.h>
 #include    <szTbl.h>
 #include    <trace.h>
 #include    <JsonIn_internal.h>
@@ -263,120 +262,6 @@ int             test_JsonIn_01(
 
 
 
-int             test_JsonIn_02(
-    const
-    char            *pTestName
-)
-{
-    ERESULT         eRc;
-    JSONIN_DATA     *pObj = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
-/*
-    {
-        "objectType":"NodeLink",
-        "index":0,
-        "leftIndex":1,
-        "middleIndex":0,
-        "parentIndex":3,
-        "rightIndex":2,
-        "misc": 0,
-        flags:[ "LEFT", "RIGHT", ],
-        "node": {
-            "objectType":"Node",
-            "class": 65,
-            "type": 0,
-            "unique": 0,
-            "misc": 0,
-            "name": {
-                "objectType":"Name",
-                "hash": 0,
-                "type": 2,
-                // UTF-8
-                "utf8": {
-                    "objectType":"utf8",
-                    "len":3,
-                    "crc":891568578,
-                    "data":"abc"
-                },
-            },
-        },
-    }
-*/
-    const
-    char            *JsonInput = "{\n"
-        "\t\"objectType\":\"NodeLink\",\n"
-        "\t\"index\":0,\n"
-        "\t\"leftIndex\":1,\n"
-        "\t\"middleIndex\":0,\n"
-        "\t\"parentIndex\":3,\n"
-        "\t\"rightIndex\":2,\n"
-        "\t\"misc\":0,\n"
-        "\tflags:[ \"LEFT\", \"RIGHT\", ],\n"
-        "\t\"node\":{"
-            "\t\t\"objectType\":\"Node\",\n"
-            "\t\t\"class\":65,\n"
-            "\t\t\"type\":0,\n"
-            "\t\t\"unique\":0,\n"
-            "\t\t\"misc\":0,\n"
-            "\t\t\"name\":{\n"
-                "\t\t\t\"objectType\":\"Name\",\n"
-                "\t\t\t\"hash\":0,\n"
-                "\t\t\t\"type\":2,\n"
-                "\t\t\t/* UTF-8 */\n"
-                "\t\t\t\"utf8\":{\n"
-                    "\t\t\t\t\"objectType\":\"utf8\",\n"
-                    "\t\t\t\t\"len\":3,\n"
-                    "\t\t\t\t\"crc\":891568578,"
-                    "\t\t\t\t\"data\":\"abc\" }\n"
-                "\t\t\t},\n"
-            "\t\t},\n"
-        "\t},\n"
-    "}\n";
-    int64_t         count = 0;
-    bool            fRc;
-
-    fprintf(stderr, "Performing: %s\n", pTestName);
-
-    pObj = JsonIn_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = JsonIn_Init(pObj);
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-
-        JsonIn_RegisterClass(NodeLink_Class());
-        JsonIn_RegisterClass(Node_Class());
-        JsonIn_RegisterClass(Name_Class());
-
-        pStr = AStr_NewA(JsonInput);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_JSONIN);
-        TINYTEST_TRUE( (fRc) );
-
-        //obj_TraceSet(pObj, true);
-        eRc = JsonIn_ParseAStr(pObj, pStr);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        {
-            ASTR_DATA       *pStr = JsonIn_ToDebugString(pObj, 2);
-            fprintf(stderr, "JsonIn Debug:\n%s\n", AStr_getData((pStr)));
-            obj_Release(pStr);
-        }
-
-        eRc = JsonIn_FindIntegerNodeInHashA(pObj, "leftIndex", &count);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        fprintf(stderr, "\tleftIndex = %lld\n", count);
-        TINYTEST_TRUE((count == 1));
-        obj_Release(pStr);
-        pStr = OBJ_NIL;
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    fprintf(stderr, "...%s completed.\n\n", pTestName);
-    return 1;
-}
-
-
-
 int             test_JsonIn_Float01(
     const
     char            *pTestName
@@ -569,7 +454,6 @@ TINYTEST_START_SUITE(test_JsonIn);
     TINYTEST_ADD_TEST(test_JsonIn_I16Array01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_JsonIn_Integers01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_JsonIn_Float01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_JsonIn_02,setUp,tearDown);
     TINYTEST_ADD_TEST(test_JsonIn_01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_JsonIn_OpenClose,setUp,tearDown);
 TINYTEST_END_SUITE();

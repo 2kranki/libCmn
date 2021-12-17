@@ -2086,6 +2086,52 @@ extern "C" {
 
 
 
+    uint32_t        NodeTree_NodeNewUTF8(
+        NODETREE_DATA   *this,
+        int32_t         cls,
+        const
+        char            *pNameA,
+        OBJ_ID          pData,
+        uint32_t        child1,
+        uint32_t        child2
+    )
+    {
+        ERESULT         eRc;
+        NODETREE_RECORD *pRcd = NULL;
+        uint32_t        index = 0;
+        NODE_DATA       *pNode;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !NodeTree_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        pNode = Node_NewWithUTF8AndClass(cls, pNameA, pData);
+        if (pNode) {
+            pRcd = NodeTree_RecordNew(this, 0, pNode);
+            if (pRcd) {
+                index = pRcd->unique;
+                if (index && child1) {
+                    eRc = NodeTree_NodeLinkChild(this, index, child1);
+                    if (ERESULT_OK(eRc) && child2) {
+                        eRc = NodeTree_NodeLinkChild(this, index, child2);
+                    }
+                }
+            }
+            obj_Release(pNode);
+            pNode = OBJ_NIL;
+        }
+
+        // Return to caller.
+        return index;
+    }
+
+
+
     //---------------------------------------------------------------
     //                         N o d e s
     //---------------------------------------------------------------

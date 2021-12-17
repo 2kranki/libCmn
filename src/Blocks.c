@@ -693,8 +693,8 @@ extern "C" {
         }
 #endif
 
-        Blocks_setIndex(this, OBJ_NIL);
         (void)Blocks_Reset(this);
+        Blocks_setIndex(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -882,7 +882,7 @@ extern "C" {
     )
     {
         BLOCKS_NODE     *pEntry = OBJ_NIL;
-        ERESULT         eRc = ERESULT_SUCCESSFUL_COMPLETION;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1206,6 +1206,7 @@ extern "C" {
 
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if( !Blocks_Validate(this) ) {
@@ -1216,8 +1217,10 @@ extern "C" {
 
         if (this->pIndex) {
             pNode = U32Index_Find(this->pIndex, unique);
-            if (pNode)
+            if (pNode) {
+                TRC_OBJ(this, "\tFound %2d - %p\n", unique, pNode);
                 return pNode->data;
+            }
         } else {
             while ((pNode = listdl_Next(&this->activeList, pNode))) {
                 if (pNode->unique == unique) {
@@ -1243,6 +1246,7 @@ extern "C" {
         BLOCKS_NODE     *pNode;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if( !Blocks_Validate(this) ) {
@@ -1265,7 +1269,11 @@ extern "C" {
         }
         pNode->unique = ++this->unique;
         if (this->pIndex) {
-            eRc = U32Index_Add(this->pIndex, pNode->unique, pNode->data, false);
+            eRc = U32Index_Add(this->pIndex, pNode->unique, pNode, false);
+            if (ERESULT_FAILED(eRc)) {
+                DEBUG_BREAK();
+            }
+            TRC_OBJ(this, "\tAdded %2d - %p\n", pNode->unique, pNode->data);
         }
 
         // Return to caller.
@@ -1332,14 +1340,17 @@ extern "C" {
         }
     #endif
 
-        // Delete all the active records.
-        for (;;) {
-            pNode = listdl_Tail(&this->activeList);
-            if (pNode) {
-                eRc = Blocks_RecordFree(this, pNode->data);
+        // If a delete exit, then delete all the active records
+        // to release their holdings.
+        if (this->pDelete) {
+            for (;;) {
+                pNode = listdl_Tail(&this->activeList);
+                if (pNode) {
+                    eRc = Blocks_RecordFree(this, pNode->data);
+                }
+                else
+                    break;
             }
-            else
-                break;
         }
 
         // Delete all the blocks.
@@ -1476,10 +1487,11 @@ extern "C" {
         ERESULT         eRc;
         //int             j;
         ASTR_DATA       *pStr;
-        //ASTR_DATA       *pWrkStr;
+        ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        
+        BLOCKS_NODE     *pEntry = OBJ_NIL;
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1507,6 +1519,28 @@ extern "C" {
                     Blocks_getSize(this),
                     obj_getRetainCount(this)
             );
+
+        pEntry = listdl_Head(&this->activeList);
+        while (pEntry) {
+            if (indent) {
+                AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+            }
+            eRc = AStr_AppendPrint(
+                        pStr,
+                        "Entry: %p unique=%2d data=%p\n",
+                        pEntry,
+                        pEntry->unique,
+                        pEntry->data
+                );
+            pEntry = listdl_Next(&this->activeList, pEntry);
+        }
+
+        if (this->pIndex) {
+            pWrkStr = U32Index_ToDebugString(this->pIndex, indent+4);
+            AStr_Append(pStr, pWrkStr);
+            obj_Release(pWrkStr);
+            pWrkStr = OBJ_NIL;
+        }
 
 #ifdef  XYZZY        
         if (this->pData) {

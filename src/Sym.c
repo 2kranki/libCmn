@@ -43,6 +43,8 @@
 
 /* Header File Inclusion */
 #include        <Sym_internal.h>
+#include        <misc.h>
+#include        <str.h>
 #include        <trace.h>
 #include        <utf8.h>
 
@@ -68,26 +70,20 @@ extern "C" {
     // the index + 1 into the Sym_Prim_entries
     // table. 0 means no enum entry.
     const
-    uint16_t    Sym_Prim_index[13] = {
-        9,
-        1,
-        6,
-        3,
-        8,
-        13,
-        11,
-        2,
-        7,
-        5,
-        10,
-        12,
-        4,
+    uint16_t    Sym_Prim_index[15] = {
+        11, 1, 7, 3, 9, 15, 13, 2,
+        8, 5, 12, 14, 4, 6, 10,
     };
+
+    const
+    uint32_t    cSym_Prim_index = 15;
 
 
     typedef struct {
         const
+        char            *pEnum;
         char            *pDesc;
+        char            *pName;
         uint32_t        value;
     } Sym_Prim_entry;
 
@@ -96,23 +92,24 @@ extern "C" {
 
     const
     Sym_Prim_entry    Sym_Prim_entries[] = {
-        {"SYM_PRIM_CHAR",1},
-        {"SYM_PRIM_DBLWORD",7},
-        {"SYM_PRIM_HALF",3},
-        {"SYM_PRIM_POINTER",12},
-        {"SYM_PRIM_QUAD",9},
-        {"SYM_PRIM_UCHAR",2},
-        {"SYM_PRIM_UDBLWORD",8},
-        {"SYM_PRIM_UHALF",4},
-        {"SYM_PRIM_UNKNOWN",0},
-        {"SYM_PRIM_UQUAD",10},
-        {"SYM_PRIM_UWORD",6},
-        {"SYM_PRIM_VOID",11},
-        {"SYM_PRIM_WORD",5},
+        {"SYM_PRIM_CHAR", "", "CHAR", 1},
+        {"SYM_PRIM_DBLWORD", "", "DBLWORD", 7},
+        {"SYM_PRIM_HALF", "", "HALF", 3},
+        {"SYM_PRIM_POINTER", "", "POINTER", 12},
+        {"SYM_PRIM_QUAD", "", "QUAD", 9},
+        {"SYM_PRIM_STRUCT", "", "STRUCT", 13},
+        {"SYM_PRIM_UCHAR", "", "UCHAR", 2},
+        {"SYM_PRIM_UDBLWORD", "", "UDBLWORD", 8},
+        {"SYM_PRIM_UHALF", "", "UHALF", 4},
+        {"SYM_PRIM_UNION", "", "UNION", 14},
+        {"SYM_PRIM_UNKNOWN", "", "UNKNOWN", 0},
+        {"SYM_PRIM_UQUAD", "", "UQUAD", 10},
+        {"SYM_PRIM_UWORD", "", "UWORD", 6},
+        {"SYM_PRIM_VOID", "", "VOID", 11},
+        {"SYM_PRIM_WORD", "", "WORD", 5},
     };
 
-    const
-    uint32_t    cSym_Prim_entries = 13;
+    uint32_t    cSym_Prim_entries = 15;
 
 
 
@@ -132,17 +129,33 @@ extern "C" {
 
     // Given an enum value, return its character format.
     const
-    char *            Sym_PrimToDesc(
+    char *            Sym_PrimToEnum (
         uint32_t        value
     )
     {
-        if (value >= 13) {
+        if (value >= cSym_Prim_index) {
             return "<<<Unknown Enum Value>>>";
         }
         if (Sym_Prim_index[value]) {
-            return Sym_Prim_entries[Sym_Prim_index[value]-1].pDesc;
+            return Sym_Prim_entries[Sym_Prim_index[value] - 1].pEnum;
         } else {
             return "<<<Unknown Enum Value>>>";
+        }
+    }
+
+    // Given an enum value, return its name.
+    const
+    char *            Sym_PrimToName (
+        uint32_t        value
+    )
+    {
+        if (value >= cSym_Prim_index) {
+            return NULL;
+        }
+        if (Sym_Prim_index[value]) {
+            return Sym_Prim_entries[Sym_Prim_index[value] - 1].pName;
+        } else {
+            return NULL;
         }
     }
 
@@ -158,50 +171,25 @@ extern "C" {
     // Given an enum description, return its value + 1 or
     // 0 for not found.
     const
-    uint32_t        Sym_DescToPrim(
+    uint32_t        Sym_EnumToPrim (
         char            *pDesc
     )
     {
-        int            iRc;
-        uint32_t        iMax = cSym_Prim_entries;
-        uint32_t        i    = 0;
-        uint32_t        high = 0;
-        uint32_t        low  = 0;
-        uint32_t        mid  = 0;
+        Sym_Prim_entry  *pEntry  = NULL;
+        uint32_t        value = 0;
 
-        if (iMax > 10) {
-            for (i=0; i<iMax; i++) {
-                iRc = strcmp(pDesc, Sym_Prim_entries[i].pDesc);
-                if (0 == iRc) {
-                    return Sym_Prim_entries[i].value + 1;
-                }
-                if (iRc < 0) {
-                    break;
-                }
-            }
-        } else {
-            high = iMax - 1;
-            while (low < high) {
-                mid = (high + low) / 2;
-                i = mid + 1;
-                iRc = strcmp(pDesc, Sym_Prim_entries[i].pDesc);
-                if (iRc < 0) {
-                    high = mid;
-                } else if (iRc == 0) {
-                    return Sym_Prim_entries[i].value + 1;
-                } else {
-                    low = mid + 1;
-                }
-            }
-            if( high == low ) {
-                i = low;
-                iRc = strcmp(pDesc, Sym_Prim_entries[i].pDesc);
-                if (0 == iRc) {
-                    return Sym_Prim_entries[i].value + 1;
-                }
-            }
+        pEntry =    misc_SearchBinary(
+                                      pDesc,
+                                      (void *)Sym_Prim_entries,
+                                      cSym_Prim_entries,
+                                      sizeof(Sym_Prim_entry),
+                                      offsetof(Sym_Prim_entry, pEnum),
+                                      (void *)strcmp
+                    );
+        if (pEntry) {
+            value = pEntry->value + 1;
         }
-        return 0;
+        return value;
     }
 
 
@@ -218,11 +206,11 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    SYM_DATA *     Sym_Alloc (
+    SYM_DATA *      Sym_Alloc (
         void
     )
     {
-        SYM_DATA       *this;
+        SYM_DATA        *this;
         uint32_t        cbSize = sizeof(SYM_DATA);
         
         // Do initialization.
@@ -235,7 +223,7 @@ extern "C" {
 
 
 
-    SYM_DATA *     Sym_New (
+    SYM_DATA *      Sym_New (
         void
     )
     {
@@ -250,7 +238,7 @@ extern "C" {
 
 
 
-    SYM_DATA *     Sym_NewA(
+    SYM_DATA *      Sym_NewA(
         int32_t         cls,
         const
         char            *pNameA
@@ -273,7 +261,7 @@ extern "C" {
 
 
 
-    SYM_DATA *     Sym_NewW32(
+    SYM_DATA *      Sym_NewW32(
         int32_t         cls,
         const
         W32CHR_T        *pNameW32
@@ -296,7 +284,7 @@ extern "C" {
 
 
 
-    SYM_DATA *     Sym_NewEntry(
+    SYM_DATA *      Sym_NewEntry(
         SYM_ENTRY       *pEntry
     )
     {
@@ -419,7 +407,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     uint32_t        Sym_getAddr (
-        SYM_DATA     *this
+        SYM_DATA        *this
     )
     {
 
@@ -461,7 +449,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     uint16_t        Sym_getAlign (
-        SYM_DATA     *this
+        SYM_DATA        *this
     )
     {
 
@@ -545,7 +533,7 @@ extern "C" {
     //---------------------------------------------------------------
 
     uint32_t        Sym_getDisp (
-        SYM_DATA     *this
+        SYM_DATA        *this
     )
     {
 
@@ -1321,6 +1309,98 @@ extern "C" {
 #endif
 
         Sym_getEntry(this)->len = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          L i n k
+    //---------------------------------------------------------------
+
+    uint32_t        Sym_getLink (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->link;
+    }
+
+
+    bool            Sym_setLink (
+        SYM_DATA        *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->link = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                         L i s t
+    //---------------------------------------------------------------
+
+    OBJ_ID          Sym_getList (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pList;
+    }
+
+
+    bool            Sym_setList (
+        SYM_DATA        *this,
+        OBJ_ID          pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+        if (pValue && !obj_IsKindOf(pValue, OBJ_IDENT_SYMLIST)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pList) {
+            obj_Release(this->pList);
+        }
+        this->pList = (SYMLIST_DATA *)pValue;
 
         return true;
     }
@@ -2229,6 +2309,8 @@ extern "C" {
         }
 #endif
 
+        Sym_setList(this, OBJ_NIL);
+
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.
@@ -2450,7 +2532,7 @@ extern "C" {
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(SYM_DATA));
         BREAK_NOT_BOUNDARY4(sizeof(SYM_ENTRY));
-        BREAK_NOT_ZERO(256 - sizeof(SYM_ENTRY));
+        BREAK_NOT_BOUNDARY4(sizeof(SYM_ENTRY));
 #endif
 
         return this;
@@ -2487,6 +2569,75 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          L i s t
+    //---------------------------------------------------------------
+
+    ERESULT         Sym_ListAdd (
+        SYM_DATA        *this,
+        SYM_DATA        *pSym
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!Sym_Validate(pSym)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->pList) {
+            this->pList = SymList_New();
+            if (OBJ_NIL == this->pList) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+
+        eRc = SymList_Add2Tail(this->pList, pSym);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    SYM_DATA *      Sym_ListFindA (
+        SYM_DATA        *this,
+        int32_t         cls,
+        const
+        char            *pNameA
+    )
+    {
+        ERESULT         eRc;
+        SYM_DATA        *pSym = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            // return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        if (this->pList) {
+            pSym = SymList_FindA(this->pList, cls, pNameA);
+        }
+
+        // Return to caller.
+        return pSym;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------

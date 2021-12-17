@@ -65,80 +65,60 @@
 #include    <test_defs.h>
 #include    <Test_internal.h>
 #include    <trace.h>
-#include    <Syms_internal.h>
+#include    <HashT_internal.h>
 #include    <JsonIn.h>
 #include    <SrcErrors.h>
 #include    <szTbl.h>
 
 
-
 static
-char        *pStrings[] = {
-    "bob",
-    "bobby",
+char    *pStringTable[] = {
+//   1234567890
     "iryna",
-    "dasha",
-    "name",
-    "way",
-    "bigger",
-    "Now",
-    "is",
-    "the",
-    "time",
-    "for",
-    "all",
-    "good",
-    "men",
-    "to",
-    "come",
-    "aid",
-    "of",
-    "their",
-    "country",
-    "We",
-    "need",
-    "another",
-    "item",
-    "in",
-    "here",
-    "Are",
-    "you",
-    "alright",
-    "with",
-    "this"
+    "rain",
+    "clouds",
+    "sun",
+    "now",
+    "xray",
+    "before",
+    "after",
+    "bob",
+//   1234567890
+    "tomorrow",
+    "today",
+    "someday"
 };
 static
-const
-uint32_t        cStrings = sizeof(pStrings)/sizeof(char *);
+int             cStringTable = (sizeof(pStringTable) / sizeof(char *));
 
 
 
 
 
 
-ERESULT         Test_Syms_OpenClose (
+ERESULT         Test_HashT_OpenClose (
     TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SYMS_DATA       *pObj = OBJ_NIL;
+    HASHT_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = Syms_Alloc( );
+    pObj = HashT_Alloc( );
     TestForNotNull(pObj, "Missing Test Alloc() object");
-    pObj = Syms_Init( pObj );
+    pObj = HashT_Init( pObj );
     TestForNotNull(pObj, "Missing Test Init() object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_HASHT);
         TestForTrue(fRc, "Failed Ident Test");
-#ifdef   SYMS_MSGS
-        Syms_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#ifdef   HASHT_MSGS
+        HashT_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
 #endif
         
         // Test something.
@@ -154,43 +134,43 @@ ERESULT         Test_Syms_OpenClose (
 
 
 
-ERESULT         Test_Syms_Copy01 (
+ERESULT         Test_HashT_Copy01 (
     TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SYMS_DATA       *pObj1 = OBJ_NIL;
-    SYMS_DATA       *pObj2 = OBJ_NIL;
+    HASHT_DATA       *pObj1 = OBJ_NIL;
+    HASHT_DATA       *pObj2 = OBJ_NIL;
     bool            fRc;
-#if defined(SYMS_JSON_SUPPORT) && defined(XYZZY)
+#if defined(HASHT_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA       *pStr = OBJ_NIL;
 #endif
     //int             iRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj1 = Syms_New( );
+    pObj1 = HashT_New( );
     TestForNotNull(pObj1, "Missing Test object");
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
-        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_HASHT);
         TestForTrue(fRc, "Failed Ident Test");
-#ifdef   SYMS_MSGS
-        Syms_setMsg(pObj1, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#ifdef   HASHT_MSGS
+        HashT_setMsg(pObj1, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
 #endif
         
         // Test assign.
-        pObj2 = Syms_New();
+        pObj2 = HashT_New();
         TestForNotNull(pObj2, "Missing copied object");
-        eRc = Syms_Assign(pObj1, pObj2);
+        eRc = HashT_Assign(pObj1, pObj2);
         TestForFalse((ERESULT_FAILED(eRc)), "Assignment failed");
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_HASHT);
         TestForTrue(fRc, "Failed Ident Test");
-        //iRc = Syms_Compare(pObj1, pObj2);
+        //iRc = HashT_Compare(pObj1, pObj2);
         //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
@@ -198,12 +178,12 @@ ERESULT         Test_Syms_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test copy.
-        pObj2 = Syms_Copy(pObj1);
+        pObj2 = HashT_Copy(pObj1);
         TestForNotNull(pObj2, "Missing copied object");
 
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_HASHT);
         TestForTrue(fRc, "Failed Ident Test");
-        //iRc = Syms_Compare(pObj1, pObj2);
+        //iRc = HashT_Compare(pObj1, pObj2);
         //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
@@ -211,17 +191,17 @@ ERESULT         Test_Syms_Copy01 (
         pObj2 = OBJ_NIL;
 
         // Test json support.
-#if defined(SYMS_JSON_SUPPORT) && defined(XYZZY)
-        pStr = Syms_ToJson(pObj1);
+#if defined(HASHT_JSON_SUPPORT) && defined(XYZZY)
+        pStr = HashT_ToJson(pObj1);
         TestForNotNull(pStr, "Missing JSON output");
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
-        pObj2 = Syms_NewFromJsonString(pStr);
+        pObj2 = HashT_NewFromJsonString(pStr);
         TestForNotNull(pObj2, "Missing JSON created object");
-        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_HASHT);
         TestForTrue(fRc, "Failed Ident Test");
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //iRc = Syms_Compare(pObj1, pObj2);
+        //iRc = HashT_Compare(pObj1, pObj2);
         //TestForTrue((0 == iRc), "Failed Compare");
 
         obj_Release(pObj2);
@@ -238,32 +218,32 @@ ERESULT         Test_Syms_Copy01 (
 
 
 
-ERESULT         Test_Syms_Test01 (
+ERESULT         Test_HashT_Test01 (
     TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SYMS_DATA       *pObj = OBJ_NIL;
+    HASHT_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = Syms_New( );
+    pObj = HashT_New( );
     TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_HASHT);
         TestForTrue(fRc, "Failed Ident Test");
         TestForSuccess("");
-#ifdef   SYMS_LOG
-        Syms_setLog(pObj, this);
+#ifdef   HASHT_LOG
+        HashT_setLog(pObj, this);
 #endif
                 
         {
-            ASTR_DATA       *pStr = Syms_ToDebugString(pObj, 4);
+            ASTR_DATA       *pStr = HashT_ToDebugString(pObj, 4);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -281,55 +261,37 @@ ERESULT         Test_Syms_Test01 (
 
 
 
-ERESULT         Test_Syms_Test02 (
+ERESULT         Test_HashT_Test02 (
     TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SYMS_DATA       *pObj = OBJ_NIL;
+    HASHT_DATA      *pObj = OBJ_NIL;
     bool            fRc;
-    SYM_DATA        *pSym;
-    SYM_DATA        *pSymFnd;
-    uint32_t        i;
-    uint32_t        cnt;
-    ASTR_DATA       *pStr;
+    int             i;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = Syms_New( );
+    pObj = HashT_New( );
     TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_HASHT);
         TestForTrue(fRc, "Failed Ident Test");
         TestForSuccess("");
-#ifdef   SYMS_LOG
-        Syms_setLog(pObj, this);
+#ifdef   HASHT_LOG
+        HashT_setLog(pObj, this);
 #endif
 
-        for (i=0; i<cStrings; ++i) {
-            uint32_t        index = 0;
-            pSym = Sym_NewA(0, pStrings[i]);
-            TestForNotNull(pSym, "");
-            eRc = Syms_Add(pObj, pSym, &index);
-            TestForSuccess("");
-            TestForTrue((index == i+1), "");
-            cnt = Syms_getSize(pObj);
-            TestForTrue((cnt == (i+1)), "");
-            fprintf(stderr, "\tAdded %p - %s\n", pSym, pStrings[i]);
-            fprintf(stderr, "\tLooking for: %s\n", pStrings[i]);
-            pSymFnd = Syms_FindA(pObj, 0, pStrings[i]);
-            TestForNotNull(pSymFnd, "");
-            fprintf(stderr, "\t\tFound\n");
-            obj_Release(pSym);
-            pSym = OBJ_NIL;
+        for (i=0; i<cStringTable; i++) {
+            fprintf(stderr, "\tAdding %s\n", pStringTable[i]);
         }
 
         {
-            ASTR_DATA       *pStr = Syms_ToDebugString(pObj, 4);
+            ASTR_DATA       *pStr = HashT_ToDebugString(pObj, 4);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -347,32 +309,32 @@ ERESULT         Test_Syms_Test02 (
 
 
 
-ERESULT         Test_Syms_Test03 (
+ERESULT         Test_HashT_Test03 (
     TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SYMS_DATA       *pObj = OBJ_NIL;
+    HASHT_DATA       *pObj = OBJ_NIL;
     bool            fRc;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = Syms_New( );
+    pObj = HashT_New( );
     TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_HASHT);
         TestForTrue(fRc, "Failed Ident Test");
         TestForSuccess("");
-#ifdef   SYMS_LOG
-        Syms_setLog(pObj, this);
+#ifdef   HASHT_LOG
+        HashT_setLog(pObj, this);
 #endif
 
         {
-            ASTR_DATA       *pStr = Syms_ToDebugString(pObj, 4);
+            ASTR_DATA       *pStr = HashT_ToDebugString(pObj, 4);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -390,32 +352,32 @@ ERESULT         Test_Syms_Test03 (
 
 
 
-ERESULT         Test_Syms_Test04 (
+ERESULT         Test_HashT_Test04 (
     TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    SYMS_DATA       *pObj = OBJ_NIL;
+    HASHT_DATA       *pObj = OBJ_NIL;
     bool            fRc;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = Syms_New( );
+    pObj = HashT_New( );
     TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_SYMS);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_HASHT);
         TestForTrue(fRc, "Failed Ident Test");
         TestForSuccess("");
-#ifdef   SYMS_LOG
-        Syms_setLog(pObj, this);
+#ifdef   HASHT_LOG
+        HashT_setLog(pObj, this);
 #endif
 
         {
-            ASTR_DATA       *pStr = Syms_ToDebugString(pObj, 4);
+            ASTR_DATA       *pStr = HashT_ToDebugString(pObj, 4);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -466,12 +428,12 @@ int     main (
     }
 
     // Execute tests.
-    TestExec("OpenClose", Test_Syms_OpenClose, NULL, NULL);
-    //TestExec("Copy01", Test_Syms_Copy01, NULL, NULL);
-    TestExec("Test01", Test_Syms_Test01, NULL, NULL);
-    TestExec("Test02", Test_Syms_Test02, NULL, NULL);
-    TestExec("Test03", Test_Syms_Test03, NULL, NULL);
-    TestExec("Test04", Test_Syms_Test04, NULL, NULL);
+    TestExec("OpenClose", Test_HashT_OpenClose, NULL, NULL);
+    //TestExec("Copy01", Test_HashT_Copy01, NULL, NULL);
+    TestExec("Test01", Test_HashT_Test01, NULL, NULL);
+    TestExec("Test02", Test_HashT_Test02, NULL, NULL);
+    TestExec("Test03", Test_HashT_Test03, NULL, NULL);
+    TestExec("Test04", Test_HashT_Test04, NULL, NULL);
 
     obj_Release(pTest);
     pTest = OBJ_NIL;

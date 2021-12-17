@@ -552,6 +552,139 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          A d d
+    //---------------------------------------------------------------
+
+    bool            Parser_AddErrorA (
+        PARSER_DATA     *this,
+        uint16_t        severity,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        ...
+    )
+    {
+        ERESULT         eRc;
+        va_list         arg_ptr;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+          DEBUG_BREAK();
+          return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        va_start(arg_ptr, pErrorString);
+        eRc = SrcErrors_AddErrorArgsA(
+                                      this->pErrors,
+                                      severity,
+                                      pLocation,
+                                      pErrorString,
+                                      arg_ptr
+                );
+        va_end(arg_ptr);
+
+        // Return to caller.
+        return true;
+    }
+
+
+    bool            Parser_AddErrorArgsA (
+        PARSER_DATA     *this,
+        uint16_t        severity,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        va_list         arg_ptr
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+          DEBUG_BREAK();
+          return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = SrcErrors_AddErrorArgsA(
+                                      this->pErrors,
+                                      severity,
+                                      pLocation,
+                                      pErrorString,
+                                      arg_ptr
+                );
+
+        // Return to caller.
+        return true;
+    }
+
+
+    ERESULT         Parser_AddFatalA (
+        PARSER_DATA     *this,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        ...
+    )
+    {
+      ERESULT         eRc;
+      va_list         arg_ptr;
+
+      // Do initialization.
+#ifdef NDEBUG
+#else
+      if (!Parser_Validate(this)) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_OBJECT;
+      }
+#endif
+
+      va_start(arg_ptr, pErrorString);
+      eRc = SrcErrors_AddFatalArgsA(this->pErrors, pLocation, pErrorString, arg_ptr);
+      va_end(arg_ptr);
+
+      // Return to caller.
+      return true;
+    }
+
+
+    ERESULT         Parser_AddFatalArgsA (
+        PARSER_DATA     *this,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        va_list         arg_ptr
+    )
+    {
+      ERESULT         eRc;
+
+      // Do initialization.
+#ifdef NDEBUG
+#else
+      if (!Parser_Validate(this)) {
+        DEBUG_BREAK();
+        return ERESULT_INVALID_OBJECT;
+      }
+#endif
+
+      eRc = SrcErrors_AddFatalArgsA(this->pErrors, pLocation, pErrorString, arg_ptr);
+
+      // Return to caller.
+      return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     

@@ -3,6 +3,12 @@
 The following are things that are being thought about. Whether they get done or not
 will depend upon time and resources.
 
+--  Opcodes
+    --  Need byte/mask index to access pointer to Opcode *. If no collisions,
+        probably use Dragon Book compress index.  Otherwise, we need an 
+        update-able ternary tree ??? Need to be able to add/subtract from
+        index since it is dynamic. Ternary tree would be safest. Maybe U32Matrix.
+
 --  CmdUtl
     --  For BOOL options, disregard '=' and anything after, but allow the long option
         name to be prefixed with "not_" to turn it off.

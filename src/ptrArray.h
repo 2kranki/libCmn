@@ -150,24 +150,6 @@ extern "C" {
 
 
     /*!
-     Create an Enumerator that will enumerate through all the pointers.
-     @param     this    object pointer
-     @param     num     a number relative to 1 that indexes into the array
-     @return:   If successful, valid enumerator. Otherwise, OBJ_NIL.
-     */
-    ERESULT         ptrArray_Expand (
-        PTRARRAY_DATA   *this,
-        uint16_t        num
-    );
-
-
-    void *          ptrArray_GetData (
-        PTRARRAY_DATA   *this,
-        uint32_t        index       // Relative to 1
-    );
-    
-    
-    /*!
      Dequeue() is an alias for DeleteLast() which deletes the last
      entry and returns the pointer stored in it.
      @param     this    object pointer
@@ -194,15 +176,25 @@ extern "C" {
 
     /*!
      Create an Enumerator that will enumerate through all the pointers.
+     @param     this    object pointer
+     @param     ppEnum  a number relative to 1 that indexes into the array
      @return:   If successful, valid enumerator. Otherwise, OBJ_NIL.
-                error code.
-     @warning:  Remember to release the returned Enumeration object and
-                the Pointer Array should not be altered while the enumerator
-                exists.
      */
     ERESULT         ptrArray_Enum (
         PTRARRAY_DATA   *this,
         ENUM_DATA       **ppEnum
+    );
+
+
+    ERESULT         ptrArray_Expand (
+        PTRARRAY_DATA   *this,
+        uint16_t        num
+    );
+
+
+    void *          ptrArray_GetData (
+        PTRARRAY_DATA   *this,
+        uint32_t        index       // Relative to 1
     );
     
     

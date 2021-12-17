@@ -96,11 +96,6 @@ extern "C" {
     ****************************************************************/
 
     static
-    bool            ObjHash_AddBlock(
-        OBJHASH_DATA    *this
-    );
-
-    static
     OBJHASH_NODE *  ObjHash_FindUniqueInt(
         OBJHASH_DATA    *this,
         uint32_t        index
@@ -120,38 +115,55 @@ extern "C" {
 
 
 
-    /* Expand the current Pointer Array by Inc entries.
-     */
-    static
-    bool            ObjHash_AddBlock(
-        OBJHASH_DATA    *this
+    //---------------------------------------------------------------
+    //                  N o d e  H a s h  C h a i n
+    //---------------------------------------------------------------
+
+    ERESULT         ObjHash_NodeEnchain(
+        OBJHASH_DATA    *this,
+        OBJHASH_MAIN    *pMain,
+        OBJHASH_NODE    *pNode
     )
     {
-        OBJHASH_BLOCK   *pBlock;
-        uint32_t        i;
+        LISTDL_DATA     *pNodeList;
+        LISTDL_DATA     *pLevel;
 
-        // Do initialization.
-        if ( 0 == listdl_Count(&this->freeList) )
-            ;
-        else {
-            return true;
+        pLevel = (LISTDL_DATA *)array_GetAddrOf(pMain->pLevels, pNode->scope+1);
+        if (NULL == pLevel) {
+            return ERESULT_INVALID_PARAMETER;
         }
 
-        // Get a new block.
-        i = sizeof(OBJHASH_BLOCK) + (this->cBlock * sizeof(OBJHASH_NODE));
-        pBlock = (OBJHASH_BLOCK *)mem_Malloc( i );
-        if( NULL == pBlock ) {
-            return false;
-        }
-        listdl_Add2Tail(&this->blocks, pBlock);
-
-        // Now chain the entries to the Free chain.
-        for (i=0; i<this->cBlock; ++i) {
-            listdl_Add2Tail(&this->freeList, &pBlock->node[i]);
-        }
+        // Chain it to the appropriate lists.
+        pNodeList = &pMain->pHash[pNode->hash % pMain->cHash];
+        listdl_Add2Head(pNodeList, pNode);
+        listdl_Add2Head(pLevel, pNode);
 
         // Return to caller.
-        return true;
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         ObjHash_NodeUnchain(
+        OBJHASH_DATA    *this,
+        OBJHASH_MAIN    *pMain,
+        OBJHASH_NODE    *pNode
+    )
+    {
+        LISTDL_DATA     *pNodeList;
+        LISTDL_DATA     *pLevel;
+
+        pLevel = (LISTDL_DATA *)array_GetAddrOf(pMain->pLevels, pNode->scope+1);
+        if (NULL == pLevel) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+
+        // Unchain it from the appropriate lists.
+        pNodeList = &pMain->pHash[pNode->hash % pMain->cHash];
+        listdl_Delete(pNodeList, pNode);
+        listdl_Delete(pLevel, pNode);
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
 
 
@@ -177,11 +189,12 @@ extern "C" {
 
 
 
-    OBJ_ID          ObjHash_DeleteNode(
+    OBJ_ID          ObjHash_DeleteNodeFromList(
         OBJHASH_DATA    *this,
         OBJHASH_NODE    *pNode
     )
     {
+        ERESULT         eRc;
         LISTDL_DATA     *pNodeList;
         OBJ_ID          pReturn = OBJ_NIL;
 
@@ -202,7 +215,7 @@ extern "C" {
         listdl_Delete(pNodeList, pNode);
         pReturn = pNode->pObject;
         pNode->pObject = OBJ_NIL;
-        listdl_Add2Head(&this->freeList, pNode);
+        eRc = Blocks_RecordFree((BLOCKS_DATA *)this, pNode);
 
         // Return to caller.
         return pReturn;
@@ -265,8 +278,8 @@ extern "C" {
 
         // Since we have no other index, we must search
         // the entire hash until we find the object.
-        for (hash=0; hash<this->cHash; ++hash) {
-            pNodeList = &this->pHash[hash];
+        for (hash=0; hash<this->main.cHash; ++hash) {
+            pNodeList = &this->main.pHash[hash];
             pNode = listdl_Head(pNodeList);
             while ( pNode ) {
                 iRc = index - pNode->unique;
@@ -291,7 +304,7 @@ extern "C" {
     {
         uint16_t        index;
 
-        index = hash % this->cHash;
+        index = hash % this->main.cHash;
         return index;
     }
 
@@ -305,7 +318,7 @@ extern "C" {
     {
         LISTDL_DATA     *pNodeList;
 
-        pNodeList = &this->pHash[ObjHash_IndexFromHash(this, hash)];
+        pNodeList = &this->main.pHash[ObjHash_IndexFromHash(this, hash)];
         return( pNodeList );
     }
 
@@ -315,8 +328,19 @@ extern "C" {
     //                  D e l e t e  E x i t
     //---------------------------------------------------------------
 
+    /*!
+     Rebuild the hash index with a different number of Hash Buckets.
+     This method allows you to grow or shrink the index dynamically
+     as needed.
+     @param     this    object pointer
+     @param     cHash   number of buckets to use
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+#ifdef XXXXXXXX
     ERESULT         ObjHash_Rehash(
-        OBJHASH_DATA    *this
+        OBJHASH_DATA    *this,
+        uint32_t        cHash
     )
     {
         uint32_t        cHash  = this->cHash;
@@ -370,6 +394,7 @@ extern "C" {
 
         return ERESULT_SUCCESS;
     }
+#endif
 
 
 
@@ -388,7 +413,7 @@ extern "C" {
         void
     )
     {
-        OBJHASH_DATA       *this;
+        OBJHASH_DATA    *this;
         uint32_t        cbSize = sizeof(OBJHASH_DATA);
         
         // Do initialization.
@@ -490,7 +515,7 @@ extern "C" {
     //                          S c o p e
     //---------------------------------------------------------------
 
-    uint32_t        ObjHash_getScope(
+    uint32_t        ObjHash_getScopeSize(
         OBJHASH_DATA    *this
     )
     {
@@ -501,7 +526,7 @@ extern "C" {
         }
 #endif
 
-        return this->scopeLvl;
+        return array_getSize(this->main.pLevels);
     }
 
 
@@ -522,7 +547,7 @@ extern "C" {
         }
 #endif
 
-        return this->num;
+        return Blocks_getNumActive((BLOCKS_DATA *)this);
     }
 
 
@@ -531,8 +556,27 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
+    BLOCKS_DATA *   ObjHash_getSuper (
+        OBJHASH_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!ObjHash_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+
+        return (BLOCKS_DATA *)this;
+    }
+
+
     OBJ_IUNKNOWN *  ObjHash_getSuperVtbl (
-        OBJHASH_DATA     *this
+        OBJHASH_DATA    *this
     )
     {
 
@@ -568,11 +612,40 @@ extern "C" {
         uint32_t        *pIndex
     )
     {
-        LISTDL_DATA     *pNodeList;
+        ERESULT         eRc;
+
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef NDEBUG
+#else
+        if( !ObjHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = ObjHash_AddInScope(this, ObjHash_getScopeSize(this)-1, pObject, pIndex);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         ObjHash_AddInScope(
+        OBJHASH_DATA    *this,
+        uint32_t        scope,
+        OBJ_ID          pObject,
+        uint32_t        *pIndex
+    )
+    {
+        ERESULT         eRc;
+        //LISTDL_DATA     *pNodeList;
+        LISTDL_DATA     *pLevel;
         OBJHASH_NODE    *pNode;
         uint32_t        hash;
+        uint32_t        unique = 0;
         OBJ_IUNKNOWN    *pVtbl;
 
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if( !ObjHash_Validate(this) ) {
@@ -585,6 +658,10 @@ extern "C" {
 #endif
         pVtbl = obj_getVtbl(pObject);
         hash = pVtbl->pHash(pObject);
+        pLevel = array_GetAddrOf(this->main.pLevels, scope+1);
+        if (NULL == pLevel) {
+            return ERESULT_INVALID_PARAMETER;
+        }
 
         if (!this->fDups) {
             pNode = ObjHash_Find(this, pObject);
@@ -593,29 +670,61 @@ extern "C" {
             }
         }
 
-        // Determine the entry number.
-        if (0 == listdl_Count(&this->freeList)) {
-            if ( ObjHash_AddBlock(this) )
-                ;
-            else {
-                return ERESULT_INSUFFICIENT_MEMORY;
+        pNode = Blocks_RecordNew((BLOCKS_DATA *)this, &unique);
+        if (pNode) {
+            // Add it to the table.
+            obj_Retain(pObject);
+            pNode->pObject = pObject;
+            pNode->hash    = hash;
+            pNode->unique  = unique;
+            pNode->scope   = scope;
+            TRC_OBJ(this, "\tAdding %2d:%2d - %p\n", scope, unique, pNode);
+
+            // Chain it to the appropriate lists.
+            eRc = ObjHash_NodeEnchain(this, &this->main, pNode);
+            if (ERESULT_FAILED(eRc)) {
+                return ERESULT_GENERAL_FAILURE;
             }
         }
-        pNode = listdl_DeleteHead(&this->freeList);
-        if (NULL == pNode) {
-            return ERESULT_INSUFFICIENT_MEMORY;
+
+        // Return to caller.
+        if (pIndex)
+            *pIndex = unique;
+        return ERESULT_SUCCESS;
+    }
+
+
+    ERESULT         ObjHash_AddUnlinked(
+        OBJHASH_DATA    *this,
+        OBJ_ID          pObject,
+        uint32_t        *pIndex
+    )
+    {
+        OBJHASH_NODE    *pNode;
+        uint32_t        unique = 0;
+
+#ifdef NDEBUG
+#else
+        if( !ObjHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pObject) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (NULL == pIndex) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        pNode = Blocks_RecordNew((BLOCKS_DATA *)this, &unique);
+        if (pNode) {
+            obj_Retain(pObject);
+            pNode->pObject = pObject;
+            pNode->unique  = unique;
         }
 
         // Add it to the table.
-        obj_Retain(pObject);
-        pNode->pObject = pObject;
-        pNode->hash    = hash;
-        pNode->unique  = ++this->unique;
-
-        pNodeList = ObjHash_NodeListFromHash(this, hash);
-        listdl_Add2Head(pNodeList, pNode);
-
-        ++this->num;
 
         // Return to caller.
         if (pIndex)
@@ -672,15 +781,15 @@ extern "C" {
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
-        eRc = ObjHash_Setup(pOther, this->cHash);
+        eRc = ObjHash_Setup(pOther, this->main.cHash);
         if (ERESULT_FAILED(eRc)) {
             return eRc;
         }
 
         // Create a copy of objects and areas in this object placing
         // them in other.
-        for (i=0; i<this->cHash; ++i) {
-            pNodeList = &this->pHash[i];
+        for (i=0; i<this->main.cHash; ++i) {
+            pNodeList = &this->main.pHash[i];
             pNode = listdl_Head(pNodeList);
             while (pNode) {
                 pObj = pNode->pObject;
@@ -744,8 +853,8 @@ extern "C" {
 #endif
 
         // Do the calculations.
-        for (i=0; i<this->cHash; ++i) {
-            pNodeList = &this->pHash[i];
+        for (i=0; i<this->main.cHash; ++i) {
+            pNodeList = &this->main.pHash[i];
             count = listdl_Count(pNodeList);
             if (0 == count) {
                 ++numEmpty;
@@ -758,14 +867,14 @@ extern "C" {
 
         // Return to caller.
         if (pNumBuckets)
-            *pNumBuckets = this->cHash;
+            *pNumBuckets = this->main.cHash;
         if (pNumEmpty)
             *pNumEmpty = numEmpty;
         if (pNumMax)
             *pNumMax = numMax;
         if (pNumAvg) {
-            if (this->cHash - numEmpty) {
-                *pNumAvg = num / (this->cHash - numEmpty);
+            if (this->main.cHash - numEmpty) {
+                *pNumAvg = num / (this->main.cHash - numEmpty);
             }
             else
                 *pNumAvg = 0;
@@ -878,7 +987,7 @@ extern "C" {
     )
     {
         OBJHASH_DATA   *this = objId;
-        ERESULT         eRc;
+        //ERESULT         eRc;
 
         // Do initialization.
         if (NULL == this) {
@@ -898,7 +1007,15 @@ extern "C" {
         }
 #endif
 
-        eRc = ObjHash_Reset(this);
+        if (this->main.pLevels) {
+            obj_Release(this->main.pLevels);
+            this->main.pLevels = OBJ_NIL;
+        }
+        if (this->main.pHash) {
+            mem_Free(this->main.pHash);
+            this->main.pHash = NULL;
+            this->main.cHash = 0;
+        }
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -966,6 +1083,7 @@ extern "C" {
         OBJ_ID          pObject
     )
     {
+        ERESULT         eRc;
         LISTDL_DATA     *pNodeList;
         OBJHASH_NODE    *pNode;
         uint32_t        hash;
@@ -988,7 +1106,10 @@ extern "C" {
 
         pNode = ObjHash_FindNode(this, hash, pObject, 0);
         if (pNode) {
-            pReturn = ObjHash_DeleteNode(this, pNode);
+            listdl_Delete(pNodeList, pNode);
+            pReturn = pNode->pObject;
+            pNode->pObject = OBJ_NIL;
+            eRc = Blocks_RecordFree((BLOCKS_DATA *)this, pNode);
         }
 
         // Return to caller.
@@ -1000,6 +1121,7 @@ extern "C" {
         OBJHASH_DATA    *this
     )
     {
+        ERESULT         eRc;
         LISTDL_DATA     *pNodeList;
         OBJHASH_NODE    *pNode;
         OBJHASH_NODE    *pNext;
@@ -1015,17 +1137,16 @@ extern "C" {
         }
 #endif
 
-        for (i=0; i<this->cHash; ++i) {
-            pNodeList = &this->pHash[i];
+        for (i=0; i<this->main.cHash; ++i) {
+            pNodeList = &this->main.pHash[i];
             pNode = listdl_Head(pNodeList);
             while ( pNode ) {
                 pNext = listdl_Next(pNodeList, pNode);
                 listdl_Delete(pNodeList, pNode);
                 pReturn = pNode->pObject;
                 pNode->pObject = OBJ_NIL;
-                listdl_Add2Head(&this->freeList, pNode);
+                eRc = Blocks_RecordFree((BLOCKS_DATA *)this, pNode);
                 if (pReturn) {
-                    --this->num;
                     obj_Release(pReturn);
                     pReturn = OBJ_NIL;
                 }
@@ -1043,6 +1164,8 @@ extern "C" {
         uint32_t        index
     )
     {
+        ERESULT         eRc;
+        LISTDL_DATA     *pNodeList;
         OBJHASH_NODE    *pNode;
         OBJ_ID          pReturn = OBJ_NIL;
 
@@ -1057,11 +1180,48 @@ extern "C" {
 
         pNode = ObjHash_FindUniqueInt(this, index);
         if (pNode) {
-            pReturn = ObjHash_DeleteNode(this, pNode);
+            pNodeList = ObjHash_NodeListFromHash(this, pNode->hash);
+            listdl_Delete(pNodeList, pNode);
+            pReturn = pNode->pObject;
+            pNode->pObject = OBJ_NIL;
+            eRc = Blocks_RecordFree((BLOCKS_DATA *)this, pNode);
         }
 
         // Return to caller.
         return pReturn;
+    }
+
+
+    ERESULT         ObjHash_DeleteUnlinked(
+        OBJHASH_DATA    *this,
+        uint32_t        index
+    )
+    {
+        ERESULT         eRc;
+        OBJHASH_NODE    *pNode;
+
+#ifdef NDEBUG
+#else
+        if( !ObjHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (0 == index) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        pNode = Blocks_RecordGetUnique((BLOCKS_DATA *)this, index);
+        if (pNode) {
+            obj_Release(pNode->pObject);
+            pNode->pObject = OBJ_NIL;
+        }
+        eRc = Blocks_RecordFree((BLOCKS_DATA *)this, pNode);
+
+        // Add it to the table.
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
 
 
@@ -1167,11 +1327,13 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        for (i=0; i<this->cHash; ++i) {
-            pNodeList = &this->pHash[i];
+        for (i=0; i<this->main.cHash; ++i) {
+            pNodeList = &this->main.pHash[i];
             pNode = listdl_Head(pNodeList);
             while (pNode) {
-                ObjEnum_AppendObj(pEnum, pNode->pObject);
+                if (pNode->pObject) {
+                    ObjEnum_AppendObj(pEnum, pNode->pObject);
+                }
                 pNode = listdl_Next(pNodeList, pNode);
             }
         }
@@ -1226,6 +1388,7 @@ extern "C" {
         OBJHASH_NODE    *pNode;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
         if( !ObjHash_Validate(this) ) {
@@ -1234,8 +1397,9 @@ extern "C" {
         }
 #endif
 
-        pNode = ObjHash_FindUniqueInt(this, index);
+        pNode = Blocks_RecordGetUnique((BLOCKS_DATA *)this, index);
         if (pNode) {
+            TRC_OBJ(this, "\tFound %2d - %p\n", index, pNode);
             return pNode->pObject;
         }
 
@@ -1287,7 +1451,7 @@ extern "C" {
     )
     {
         uint32_t        cbSize = sizeof(OBJHASH_DATA);
-        //ERESULT         eRc;
+        ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -1312,7 +1476,37 @@ extern "C" {
         obj_setSize(this, cbSize);                              // Needed for Inheritance
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&ObjHash_Vtbl);
+
+        ObjHash_setDuplicates(this, true);
+
+        // Allow for fast access to objects.
+        eRc = Blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(OBJHASH_NODE));
+        if (ERESULT_FAILED(eRc)) {
+           DEBUG_BREAK();
+           obj_Release(this);
+           return this;
+        }
+
+        Blocks_setDeleteExit(
+                             (BLOCKS_DATA *)this,
+                             (void *)ObjHash_DeleteExit,
+                             this,
+                             NULL
+        );
+        Blocks_SetupIndex((BLOCKS_DATA *)this);
         
+        this->main.pLevels = array_NewWithSize(sizeof(LISTDL_DATA));
+        if (OBJ_NIL == this->main.pLevels) {
+            DEBUG_BREAK();
+            obj_Release(this);
+            return OBJ_NIL;
+        } else {
+            LISTDL_DATA     list;
+            // Add Scope 0.
+            listdl_Init(&list, offsetof(OBJHASH_NODE, level));
+            eRc = array_Push(this->main.pLevels, &list);
+        }
+
 #ifdef NDEBUG
 #else
         if (!ObjHash_Validate(this)) {
@@ -1326,8 +1520,14 @@ extern "C" {
                 "ObjHash::sizeof(OBJHASH_DATA) = %lu\n", 
                 sizeof(OBJHASH_DATA)
         );
+        fprintf(
+                stderr,
+                "ObjHash::sizeof(OBJHASH_NODE) = %lu\n",
+                sizeof(OBJHASH_NODE)
+        );
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(OBJHASH_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(OBJHASH_NODE));
 #endif
 
         return this;
@@ -1534,8 +1734,8 @@ extern "C" {
         }
 
         // Create the new index;
-        for (i=0; i<this->cHash; ++i) {
-            pNodeList = &this->pHash[i];
+        for (i=0; i<this->main.cHash; ++i) {
+            pNodeList = &this->main.pHash[i];
             while (listdl_Count(pNodeList)) {
                 pNode = listdl_DeleteHead(pNodeList);
                 idx = pNode->hash % cHash;
@@ -1544,9 +1744,9 @@ extern "C" {
         }
 
         // Make the new index active.
-        mem_Free(this->pHash);
-        this->pHash = pHash;
-        this->cHash = cHash;
+        mem_Free(this->main.pHash);
+        this->main.pHash = pHash;
+        this->main.cHash = cHash;
 
         // Return to caller.
         return eRc;
@@ -1569,7 +1769,6 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        OBJHASH_BLOCK   *pBlock;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1582,21 +1781,209 @@ extern "C" {
 
         eRc = ObjHash_DeleteAll(this);
 
-        while ( listdl_Count(&this->blocks) ) {
-            pBlock = listdl_DeleteHead(&this->blocks);
-            mem_Free( pBlock );
+        if (this->main.pHash) {
+            mem_Free(this->main.pHash);
+            this->main.pHash = NULL;
         }
-
-        if( this->pHash ) {
-            mem_Free( this->pHash );
-            this->pHash = NULL;
-        }
-        this->cHash = 0;
+        this->main.cHash = 0;
 
         eRc = Blocks_Reset((BLOCKS_DATA *)this);
 
         // Return to caller.
         return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      S c o p e
+    //---------------------------------------------------------------
+
+    ERESULT         ObjHash_ScopeClose (
+        OBJHASH_DATA    *this,
+        OBJENUM_DATA    **ppEnum
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        //LISTDL_DATA     *pNodeList;
+        //uint32_t        hash;
+        LISTDL_DATA     list;
+        OBJHASH_NODE    *pNode;
+        OBJHASH_NODE    *pNext;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = ObjHash_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!ObjHash_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (ObjHash_getScopeSize(this) <= 1) {
+            return ERESULT_DATA_MISSING;
+        }
+
+        // Remove the scope.
+        eRc = array_Pop(this->main.pLevels, &list);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        if (ppEnum) {
+            pEnum = ObjEnum_New();
+            if (OBJ_NIL == pEnum) {
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+
+        // Now remove the scope entries from the table.
+        // Now enumerate the scope entries.
+        pNode = listdl_Head(&list);
+        while (pNode) {
+            if (pNode->pObject) {
+                if (ppEnum) {
+                    ObjEnum_AppendObj(pEnum, pNode->pObject);
+                }
+                pNext = listdl_Next(&list, pNode);
+                eRc = ObjHash_NodeUnchain(this, &this->main, pNode);
+                Blocks_RecordFree((BLOCKS_DATA *)this, pNode);
+                pNode = pNext;
+            }
+        }
+
+        // Return to caller.
+        if (ppEnum) {
+            *ppEnum = pEnum;
+        }
+        return eRc;
+    }
+
+
+    uint32_t        ObjHash_ScopeCount (
+        OBJHASH_DATA    *this,
+        uint32_t        scope
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        LISTDL_DATA     *pList;
+        uint32_t        count = 0;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = ObjHash_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!ObjHash_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+
+        pList = array_GetAddrOf(this->main.pLevels, scope+1);
+        count = listdl_Count(pList);
+
+        // Return to caller.
+        return count;
+    }
+
+
+    OBJENUM_DATA *  ObjHash_ScopeEnum (
+        OBJHASH_DATA    *this,
+        uint32_t        scope
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        LISTDL_DATA     list;
+        OBJHASH_NODE    *pNode;
+        OBJENUM_DATA    *pEnum = OBJ_NIL;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = ObjHash_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!ObjHash_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        eRc = array_Get(this->main.pLevels, scope+1, 1, &list);
+        if (ERESULT_FAILED(eRc)) {
+            return OBJ_NIL;
+        }
+
+        pEnum = ObjEnum_New();
+        if (OBJ_NIL == pEnum) {
+            return OBJ_NIL;
+        }
+
+        // Now enumerate the scope entries.
+        pNode = listdl_Head(&list);
+        while (pNode) {
+            if (pNode->pObject) {
+                ObjEnum_AppendObj(pEnum, pNode->pObject);
+            }
+            pNode = listdl_Next(&list, pNode);
+        }
+
+        // Return to caller.
+        return pEnum;
+    }
+
+
+    int32_t         ObjHash_ScopeOpen (
+        OBJHASH_DATA    *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        LISTDL_DATA     list;
+        uint32_t        level = 0;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = ObjHash_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!ObjHash_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return -1;
+        }
+#endif
+
+        listdl_Init(&list, offsetof(OBJHASH_NODE, level));
+        eRc = array_Push(this->main.pLevels, &list);
+        if (ERESULT_OK(eRc)) {
+            level = ObjHash_getScopeSize(this) - 1;
+        } else {
+            level = -1;
+        }
+
+        // Return to caller.
+        return level;
     }
 
 
@@ -1619,6 +2006,7 @@ extern "C" {
         ERESULT         eRc;
         uint32_t        cbSize;
         uint32_t        i;
+        LISTDL_DATA     list;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1629,37 +2017,29 @@ extern "C" {
         }
 #endif
 
-        eRc = Blocks_SetupSizes((BLOCKS_DATA *)this, 0, sizeof(OBJHASH_NODE));
-        if (ERESULT_FAILED(eRc)) {
-           DEBUG_BREAK();
-           obj_Release(this);
-           return eRc;
+        // Free prior Hash Table.
+        if (this->main.pHash) {
+            mem_Free(this->main.pHash);
+            this->main.pHash = NULL;
+            this->main.cHash = 0;
         }
-        Blocks_setDeleteExit(
-           (BLOCKS_DATA *)this,
-           (void *)ObjHash_DeleteExit,
-           this,
-           NULL
-        );
-
-        this->cHash = cHash;
-        cbSize = 4096 - sizeof(OBJHASH_BLOCK);
-        cbSize /= sizeof(OBJHASH_NODE);
-        this->cBlock = cbSize;
 
         // Allocate the Hash Table.
         cbSize = cHash * sizeof(LISTDL_DATA);
-        this->pHash = (LISTDL_DATA *)mem_Malloc( cbSize );
-        if (NULL == this->pHash) {
+        this->main.pHash = (LISTDL_DATA *)mem_Malloc( cbSize );
+        if (NULL == this->main.pHash) {
            DEBUG_BREAK();
-           mem_Free(this);
-           this = NULL;
            return ERESULT_OUT_OF_MEMORY;
         }
         for (i=0; i<cHash; ++i) {
-           listdl_Init(&this->pHash[i], offsetof(OBJHASH_NODE, list));
+           listdl_Init(&this->main.pHash[i], offsetof(OBJHASH_NODE, list));
         }
-        listdl_Init(&this->freeList, offsetof(OBJHASH_NODE, list));
+        this->main.cHash = cHash;
+
+        // Reset to just Scope 0.
+        eRc = array_Truncate(this->main.pLevels, 0);
+        listdl_Init(&list, offsetof(OBJHASH_NODE, level));
+        eRc = array_Push(this->main.pLevels, &list);
 
         // Return to caller.
         return ERESULT_SUCCESS;
@@ -1694,7 +2074,11 @@ extern "C" {
         //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
-        
+        uint32_t        i;
+        uint32_t        iMax;
+        OBJHASH_NODE    *pNode;
+
+
         // Do initialization.
 #ifdef NDEBUG
 #else
@@ -1716,14 +2100,36 @@ extern "C" {
         }
         eRc = AStr_AppendPrint(
                     pStr,
-                    "{%p(%s) size=%d retain=%d\n",
+                    "{%p(%s) size=%d retain=%d  BlockSize=%d\n",
                     this,
                     pInfo->pClassName,
                     ObjHash_getSize(this),
-                    obj_getRetainCount(this)
+                    obj_getRetainCount(this),
+                    Blocks_getBlockSize((BLOCKS_DATA *)this)
             );
 
-#ifdef  XYZZY        
+        iMax = this->main.cHash;
+        for (i=0; i<iMax; i++) {
+            if (indent) {
+                AStr_AppendCharRepeatA(pStr, indent+4, ' ');
+            }
+            AStr_AppendPrint(pStr, "Hash List: %2d\n", i);
+            pNode = listdl_Head(&this->main.pHash[i]);
+            while (pNode) {
+                if (indent) {
+                    AStr_AppendCharRepeatA(pStr, indent+8, ' ');
+                }
+                AStr_AppendPrint(
+                                 pStr,
+                                 "unique: %2d  scope: %2d\n",
+                                 pNode->unique,
+                                 pNode->scope
+                );
+                pNode = listdl_Next(&this->main.pHash[i], pNode);
+            }
+        }
+
+#ifdef  XYZZY
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(

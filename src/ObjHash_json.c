@@ -297,15 +297,15 @@ extern "C" {
         AStr_AppendPrint(
                          pStr,
                          "\t\"cHash\":%d, \"count\":%d,\n\t\"entries\":[\n\t\t",
-                         this->cHash,
-                         this->num
+                         this->main.cHash,
+                         ObjHash_getSize(this)
         );
 
         // Scan the Hash Table creating entries for each of the objects
         // in the table and appending them to the array.
-        j = this->num;
-        for (i=0; i < this->cHash; ++i) {
-            pNodeList = &this->pHash[i];
+        j = ObjHash_getSize(this);
+        for (i=0; i < this->main.cHash; ++i) {
+            pNodeList = &this->main.pHash[i];
             pNode = listdl_Head(pNodeList);
             while (pNode) {
                 pData = OBJ_NIL;

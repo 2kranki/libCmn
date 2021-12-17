@@ -68,20 +68,32 @@ extern "C" {
 #pragma pack(push, 1)
     typedef struct  ObjHash_Node_s {
         LISTDL_NODE     list;
-        uint32_t        hash;
-        uint32_t        unique;
+        LISTDL_NODE     level;
         OBJ_ID          pObject;        // OBJ_NIL == deleted node
+        uint32_t        hash;
+        uint32_t        scope;
+        uint32_t        unique;
     } OBJHASH_NODE;
 #pragma pack(pop)
 
 
-    // Block Descriptor
+    // Level Descriptor
 #pragma pack(push, 1)
-    typedef struct  ObjHash_block_s {
+    typedef struct  ObjHash_Level_s {
         LISTDL_NODE     list;
         OBJHASH_NODE    node[0];
-    } OBJHASH_BLOCK;
+    } OBJHASH_LEVEL;
 #pragma pack(pop)
+
+
+    // Block Descriptor
+//#pragma pack(push, 1)
+    typedef struct  ObjHash_Main_s {
+        LISTDL_DATA     *pHash;         // Main Hash Table
+        ARRAY_DATA      *pLevels;       // Level Table
+        uint32_t        cHash;          // Number of Hash Buckets
+    } OBJHASH_MAIN;
+//#pragma pack(pop)
 
 
 
@@ -98,18 +110,9 @@ struct ObjHash_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    uint32_t        unique;         // Unique number given to entries as they are
-    //                              // added to the hash table
-    uint32_t        num;            // Current Number of Entries
+    OBJHASH_MAIN    main;
     uint8_t         fDups;          // true == Allow Duplicate Names
     uint8_t         rsvd8[3];
-    uint32_t        cBlock;         // Number of Nodes per Block
-    uint32_t        cHash;          // Number of Hash Buckets
-    uint32_t        cHashIdx;       // Hash Bucket Size Index
-    uint32_t        scopeLvl;       /* Scope Level Number (0 = Global) */
-    LISTDL_DATA     blocks;
-    LISTDL_DATA     freeList;       // Free Node Linked List
-    LISTDL_DATA     *pHash;         // Main Hash Table
 
 };
 #pragma pack(pop)

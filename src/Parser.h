@@ -242,6 +242,65 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
+    /*!
+     Create a new fatal error and add it to the internal collection.
+     Execute the Fatal Error Exit if available.
+     @param     this    object pointer
+     @param     severity error severity as defined in enum srcError_Severity
+     @param     pLocation Location of first character where error occurred (optional)
+     @param     pErrorString  A character string describing the error without
+                        the source location
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_* error code.
+     */
+    bool            Parser_AddErrorA (
+        PARSER_DATA     *this,
+        uint16_t        severity,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        ...
+    );
+
+    bool            Parser_AddErrorArgsA (
+        PARSER_DATA     *this,
+        uint16_t        severity,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        va_list         arg_ptr
+    );
+
+
+    /*!
+     Create a new fatal error and add it to the internal collection.
+     Execute the Fatal Error Exit if available.
+     @param     this    object pointer
+     @param     pLocation Location of first character where error occurred (optional)
+     @param     pErrorString  A character string describing the error without
+                            the source location
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_* error code.
+     */
+    ERESULT         Parser_AddFatalA (
+        PARSER_DATA     *this,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        ...
+    );
+
+    ERESULT         Parser_AddFatalArgsA (
+        PARSER_DATA     *this,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        va_list         arg_ptr
+    );
+
+
     PARSER_DATA *   Parser_Init (
         PARSER_DATA     *this
     );

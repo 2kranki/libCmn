@@ -8,7 +8,8 @@
  *			Command Line Utilities (CmdUtl)
  * Purpose
  *			This object provides a standardized way of parsing or
- *          constructing command line data.
+ *          constructing command line data. It does a single level
+ *          scan only similar to what C provides for main().
  *
  * Remarks
  *	1.      None

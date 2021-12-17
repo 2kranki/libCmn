@@ -1,7 +1,7 @@
 // vi: nu:noai:ts=4:sw=4
 
-//  Class Object Metods and Tables for 'NodeLink'
-//  Generated 02/03/2021 18:58:16
+//  Class Object Metods and Tables for 'HashT'
+//  Generated 12/12/2021 15:40:13
 
 
 /*
@@ -34,9 +34,9 @@
 
 
 
-#define         NODELINK_OBJECT_C       1
-#include        <NodeLink_internal.h>
-#ifdef  NODELINK_SINGLETON
+#define         HASHT_OBJECT_C       1
+#include        <HashT_internal.h>
+#ifdef  HASHT_SINGLETON
 #include        <psxLock.h>
 #endif
 
@@ -46,14 +46,14 @@
 //                  Class Object Definition
 //===========================================================
 
-struct NodeLink_class_data_s    {
+struct HashT_class_data_s    {
     // Warning - OBJ_DATA must be first in this object!
     OBJ_DATA        super;
     
     // Common Data
-#ifdef  NODELINK_SINGLETON
+#ifdef  HASHT_SINGLETON
     volatile
-    NODELINK_DATA       *pSingleton;
+    HASHT_DATA       *pSingleton;
 #endif
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
@@ -69,7 +69,7 @@ struct NodeLink_class_data_s    {
 
 
 static
-void *          NodeLinkClass_QueryInfo (
+void *          HashTClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
@@ -78,29 +78,26 @@ void *          NodeLinkClass_QueryInfo (
 
 static
 const
-OBJ_INFO        NodeLink_Info;            // Forward Reference
+OBJ_INFO        HashT_Info;            // Forward Reference
 
 
 
 
 static
-bool            NodeLinkClass_IsKindOf (
+bool            HashTClass_IsKindOf (
     uint16_t        classID
 )
 {
     OBJ_DATA        *pObj;
     
-    if (OBJ_IDENT_NODELINK_CLASS == classID) {
-       return true;
-    }
-    if (OBJ_IDENT_NODE_CLASS == classID) {
+    if (OBJ_IDENT_HASHT_CLASS == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ_CLASS == classID) {
        return true;
     }
     
-    pObj = obj_getInfo(NodeLink_Class())->pClassSuperObject;
+    pObj = obj_getInfo(HashT_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -112,11 +109,11 @@ bool            NodeLinkClass_IsKindOf (
 
 
 static
-uint16_t        NodeLinkClass_WhoAmI (
+uint16_t        HashTClass_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODELINK_CLASS;
+    return OBJ_IDENT_HASHT_CLASS;
 }
 
 
@@ -128,17 +125,17 @@ uint16_t        NodeLinkClass_WhoAmI (
 
 static
 const
-NODELINK_CLASS_VTBL    class_Vtbl = {
+HASHT_CLASS_VTBL    class_Vtbl = {
     {
-        &NodeLink_Info,
-        NodeLinkClass_IsKindOf,
+        &HashT_Info,
+        HashTClass_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
         NULL,
-        NodeLink_Class,
-        NodeLinkClass_WhoAmI,
-        (P_OBJ_QUERYINFO)NodeLinkClass_QueryInfo,
-        NULL                        // NodeLinkClass_ToDebugString
+        HashT_Class,
+        HashTClass_WhoAmI,
+        (P_OBJ_QUERYINFO)HashTClass_QueryInfo,
+        NULL                        // HashTClass_ToDebugString
     },
 };
 
@@ -148,10 +145,10 @@ NODELINK_CLASS_VTBL    class_Vtbl = {
 //                      Class Object
 //-----------------------------------------------------------
 
-NODELINK_CLASS_DATA  NodeLink_ClassObj = {
+HASHT_CLASS_DATA  HashT_ClassObj = {
     {
         (const OBJ_IUNKNOWN *)&class_Vtbl,      // pVtbl
-        sizeof(NODELINK_CLASS_DATA),                  // cbSize
+        sizeof(HASHT_CLASS_DATA),                  // cbSize
         0,                                      // cbFlags
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
@@ -165,22 +162,22 @@ NODELINK_CLASS_DATA  NodeLink_ClassObj = {
 //          S i n g l e t o n  M e t h o d s
 //---------------------------------------------------------------
 
-#ifdef  NODELINK_SINGLETON
+#ifdef  HASHT_SINGLETON
 extern
 const
-NODELINK_VTBL       NodeLink_VtblShared;
+HASHT_VTBL       HashT_VtblShared;
 
 
-NODELINK_DATA *     NodeLink_getSingleton (
+HASHT_DATA *     HashT_getSingleton (
     void
 )
 {
-    return (OBJ_ID)(NodeLink_ClassObj.pSingleton);
+    return (OBJ_ID)(HashT_ClassObj.pSingleton);
 }
 
 
-bool            NodeLink_setSingleton (
-    NODELINK_DATA       *pValue
+bool            HashT_setSingleton (
+    HASHT_DATA       *pValue
 )
 {
     PSXLOCK_DATA    *pLock = OBJ_NIL;
@@ -200,10 +197,10 @@ bool            NodeLink_setSingleton (
     }
     
     obj_Retain(pValue);
-    if (NodeLink_ClassObj.pSingleton) {
-        obj_Release((OBJ_ID)(NodeLink_ClassObj.pSingleton));
+    if (HashT_ClassObj.pSingleton) {
+        obj_Release((OBJ_ID)(HashT_ClassObj.pSingleton));
     }
-    NodeLink_ClassObj.pSingleton = pValue;
+    HashT_ClassObj.pSingleton = pValue;
     
     fRc = psxLock_Unlock(pLock);
     obj_Release(pLock);
@@ -213,18 +210,18 @@ bool            NodeLink_setSingleton (
 
 
 
-NODELINK_DATA *     NodeLink_Shared (
+HASHT_DATA *     HashT_Shared (
     void
 )
 {
-    NODELINK_DATA       *this = (OBJ_ID)(NodeLink_ClassObj.pSingleton);
+    HASHT_DATA       *this = (OBJ_ID)(HashT_ClassObj.pSingleton);
     
     if (NULL == this) {
-        this = NodeLink_New( );
-        obj_setVtbl(this, (void *)&NodeLink_VtblShared);
-        NodeLink_setSingleton(this);
+        this = HashT_New( );
+        obj_setVtbl(this, (void *)&HashT_VtblShared);
+        HashT_setSingleton(this);
         obj_Release(this);          // Shared controls object retention now.
-        // NodeLink_ClassObj.pSingleton = OBJ_NIL;
+        // HashT_ClassObj.pSingleton = OBJ_NIL;
     }
     
     return this;
@@ -232,16 +229,16 @@ NODELINK_DATA *     NodeLink_Shared (
 
 
 
-void            NodeLink_SharedReset (
+void            HashT_SharedReset (
     void
 )
 {
-    NODELINK_DATA       *this = (OBJ_ID)(NodeLink_ClassObj.pSingleton);
+    HASHT_DATA       *this = (OBJ_ID)(HashT_ClassObj.pSingleton);
     
     if (this) {
-        obj_setVtbl(this, (void *)&NodeLink_Vtbl);
+        obj_setVtbl(this, (void *)&HashT_Vtbl);
         obj_Release(this);
-        NodeLink_ClassObj.pSingleton = OBJ_NIL;
+        HashT_ClassObj.pSingleton = OBJ_NIL;
     }
     
 }
@@ -257,13 +254,13 @@ void            NodeLink_SharedReset (
 //---------------------------------------------------------------
 
 static
-void *          NodeLinkClass_QueryInfo (
+void *          HashTClass_QueryInfo (
     OBJ_ID          objId,
     uint32_t        type,
     void            *pData
 )
 {
-    NODELINK_CLASS_DATA *this = objId;
+    HASHT_CLASS_DATA *this = objId;
     const
     char            *pStr = pData;
     
@@ -274,7 +271,7 @@ void *          NodeLinkClass_QueryInfo (
     switch (type) {
       
         case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(NODELINK_DATA);
+            return (void *)sizeof(HASHT_DATA);
             break;
             
         case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
@@ -287,13 +284,13 @@ void *          NodeLinkClass_QueryInfo (
  
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
-                        return (void *)&NodeLink_Info;
+                        return (void *)&HashT_Info;
                     }
                     break;
                     
                 case 'S':
                     if (str_Compare("SuperClass", (char *)pStr) == 0) {
-                        return (void *)&NodeLink_Info.pClassSuperObject;
+                        return (void *)&HashT_Info.pClassSuperObject;
                     }
                     break;
                     
@@ -311,35 +308,35 @@ void *          NodeLinkClass_QueryInfo (
                     
                 case 'N':
                     if (str_Compare("New", (char *)pStr) == 0) {
-                        return NodeLink_New;
+                        return HashT_New;
                     }
                     break;
                     
                 case 'P':
-#ifdef  NODELINK_JSON_SUPPORT
+#ifdef  HASHT_JSON_SUPPORT
                     if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                        return NodeLink_ParseJsonFields;
+                        return HashT_ParseJsonFields;
                     }
                     if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                        return NodeLink_ParseJsonObject;
+                        return HashT_ParseJsonObject;
                     }
 #endif
                     break;
 
                 case 'T':
-#ifdef  NODELINK_JSON_SUPPORT
+#ifdef  HASHT_JSON_SUPPORT
                     if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                        return NodeLink_ToJsonFields;
+                        return HashT_ToJsonFields;
                     }
                     if (str_Compare("ToJson", (char *)pStr) == 0) {
-                        return NodeLink_ToJson;
+                        return HashT_ToJson;
                     }
 #endif
                     break;
 
                  case 'W':
                     if (str_Compare("WhoAmI", (char *)pStr) == 0) {
-                        return NodeLinkClass_WhoAmI;
+                        return HashTClass_WhoAmI;
                     }
                     break;
                     
@@ -359,7 +356,7 @@ void *          NodeLinkClass_QueryInfo (
 
 
 static
-bool            NodeLink_IsKindOf (
+bool            HashT_IsKindOf (
     uint16_t        classID
 )
 {
@@ -367,17 +364,14 @@ bool            NodeLink_IsKindOf (
     const
     OBJ_INFO        *pInfo;
 
-    if (OBJ_IDENT_NODELINK == classID) {
-       return true;
-    }
-    if (OBJ_IDENT_NODE == classID) {
+    if (OBJ_IDENT_HASHT == classID) {
        return true;
     }
     if (OBJ_IDENT_OBJ == classID) {
        return true;
     }
 
-    pObj = obj_getInfo(NodeLink_Class())->pClassSuperObject;
+    pObj = obj_getInfo(HashT_Class())->pClassSuperObject;
     if (pObj == obj_BaseClass())
         ;
     else {
@@ -391,25 +385,25 @@ bool            NodeLink_IsKindOf (
 
 // Dealloc() should be put into the Internal Header as well
 // for classes that get inherited from.
-void            NodeLink_Dealloc (
+void            HashT_Dealloc (
     OBJ_ID          objId
 );
 
 
-OBJ_ID          NodeLink_Class (
+OBJ_ID          HashT_Class (
     void
 )
 {
-    return (OBJ_ID)&NodeLink_ClassObj;
+    return (OBJ_ID)&HashT_ClassObj;
 }
 
 
 static
-uint16_t        NodeLink_WhoAmI (
+uint16_t        HashT_WhoAmI (
     void
 )
 {
-    return OBJ_IDENT_NODELINK;
+    return OBJ_IDENT_HASHT;
 }
 
 
@@ -420,35 +414,35 @@ uint16_t        NodeLink_WhoAmI (
 //                  Object Vtbl Definition
 //===========================================================
 
-#ifdef  NODELINK_SINGLETON
+#ifdef  HASHT_SINGLETON
 // A Shared object ignores Retain() and Release() except for
 // initialization and termination. So, there must be an
 // independent VTbl from the normal which does support Retain()
 // and Release().
 const
-NODELINK_VTBL     NodeLink_VtblShared = {
+HASHT_VTBL     HashT_VtblShared = {
     {
-        &NodeLink_Info,
-        NodeLink_IsKindOf,
+        &HashT_Info,
+        HashT_IsKindOf,
         obj_RetainNull,
         obj_ReleaseNull,
-        NodeLink_Dealloc,
-        NodeLink_Class,
-        NodeLink_WhoAmI,
-        (P_OBJ_QUERYINFO)NodeLink_QueryInfo,
-        (P_OBJ_TOSTRING)NodeLink_ToDebugString,
-        NULL,           // NodeLink_Enable,
-        NULL,           // NodeLink_Disable,
-        NULL,           // (P_OBJ_ASSIGN)NodeLink_Assign,
-        NULL,           // (P_OBJ_COMPARE)NodeLink_Compare,
-        NULL,           // (P_OBJ_PTR)NodeLink_Copy,
-        NULL,           // (P_OBJ_PTR)NodeLink_DeepCopy,
-        NULL            // (P_OBJ_HASH)NodeLink_Hash,
+        HashT_Dealloc,
+        HashT_Class,
+        HashT_WhoAmI,
+        (P_OBJ_QUERYINFO)HashT_QueryInfo,
+        (P_OBJ_TOSTRING)HashT_ToDebugString,
+        NULL,           // HashT_Enable,
+        NULL,           // HashT_Disable,
+        NULL,           // (P_OBJ_ASSIGN)HashT_Assign,
+        NULL,           // (P_OBJ_COMPARE)HashT_Compare,
+        NULL,           // (P_OBJ_PTR)HashT_Copy,
+        NULL,           // (P_OBJ_PTR)HashT_DeepCopy,
+        NULL            // (P_OBJ_HASH)HashT_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //NodeLink_IsEnabled,
+    //HashT_IsEnabled,
  
 };
 #endif
@@ -460,29 +454,29 @@ NODELINK_VTBL     NodeLink_VtblShared = {
 // just that they are deleted when their usage count
 // goes to zero.
 const
-NODELINK_VTBL     NodeLink_Vtbl = {
+HASHT_VTBL     HashT_Vtbl = {
     {
-        &NodeLink_Info,
-        NodeLink_IsKindOf,
+        &HashT_Info,
+        HashT_IsKindOf,
         obj_RetainStandard,
         obj_ReleaseStandard,
-        NodeLink_Dealloc,
-        NodeLink_Class,
-        NodeLink_WhoAmI,
-        (P_OBJ_QUERYINFO)NodeLink_QueryInfo,
-        (P_OBJ_TOSTRING)NodeLink_ToDebugString,
-        NULL,           // NodeLink_Enable,
-        NULL,           // NodeLink_Disable,
-        (P_OBJ_ASSIGN)NodeLink_Assign,
-        (P_OBJ_COMPARE)NodeLink_Compare,
-        (P_OBJ_PTR)NodeLink_Copy,
-        NULL,           // (P_OBJ_PTR)NodeLink_DeepCopy,
-        (P_OBJ_HASH)NodeLink_Hash,
+        HashT_Dealloc,
+        HashT_Class,
+        HashT_WhoAmI,
+        (P_OBJ_QUERYINFO)HashT_QueryInfo,
+        (P_OBJ_TOSTRING)HashT_ToDebugString,
+        NULL,           // HashT_Enable,
+        NULL,           // HashT_Disable,
+        NULL,           // (P_OBJ_ASSIGN)HashT_Assign,
+        NULL,           // (P_OBJ_COMPARE)HashT_Compare,
+        NULL,           // (P_OBJ_PTR)HashT_Copy,
+        NULL,           // (P_OBJ_PTR)HashT_DeepCopy,
+        NULL            // (P_OBJ_HASH)HashT_Hash,
     },
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //NodeLink_IsEnabled,
+    //HashT_IsEnabled,
  
 };
 
@@ -490,13 +484,13 @@ NODELINK_VTBL     NodeLink_Vtbl = {
 
 static
 const
-OBJ_INFO        NodeLink_Info = {
-    "NodeLink",
-    "Node with Integer Links",
-    (OBJ_DATA *)&NodeLink_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
-    (OBJ_IUNKNOWN *)&NodeLink_Vtbl,
-    sizeof(NODELINK_DATA)
+OBJ_INFO        HashT_Info = {
+    "HashT",
+    "Generic Hash Table",
+    (OBJ_DATA *)&HashT_ClassObj,
+    (OBJ_DATA *)&Blocks_ClassObj,
+    (OBJ_IUNKNOWN *)&HashT_Vtbl,
+    sizeof(HASHT_DATA)
 };
 
 

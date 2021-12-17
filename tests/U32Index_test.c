@@ -1,124 +1,141 @@
 // vi:nu:et:sts=4 ts=4 sw=4
+//****************************************************************
+//                      Test Object Program
+//****************************************************************
 /*
- *  Generated 01/04/2021 10:35:59
+ * Program
+ *          Test Object Program
+ * Purpose
+ *          This program tests a particular object given certain
+ *          parameters.
+ *
+ * Remarks
+ *  1.      This relies on the fact that we can add to the Test
+ *          Object by simply coding methods that use the Test
+ *          Object.
+ *
+ * History
+ *  08/29/2021 Generated
+ */
+
+
+/*
+ This is free and unencumbered software released into the public domain.
+ 
+ Anyone is free to copy, modify, publish, use, compile, sell, or
+ distribute this software, either in source code form or as a compiled
+ binary, for any purpose, commercial or non-commercial, and by any
+ means.
+ 
+ In jurisdictions that recognize copyright laws, the author or authors
+ of this software dedicate any and all copyright interest in the
+ software to the public domain. We make this dedication for the benefit
+ of the public at large and to the detriment of our heirs and
+ successors. We intend this dedication to be an overt act of
+ relinquishment in perpetuity of all present and future rights to this
+ software under copyright law.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+ 
+ For more information, please refer to <http://unlicense.org/>
+ */
+
+
+
+
+/*
+ TestForFail(error_sttring)         <= Tests eRc for failure
+ TestForFalse(test, error_sttring)
+ TestForNotNull(test, error)
+ TestForNull(test, error)
+ TestForSuccess(error)              <= Tests eRc for success
+ TestForTrue(test, error)
  */
 
 
 
 
 
-// All code under test must be linked into the Unit Test bundle
-// Test Macros:
-//      TINYTEST_ASSERT(condition)
-//      TINYTEST_ASSERT_MSG(condition,msg)
-//      TINYTEST_EQUAL(expected, actual)
-//      TINYTEST_EQUAL_MSG(expected, actual, msg)
-//      TINYTEST_FALSE_MSG(condition,msg)
-//      TINYTEST_FALSE(condition)
-//      TINYTEST_TRUE_MSG(pointer,msg)
-//      TINYTEST_TRUE(condition)
-
-
-
-
-
-#include    <tinytest.h>
-#include    <cmn_defs.h>
+#include    <test_defs.h>
+#include    <Test_internal.h>
 #include    <trace.h>
 #include    <U32Index_internal.h>
 #include    <JsonIn.h>
-#ifdef  U32INDEX_JSON_SUPPORT
-#   include    <SrcErrors.h>
-#   include    <szTbl.h>
-#endif
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 
 
 
-int             setUp (
-    const
-    char            *pTestName
-)
-{
-    mem_Init( );
-    trace_Shared( ); 
-    // Put setup code here. This method is called before the invocation of each
-    // test method in the class.
-    
-    return 1; 
-}
-
-
-int             tearDown (
-    const
-    char            *pTestName
-)
-{
-    // Put teardown code here. This method is called after the invocation of each
-    // test method in the class.
-
-#ifdef  U32INDEX_JSON_SUPPORT
-    SrcErrors_SharedReset( );
-    szTbl_SharedReset( );
-#endif
-    JsonIn_RegisterReset();
-    trace_SharedReset( ); 
-    if (mem_Dump( ) ) {
-        fprintf(
-                stderr,
-                "\x1b[1m"
-                "\x1b[31m"
-                "ERROR: "
-                "\x1b[0m"
-                "Leaked memory areas were found!\n"
-        );
-        exitCode = 4;
-        return 0;
-    }
-    mem_Release( );
-    
-    return 1; 
-}
+static
+char    *pStringTable[] = {
+//   1234567890
+    "iryna",
+    "rain",
+    "clouds",
+    "sun",
+    "now",
+    "xray",
+    "before",
+    "after",
+    "bob",
+//   1234567890
+    "tomorrow",
+    "today",
+    "someday"
+};
+static
+int             cStringTable = (sizeof(pStringTable) / sizeof(char *));
 
 
 
 
 
-
-int             test_U32Index_OpenClose (
+ERESULT         Test_U32Index_OpenClose (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    U32INDEX_DATA       *pObj = OBJ_NIL;
+    U32INDEX_DATA   *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = U32Index_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Alloc() object");
     pObj = U32Index_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Init() object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_U32INDEX);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+#ifdef   U32INDEX_MSGS
+        U32Index_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
         
         // Test something.
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("test failed");
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_U32Index_Copy01 (
+ERESULT         Test_U32Index_Copy01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
@@ -130,27 +147,31 @@ int             test_U32Index_Copy01 (
 #if defined(U32INDEX_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA       *pStr = OBJ_NIL;
 #endif
+    //int             iRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj1 = U32Index_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj1) );
+    TestForNotNull(pObj1, "Missing Test object");
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_U32INDEX);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+#ifdef   U32INDEX_MSGS
+        U32Index_setMsg(pObj1, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
         
         // Test assign.
         pObj2 = U32Index_New();
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
         eRc = U32Index_Assign(pObj1, pObj2);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForFalse((ERESULT_FAILED(eRc)), "Assignment failed");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_U32INDEX);
-        TINYTEST_TRUE( (fRc) );
-        //eRc = U32Index_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+        //iRc = U32Index_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -158,12 +179,12 @@ int             test_U32Index_Copy01 (
 
         // Test copy.
         pObj2 = U32Index_Copy(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_U32INDEX);
-        TINYTEST_TRUE( (fRc) );
-        //eRc = U32Index_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+        //iRc = U32Index_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -172,16 +193,16 @@ int             test_U32Index_Copy01 (
         // Test json support.
 #if defined(U32INDEX_JSON_SUPPORT) && defined(XYZZY)
         pStr = U32Index_ToJson(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "Missing JSON output");
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
         pObj2 = U32Index_NewFromJsonString(pStr);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing JSON created object");
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_U32INDEX);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         obj_Release(pStr);
         pStr = OBJ_NIL;
-        //eRc = U32Index_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (ERESULT_SUCCESS_EQUAL == eRc) );
+        //iRc = U32Index_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -192,12 +213,13 @@ int             test_U32Index_Copy01 (
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_U32Index_Test01 (
+ERESULT         Test_U32Index_Test01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
@@ -205,88 +227,25 @@ int             test_U32Index_Test01 (
     ERESULT         eRc = ERESULT_SUCCESS;
     U32INDEX_DATA   *pObj = OBJ_NIL;
     bool            fRc;
-    void            *ptr;
+    int             i;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = U32Index_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_U32INDEX);
-        TINYTEST_TRUE( (fRc) );
-        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
-        
-        eRc = U32Index_Add(pObj, 3, (void *)3, false);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        {
-            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
-            if (pStr) {
-                fprintf(stderr, "Added 3: %s\n", AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
-
-        eRc = U32Index_Add(pObj, 2, (void *)2, false);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        {
-            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
-            if (pStr) {
-                fprintf(stderr, "Added 2: %s\n", AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
-
-        eRc = U32Index_Add(pObj, 5, (void *)5, false);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        {
-            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
-            if (pStr) {
-                fprintf(stderr, "Added 5: %s\n", AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
-        eRc = U32Index_Add(pObj, 4, (void *)4, false);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        {
-            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
-            if (pStr) {
-                fprintf(stderr, "Added 4: %s\n", AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
-
-        eRc = U32Index_Add(pObj, 1, (void *)1, false);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
-        {
-            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
-            if (pStr) {
-                fprintf(stderr, "Added 1: %s\n", AStr_getData(pStr));
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
-
-        ptr = U32Index_Find(pObj, 1);
-        TINYTEST_TRUE( ((void *)1 == ptr) );
-        ptr = U32Index_Find(pObj, 5);
-        TINYTEST_TRUE( ((void *)5 == ptr) );
-        ptr = U32Index_Find(pObj, 2);
-        TINYTEST_TRUE( ((void *)2 == ptr) );
-        ptr = U32Index_Find(pObj, 3);
-        TINYTEST_TRUE( ((void *)3 == ptr) );
-        ptr = U32Index_Find(pObj, 4);
-        TINYTEST_TRUE( ((void *)4 == ptr) );
-        ptr = U32Index_Find(pObj, 6);
-        TINYTEST_TRUE( ((void *)0 == ptr) );
+        TestForTrue(fRc, "Failed Ident Test");
+        TestForSuccess("");
+#ifdef   U32INDEX_LOG
+        U32Index_setLog(pObj, this);
+#endif
+                
 
         {
-            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
+            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 4);
             if (pStr) {
                 fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
                 obj_Release(pStr);
@@ -299,21 +258,256 @@ int             test_U32Index_Test01 (
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
+}
+
+
+
+ERESULT         Test_U32Index_Test02 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    U32INDEX_DATA   *pObj = OBJ_NIL;
+    bool            fRc;
+    int             i;
+    void            *ptr;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = U32Index_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_U32INDEX);
+        TestForTrue(fRc, "Failed Ident Test");
+        TestForSuccess("");
+#ifdef   U32INDEX_LOG
+        U32Index_setLog(pObj, this);
+#endif
+                
+        eRc = U32Index_Add(pObj, 3, (void *)3, false);
+        TestForSuccess("");
+        ptr = U32Index_Find(pObj, 3);
+        TestForTrue(((void *)3 == ptr), "");
+
+        eRc = U32Index_Add(pObj, 2, (void *)2, false);
+        TestForSuccess("");
+        ptr = U32Index_Find(pObj, 2);
+        TestForTrue(((void *)2 == ptr), "");
+
+        eRc = U32Index_Add(pObj, 5, (void *)5, false);
+        TestForSuccess("");
+        ptr = U32Index_Find(pObj, 5);
+        TestForTrue(((void *)5 == ptr), "");
+
+        eRc = U32Index_Add(pObj, 4, (void *)4, false);
+        TestForSuccess("");
+        ptr = U32Index_Find(pObj, 4);
+        TestForTrue(((void *)4 == ptr), "");
+
+        eRc = U32Index_Add(pObj, 1, (void *)1, false);
+        TestForSuccess("");
+        ptr = U32Index_Find(pObj, 1);
+        TestForTrue(((void *)1 == ptr), "");
+
+        ptr = U32Index_Find(pObj, 1);
+        TestForTrue(((void *)1 == ptr), "");
+        ptr = U32Index_Find(pObj, 5);
+        TestForTrue(((void *)5 == ptr), "");
+        ptr = U32Index_Find(pObj, 2);
+        TestForTrue(((void *)2 == ptr), "");
+        ptr = U32Index_Find(pObj, 3);
+        TestForTrue(((void *)3 == ptr), "");
+        ptr = U32Index_Find(pObj, 4);
+        TestForTrue(((void *)4 == ptr), "");
+        ptr = U32Index_Find(pObj, 6);
+        TestForTrue(((void *)0 == ptr), "");
+
+        {
+            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 0);
+            if (pStr) {
+                fprintf(stderr, "Added 3: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        {
+            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_U32Index_Test03 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    U32INDEX_DATA   *pObj = OBJ_NIL;
+    bool            fRc;
+    int             iRc;
+    int             i;
+    char            *pStrA;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = U32Index_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_U32INDEX);
+        TestForTrue(fRc, "Failed Ident Test");
+        TestForSuccess("");
+#ifdef   U32INDEX_LOG
+        U32Index_setLog(pObj, this);
+#endif
+                
+        for (i=0; i<cStringTable; i++) {
+            fprintf(stderr, "\tAdding %2d - %s\n", i+1, pStringTable[i]);
+            eRc = U32Index_Add(pObj, i+1, pStringTable[i], false);
+            TestForSuccess("");
+            pStrA = U32Index_Find(pObj, i+1);
+            iRc = strcmp(pStrA, pStringTable[i]);
+            TestForTrue((0 == iRc), "");
+        }
+        fprintf(stderr, "\n\n");
+
+        for (i=0; i<cStringTable; i++) {
+            fprintf(stderr, "\tChecking %2d - %s\n", i+1, pStringTable[i]);
+            pStrA = U32Index_Find(pObj, i+1);
+            iRc = strcmp(pStrA, pStringTable[i]);
+            TestForTrue((0 == iRc), "");
+        }
+        fprintf(stderr, "\n\n");
+
+        {
+            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_U32Index_Test04 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    U32INDEX_DATA   *pObj = OBJ_NIL;
+    bool            fRc;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = U32Index_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_U32INDEX);
+        TestForTrue(fRc, "Failed Ident Test");
+        TestForSuccess("");
+#ifdef   U32INDEX_LOG
+        U32Index_setLog(pObj, this);
+#endif
+                
+        {
+            ASTR_DATA       *pStr = U32Index_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
 }
 
 
 
 
-TINYTEST_START_SUITE(test_U32Index);
-    TINYTEST_ADD_TEST(test_U32Index_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_U32Index_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_U32Index_OpenClose,setUp,tearDown);
-TINYTEST_END_SUITE();
+int     main (
+    int         cArgs,
+    const
+    char        *ppArgs[],
+    const
+    char        *ppEnv[]
+)
+{
+    ERESULT     eRc;
+    TEST_DATA   test = {0};
+    TEST_DATA   *pTest = OBJ_NIL;
+    int         i;
+    const
+    char        *pTestNameA = NULL;
 
-TINYTEST_MAIN_SINGLE_SUITE(test_U32Index);
+    pTest = Test_Init(&test);
+    if (OBJ_NIL == pTest) {
+        fprintf(
+                stderr,
+                "\x1b[1m\x1b[31mFATAL\x1b[0m: Could not create Test object!\n\n\n"
+        );
+        exit(201);
+    }
 
+    // Scan args.
+    for (i=0; i<cArgs; i++) {
+        if (0 == strcmp("--no_int3", ppArgs[i])) {
+            Test_setAllowInt3(pTest, false);
+        }
+    }
 
+    // Execute tests.
+    TestExec("OpenClose", Test_U32Index_OpenClose, NULL, NULL);
+    //TestExec("Copy01", Test_U32Index_Copy01, NULL, NULL);
+    TestExec("Test01", Test_U32Index_Test01, NULL, NULL);
+    TestExec("Test02", Test_U32Index_Test02, NULL, NULL);
+    TestExec("Test03", Test_U32Index_Test03, NULL, NULL);
+    TestExec("Test04", Test_U32Index_Test04, NULL, NULL);
+
+    obj_Release(pTest);
+    pTest = OBJ_NIL;
+
+    // Return to Operating System.
+    return 0;
+}
 
 
 

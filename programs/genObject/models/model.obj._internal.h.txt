@@ -111,6 +111,11 @@ struct ${NAMEL}_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    ${SUPERU}_DATA *  ${NAMEL}_getSuper (
+        ${NAMEU}_DATA     *this
+    );
+
+
     OBJ_IUNKNOWN *  ${NAMEL}_getSuperVtbl (
         ${NAMEU}_DATA     *this
     );

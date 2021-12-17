@@ -157,6 +157,17 @@ struct Blocks_data_s	{
     );
 
 
+    ERESULT         Blocks_Assign (
+        BLOCKS_DATA        *this,
+        BLOCKS_DATA     *pOther
+    );
+
+
+    BLOCKS_DATA *     Blocks_Copy (
+        BLOCKS_DATA       *this
+    );
+
+
     void            Blocks_Dealloc (
         OBJ_ID          objId
     );

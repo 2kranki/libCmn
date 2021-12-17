@@ -17,21 +17,30 @@
  *          The hash chains are manipulated like a push down
  *          stack with the latest addition being the closest
  *          to the head of the chain. So, if duplicate entries
- *          are allowed (see objHash_setDuplicates()), the
+ *          are allowed (see duplicates property), the
  *          lastest addition of that name will be the first
  *          to be found.
+ *
+ *          Entries are now added to the Hash chains and to
+ *          Scope chains.  The default Scope level is 0. Scopes
+ *          are a push-down stack. When a Scope is popped,
+ *          all of its entries are removed from the table.
+ *          ScopeOpen() pushes a new Scope level. ScopeClose()
+ *          pops the scope level.
  *
  * Remarks
  *    1.    The objects added to this table must support the
  *          compare() and hash() methods. The compare() method
  *          must be able to compare its object against any
  *          other object in the table.  These methods are
- *          part of the common VTBL for each object.
+ *          part of the common VTBL for each object, and must
+ *          be implemented.
  *
  * History
  *  10/24/2015  Generated
  *  01/31/2018  Added the ability to have duplicate symbols
  *	02/02/2020  Regenerated and upgraded json
+ *  12/16/2021  Added Scope levels.
  */
 
 
@@ -68,6 +77,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <Blocks.h>
 #include        <ObjEnum.h>
 
 
@@ -93,7 +103,7 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct ObjHash_data_s	OBJHASH_DATA;            // Inherits from OBJ
+    typedef struct ObjHash_data_s	OBJHASH_DATA;            // Inherits from BLOCKS
     typedef struct ObjHash_class_data_s OBJHASH_CLASS_DATA;   // Inherits from OBJ
 
     typedef struct ObjHash_vtbl_s	{
@@ -195,6 +205,10 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*!
+     @property  Duplicates is set true (default) if duplicates are allowed
+                or false if they are not.
+     */
     bool            ObjHash_getDuplicates (
         OBJHASH_DATA    *this
     );
@@ -205,11 +219,19 @@ extern "C" {
     );
 
 
+    uint32_t        ObjHash_getScopeSize (
+        OBJHASH_DATA    *this
+    );
+
+
     uint32_t        ObjHash_getSize (
         OBJHASH_DATA    *this
     );
 
 
+    BLOCKS_DATA *   ObjHash_getSuper (
+        OBJHASH_DATA    *this
+    );
 
 
     
@@ -217,9 +239,11 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    /*! Add an object to the Hash Table if the supplied key does not exist
+    /*!
+     Add an object to the Hash Table if the supplied key does not exist
      in the table or if duplicates are allowed.  The object being added
-     must support the compare() and hash() methods.
+     must support the compare() and hash() methods and will be added to
+     the current scope.
      @param     this    object pointer
      @param     pObject object pointer to be added to the table
      @param     pIndex  An optional pointer to uint32_t which will contain
@@ -229,6 +253,45 @@ extern "C" {
                 error code.
      */
     ERESULT         ObjHash_Add (
+        OBJHASH_DATA    *this,
+        OBJ_ID          pObject,
+        uint32_t        *pIndex
+    );
+
+    /*!
+     Add an object to the Hash Table if the supplied key does not exist
+     in the table or if duplicates are allowed.  The object being added
+     must support the compare() and hash() methods and will be added to
+     the current scope.
+     @param     this    object pointer
+     @param     pObject object pointer to be added to the table
+     @param     pIndex  An optional pointer to uint32_t which will contain
+                a unique number for the object if it is added to the Hash
+                successfully.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ObjHash_AddInScope (
+        OBJHASH_DATA    *this,
+        uint32_t        scope,
+        OBJ_ID          pObject,
+        uint32_t        *pIndex
+    );
+
+    /*!
+     Add an object to the Hash Table as a singleton entry which will not
+     be added to the hash or scope indices.  It can only be accessed with
+     ObjHash_FindIndex() and deleted with DeleteUnlinked(). It will not
+     added into the ObjHash's indices.
+     @param     this    object pointer
+     @param     pObject object pointer to be added to the table
+     @param     pIndex  An required pointer to uint32_t which will contain
+                a unique number for the object if it is added to the Hash
+                successfully.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ObjHash_AddUnlinked(
         OBJHASH_DATA    *this,
         OBJ_ID          pObject,
         uint32_t        *pIndex
@@ -321,12 +384,24 @@ extern "C" {
     );
 
 
+    /*! Delete the object for the given index which must have been added
+     to the Hash by AddUnlinked().  DeleteIndex() should be used if AddUnlinked()
+     was not used.
+     @return    If successful, the object deleted. Otherwise, return OBJ_NIL
+                and set an ERESULT_* error.
+     */
+    ERESULT         ObjHash_DeleteUnlinked(
+        OBJHASH_DATA    *this,
+        uint32_t        index
+    );
+
+
     /*! Create an enumerator for the Hash in ascending order
          if the object contains a compare() method.
      @param     this    object pointer
      @return    If successful, an Enumerator object which must be
                  released, otherwise OBJ_NIL.
-     @warning   Remember to release the returned AStr object.
+     @warning   Remember to release the returned Enumerator.
      */
     OBJENUM_DATA *  ObjHash_Enum (
         OBJHASH_DATA    *this
@@ -371,16 +446,55 @@ extern "C" {
 
 
     /*!
-     Rebuild the hash index with a different number of Hash Buckets.
-     This method allows you to grow or shrink the index dynamically
-     as needed.
+     Delete the current Scope if it is greater than 0 and optionally
+     return an enumerator for those objects.  The objects will be deleted
+     from the Hash Table. Optionally they will be returned in an Enumerator
+     if you want the use of them.
      @param     this    object pointer
-     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
-                error code.
+     @param     ppEnum  optional Enumerator object return pointer
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error.
      */
-    ERESULT         ObjHash_RebuildIndex (
+    ERESULT         ObjHash_ScopeClose (
         OBJHASH_DATA    *this,
-        uint32_t        cHash           // Number of Hash Buckets
+        OBJENUM_DATA    **ppEnum
+    );
+
+
+    /*!
+     Get the number of entries in the specified Scope.
+     @param     this    object pointer
+     @param     scope   scope level number (relative to 0)
+     @return    If successful, the nuimber of entries in the requested scope.
+                Otherwise, 0.
+     */
+    uint32_t        ObjHash_ScopeCount (
+        OBJHASH_DATA    *this,
+        uint32_t        scope
+    );
+
+
+    /*! Create an enumerator for the Scope in ascending order
+         if the object contains a compare() method.
+     @param     this    object pointer
+     @param     scope   scope number (relative to 0)
+     @return    If successful, an Enumerator object which must be
+                 released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned Enumerator.
+     */
+    OBJENUM_DATA *  ObjHash_ScopeEnum (
+        OBJHASH_DATA    *this,
+        uint32_t        scope
+    );
+
+
+    /*! Open a new Scope making it the current Scope. Scopes work
+     like a push down stack with the newest one on the top.
+     @param     this    object pointer
+     @return    If successful, the new scope number relative to 0;
+                otherwise -1;
+     */
+    int32_t         ObjHash_ScopeOpen (
+        OBJHASH_DATA    *this
     );
 
 

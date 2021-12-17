@@ -184,12 +184,55 @@ extern "C" {
      Add the given Symbol object to the Tree.
      @param     this        Object Pointer
      @param     pSym        Symbol Entry Object Pointer
+     @param     pIndex  An required pointer to uint32_t which will contain
+                a unique number for the object if it is added to the Hash
+                successfully.
      @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
                 error code is returned.
      */
     ERESULT         Syms_Add (
         SYMS_DATA       *this,
-        SYM_DATA        *pSym
+        SYM_DATA        *pSym,
+        uint32_t        *pIndex
+    );
+
+
+    /*!
+     Add the given Symbol object to the Tree.
+     @param     this        Object Pointer
+     @param     scope       scope level (relative to 0)
+     @param     pSym        Symbol Entry Object Pointer
+     @param     pIndex  An required pointer to uint32_t which will contain
+                a unique number for the object if it is added to the Hash
+                successfully.
+     @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
+                error code is returned.
+     */
+    ERESULT         Syms_AddInScope (
+        SYMS_DATA       *this,
+        uint32_t        scope,
+        SYM_DATA        *pSym,
+        uint32_t        *pIndex
+    );
+
+
+    /*!
+     Add an object to the Hash Table as a singleton entry which will not
+     be added to the hash or scope indices.  It can only be accessed with
+     ObjHash_FindIndex() and deleted with DeleteUnlinked(). It will not
+     added into the ObjHash's indices.
+     @param     this    object pointer
+     @param     pSym    Symbol to be added to the table
+     @param     pIndex  An required pointer to uint32_t which will contain
+                a unique number for the object if it is added to the Hash
+                successfully.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Syms_AddUnlinked(
+        SYMS_DATA       *this,
+        SYM_DATA        *pSym,
+        uint32_t        *pIndex
     );
 
 
@@ -241,6 +284,59 @@ extern "C" {
 
 
     SYMS_DATA *     Syms_Init (
+        SYMS_DATA       *this
+    );
+
+
+    /*!
+     Delete the current Scope if it is greater than 0 and optionally
+     return an enumerator for those objects.  The objects will be deleted
+     from the Hash Table. Optionally they will be returned in an Enumerator
+     if you want the use of them.
+     @param     this    object pointer
+     @param     ppEnum  optional Enumerator object return pointer
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_* error.
+     */
+    ERESULT         Syms_ScopeClose (
+        SYMS_DATA       *this,
+        OBJENUM_DATA    **ppEnum
+    );
+
+
+    /*!
+     Get the number of entries in the specified Scope.
+     @param     this    object pointer
+     @param     scope   scope level number (relative to 0)
+     @return    If successful, the nuimber of entries in the requested scope.
+                Otherwise, 0.
+     */
+    uint32_t        Syms_ScopeCount (
+        SYMS_DATA       *this,
+        uint32_t        scope
+    );
+
+
+    /*! Create an enumerator for the Scope in ascending order
+         if the object contains a compare() method.
+     @param     this    object pointer
+     @param     scope   scope number (relative to 0)
+     @return    If successful, an Enumerator object which must be
+                 released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned Enumerator.
+     */
+    OBJENUM_DATA *  Syms_ScopeEnum (
+        SYMS_DATA       *this,
+        uint32_t        scope
+    );
+
+
+    /*! Open a new Scope making it the current Scope. Scopes work
+     like a push down stack with the newest one on the top.
+     @param     this    object pointer
+     @return    If successful, the new scope number relative to 0;
+                otherwise -1;
+     */
+    int32_t         Syms_ScopeOpen (
         SYMS_DATA       *this
     );
 

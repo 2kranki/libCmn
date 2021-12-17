@@ -12,3 +12,5 @@
         UQUAD,
         VOID
         POINTER
+	STRUCT
+	UNION

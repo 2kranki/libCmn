@@ -289,8 +289,8 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  Cmd_getSuperVtbl (
-        CMD_DATA     *this
+    OBJ_IUNKNOWN * Cmd_getSuperVtbl (
+        CMD_DATA    *this
     )
     {
 
@@ -308,6 +308,25 @@ extern "C" {
     }
     
   
+    NODE_DATA * Cmd_getSuper (
+        CMD_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Cmd_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+
+        return (NODE_DATA *)this;
+    }
+
+
 
     
 
@@ -711,8 +730,8 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)other_Init((OTHER_DATA *)this);        // Needed for Inheritance
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_CMD);
+        this = (OBJ_ID)Node_Init((NODE_DATA *)this);        // Needed for Inheritance
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_CMD);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);

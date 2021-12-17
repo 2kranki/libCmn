@@ -491,6 +491,16 @@ extern "C" {
         NODE_DATA       *pNode
     );
 
+    uint32_t        NodeTree_NodeNewUTF8(
+        NODETREE_DATA   *this,
+        int32_t         cls,
+        const
+        char            *pNameA,
+        OBJ_ID          pData,
+        uint32_t        child1,
+        uint32_t        child2
+    );
+
 
     /*!
      Add a node to the end of the sibling chain for the given sibling if

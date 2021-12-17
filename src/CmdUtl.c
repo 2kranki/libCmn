@@ -1575,6 +1575,7 @@ extern "C" {
                 return false;
             }
             switch (pOption->argType) {
+
                 case CMDUTL_TYPE_EXEC:         // Execute given routine
                     if (pOption->pExec) {
                         eRc = pOption->pExec(this->pObj, this->pOptArg);
@@ -1589,6 +1590,7 @@ extern "C" {
                         }
                     }
                     break;
+
                 case CMDUTL_TYPE_BOOL:          // uint16_t - 0 or 1
                 case CMDUTL_TYPE_INCR:          // uint16_t - Every occurence increases the
                     //                          // associated value (default is 0);
@@ -1596,8 +1598,10 @@ extern "C" {
                         *((uint16_t *)pPtr) += 1;
                     }
                     break;
+
                 case CMDUTL_TYPE_NUMBER:        // Number pointer
                     break;
+
                 case CMDUTL_TYPE_PATH:          // Path pointer
                     if (NULL == this->pOptArg) {
                         option[0] = this->optopt;
@@ -1615,6 +1619,7 @@ extern "C" {
                         pPath = OBJ_NIL;
                     }
                     break;
+
                 case CMDUTL_TYPE_STRING:        // AStr pointer
                     if (NULL == this->pOptArg) {
                         option[0] = this->optopt;
@@ -1632,6 +1637,7 @@ extern "C" {
                         pStr = OBJ_NIL;
                     }
                     break;
+
                 default:
                     break;
             }

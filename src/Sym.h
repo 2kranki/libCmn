@@ -7,7 +7,7 @@
  * Program
  *			Symbol Table Entry (Sym)
  * Purpose
- *			This object provides a standardized Symbol Table Entry.
+ *			This object provides a generic Symbol Table Entry.
  *
  * Remarks
  *	1.      None
@@ -121,6 +121,8 @@ extern "C" {
         SYM_PRIM_UQUAD=10,
         SYM_PRIM_VOID=11,
         SYM_PRIM_POINTER=12,
+        SYM_PRIM_STRUCT=13,
+        SYM_PRIM_UNION=14,
     } SYM_PRIMS;
 
 
@@ -187,6 +189,7 @@ extern "C" {
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
         uint32_t        strct;              // Struct Identifier (0 == none)
+        uint32_t        link;               // index linkage if needed (0 == none)
         uint32_t        storcls;            // Storage Class (See SYM_STORAGE_TYPES)
         uint32_t        section;            // Section/Segment Identifier (0 == none)
         uint32_t        addr;               // Address within Section/Segment
@@ -260,6 +263,13 @@ extern "C" {
         int32_t         cls,
         const
         char            *pNameA
+    );
+
+
+    SYM_DATA *      Sym_NewW32(
+        int32_t         cls,
+        const
+        W32CHR_T        *pNameW32
     );
 
 
@@ -544,6 +554,35 @@ extern "C" {
     );
 
 
+    /*! Property: Link can be used to develop a singly-linkeed
+        list of Symbol Objects using unique identifiers such
+        as provided in Syms if needed.
+     */
+    uint32_t        Sym_getDisp (
+        SYM_DATA     *this
+    );
+
+    bool            Sym_setDisp (
+        SYM_DATA        *this,
+        uint32_t        value
+    );
+
+
+    /*! Property: List of Sym Objects
+        This can be used for stucture/union types. They
+        normally are relatively short in number of sub-
+        entries. So, a list can easily be used.
+     */
+    OBJ_ID          Sym_getList (
+        SYM_DATA        *this
+    );
+
+    bool            Sym_setList (
+        SYM_DATA        *this,
+        OBJ_ID          pValue
+    );
+
+
     SRCLOC *        Sym_getLoc(
         SYM_DATA        *this
     );
@@ -766,6 +805,27 @@ extern "C" {
 
     SYM_DATA *      Sym_Init (
         SYM_DATA        *this
+    );
+
+
+    /*!
+     Add the provided Symbol object to this symbol's list.
+     @param     this    object pointer
+     @param     pSym    SYM object to be added to list
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         Sym_ListAdd (
+        SYM_DATA        *this,
+        SYM_DATA        *pSym
+    );
+
+
+    SYM_DATA *      Sym_ListFindA(
+        SYM_DATA        *this,
+        int32_t         cls,
+        const
+        char            *pNameA
     );
 
 

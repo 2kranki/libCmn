@@ -76,10 +76,27 @@ extern "C" {
         uint32_t        high;
         uint32_t        low;
         uint32_t        mid;
+        uint32_t        i;
 
 
         if (0 == max)
             return NULL;
+
+        // If small table, do sequential search.
+        if (max < 11) {
+            for (i=0; i<max; i++) {
+                pNode  = array_GetAddrOf(this->pArray, i+1);
+                if (pNode && (index == pNode->index)) {
+                    if (pOffset)
+                        *pOffset = i + 1;
+                    return pNode;
+                }
+                if (pNode && (index < pNode->index)) {
+                    break;
+                }
+            }
+            return NULL;
+        }
 
         // Do a binary search on the array.
         high = max - 1;
@@ -860,6 +877,7 @@ extern "C" {
         );
 #endif
         BREAK_NOT_BOUNDARY4(sizeof(U32INDEX_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(U32INDEX_NODE));
 #endif
 
         return this;

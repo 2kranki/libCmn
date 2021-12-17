@@ -1,5 +1,7 @@
 # vi:nu:et:sts=4 ts=4 sw=4
 
+* misc.h contains a binary search which should be used instead of
+        generating one.
 
 *   Maybe use as input a csv file:
     name,value,description

@@ -454,6 +454,72 @@ extern "C" {
     }
     
     
+    bool        SrcErrors_AddErrorArgsA (
+        SRCERRORS_DATA  *this,
+        uint16_t        severity,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        va_list         arg_ptr
+    )
+    {
+        ERESULT         eRc;
+        SRCERROR_DATA   *pError = OBJ_NIL;
+        char            str[512];
+        int             size;
+        char            *pStr = str;
+
+        // Do initialization.
+        if (OBJ_NIL == this) {
+            this = SrcErrors_Shared();
+        }
+#ifdef NDEBUG
+#else
+        if (!SrcErrors_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        str[0] = '\0';
+        size = vsnprintf(str, sizeof(str), pErrorString, arg_ptr);
+        if (size >= sizeof(str)) {
+            ++size;
+            pStr = (char *)mem_Malloc(size);
+            if( pStr == NULL ) {
+                return ERESULT_INSUFFICIENT_MEMORY;
+            }
+            size = vsnprintf( pStr, size, pErrorString, arg_ptr );
+            pError = SrcError_NewFromData(severity, pLocation, pStr);
+            mem_Free( pStr );
+            pStr = NULL;
+        }
+        else {
+            pError = SrcError_NewFromData(severity, pLocation, pStr);
+        }
+        if (OBJ_NIL == pError) {
+            return ERESULT_INSUFFICIENT_MEMORY;
+        }
+        eRc = ObjArray_AppendObj((OBJARRAY_DATA *)this, pError, NULL);
+        obj_Release(pError);
+        pError = OBJ_NIL;
+        if (ERESULT_FAILED(eRc)) {
+            return false;
+        }
+
+        if (severity == SRCERROR_SEVERITY_FATAL) {
+            SrcErrors_setFatal(this, true);
+            if (this->fExitOnFatal) {
+                SrcErrors_ExitOnFatal(this);
+            }
+        }
+
+        // Return to caller.
+        return true;
+    }
+
+
     ERESULT         SrcErrors_AddFatal (
         SRCERRORS_DATA  *this,
         SRCERROR_DATA   *pError

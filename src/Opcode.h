@@ -113,7 +113,7 @@ extern "C" {
         char            DisA[OPCODE_ENTRY_DIS_MAX];
         uint8_t         iLen;               // Full Instruction Length including operands
         uint8_t         cCode;              // Operation Code Length
-#define OPCODE_ENTRY_CCODE_MAX 8            // Entry Length w/o trailing NUL
+#define OPCODE_ENTRY_CCODE_MAX 4            // number of bytes in opcode and mask
         uint8_t         iCode[OPCODE_ENTRY_CCODE_MAX]; // Operation Code
         uint8_t         iMask[OPCODE_ENTRY_CCODE_MAX]; // Operation Code Mask
         /*

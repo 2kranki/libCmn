@@ -476,6 +476,7 @@ CMD_VTBL     Cmd_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
+    (void *)Cmd_Exec,
     (void *)Cmd_Redo,
     (void *)Cmd_Undo,
 
@@ -489,7 +490,7 @@ OBJ_INFO        Cmd_Info = {
     "Cmd",
     "Command Base",
     (OBJ_DATA *)&Cmd_ClassObj,
-    (OBJ_DATA *)&obj_ClassObj,
+    (OBJ_DATA *)&Node_ClassObj,
     (OBJ_IUNKNOWN *)&Cmd_Vtbl,
     sizeof(CMD_DATA)
 };

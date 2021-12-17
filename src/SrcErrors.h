@@ -217,7 +217,17 @@ extern "C" {
          ...
      );
      
-     
+    bool        SrcErrors_AddErrorArgsA (
+        SRCERRORS_DATA  *this,
+        uint16_t        severity,
+        const
+        SRCLOC          *pLocation,
+        const
+        char            *pErrorString,
+        va_list         arg_ptr
+    );
+
+
      ERESULT         SrcErrors_AddFatal (
          SRCERRORS_DATA  *this,
          SRCERROR_DATA   *pError

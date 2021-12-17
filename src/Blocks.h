@@ -353,7 +353,7 @@ extern "C" {
 
     /*!
      If there are no active records, add an index for the unique identifier
-     in the record.
+     in the record which greatly speeds up access by index number.
      @param     this    object pointer
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.

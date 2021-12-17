@@ -1166,6 +1166,7 @@ extern "C" {
         pCapsPrefix = AStr_NewUpperA(pPrefixA);
         eRc = Path_SplitPath(pInputPath, OBJ_NIL, OBJ_NIL, &pFileName);
 
+        fprintf(pOut, "#include\t\t<misc.h>\n");
         fprintf(pOut, "\t/* The following routine was generated from:\n");
         fprintf(pOut, "\t * \"%s\"\n", Path_getData(pFileName));
         fprintf(pOut, "\t * If you want to change it, you\n");
@@ -1300,78 +1301,26 @@ extern "C" {
         fprintf(pOut, "\t// 0 for not found.\n");
         fprintf(pOut, "\tconst\n");
         fprintf(pOut, "\tuint32_t\t\t%s_EnumTo%s (\n", pPrefixA, pNameA);
-        fprintf(pOut, "\t\tchar\t\t\t*pDesc\n");
+        fprintf(pOut, "\t\tchar\t\t\t*pDescA\n");
         fprintf(pOut, "\t)\n");
         fprintf(pOut, "\t{\n");
-        fprintf(pOut, "\t\tint\t\t\tiRc;\n");
-        fprintf(pOut, "\t\tuint32_t\t\tiMax = c%s_%s_entries;\n", pPrefixA, pNameA);
-        fprintf(pOut, "\t\tuint32_t\t\ti    = 0;\n");
-        fprintf(pOut, "\t\tuint32_t\t\thigh = 0;\n");
-        fprintf(pOut, "\t\tuint32_t\t\tlow  = 0;\n");
-        fprintf(pOut, "\t\tuint32_t\t\tmid  = 0;\n\n");
-        fprintf(pOut, "\t\tif (iMax > 10) {\n");
-        fprintf(pOut, "\t\t\tfor (i=0; i<iMax; i++) {\n");
-        fprintf(
-                pOut,
-                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pEnum);\n",
-                pPrefixA,
-                pNameA
-        );
-        fprintf(pOut, "\t\t\t\tif (0 == iRc) {\n");
-        fprintf(
-                pOut,
-                "\t\t\t\t\treturn %s_%s_entries[i].value + 1;\n",
-                pPrefixA,
-                pNameA
-        );
-        fprintf(pOut, "\t\t\t\t}\n");
-        fprintf(pOut, "\t\t\t\tif (iRc < 0) {\n");
-        fprintf(pOut, "\t\t\t\t\tbreak;\n");
-        fprintf(pOut, "\t\t\t\t}\n");
-        fprintf(pOut, "\t\t\t}\n");
-        fprintf(pOut, "\t\t} else {\n");
-        fprintf(pOut, "\t\t\thigh = iMax - 1;\n");
-        fprintf(pOut, "\t\t\twhile (low < high) {\n");
-        fprintf(pOut, "\t\t\t\tmid = (high + low) / 2;\n");
-        fprintf(pOut, "\t\t\t\ti = mid + 1;\n");
-        fprintf(
-                pOut,
-                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pEnum);\n",
-                pPrefixA,
-                pNameA
-        );
-        fprintf(pOut, "\t\t\t\tif (iRc < 0) {\n");
-        fprintf(pOut, "\t\t\t\t\thigh = mid;\n");
-        fprintf(pOut, "\t\t\t\t} else if (iRc == 0) {\n");
-        fprintf(
-                pOut,
-                "\t\t\t\t\treturn %s_%s_entries[i].value + 1;\n",
-                pPrefixA,
-                pNameA
-        );
-        fprintf(pOut, "\t\t\t\t} else {\n");
-        fprintf(pOut, "\t\t\t\t\tlow = mid + 1;\n");
-        fprintf(pOut, "\t\t\t\t}\n");
-        fprintf(pOut, "\t\t\t}\n");
-        fprintf(pOut, "\t\t\tif( high == low ) {\n");
-        fprintf(pOut, "\t\t\t\ti = low;\n");
-        fprintf(
-                pOut,
-                "\t\t\t\tiRc = strcmp(pDesc, %s_%s_entries[i].pEnum);\n",
-                pPrefixA,
-                pNameA
-        );
-        fprintf(pOut, "\t\t\t\tif (0 == iRc) {\n");
-        fprintf(
-                pOut,
-                "\t\t\t\t\treturn %s_%s_entries[i].value + 1;\n",
-                pPrefixA,
-                pNameA
-        );
-        fprintf(pOut, "\t\t\t\t}\n");
+        fprintf(pOut, "\t\t%s_%s_entry\t*pEntry = NULL;\n", pPrefixA, pNameA);
+        fprintf(pOut, "\t\tuint32_t\t\tvalue = 0;\n");
+        fprintf(pOut, "\n");
+        fprintf(pOut, "\t\tif (pDescA) {\n");
+        fprintf(pOut, "\t\t\tpEntry = misc_SearchBinary(\n");
+        fprintf(pOut, "\t\t\t\t\t\tpDescA,\n");
+        fprintf(pOut, "\t\t\t\t\t\t(void *)%s_%s_entries,\n", pPrefixA, pNameA);
+        fprintf(pOut, "\t\t\t\t\t\tc%s_%s_entries,\n", pPrefixA, pNameA);
+        fprintf(pOut, "\t\t\t\t\t\tsizeof(%s_%s_entry),\n", pPrefixA, pNameA);
+        fprintf(pOut, "\t\t\t\t\t\toffsetof(%s_%s_entry, pEnum),\n", pPrefixA, pNameA);
+        fprintf(pOut, "\t\t\t\t\t\t(void *)strcmp\n");
+        fprintf(pOut, "\t\t\t\t);\n");
+        fprintf(pOut, "\t\t\tif (pEntry) {\n");
+        fprintf(pOut, "\t\t\t\tvalue = pEntry->value + 1;\n");
         fprintf(pOut, "\t\t\t}\n");
         fprintf(pOut, "\t\t}\n");
-        fprintf(pOut, "\t\treturn 0;\n");
+        fprintf(pOut, "\t\treturn value;\n");
         fprintf(pOut, "\t}\n");
         fprintf(pOut, "\n\n\n");
 
@@ -1458,7 +1407,7 @@ extern "C" {
                 fprintf(pOut, "\n\t\t");
             }
         }
-        fprintf(pOut, "\n\t};\n\n\n");
+        fprintf(pOut, "\n\t};\n\n");
         fprintf(pOut, "\tconst\n");
         fprintf(
                 pOut,
@@ -1509,7 +1458,7 @@ extern "C" {
                 }
             }
         }
-        fprintf(pOut, "\t};\n");
+        fprintf(pOut, "\t};\n\n");
         fprintf(
                 pOut,
                 "\tuint32_t\tc%s_%s_entries = %d;\n\n\n\n\n",

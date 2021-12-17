@@ -84,6 +84,29 @@ uint8_t         hashRandomNumbers[256] =
 
 
 
+int             str_ChrPosA(
+    const
+    char            *pStrA,
+    char            chr
+)
+{
+    int             i = 0;
+
+    while (*pStrA && (*pStrA != chr)) {
+        i++;
+        pStrA++;
+    }
+    if ('\0' == *pStrA) {
+        i = 0;
+    } else {
+        i++;            // Make it relative to 1.
+    }
+
+    return i;
+}
+
+
+
 /**********************************************************
 	str_Compare - Compare Two Strings
  **********************************************************/

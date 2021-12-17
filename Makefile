@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/ 6/2021 17:00:44.000)
+# (12/17/2021  5:30:57.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -788,21 +788,6 @@ OBJS += $(OBJDIR)/NodeHash_object.o
 $(OBJDIR)/NodeHash_object.o: $(SRCDIR)/NodeHash_object.c $(SRCDIR)/Node.h $(SRCDIR)/NodeHash.h $(SRCDIR)/NodeHash_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/NodeLink.o
-
-$(OBJDIR)/NodeLink.o: $(SRCDIR)/NodeLink.c $(SRCDIR)/Name.h $(SRCDIR)/Node.h $(SRCDIR)/NodeLink.h $(SRCDIR)/NodeLink_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/NodeLink_json.o
-
-$(OBJDIR)/NodeLink_json.o: $(SRCDIR)/NodeLink_json.c $(SRCDIR)/NodeLink.h $(SRCDIR)/NodeLink_internal.h $(SRCDIR)/Name.h $(SRCDIR)/Node.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/NodeLink_object.o
-
-$(OBJDIR)/NodeLink_object.o: $(SRCDIR)/NodeLink_object.c $(SRCDIR)/Name.h $(SRCDIR)/Node.h $(SRCDIR)/NodeLink.h $(SRCDIR)/NodeLink_internal.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/NodeList.o
 
 $(OBJDIR)/NodeList.o: $(SRCDIR)/NodeList.c $(SRCDIR)/Node.h $(SRCDIR)/NodeList.h $(SRCDIR)/NodeList_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
@@ -1345,17 +1330,17 @@ $(OBJDIR)/Sym_object.o: $(SRCDIR)/Sym_object.c $(SRCDIR)/Sym.h $(SRCDIR)/Sym_int
 
 OBJS += $(OBJDIR)/Syms.o
 
-$(OBJDIR)/Syms.o: $(SRCDIR)/Syms.c $(SRCDIR)/NodeBT.h $(SRCDIR)/Sym.h $(SRCDIR)/Syms.h $(SRCDIR)/Syms_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/Syms.o: $(SRCDIR)/Syms.c $(SRCDIR)/ObjHash.h $(SRCDIR)/Sym.h $(SRCDIR)/Syms.h $(SRCDIR)/Syms_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Syms_json.o
 
-$(OBJDIR)/Syms_json.o: $(SRCDIR)/Syms_json.c $(SRCDIR)/Syms.h $(SRCDIR)/Syms_internal.h $(SRCDIR)/NodeBT.h $(SRCDIR)/Sym.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/Syms_json.o: $(SRCDIR)/Syms_json.c $(SRCDIR)/Syms.h $(SRCDIR)/Syms_internal.h $(SRCDIR)/ObjHash.h $(SRCDIR)/Sym.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Syms_object.o
 
-$(OBJDIR)/Syms_object.o: $(SRCDIR)/Syms_object.c $(SRCDIR)/NodeBT.h $(SRCDIR)/Sym.h $(SRCDIR)/Syms.h $(SRCDIR)/Syms_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/Syms_object.o: $(SRCDIR)/Syms_object.c $(SRCDIR)/ObjHash.h $(SRCDIR)/Sym.h $(SRCDIR)/Syms.h $(SRCDIR)/Syms_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/TRegex.o
@@ -2479,12 +2464,6 @@ NodeHash_test: $(TEST_SRC)/NodeHash_test.c $(SRCDIR)/NodeHash.h $(SRCDIR)/NodeHa
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
-TESTS += NodeLink_test
-
-NodeLink_test: $(TEST_SRC)/NodeLink_test.c $(SRCDIR)/NodeLink.h $(SRCDIR)/NodeLink_internal.h $(SRCDIR)/Name.h $(SRCDIR)/Node.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F) --no_int3
-
 TESTS += NodeList_test
 
 NodeList_test: $(TEST_SRC)/NodeList_test.c $(SRCDIR)/NodeList.h $(SRCDIR)/NodeList_internal.h $(SRCDIR)/Node.h $(SRCDIR)/listdl.h $(SRCDIR)/str.h $(SRCDIR)/cmn_defs.h 
@@ -2727,7 +2706,7 @@ Sym_test: $(TEST_SRC)/Sym_test.c $(SRCDIR)/Sym.h $(SRCDIR)/Sym_internal.h $(SRCD
 
 TESTS += Syms_test
 
-Syms_test: $(TEST_SRC)/Syms_test.c $(SRCDIR)/Syms.h $(SRCDIR)/Syms_internal.h $(SRCDIR)/NodeBT.h $(SRCDIR)/Sym.h $(SRCDIR)/cmn_defs.h 
+Syms_test: $(TEST_SRC)/Syms_test.c $(SRCDIR)/Syms.h $(SRCDIR)/Syms_internal.h $(SRCDIR)/ObjHash.h $(SRCDIR)/Sym.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

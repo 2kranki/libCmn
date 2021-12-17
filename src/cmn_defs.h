@@ -285,10 +285,8 @@ extern "C" {
         OBJ_IDENT_GENOBJ_CLASS,
         OBJ_IDENT_GREG,                 // Gregorian Date
         OBJ_IDENT_GREG_CLASS,
-        OBJ_IDENT_HASH32,               // 32-Bit Key Hash Table
-        OBJ_IDENT_HASH32_CLASS,
-        OBJ_IDENT_HASHTBL,              // Hash Table Base
-        OBJ_IDENT_HASHTBL_CLASS,
+        OBJ_IDENT_HASHT,                // Generic Hash Table
+        OBJ_IDENT_HASHT_CLASS,
         OBJ_IDENT_HEX,                  // Hex Input/Output
         OBJ_IDENT_HEX_CLASS,
         OBJ_IDENT_HJSON,                // HJSON (loose JSON) Parser
@@ -385,8 +383,6 @@ extern "C" {
         OBJ_IDENT_NODEGRAPH_CLASS,
         OBJ_IDENT_NODEHASH,             // A Hash Table of Nodes
         OBJ_IDENT_NODEHASH_CLASS,
-        OBJ_IDENT_NODELINK,             // A Node w/Index Links
-        OBJ_IDENT_NODELINK_CLASS,
         OBJ_IDENT_NODELNKP,             // A Node w/Pointer Links
         OBJ_IDENT_NODELNKP_CLASS,
         OBJ_IDENT_NODELIST,             // A List of Nodes
@@ -431,8 +427,6 @@ extern "C" {
         OBJ_IDENT_OPCODE_CLASS,
         OBJ_IDENT_OPCODES,              // Universal Opcode Table
         OBJ_IDENT_OPCODES_CLASS,
-        OBJ_IDENT_OSC,
-        OBJ_IDENT_OSC_CLASS,
         OBJ_IDENT_PACKET,
         OBJ_IDENT_PACKET_CLASS,
         OBJ_IDENT_PARSER,

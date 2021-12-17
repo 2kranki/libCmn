@@ -275,25 +275,6 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  ${NAMEL}_getSuperVtbl (
-        ${NAMEU}_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!${NAMEL}_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        
-        return this->pSuperVtbl;
-    }
-    
-  
     ${SUPERU}_DATA *  ${NAMEL}_getSuper (
         ${NAMEU}_DATA     *this
     )
@@ -313,6 +294,25 @@ extern "C" {
     }
 
     
+    OBJ_IUNKNOWN *  ${NAMEL}_getSuperVtbl (
+        ${NAMEU}_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!${NAMEL}_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        
+        return this->pSuperVtbl;
+    }
+    
+  
 
     //===============================================================
     //                          M e t h o d s

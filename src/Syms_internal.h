@@ -41,7 +41,7 @@
 
 #include        <Syms.h>
 #include        <JsonIn.h>
-#include        <szBT_internal.h>
+#include        <ObjHash_internal.h>
 
 
 #ifndef SYMS_INTERNAL_H
@@ -70,7 +70,9 @@ struct Syms_data_s	{
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    SZBT_DATA       *pTree;
+    OBJHASH_DATA    *pHash;
+    uint32_t        unique;
+    uint32_t        uniqueStruct;
 
 };
 #pragma pack(pop)

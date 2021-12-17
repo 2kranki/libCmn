@@ -75,6 +75,17 @@
 * * * * * * * * * *  subroutine definitions	  * * * * * * * * * *
 ****************************************************************/
 
+
+/* str_ChrPosA() tries to find chr in pStrA and returns offset
+ into the string relative to 1 if found; otherwise 0.
+ */
+int             str_ChrPosA(
+    const
+    char            *pStrA,
+    char            chr
+);
+
+
 /* str_Compare() compares two Input Strings to each other.
  * Returns:
  *	-1              =	Str1 <	Str2

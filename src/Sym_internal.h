@@ -42,6 +42,7 @@
 #include        <Sym.h>
 #include        <JsonIn.h>
 #include        <Node_internal.h>
+#include        <SymList.h>
 
 
 #ifndef SYM_INTERNAL_H
@@ -72,6 +73,7 @@ struct Sym_data_s	{
 
     // Common Data
     SYM_ENTRY       entry;
+    SYMLIST_DATA    *pList;
 
 };
 #pragma pack(pop)

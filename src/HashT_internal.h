@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   NodeLink_internal.h
- *  Generated 02/03/2021 18:58:16
+ * File:   HashT_internal.h
+ *  Generated 12/12/2021 15:40:13
  *
  * Notes:
  *  --  N/A
@@ -39,13 +39,14 @@
 
 
 
-#include        <NodeLink.h>
+#include        <HashT.h>
+#include        <array.h>
+#include        <Blocks_internal.h>
 #include        <JsonIn.h>
-#include        <Node_internal.h>
 
 
-#ifndef NODELINK_INTERNAL_H
-#define NODELINK_INTERNAL_H
+#ifndef HASHT_INTERNAL_H
+#define HASHT_INTERNAL_H
 
 
 
@@ -56,6 +57,28 @@ extern "C" {
 #endif
 
 
+    //      Hash Node Descriptor
+    #pragma pack(push, 1)
+    typedef struct  HashT_Node_s {
+        LISTDL_NODE     list;               // Hash Chain
+        LISTDL_NODE     level;              // Level Chain
+        uint32_t        hash;
+        uint32_t        unique;
+        uint8_t         data[0];
+    } HASHT_NODE;
+    #pragma pack(pop)
+
+
+    // Block Descriptor
+    #pragma pack(push, 1)
+    typedef struct  HashT_block_s {
+        LISTDL_NODE     list;
+        HASHT_NODE      node[0];
+    } HASHT_BLOCK;
+    #pragma pack(pop)
+
+
+
 
 
     //---------------------------------------------------------------
@@ -63,32 +86,52 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct NodeLink_data_s  {
+struct HashT_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
-    NODE_DATA       super;
+    BLOCKS_DATA     super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
-#define NODELINK_LEFT_LINK   OBJ_FLAG_USER5
-#define NODELINK_RIGHT_LINK  OBJ_FLAG_USER6
-#define NODELINK_RIGHT_CHILD OBJ_FLAG_USER7
 
     // Common Data
-    uint32_t        index;
-    uint32_t        leftIndex;
-    uint32_t        middleIndex;
-    uint32_t        parentIndex;
-    uint32_t        rightIndex;
-    uint32_t        rsvd32;
+    uint32_t        dataSize;       // Data Size in bytes
+    uint32_t        unique;         // Unique number given to entries as they are
+    //                              // added to the hash table
+    uint32_t        num;            // Current Number of Active Entries
+    uint8_t         fDups;          // true == Allow Duplicate Names
+    uint8_t         rsvd8[3];
+    uint32_t        cBlock;         // Number of Nodes per Block
+    uint32_t        cHash;          // Number of Hash Buckets
+    uint32_t        cHashIdx;       // Hash Bucket Size Index
+    uint32_t        scopeLvl;       /* Scope Level Number (0 = Global) */
+    LISTDL_DATA     blocks;
+    LISTDL_DATA     freeList;       // Free Node Linked List
+    LISTDL_DATA     *pHash;         // Main Hash Table
+    ARRAY_DATA      *pLevels;       // Level Table
 
+    ASTR_DATA       *pStr;
+    uint16_t        size;           // maximum number of elements
+    uint16_t        rsvd16;
+
+#ifdef   HASHT_LOG
+    // Informational and Warning Log Messages
+    OBJ_ID          *pLog;
+#endif
+
+    int             (*pCompare)(void *, void *);
+
+    P_ERESULT_EXIT3 pDelete;
+    OBJ_ID          pDeleteObj;     // Used as first parameter of scan method
+    //                              // second parameter is data to be deleted
+    void            *pDeleteArg3;   // Used as third parameter of scan method
 };
 #pragma pack(pop)
 
     extern
-    struct NodeLink_class_data_s  NodeLink_ClassObj;
+    struct HashT_class_data_s  HashT_ClassObj;
 
     extern
     const
-    NODELINK_VTBL         NodeLink_Vtbl;
+    HASHT_VTBL         HashT_Vtbl;
 
 
 
@@ -96,13 +139,13 @@ struct NodeLink_data_s  {
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  NODELINK_SINGLETON
-    NODELINK_DATA * NodeLink_getSingleton (
+#ifdef  HASHT_SINGLETON
+    HASHT_DATA *     HashT_getSingleton (
         void
     );
 
-    bool            NodeLink_setSingleton (
-     NODELINK_DATA       *pValue
+    bool            HashT_setSingleton (
+     HASHT_DATA       *pValue
 );
 #endif
 
@@ -112,35 +155,45 @@ struct NodeLink_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  NodeLink_getSuperVtbl (
-        NODELINK_DATA   *this
+    HASHT_DATA *  HashT_getSuper (
+        HASHT_DATA     *this
     );
 
 
-    ERESULT         NodeLink_Assign (
-        NODELINK_DATA   *this,
-        NODELINK_DATA   *pOther
+    OBJ_IUNKNOWN *  HashT_getSuperVtbl (
+        HASHT_DATA     *this
     );
 
 
-    NODELINK_DATA * NodeLink_Copy (
-        NODELINK_DATA   *this
+    ERESULT         HashT_Assign (
+        HASHT_DATA    *this,
+        HASHT_DATA    *pOther
     );
 
 
-    void            NodeLink_Dealloc (
+    HASHT_DATA *       HashT_Copy (
+        HASHT_DATA     *this
+    );
+
+
+    void            HashT_Dealloc (
         OBJ_ID          objId
     );
 
 
-#ifdef  NODELINK_JSON_SUPPORT
+    HASHT_DATA *     HashT_DeepCopy (
+        HASHT_DATA       *this
+    );
+
+
+#ifdef  HASHT_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    NODELINK_DATA * NodeLink_ParseJsonObject (
+    HASHT_DATA *       HashT_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -154,35 +207,35 @@ struct NodeLink_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeLink_ParseJsonFields (
+    ERESULT         HashT_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        NODELINK_DATA   *pObject
+        HASHT_DATA     *pObject
     );
 #endif
 
 
-    void *          NodeLink_QueryInfo (
+    void *          HashT_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  NODELINK_JSON_SUPPORT
+#ifdef  HASHT_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = NodeLink_ToJson(this);
+     ASTR_DATA      *pDesc = HashT_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
                 JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     NodeLink_ToJson (
-        NODELINK_DATA   *this
+    ASTR_DATA *     HashT_ToJson (
+        HASHT_DATA      *this
     );
 
 
@@ -195,8 +248,8 @@ struct NodeLink_data_s  {
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         NodeLink_ToJsonFields (
-        NODELINK_DATA   *this,
+    ERESULT         HashT_ToJsonFields (
+        HASHT_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -206,8 +259,8 @@ struct NodeLink_data_s  {
 
 #ifdef NDEBUG
 #else
-    bool            NodeLink_Validate (
-        NODELINK_DATA   *this
+    bool            HashT_Validate (
+        HASHT_DATA       *this
     );
 #endif
 
@@ -217,5 +270,5 @@ struct NodeLink_data_s  {
 }
 #endif
 
-#endif  /* NODELINK_INTERNAL_H */
+#endif  /* HASHT_INTERNAL_H */
 

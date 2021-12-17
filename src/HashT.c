@@ -1,7 +1,6 @@
-// vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   Syms.c
- *	Generated 02/22/2020 20:18:16
+ * File:   HashT.c
+ *  Generated 12/12/2021 15:40:13
  *
  */
 
@@ -41,8 +40,8 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <Syms_internal.h>
-#include        <ObjEnum_internal.h>
+#include        <HashT_internal.h>
+#include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
 
@@ -51,15 +50,27 @@
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
 
     
+    //****************************************************************
+    // * * * * * * * * * * *    Internal Data    * * * * * * * * * * *
+    //****************************************************************
+
+    // Place constant internal data here. Generally, it should be
+    // 'static' so that it does not interfere with other objects.
 
 
  
+    /****************************************************************
+    * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
+    ****************************************************************/
+
+
+
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
@@ -68,85 +79,38 @@ extern "C" {
     //                  D e l e t e  E x i t
     //---------------------------------------------------------------
 
-    ERESULT         Syms_DeleteExit (
-        SYMS_DATA       *this,
-        void            *pKey,
-        void            *pData
+    ERESULT         HashT_DeleteExit(
+        HASHT_DATA      *this,
+        HASHT_NODE      *pNode,
+        void            *pArg3
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
 
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+        if (this->pDelete) {
+            eRc =   this->pDelete(
+                                this->pDeleteObj,
+                                pNode->data,
+                                this->pDeleteArg3
+                    );
         }
-#endif
 
-        // We can ignore the key since it is part of the data object.
-
-        // Release the Opcode object.
-        obj_Release(pData);
-
-        // Return to caller.
         return eRc;
     }
 
 
-
-    //---------------------------------------------------------------
-    //                  S c a n  E x i t
-    //---------------------------------------------------------------
-
-    ERESULT         Syms_ScanExit (
-        SYMS_DATA       *this,
-        const
-        char            *pKey,
-        SYM_DATA        *pData,
-        OBJENUM_DATA    *pEnum
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        // We can ignore the key since it is part of the data object.
-        if (pData) {
-            eRc = ObjEnum_AppendObj(pEnum, pData);
-        }
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-
-
-    /****************************************************************
-    * * * * * * * * * * *  External Subroutines   * * * * * * * * * *
-    ****************************************************************/
 
 
     //===============================================================
     //                      *** Class Methods ***
     //===============================================================
 
-    SYMS_DATA *     Syms_Alloc (
+    HASHT_DATA *     HashT_Alloc (
         void
     )
     {
-        SYMS_DATA       *this;
-        uint32_t        cbSize = sizeof(SYMS_DATA);
+        HASHT_DATA       *this;
+        uint32_t        cbSize = sizeof(HASHT_DATA);
         
         // Do initialization.
         
@@ -158,15 +122,15 @@ extern "C" {
 
 
 
-    SYMS_DATA *     Syms_New (
+    HASHT_DATA *     HashT_New (
         void
     )
     {
-        SYMS_DATA       *this;
+        HASHT_DATA       *this;
         
-        this = Syms_Alloc( );
+        this = HashT_Alloc( );
         if (this) {
-            this = Syms_Init(this);
+            this = HashT_Init(this);
         } 
         return this;
     }
@@ -180,47 +144,100 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
-    //                         H a s h
+    //                  C o m p a r e  M e t h o d
     //---------------------------------------------------------------
 
-    OBJHASH_DATA *  Syms_getHash (
-        SYMS_DATA       *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pHash;
-    }
-
-
-    bool            Syms_setHash (
-        SYMS_DATA       *this,
-        OBJHASH_DATA    *pValue
+    bool            HashT_setCompare (
+        HASHT_DATA      *this,
+        int             (*pCompare)(void *, void *)
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
 #endif
 
-        obj_Retain(pValue);
-        if (this->pHash) {
-            obj_Release(this->pHash);
-        }
-        this->pHash = pValue;
+        this->pCompare = pCompare;
 
         return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                     D e l e t e  E x i t
+    //---------------------------------------------------------------
+
+    bool            HashT_setDeleteExit (
+        HASHT_DATA      *this,
+        P_ERESULT_EXIT3 pDelete,
+        OBJ_ID          pObj,           // Used as first parameter of scan method
+        void            *pArg3          // Used as third parameter of scan method
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!HashT_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pDelete = pDelete;
+        this->pDeleteObj = pObj;
+        this->pDeleteArg3 = pArg3;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          L o g
+    //---------------------------------------------------------------
+
+#ifdef   HASHT_LOG
+    bool            HashT_setLog (
+        HASHT_DATA   *this,
+        OBJ_ID          pObj
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!HashT_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->pLog = pObj;
+
+        return true;
+    }
+#endif
+
+
+
+    //---------------------------------------------------------------
+    //                        N u m  S c o p e s
+    //---------------------------------------------------------------
+
+    uint32_t        HashT_getNumScopes (
+        HASHT_DATA       *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!HashT_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return array_getSize(this->pLevels);
     }
 
 
@@ -229,15 +246,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        Syms_getPriority (
-        SYMS_DATA     *this
+    uint16_t        HashT_getPriority (
+        HASHT_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -248,14 +265,14 @@ extern "C" {
     }
 
 
-    bool            Syms_setPriority (
-        SYMS_DATA     *this,
+    bool            HashT_setPriority (
+        HASHT_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -272,36 +289,100 @@ extern "C" {
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        Syms_getSize (
-        SYMS_DATA       *this
+    uint32_t        HashT_getSize (
+        HASHT_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
-        return ObjHash_getSize(this->pHash);
+        return 0;
     }
 
 
 
     //---------------------------------------------------------------
+    //                              S t r
+    //---------------------------------------------------------------
+    
+    ASTR_DATA * HashT_getStr (
+        HASHT_DATA     *this
+    )
+    {
+        
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!HashT_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        
+        return this->pStr;
+    }
+    
+    
+    bool        HashT_setStr (
+        HASHT_DATA     *this,
+        ASTR_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!HashT_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pStr) {
+            obj_Release(this->pStr);
+        }
+        this->pStr = pValue;
+        
+        return true;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  Syms_getSuperVtbl (
-        SYMS_DATA     *this
+    HASHT_DATA *  HashT_getSuper (
+        HASHT_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        
+        return (HASHT_DATA *)this;
+    }
+
+    OBJ_IUNKNOWN *  HashT_getSuperVtbl (
+        HASHT_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -314,7 +395,6 @@ extern "C" {
   
 
 
-
     //===============================================================
     //                          M e t h o d s
     //===============================================================
@@ -324,111 +404,97 @@ extern "C" {
     //                          A d d
     //---------------------------------------------------------------
 
-    ERESULT         Syms_Add (
-        SYMS_DATA       *this,
-        SYM_DATA        *pEntry,
+    ERESULT         HashT_Add (
+        HASHT_DATA      *this,
+        uint32_t        hash,
+        void            *pData,
         uint32_t        *pIndex
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = HashT_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == pEntry) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-        if (obj_IsKindOf(pEntry, OBJ_IDENT_SYM))
-            ;
-        else {
-            return ERESULT_INVALID_PARAMETER;
-        }
 #endif
 
-        eRc = ObjHash_Add(this->pHash, pEntry, pIndex);
-        if (ERESULT_FAILED(eRc)) {
-            obj_Release(pEntry);
-        }
+        eRc = HashT_AddInScope(this, HashT_getNumScopes(this)-1, hash, pData, pIndex);
 
         // Return to caller.
         return eRc;
     }
 
 
-    ERESULT         Syms_AddInScope (
-        SYMS_DATA       *this,
+    ERESULT         HashT_AddInScope (
+        HASHT_DATA      *this,
         uint32_t        scope,
-        SYM_DATA        *pEntry,
+        uint32_t        hash,
+        void            *pData,
         uint32_t        *pIndex
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        unique;
+        uint32_t        index;
+        HASHT_NODE      *pNode;
+        LISTDL_DATA     list;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = HashT_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == pEntry) {
+        eRc = array_Get(this->pLevels, scope+1, 1, &list);
+        if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-        if (obj_IsKindOf(pEntry, OBJ_IDENT_SYM))
-            ;
-        else {
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
-        eRc = ObjHash_AddInScope(this->pHash, scope, pEntry, NULL);
-        if (ERESULT_FAILED(eRc)) {
-            obj_Release(pEntry);
+        pNode = Blocks_RecordNew((BLOCKS_DATA *)this, &unique);
+        if (NULL == pNode) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        pNode->unique = unique;
+        memmove(pNode->data, pData, this->dataSize);
+
+        // Add to head of Hash Chain Bucket.
+        index = hash % this->cHash;
+        listdl_Add2Head(&this->pHash[index], pNode);
+
+        // Add to head of given scope.
+        eRc = array_Get(this->pLevels, scope+1, 1, &list);
+        if (ERESULT_OK(eRc)) {
+            listdl_Add2Head(&this->pHash[index], pNode);
+            eRc = array_Put(this->pLevels, scope+1, 1, &list);
         }
 
         // Return to caller.
-        return eRc;
-    }
-
-
-    ERESULT         Syms_AddUnlinked (
-        SYMS_DATA       *this,
-        SYM_DATA        *pEntry,
-        uint32_t        *pIndex
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
+        if (pIndex) {
+            if (ERESULT_OK(eRc)) {
+                *pIndex = unique;
+            } else {
+                *pIndex = 0;
+            }
         }
-        if (OBJ_NIL == pEntry) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_PARAMETER;
-        }
-        if (obj_IsKindOf(pEntry, OBJ_IDENT_SYM))
-            ;
-        else {
-            return ERESULT_INVALID_PARAMETER;
-        }
-#endif
-
-        eRc = ObjHash_AddUnlinked(this->pHash, pEntry, pIndex);
-        if (ERESULT_FAILED(eRc)) {
-            obj_Release(pEntry);
-        }
-
-        // Return to caller.
         return eRc;
     }
 
@@ -444,16 +510,16 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = Syms_Assign(this,pOther);
+        ERESULT eRc = HashT_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another SYMS object
+     @param     pOther  a pointer to another HASHT object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         Syms_Assign (
-        SYMS_DATA		*this,
-        SYMS_DATA     *pOther
+    ERESULT         HashT_Assign (
+        HASHT_DATA       *this,
+        HASHT_DATA     *pOther
     )
     {
         ERESULT     eRc;
@@ -461,11 +527,11 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!Syms_Validate(pOther)) {
+        if (!HashT_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -504,8 +570,7 @@ extern "C" {
 #endif
 
         // Copy other data from this object to other.
-        
-        //goto eom;
+        //pOther->x     = this->x; 
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
@@ -527,37 +592,43 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             Syms_Compare (
-        SYMS_DATA       *this,
-        SYMS_DATA       *pOther
+    int             HashT_Compare (
+        HASHT_DATA     *this,
+        HASHT_DATA     *pOther
     )
     {
-        int             iRc = 0;
-
+        int             iRc = -1;
+#ifdef  xyzzy        
+        const
+        char            *pStr1;
+        const
+        char            *pStr2;
+#endif
+        
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = HashT_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!Syms_Validate(pOther)) {
+        if (!HashT_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
         }
 #endif
 
-#ifdef  xyzzy
-        if (this->token == pOther->token) {
-            return iRc;
-        }
-        iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
-#endif
-
+        //TODO: iRc = utf8_StrCmp(AStr_getData(this->pStr), AStr_getData(pOther->pStr));
+     
         return iRc;
     }
-
+    
    
  
     //---------------------------------------------------------------
@@ -568,36 +639,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Syms      *pCopy = Syms_Copy(this);
+        HashT      *pCopy = HashT_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a SYMS object which must be 
+     @return    If successful, a HASHT object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SYMS_DATA *     Syms_Copy (
-        SYMS_DATA       *this
+    HASHT_DATA *     HashT_Copy (
+        HASHT_DATA       *this
     )
     {
-        SYMS_DATA       *pOther = OBJ_NIL;
+        HASHT_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef SYMS_IS_IMMUTABLE
+#ifdef HASHT_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = Syms_New( );
+        pOther = HashT_New( );
         if (pOther) {
-            eRc = Syms_Assign(this, pOther);
+            eRc = HashT_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -615,11 +686,11 @@ extern "C" {
     //                        D e a l l o c
     //---------------------------------------------------------------
 
-    void            Syms_Dealloc (
+    void            HashT_Dealloc (
         OBJ_ID          objId
     )
     {
-        SYMS_DATA   *this = objId;
+        HASHT_DATA   *this = objId;
         //ERESULT         eRc;
 
         // Do initialization.
@@ -628,7 +699,7 @@ extern "C" {
         }        
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -636,11 +707,16 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((SYMS_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((HASHT_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        Syms_setHash(this, OBJ_NIL);
+        if (this->pHash) {
+            mem_Free(this->pHash);
+            this->pHash = NULL;
+            this->cHash = 0;
+        }
+        HashT_setStr(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -661,32 +737,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        Syms      *pDeepCopy = Syms_Copy(this);
+        HashT      *pDeepCopy = HashT_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a SYMS object which must be 
+     @return    If successful, a HASHT object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    SYMS_DATA *     Syms_DeepyCopy (
-        SYMS_DATA       *this
+    HASHT_DATA *     HashT_DeepCopy (
+        HASHT_DATA       *this
     )
     {
-        SYMS_DATA       *pOther = OBJ_NIL;
+        HASHT_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = Syms_New( );
+        pOther = HashT_New( );
         if (pOther) {
-            eRc = Syms_Assign(this, pOther);
+            eRc = HashT_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -700,36 +776,6 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                        D e l e t e
-    //---------------------------------------------------------------
-
-    ERESULT         Syms_DeleteA (
-        SYMS_DATA       *this,
-        int32_t         cls,
-        const
-        char            *pNameA
-    )
-    {
-        ERESULT         eRc = ERESULT_SUCCESS;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            return ERESULT_INVALID_OBJECT;
-        }
-#endif
-
-        //FIXME: eRc = szBT_DeleteA(this->pTree, pNameA);
-
-        // Return to caller.
-        return eRc;
-    }
-
-
-
-    //---------------------------------------------------------------
     //                      D i s a b l e
     //---------------------------------------------------------------
 
@@ -739,16 +785,22 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Syms_Disable (
-        SYMS_DATA		*this
+    ERESULT         HashT_Disable (
+        HASHT_DATA      *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = HashT_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -756,10 +808,11 @@ extern "C" {
 
         // Put code here...
 
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
         obj_Disable(this);
         
         // Return to caller.
-        return ERESULT_SUCCESS;
+        return eRc;
     }
 
 
@@ -774,163 +827,39 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Syms_Enable (
-        SYMS_DATA		*this
+    ERESULT         HashT_Enable (
+        HASHT_DATA      *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = HashT_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
+#ifdef   HASHT_MSGS
+        if (this->pMsgInfo) {
+            this->pMsgInfo(this->pMsgObj, "Enabling object!\n");
+        }
+#endif
         obj_Enable(this);
 
         // Put code here...
         
         // Return to caller.
-        return ERESULT_SUCCESS;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                        E n u m
-    //---------------------------------------------------------------
-
-    OBJENUM_DATA *  Syms_Enum (
-        SYMS_DATA       *this
-    )
-    {
-        //ERESULT         eRc;
-        OBJENUM_DATA    *pEnum = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-
-        pEnum = ObjHash_Enum(this->pHash);
-
-        // Return to caller.
-        return pEnum;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //                          F i n d
-    //---------------------------------------------------------------
-
-    SYM_DATA *      Syms_FindA (
-        SYMS_DATA       *this,
-        int32_t         cls,
-        const
-        char            *pNameA
-    )
-    {
-        //ERESULT         eRc;
-        SYM_DATA        *pSym = OBJ_NIL;
-        SYM_DATA        *pSymNew = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-
-        pSymNew = Sym_NewA(cls, pNameA);
-        if (pSymNew) {
-            pSym = (SYM_DATA *)ObjHash_Find(this->pHash, pSymNew);
-            obj_Release(pSymNew);
-            pSymNew = OBJ_NIL;
-        }
-
-        // Return to caller.
-        return pSym;
-    }
-
-
-    SYM_DATA *      Syms_FindW32 (
-        SYMS_DATA       *this,
-        int32_t         cls,
-        const
-        W32CHR_T        *pNameW32
-    )
-    {
-        //ERESULT         eRc;
-        SYM_DATA        *pSym = OBJ_NIL;
-        char            nameA[SYM_NAME_MAXLEN+1]; // NUL-terminated name
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-
-        utf8_W32StrToUtf8Str(0, pNameW32, (SYM_NAME_MAXLEN+1), nameA);
-        pSym = Syms_FindA(this, cls, nameA);
-
-        // Return to caller.
-        return pSym;
-    }
-
-
-    SYM_DATA *      Syms_FindAddr (
-        SYMS_DATA       *this,
-        uint32_t        section,            // Section/Segment Identifier (0 == none)
-        uint32_t        addr                // Address within Section/Segment
-    )
-    {
-        ERESULT         eRc;
-        SYM_DATA        *pSym = OBJ_NIL;
-        OBJENUM_DATA    *pEnum = OBJ_NIL;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
-        }
-#endif
-
-        pEnum = Syms_Enum(this);
-        if (pEnum) {
-            for (;;) {
-                eRc = ObjEnum_Next(pEnum, 1, (OBJ_ID *)&pSym, NULL);
-                if (ERESULT_FAILED(eRc)) {
-                    pSym = OBJ_NIL;
-                    break;
-                }
-                if ((section == Sym_getSection(pSym)) && (section == Sym_getSection(pSym)))
-                    break;
-            }
-            obj_Release(pEnum);
-            pEnum = OBJ_NIL;
-        }
-
-        // Return to caller.
-        return pSym;
+        return eRc;
     }
 
 
@@ -939,12 +868,12 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    SYMS_DATA *   Syms_Init (
-        SYMS_DATA       *this
+    HASHT_DATA *   HashT_Init (
+        HASHT_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(SYMS_DATA);
-        //ERESULT         eRc;
+        uint32_t        cbSize = sizeof(HASHT_DATA);
+        ERESULT         eRc;
         
         if (OBJ_NIL == this) {
             return OBJ_NIL;
@@ -960,7 +889,10 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_SYMS);
+        this = (OBJ_ID)Blocks_Init((BLOCKS_DATA *)this);    // Needed for Inheritance
+        // If you use inheritance, remember to change the obj_ClassObj reference 
+        // in the OBJ_INFO at the end of HashT_object.c
+        //this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_HASHT);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -968,22 +900,34 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Syms_Vtbl);
-#ifdef  SYMS_JSON_SUPPORT
-        JsonIn_RegisterClass(Sym_Class());
-        JsonIn_RegisterClass(Syms_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&HashT_Vtbl);
+#ifdef  HASHT_JSON_SUPPORT
+        JsonIn_RegisterClass(HashT_Class());
 #endif
+        
+        Blocks_setDeleteExit(
+                        (BLOCKS_DATA *)this,
+                        (void *)HashT_DeleteExit,
+                        this,               // 1st parameter
+                        NULL                // 3rd parameter
+        );
 
-        this->pHash = ObjHash_NewWithSize(OBJHASH_TABLE_SIZE_XXXSMALL);
-        if (OBJ_NIL == this->pHash) {
+        this->pLevels = array_NewWithSize(sizeof(LISTDL_DATA));
+        if (OBJ_NIL == this->pLevels) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
+        } else {
+            LISTDL_DATA     list;
+            // Add Scope 0.
+            listdl_Init(&list, offsetof(HASHT_NODE, level));
+            eRc = array_Push(this->pLevels, &list);
         }
+
 
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -992,11 +936,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "Syms::sizeof(SYMS_DATA) = %lu\n", 
-                sizeof(SYMS_DATA)
+                "HashT::sizeof(HASHT_DATA) = %lu\n", 
+                sizeof(HASHT_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(SYMS_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(HASHT_DATA));
 #endif
 
         return this;
@@ -1005,19 +949,25 @@ extern "C" {
      
 
     //---------------------------------------------------------------
-    //                       I s E n a b l e d
+    //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         Syms_IsEnabled (
-        SYMS_DATA		*this
+    ERESULT         HashT_IsEnabled (
+        HASHT_DATA       *this
     )
     {
         //ERESULT         eRc;
         
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = HashT_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -1044,14 +994,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = Syms_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = HashT_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "Syms", prefix,
+                        the object name, "HashT", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -1059,13 +1009,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          Syms_QueryInfo (
+    void *          HashT_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        SYMS_DATA     *this = objId;
+        HASHT_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -1074,7 +1024,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -1082,33 +1032,29 @@ extern "C" {
         
         switch (type) {
                 
-        case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-            return (void *)sizeof(SYMS_DATA);
-            break;
+            case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
+                return (void *)sizeof(HASHT_DATA);
+                break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)Syms_Class();
+                return (void *)HashT_Class();
                 break;
-                
-#ifdef XYZZY  
-        // Query for an address to specific data within the object.  
-        // This should be used very sparingly since it breaks the 
-        // object's encapsulation.                 
-        case OBJ_QUERYINFO_TYPE_DATA_PTR:
-            switch (*pStr) {
- 
-                case 'S':
-                    if (str_Compare("SuperVtbl", (char *)pStr) == 0) {
-                        return &this->pSuperVtbl;
-                    }
-                    break;
-                    
-                default:
-                    break;
-            }
-            break;
-#endif
-             case OBJ_QUERYINFO_TYPE_INFO:
+                              
+            case OBJ_QUERYINFO_TYPE_DATA_PTR:
+                switch (*pStr) {
+     
+                    case 'S':
+                        if (str_Compare("SuperClass", (char *)pStr) == 0) {
+                            return (void *)(obj_getInfo(this)->pClassSuperObject);
+                        }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                break;
+
+            case OBJ_QUERYINFO_TYPE_INFO:
                 return (void *)obj_getInfo(this);
                 break;
                 
@@ -1117,34 +1063,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return Syms_Disable;
+                            return HashT_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return Syms_Enable;
+                            return HashT_Enable;
                         }
                         break;
 
-#ifdef  SYMS_JSON_SUPPORT
                     case 'P':
+#ifdef  HASHT_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return Syms_ParseJsonFields;
+                            return HashT_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return Syms_ParseJsonObject;
+                            return HashT_ParseJsonObject;
                         }
-                        break;
 #endif
+                        break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return Syms_ToDebugString;
+                            return HashT_ToDebugString;
                         }
-#ifdef  SYMS_JSON_SUPPORT
+#ifdef  HASHT_JSON_SUPPORT
+                        if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
+                            return HashT_ToJsonFields;
+                        }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return Syms_ToJson;
+                            return HashT_ToJson;
                         }
 #endif
                         break;
@@ -1155,10 +1104,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == Syms_ToDebugString)
+                if (pData == HashT_ToDebugString)
                     return "ToDebugString";
-#ifdef  SYMS_JSON_SUPPORT
-                if (pData == Syms_ToJson)
+#ifdef  HASHT_JSON_SUPPORT
+                if (pData == HashT_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -1173,92 +1122,148 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                       S c o p e
+    //                      S c o p e
     //---------------------------------------------------------------
 
-    ERESULT         Syms_ScopeClose (
-        SYMS_DATA       *this,
-        OBJENUM_DATA    **ppEnum
+    ERESULT         HashT_ScopeClose (
+        HASHT_DATA      *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        LISTDL_DATA     list;
+        HASHT_NODE      *pNode;
+        HASHT_NODE      *pNext = NULL;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = HashT_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
 
-        // Return to caller.
-        return ObjHash_ScopeClose(this->pHash, ppEnum);
-    }
+        // Remove the scope.
+        eRc = array_Pop(this->pLevels, &list);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
 
-
-    uint32_t        Syms_ScopeCount (
-        SYMS_DATA       *this,
-        uint32_t        scope
-    )
-    {
-        //ERESULT         eRc;
-
-        // Do initialization.
-#ifdef NDEBUG
-#else
-        if (!Syms_Validate(this)) {
-            DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return 0;
+        // Now remove the scope entries from the table.
+#ifdef XYZZY
+        pNode = listdl_Head(&list);
+        while (pNode) {
+            pNext = listdl_Next(&list, &pNext);
         }
 #endif
 
         // Return to caller.
-        return ObjHash_ScopeCount(this->pHash, scope);
+        return eRc;
     }
 
-    
-    OBJENUM_DATA *  Syms_ScopeEnum (
-        SYMS_DATA       *this,
-        uint32_t        scope
+
+    uint32_t        HashT_ScopeOpen (
+        HASHT_DATA      *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        LISTDL_DATA     list;
+        uint32_t        level = 0;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = HashT_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return OBJ_NIL;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
+        listdl_Init(&list, offsetof(HASHT_NODE, level));
+        eRc = array_Push(this->pLevels, &list);
+        if (ERESULT_OK(eRc)) {
+            level = HashT_getNumScopes(this) - 1;
+        }
+
         // Return to caller.
-        return ObjHash_ScopeEnum(this->pHash, scope);
+        return level;
     }
 
-    
-    int32_t         Syms_ScopeOpen (
-        SYMS_DATA       *this
+
+
+    //---------------------------------------------------------------
+    //                      S e t u p
+    //---------------------------------------------------------------
+
+    /*!
+     Perform initial setup of the hash table.
+     @param     this        object pointer
+     @param     dataSize    Size in bytes of the data
+     @param     cHash       Number of Buckets in the Hash Table.
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         HashT_Setup (
+        HASHT_DATA      *this,
+        uint16_t        dataSize,
+        uint16_t        cHash           // [in] Hash Table Size
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        cbSize;
+        uint32_t        i;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  HASHT_SINGLETON
+        if (OBJ_NIL == this) {
+            this = HashT_Shared();
+        }
+#endif
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
-            //return ERESULT_INVALID_OBJECT;
-            return -1;
+            return ERESULT_INVALID_OBJECT;
         }
 #endif
 
+        dataSize = ROUNDUP4(dataSize);
+        dataSize += sizeof(HASHT_NODE);
+
+        eRc = Blocks_SetupSizes((BLOCKS_DATA *)this, 0, dataSize);
+        if (ERESULT_FAILED(eRc)) {
+           DEBUG_BREAK();
+           return eRc;
+        }
+
+        // Allocate the Hash Table.
+        cbSize = cHash * sizeof(LISTDL_DATA);
+        this->pHash = (LISTDL_DATA *)mem_Malloc(cbSize);
+        if (NULL == this->pHash) {
+           DEBUG_BREAK();
+           return ERESULT_OUT_OF_MEMORY;
+        }
+        this->cHash = cHash;
+        for (i=0; i<cHash; ++i) {
+           listdl_Init(&this->pHash[i], offsetof(HASHT_NODE, list));
+        }
+        listdl_Init(&this->freeList, offsetof(HASHT_NODE, list));
+
         // Return to caller.
-        return ObjHash_ScopeOpen(this->pHash);
+        return eRc;
     }
 
 
@@ -1271,7 +1276,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = Syms_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = HashT_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -1279,24 +1284,23 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Syms_ToDebugString (
-        SYMS_DATA      *this,
+    ASTR_DATA *     HashT_ToDebugString (
+        HASHT_DATA      *this,
         int             indent
     )
     {
         ERESULT         eRc;
         ASTR_DATA       *pStr;
-        //ASTR_DATA       *pWrkStr = OBJ_NIL;
+        //ASTR_DATA       *pWrkStr;
         const
         OBJ_INFO        *pInfo;
         //uint32_t        i;
         //uint32_t        j;
-        OBJENUM_DATA    *pEnum = OBJ_NIL;
         
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!Syms_Validate(this)) {
+        if (!HashT_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -1317,40 +1321,21 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    Syms_getSize(this),
+                    HashT_getSize(this),
                     obj_getRetainCount(this)
             );
 
-        pEnum = Syms_Enum(this);
-        if (pEnum) {
-            for (;;) {
-                SYM_DATA        *pSym = OBJ_NIL;
-                ASTR_DATA       *pWrk = OBJ_NIL;
-                eRc = ObjEnum_Next(pEnum, 1, (OBJ_ID *)&pSym, NULL);
-                if (ERESULT_FAILED(eRc)) {
-                    break;
-                }
-                if (pSym) {
-                    pWrk = Sym_ToDebugString(pSym, indent+4);
-                    if (pWrk) {
-                        AStr_Append(pStr, pWrk);
-                        obj_Release(pWrk);
-                    }
-                }
-            }
-            obj_Release(pEnum);
-            pEnum = OBJ_NIL;
-        }
-
-#ifdef  XYZZY
+#ifdef  XYZZY        
         if (this->pData) {
             if (((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString) {
                 pWrkStr =   ((OBJ_DATA *)(this->pData))->pVtbl->pToDebugString(
                                                     this->pData,
                                                     indent+3
                             );
-                AStr_Append(pStr, pWrkStr);
-                obj_Release(pWrkStr);
+                if (pWrkStr) {
+                    AStr_Append(pStr, pWrkStr);
+                    obj_Release(pWrkStr);
+                }
             }
         }
 #endif
@@ -1376,15 +1361,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            Syms_Validate (
-        SYMS_DATA      *this
+    bool            HashT_Validate (
+        HASHT_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_SYMS))
+            if (obj_IsKindOf(this, OBJ_IDENT_HASHT))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1400,7 +1385,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(SYMS_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(HASHT_DATA))) {
             return false;
         }
 
@@ -1413,7 +1398,7 @@ extern "C" {
     
     
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
