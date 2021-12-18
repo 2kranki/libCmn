@@ -377,6 +377,28 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //          L o o k  A h e a d  I n t e r f a c e
+    //---------------------------------------------------------------
+
+    LA_INTERFACE *  SrcFile_getLaInterface (
+        SRCFILE_DATA    *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SrcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (LA_INTERFACE *)this;
+    }
+
+
+    //---------------------------------------------------------------
     //                         P a t h
     //---------------------------------------------------------------
 
@@ -457,6 +479,48 @@ extern "C" {
 #endif
 
         //this->priority = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //              L o o k  A h e a d  Q u e u e
+    //---------------------------------------------------------------
+
+    uint16_t        SrcFile_getQueueSize (
+        SRCFILE_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SrcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->sizeInputs;
+    }
+
+
+    bool            SrcFile_setQueueSize (
+        SRCFILE_DATA    *this,
+        uint16_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!SrcFile_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        this->sizeInputs = value;
 
         return true;
     }
@@ -1154,6 +1218,43 @@ extern "C" {
     }
 
 
+    int32_t         SrcFile_InputAdvance2 (
+        SRCFILE_DATA    *this,
+        uint16_t        num,
+        TOKEN_DATA      **ppToken
+    )
+    {
+        uint32_t        i;
+        TOKEN_DATA      *pToken = OBJ_NIL;
+        ERESULT         eRc;
+        int32_t         class = -1;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !SrcFile_Validate(this) ) {
+            DEBUG_BREAK();
+            return class;
+        }
+#endif
+
+        // Shift inputs.
+        for (i=0; i<num; ++i) {
+            eRc = SrcFile_InputNextChar(this);
+        }
+
+        pToken = &this->pInputs[this->curInputs];
+        if (pToken) {
+            class = Token_getClass(pToken);
+        }
+
+        // Return to caller.
+        if (ppToken)
+            *ppToken = pToken;
+        return class;
+    }
+
+
 
     //--------------------------------------------------------------
     //               I n p u t  L o o k  A h e a d
@@ -1187,6 +1288,41 @@ extern "C" {
         return pToken;
     }
 
+
+    int32_t         SrcFile_InputLookAhead2 (
+        SRCFILE_DATA    *this,
+        uint16_t        num,
+        TOKEN_DATA      **ppToken
+    )
+    {
+        uint16_t        idx;
+        TOKEN_DATA      *pToken = OBJ_NIL;
+        int32_t         class = -1;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!SrcFile_Validate( this )) {
+            DEBUG_BREAK();
+            return class;
+        }
+        if (num > this->sizeInputs) {
+            DEBUG_BREAK();
+            return class;
+        }
+#endif
+
+        idx = (this->curInputs + num - 1) % this->sizeInputs;
+        pToken = &this->pInputs[idx];
+        if (pToken) {
+            class = Token_getClass(pToken);
+        }
+
+        // Return to caller.
+        if (ppToken)
+            *ppToken = pToken;
+        return class;
+    }
 
 
 

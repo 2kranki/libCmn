@@ -91,7 +91,50 @@ extern "C" {
         // method names to the vtbl definition in SrcFiles_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(SRCFILES_DATA *);
+
+        /*! Advance() advances the current input source num elements.
+         @param     this    object pointer
+         @param     num     number of tokens to advance
+         @param     ppToken optional pointer to return token pointer into
+                            (If this token needs to be retained, then it
+                            must be copied. The lexical analyzer may re-
+                            use it.)
+         @return    token type and token address if ppToken is non-null;
+                    otherwise, EOF(-1).
+         */
+        int32_t             (*pAdvance)(
+                OBJ_ID          this,
+                uint16_t        num,
+                TOKEN_DATA      *ppToken    // Optional Token pointer
+        );
+
+        /*! LookAhead() returns the requested token if it is within its
+            look-ahead buffer. The look-ahead queue size is set when the
+            Lexical Analyzer is created.
+         @param     this    object pointer
+         @param     num     number of tokens to advance
+         @param     ppToken optional pointer to return token pointer into
+                            (If this token needs to be retained, then it
+                            must be copied. The lexical analyzer may re-
+                            use it.)
+         @return    token type and token address if ppToken is non-null;
+                    otherwise, EOF(-1).
+         */
+        int32_t             (*pLookAhead)(
+                OBJ_ID,
+                uint16_t        num,
+                TOKEN_DATA      *ppToken    // Optional Token pointer
+        );
+
+        /*! BufferSize() returns the Lexical Analyzer's look-ahead queue
+         size.
+         @param     this    object pointer
+         @return    the Lexical Analyzer's look-ahead queue size
+         */
+        int32_t             (*pQueueSize)(
+                OBJ_ID          this
+        );
+
     } SRCFILES_VTBL;
 
     typedef struct SrcFiles_class_vtbl_s    {
@@ -164,16 +207,26 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    OBJARRAY_DATA * SrcFiles_getPaths(
+    LA_INTERFACE *  SrcFiles_getLaInterface (
         SRCFILES_DATA   *this
     );
 
 
-    bool            SrcFiles_getReuse(
+    OBJARRAY_DATA * SrcFiles_getPaths (
         SRCFILES_DATA   *this
     );
 
-    bool            SrcFiles_setReuse(
+
+    uint16_t        SrcFiles_getQueueSize (
+        SRCFILES_DATA   *this
+    );
+
+
+    bool            SrcFiles_getReuse (
+        SRCFILES_DATA   *this
+    );
+
+    bool            SrcFiles_setReuse (
         SRCFILES_DATA   *this,
         bool            fValue
     );
@@ -184,25 +237,37 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    uint16_t        SrcFiles_AddPath(
+    uint16_t        SrcFiles_AddPath (
         SRCFILES_DATA   *this
     );
 
 
-    SRCFILES_DATA * SrcFiles_Init(
+    SRCFILES_DATA * SrcFiles_Init (
         SRCFILES_DATA   *this
     );
 
 
-    TOKEN_DATA *    SrcFiles_InputAdvance(
+    TOKEN_DATA *    SrcFiles_InputAdvance (
         SRCFILES_DATA   *this,
         uint16_t        numChrs
     );
 
+    int32_t         SrcFiles_InputAdvance2 (
+        SRCFILES_DATA   *this,
+        uint16_t        num,
+        TOKEN_DATA      **ppToken
+    );
 
-    TOKEN_DATA *    SrcFiles_InputLookAhead(
+
+    TOKEN_DATA *    SrcFiles_InputLookAhead (
         SRCFILES_DATA   *this,
         uint16_t        num
+    );
+
+    int32_t         SrcFiles_InputLookAhead2 (
+        SRCFILES_DATA   *this,
+        uint16_t        num,
+        TOKEN_DATA      **ppToken
     );
 
 
@@ -210,7 +275,7 @@ extern "C" {
      Create a new srcFile object from the given parameters and push it to the
      top of the stack.
      */
-    ERESULT         SrcFiles_NewSrcFromAStr(
+    ERESULT         SrcFiles_NewSrcFromAStr (
         SRCFILES_DATA   *this,
         PATH_DATA       *pFilePath,
         ASTR_DATA       *pAStr,         // Buffer of file data
@@ -218,21 +283,21 @@ extern "C" {
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
 
-    ERESULT         SrcFiles_NewSrcFromFile(
+    ERESULT         SrcFiles_NewSrcFromFile (
         SRCFILES_DATA   *this,
         FILE            *pFile,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
 
-    ERESULT         SrcFiles_NewSrcFromPath(
+    ERESULT         SrcFiles_NewSrcFromPath (
         SRCFILES_DATA   *this,
         PATH_DATA       *pFilePath,
         uint16_t        fileIndex,      // File Path Index for a separate path table
         uint16_t        tabSize         // Tab Spacing if any (0 will default to 4)
     );
 
-    ERESULT         SrcFiles_NewSrcFromW32Str(
+    ERESULT         SrcFiles_NewSrcFromW32Str (
         SRCFILES_DATA   *this,
         PATH_DATA       *pFilePath,
         W32STR_DATA     *pStr,          // Buffer of file data
@@ -241,18 +306,18 @@ extern "C" {
     );
 
 
-    ERESULT         SrcFiles_StackPop(
+    ERESULT         SrcFiles_StackPop (
         SRCFILES_DATA   *this
     );
 
 
-    ERESULT         SrcFiles_StackPush(
+    ERESULT         SrcFiles_StackPush (
         SRCFILES_DATA   *this,
         SRCFILE_DATA    *pItem
     );
 
 
-    SRCFILE_DATA *  SrcFiles_StackTop(
+    SRCFILE_DATA *  SrcFiles_StackTop (
         SRCFILES_DATA   *this
     );
 

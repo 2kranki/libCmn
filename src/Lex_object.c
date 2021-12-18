@@ -476,8 +476,11 @@ LEX_VTBL     Lex_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    (void *)Lex_TokenAdvance,
-    (void *)Lex_TokenLookAhead,
+    /* The following must conform to the laInterface.
+     */
+    (void *)Lex_TokenAdvance2,
+    (void *)Lex_TokenLookAhead2,
+    (void *)Lex_getSize
 
 };
 

@@ -476,8 +476,12 @@ LEXTRI_VTBL     LexTri_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //LexTri_IsEnabled,
- 
+    /* The following must conform to the laInterface.
+     */
+    (void *)Lex_TokenAdvance2,
+    (void *)Lex_TokenLookAhead2,
+    (void *)Lex_getSize
+
 };
 
 

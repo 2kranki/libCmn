@@ -476,8 +476,9 @@ SRCFILE_VTBL     SrcFile_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    (void *)SrcFile_InputAdvance,
-    (void *)SrcFile_InputLookAhead,
+    (void *)SrcFile_InputAdvance2,
+    (void *)SrcFile_InputLookAhead2,
+    (void *)SrcFile_getQueueSize,
 
 };
 

@@ -265,6 +265,31 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //          L o o k  A h e a d  I n t e r f a c e
+    //---------------------------------------------------------------
+
+    LA_INTERFACE *  LexC_getLaInterface (
+        LEXC_DATA       *this
+    )
+    {
+        LEX_DATA        *pLex;
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!LexC_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pLex = LexC_getLex(this);
+
+        return Lex_getLaInterface(pLex);
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          P r i o r i t y
     //---------------------------------------------------------------
     

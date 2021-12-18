@@ -75,7 +75,7 @@ struct Parser_data_s	{
     #define PARSER_INIT_DONE    OBJ_FLAG_USER1
 
     // Common Data
-    LEX_DATA        *pLex;
+    PARSER_COMMON   common;
     COMPILER_DATA   *pCompiler;
     SRCERRORS_DATA  *pErrors;
     OBJ_ID          pAux1;

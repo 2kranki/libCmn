@@ -430,6 +430,31 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //          L o o k  A h e a d  I n t e r f a c e
+    //---------------------------------------------------------------
+
+    LA_INTERFACE *  LexJ_getLaInterface (
+        LEXJ_DATA       *this
+    )
+    {
+        LEX_DATA        *pLex;
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!LexJ_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pLex = LexJ_getLex(this);
+
+        return Lex_getLaInterface(pLex);
+    }
+
+
+
+    //---------------------------------------------------------------
     //                              L e x
     //---------------------------------------------------------------
 

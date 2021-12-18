@@ -93,7 +93,50 @@ extern "C" {
         // method names to the vtbl definition in LexTri_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(LEXTRI_DATA *);
+
+        /*! Advance() advances the current input source num elements.
+         @param     this    object pointer
+         @param     num     number of tokens to advance
+         @param     ppToken optional pointer to return token pointer into
+                            (If this token needs to be retained, then it
+                            must be copied. The lexical analyzer may re-
+                            use it.)
+         @return    token type and token address if ppToken is non-null;
+                    otherwise, EOF(-1).
+         */
+        int32_t             (*pAdvance)(
+                OBJ_ID          this,
+                uint16_t        num,
+                TOKEN_DATA      *ppToken    // Optional Token pointer
+        );
+
+        /*! LookAhead() returns the requested token if it is within its
+            look-ahead buffer. The look-ahead queue size is set when the
+            Lexical Analyzer is created.
+         @param     this    object pointer
+         @param     num     number of tokens to advance
+         @param     ppToken optional pointer to return token pointer into
+                            (If this token needs to be retained, then it
+                            must be copied. The lexical analyzer may re-
+                            use it.)
+         @return    token type and token address if ppToken is non-null;
+                    otherwise, EOF(-1).
+         */
+        int32_t             (*pLookAhead)(
+                OBJ_ID,
+                uint16_t        num,
+                TOKEN_DATA      *ppToken    // Optional Token pointer
+        );
+
+        /*! BufferSize() returns the Lexical Analyzer's look-ahead queue
+         size.
+         @param     this    object pointer
+         @return    the Lexical Analyzer's look-ahead queue size
+         */
+        int32_t             (*pQueueSize)(
+                OBJ_ID          this
+        );
+
     } LEXTRI_VTBL;
 
     typedef struct LexTri_class_vtbl_s    {
@@ -118,7 +161,7 @@ extern "C" {
     //---------------------------------------------------------------
 
 #ifdef  LEXTRI_SINGLETON
-    LEXTRI_DATA *     LexTri_Shared (
+    LEXTRI_DATA *   LexTri_Shared (
         void
     );
 
@@ -134,7 +177,7 @@ extern "C" {
      released.
      @return    pointer to LexTri object if successful, otherwise OBJ_NIL.
      */
-    LEXTRI_DATA *     LexTri_Alloc (
+    LEXTRI_DATA *   LexTri_Alloc (
         void
     );
     
@@ -144,17 +187,17 @@ extern "C" {
     );
     
     
-    LEXTRI_DATA *     LexTri_New (
+    LEXTRI_DATA *   LexTri_New (
         void
     );
     
     
 #ifdef  LEXTRI_JSON_SUPPORT
-    LEXTRI_DATA *   LexTri_NewFromJsonString (
+    LEXTRI_DATA *  LexTri_NewFromJsonString (
         ASTR_DATA       *pString
     );
 
-    LEXTRI_DATA *   LexTri_NewFromJsonStringA (
+    LEXTRI_DATA *  LexTri_NewFromJsonStringA (
         const
         char            *pStringA
     );
@@ -166,6 +209,14 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    LA_INTERFACE *  LexTri_getLaInterface (
+        LEXTRI_DATA     *this
+    );
+
+
+    LEX_DATA *      LexTri_getLex (
+        LEXTRI_DATA     *this
+    );
 
 
     
@@ -173,13 +224,13 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    ERESULT     LexTri_Disable (
-        LEXTRI_DATA       *this
+    ERESULT         LexTri_Disable (
+        LEXTRI_DATA     *this
     );
 
 
-    ERESULT     LexTri_Enable (
-        LEXTRI_DATA       *this
+    ERESULT         LexTri_Enable (
+        LEXTRI_DATA     *this
     );
 
    
@@ -188,8 +239,8 @@ extern "C" {
     );
 
 
-    ERESULT     LexTri_IsEnabled (
-        LEXTRI_DATA       *this
+    ERESULT         LexTri_IsEnabled (
+        LEXTRI_DATA     *this
     );
     
  

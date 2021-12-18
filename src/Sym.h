@@ -97,33 +97,93 @@ extern "C" {
         //bool        (*pIsEnabled)(SYM_DATA *);
     } SYM_CLASS_VTBL;
 
-
-    // Primitive Types
-    // Note: Signed Types are even, unsigned types are odd.
     /* The following enum was generated from:
-     * "sym_prim.txt"
+     * "sym_c_prim.txt"
      * If you want to change this enum, you
      * should alter the above file and
      * regenerate using genEnum!
      */
 
-    typedef enum Sym_Prim_e {
-        SYM_PRIM_UNKNOWN=0,
-        SYM_PRIM_CHAR=1,
-        SYM_PRIM_UCHAR=2,
-        SYM_PRIM_HALF=3,
-        SYM_PRIM_UHALF=4,
-        SYM_PRIM_WORD=5,
-        SYM_PRIM_UWORD=6,
-        SYM_PRIM_DBLWORD=7,
-        SYM_PRIM_UDBLWORD=8,
-        SYM_PRIM_QUAD=9,
-        SYM_PRIM_UQUAD=10,
-        SYM_PRIM_VOID=11,
-        SYM_PRIM_POINTER=12,
-        SYM_PRIM_STRUCT=13,
-        SYM_PRIM_UNION=14,
-    } SYM_PRIMS;
+    typedef enum Sym_C_Prim_e {
+        SYM_C_PRIM_UNKNOWN=0,
+        SYM_C_PRIM_FUNC_PTR=1,
+        SYM_C_PRIM_CHAR=2,
+        SYM_C_PRIM_CHAR_PTR=3,
+        SYM_C_PRIM_SCHAR=4,
+        SYM_C_PRIM_SCHAR_PTR=5,
+        SYM_C_PRIM_UCHAR=6,
+        SYM_C_PRIM_UCHAR_PTR=7,
+        SYM_C_PRIM_SHORT=8,
+        SYM_C_PRIM_SHORT_PTR=9,
+        SYM_C_PRIM_SSHORT=10,
+        SYM_C_PRIM_SSHORT_PTR=11,
+        SYM_C_PRIM_USHORT=12,
+        SYM_C_PRIM_USHORT_PTR=13,
+        SYM_C_PRIM_INT=14,
+        SYM_C_PRIM_INT_PTR=15,
+        SYM_C_PRIM_SINT=16,
+        SYM_C_PRIM_SINT_PTR=17,
+        SYM_C_PRIM_UINT=18,
+        SYM_C_PRIM_UINT_PTR=19,
+        SYM_C_PRIM_LONG=20,
+        SYM_C_PRIM_LONG_PTR=21,
+        SYM_C_PRIM_SLONG=22,
+        SYM_C_PRIM_SLONG_PTR=23,
+        SYM_C_PRIM_ULONG=24,
+        SYM_C_PRIM_ULONG_PTR=25,
+        SYM_C_PRIM_LONGLONG=26,
+        SYM_C_PRIM_LONGLONG_PTR=27,
+        SYM_C_PRIM_SLONGLONG=28,
+        SYM_C_PRIM_SLONGLONG_PTR=29,
+        SYM_C_PRIM_ULONGLONG=30,
+        SYM_C_PRIM_ULONGLONG_PTR=31,
+        SYM_C_PRIM_VOID=32,
+        SYM_C_PRIM_VOID_PTR=33,
+        SYM_C_PRIM_ENUM=34,
+        SYM_C_PRIM_ENUM_PTR=35,
+        SYM_C_PRIM_STRUCT=36,
+        SYM_C_PRIM_STRUCT_PTR=37,
+        SYM_C_PRIM_UNION=38,
+        SYM_C_PRIM_UNION_PTR=39,
+        SYM_C_PRIM_MACRO=40,
+    } SYM_C_PRIMS;
+
+#define SYM_C_PRIM_BASE_LOW         1
+#define SYM_C_PRIM_BASE_HIGH        35
+#define SYM_C_PRIM_PTR_MASK         0x0001
+#define SYM_C_PRIM_STRUCT_LOW       36
+#define SYM_C_PRIM_STRUCT_HIGH      39
+
+
+    /* The following enum was generated from:
+     * "sym_phy_prim.txt"
+     * If you want to change this enum, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    typedef enum Sym_Phy_Prim_e {
+        SYM_PHY_PRIM_UNKNOWN=0,
+        SYM_PHY_PRIM_CHAR=1,
+        SYM_PHY_PRIM_SCHAR=2,
+        SYM_PHY_PRIM_UCHAR=3,
+        SYM_PHY_PRIM_HALF=4,
+        SYM_PHY_PRIM_SHALF=5,
+        SYM_PHY_PRIM_UHALF=6,
+        SYM_PHY_PRIM_SWORD=7,
+        SYM_PHY_PRIM_WORD=8,
+        SYM_PHY_PRIM_UWORD=9,
+        SYM_PHY_PRIM_DBLWORD=10,
+        SYM_PHY_PRIM_SDBLWORD=11,
+        SYM_PHY_PRIM_UDBLWORD=12,
+        SYM_PHY_PRIM_QUAD=13,
+        SYM_PHY_PRIM_SQUAD=14,
+        SYM_PHY_PRIM_UQUAD=15,
+        SYM_PHY_PRIM_VOID=16,
+        SYM_PHY_PRIM_POINTER=17,
+        SYM_PHY_PRIM_STRUCT=18,
+        SYM_PHY_PRIM_UNION=19,
+    } SYM_PHY_PRIMS;
 
 
 
@@ -182,13 +242,15 @@ extern "C" {
         #define SYM_FLGS2_UNUSED6   0x04        // Unused Flag
         #define SYM_FLGS2_UNUSED7   0x02        // Unused Flag
         #define SYM_FLGS2_UNUSED8   0x01        // Unused Flag
-        uint8_t         extra1;             // Used as needed
+        uint8_t         level;              // For pointer types, this represents the
+        //                                  // level of the pointer (ie for C, the '*'
+        //                                  // count.
         SRCLOC          loc;                // Source Definition Location
         uint32_t        hash;               // Hash Code for name
         uint32_t        token;              // unique token for name
         int32_t         cls;                // User Defined Class
         int32_t         type;               // See SYM_TYPE
-        uint32_t        strct;              // Struct Identifier (0 == none)
+        uint32_t        strct;              // Enum/Struct/Union Identifier (0 == none)
         uint32_t        link;               // index linkage if needed (0 == none)
         uint32_t        storcls;            // Storage Class (See SYM_STORAGE_TYPES)
         uint32_t        section;            // Section/Segment Identifier (0 == none)

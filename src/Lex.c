@@ -1314,6 +1314,29 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //          L o o k  A h e a d  I n t e r f a c e
+    //---------------------------------------------------------------
+
+    LA_INTERFACE *  Lex_getLaInterface (
+        LEX_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Lex_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (LA_INTERFACE *)this;
+    }
+
+
+
+    //---------------------------------------------------------------
     //  A l l o w  M u l t i - b y t e  C h a r  C o n s t a n t s
     //---------------------------------------------------------------
 
@@ -1492,7 +1515,7 @@ extern "C" {
         }
 #endif
 
-        return 0;
+        return this->sizeOutputs;
     }
 
 
@@ -3821,6 +3844,36 @@ extern "C" {
     }
 
 
+    int32_t         Lex_TokenAdvance2 (
+        LEX_DATA        *this,
+        uint16_t        num,
+        TOKEN_DATA      **ppToken
+    )
+    {
+        TOKEN_DATA      *pToken = OBJ_NIL;
+        int32_t         tokenType = -1;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Lex_Validate(this)) {
+            DEBUG_BREAK();
+            return -1;
+        }
+#endif
+
+        pToken = Lex_TokenAdvance(this, num);
+        if (pToken) {
+            tokenType = Token_getClass(pToken);
+        }
+
+        // Return to caller.
+        if (ppToken)
+            *ppToken = pToken;
+        return tokenType;
+    }
+
+
 
     //--------------------------------------------------------------
     //               T o k e n  L o o k  A h e a d
@@ -3884,6 +3937,36 @@ extern "C" {
         }
 #endif
         return pToken;
+    }
+
+
+    int32_t         Lex_TokenLookAhead2 (
+        LEX_DATA        *this,
+        uint16_t        num,
+        TOKEN_DATA      **ppToken
+    )
+    {
+        TOKEN_DATA      *pToken = OBJ_NIL;
+        int32_t         tokenType = -1;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Lex_Validate(this)) {
+            DEBUG_BREAK();
+            return -1;
+        }
+#endif
+
+        pToken = Lex_TokenLookAhead(this, num);
+        if (pToken) {
+            tokenType = Token_getClass(pToken);
+        }
+
+        // Return to caller.
+        if (ppToken)
+            *ppToken = pToken;
+        return tokenType;
     }
 
 

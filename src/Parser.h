@@ -53,10 +53,12 @@
 #include        <cmn_defs.h>
 #include        <AStr.h>
 #include        <Compiler.h>
+#include        <laInterface.h>
 #include        <Lex.h>
 #include        <Node.h>
 #include        <ObjList.h>
 #include        <SrcLoc.h>
+#include        <Syms.h>
 
 
 #ifndef         PARSER_H
@@ -109,6 +111,17 @@ extern "C" {
     } PARSER_ACTION_TYPE;
 
 
+    typedef struct Parser_common_s {
+        TOKEN_DATA      *pToken;
+        int32_t         tokenType;
+        LA_INTERFACE    *pLA;           // Look-ahead Lexical Interface
+        LEX_DATA        *pLex;
+        NODETREE_DATA   *pTree;         // Parse Tree
+        SYMS_DATA       *pGlobals;      // Global Symbols
+        SYMS_DATA       *pLocals;
+    } PARSER_COMMON;
+
+
 
 
     /****************************************************************
@@ -157,33 +170,43 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
-    OBJ_ID          Parser_getAux1(
+    OBJ_ID          Parser_getAux1 (
         PARSER_DATA     *this
     );
 
-    bool            Parser_setAux1(
+    bool            Parser_setAux1 (
         PARSER_DATA     *this,
         OBJ_ID           pValue
     );
 
 
-    OBJ_ID          Parser_getAux2(
+    OBJ_ID          Parser_getAux2 (
         PARSER_DATA     *this
     );
 
-    bool            Parser_setAux2(
+    bool            Parser_setAux2 (
         PARSER_DATA     *this,
         OBJ_ID           pValue
     );
 
 
-    COMPILER_DATA * Parser_getCompiler(
+    PARSER_COMMON * Parser_getCommon (
         PARSER_DATA     *this
     );
 
-    bool            Parser_setCompiler(
+
+    COMPILER_DATA * Parser_getCompiler (
+        PARSER_DATA     *this
+    );
+
+    bool            Parser_setCompiler (
         PARSER_DATA     *this,
         COMPILER_DATA   *pValue
+    );
+
+
+    SYMS_DATA *     Parser_getGlobals (
+        PARSER_DATA     *this
     );
 
 
@@ -202,19 +225,24 @@ extern "C" {
     );
 
 
-    bool            Parser_setParseFunction(
+    SYMS_DATA *     Parser_getLocals (
+        PARSER_DATA     *this
+    );
+
+
+    bool            Parser_setParseFunction (
         PARSER_DATA    *this,
         bool            (*pParse)(OBJ_ID,NODETREE_DATA **),
         OBJ_ID          pParseObj
     );
 
 
-    OBJLIST_DATA *  Parser_getSemanticStack(
+    OBJLIST_DATA *  Parser_getSemanticStack (
         PARSER_DATA     *this
     );
 
 
-    bool            Parser_setSourceFunction(
+    bool            Parser_setSourceFunction (
         PARSER_DATA     *this,
         TOKEN_DATA *   (*pSrcChrAdvance)(OBJ_ID, uint16_t),
         TOKEN_DATA *   (*pSrcChrLookAhead)(OBJ_ID, uint16_t),
@@ -222,7 +250,7 @@ extern "C" {
     );
 
 
-    TOKEN_DATA *    Parser_getToken(
+    TOKEN_DATA *    Parser_getToken (
         PARSER_DATA     *this
     );
 
@@ -312,13 +340,13 @@ extern "C" {
      @return:   If successful, the current token after the advance
                 which must NOT be released, otherwise OBJ_NIL.
      */
-    TOKEN_DATA *    Parser_InputAdvance(
+    TOKEN_DATA *    Parser_InputAdvance (
         PARSER_DATA     *this,
         uint16_t        numChrs
     );
     
     
-    TOKEN_DATA *    Parser_InputLookAhead(
+    TOKEN_DATA *    Parser_InputLookAhead (
         PARSER_DATA     *this,
         uint16_t        num
     );
@@ -391,47 +419,47 @@ extern "C" {
     );
 
 
-    ERESULT         Parser_Parse(
+    ERESULT         Parser_Parse (
         PARSER_DATA     *this,
         NODETREE_DATA   **ppTree
     );
     
     
-    NODE_DATA *     Parser_Property(
+    NODE_DATA *     Parser_Property (
         PARSER_DATA     *this,
         const
         char            *pName
     );
     
     
-    ERESULT         Parser_PropertyAdd(
+    ERESULT         Parser_PropertyAdd (
         PARSER_DATA        *this,
         NODE_DATA       *pData
     );
     
     
-    uint16_t        Parser_PropertyCount(
+    uint16_t        Parser_PropertyCount (
         PARSER_DATA        *this
     );
     
     
-    NODEARRAY_DATA * Parser_Properties(
+    NODEARRAY_DATA * Parser_Properties (
         PARSER_DATA     *this
     );
     
     
-    OBJ_ID          Parser_SemPop(
+    OBJ_ID          Parser_SemPop (
         PARSER_DATA     *this
     );
     
     
-    bool            Parser_SemPush(
+    bool            Parser_SemPush (
         PARSER_DATA     *this,
         OBJ_ID          pItem
     );
 
     
-    OBJ_ID          Parser_SemTop(
+    OBJ_ID          Parser_SemTop (
         PARSER_DATA     *this
     );
     

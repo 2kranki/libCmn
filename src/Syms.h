@@ -268,6 +268,11 @@ extern "C" {
         char            *pNameA
     );
 
+    SYM_DATA *      Syms_FindIndex (
+        SYMS_DATA       *this,
+        uint32_t        index
+    );
+
     SYM_DATA *      Syms_FindW32 (
         SYMS_DATA       *this,
         int32_t         cls,

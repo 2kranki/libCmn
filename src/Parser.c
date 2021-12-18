@@ -213,6 +213,29 @@ extern "C" {
                 
 
     //---------------------------------------------------------------
+    //                  C o m m o n  A r e a
+    //---------------------------------------------------------------
+
+    PARSER_COMMON * Parser_getCommon (
+        PARSER_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return NULL;
+        }
+#endif
+
+        return &this->common;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                      C o m p i l e r
     //---------------------------------------------------------------
     
@@ -276,7 +299,7 @@ extern "C" {
         }
 #endif
 
-        return this->pLex;
+        return this->common.pLex;
     }
 
 
@@ -294,10 +317,10 @@ extern "C" {
 #endif
 
         obj_Retain(pValue);
-        if (this->pLex) {
-            obj_Release(this->pLex);
+        if (this->common.pLex) {
+            obj_Release(this->common.pLex);
         }
-        this->pLex = pValue;
+        this->common.pLex = pValue;
 
         return true;
     }
@@ -499,6 +522,90 @@ extern "C" {
     //---------------------------------------------------------------
     //                 S y m b o l  T a b l e
     //---------------------------------------------------------------
+
+    SYMS_DATA *     Parser_getGlobals (
+        PARSER_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->common.pGlobals;
+    }
+
+    bool            Parser_setGlobals (
+        PARSER_DATA     *this,
+        SYMS_DATA       *pValue
+    )
+    {
+
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->common.pGlobals) {
+            obj_Release(this->common.pGlobals);
+            //this->common.pGlobals = OBJ_NIL;
+        }
+        this->common.pGlobals = pValue;
+
+        return true;
+    }
+
+
+    SYMS_DATA *     Parser_getLocals (
+        PARSER_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->common.pLocals;
+    }
+
+    bool            Parser_setLocals (
+        PARSER_DATA     *this,
+        SYMS_DATA       *pValue
+    )
+    {
+
+#ifdef NDEBUG
+#else
+        if (!Parser_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->common.pLocals) {
+            obj_Release(this->common.pLocals);
+            //this->common.pLocals = OBJ_NIL;
+        }
+        this->common.pLocals = pValue;
+
+        return true;
+    }
+
 
     OBJ_ID          Parser_getSymbols (
         PARSER_DATA     *this
@@ -883,7 +990,9 @@ extern "C" {
         Parser_setAux1(this, OBJ_NIL);
         Parser_setAux2(this, OBJ_NIL);
         Parser_setCompiler(this, OBJ_NIL);
+        Parser_setGlobals(this, OBJ_NIL);
         Parser_setLex(this, OBJ_NIL);
+        Parser_setLocals(this, OBJ_NIL);
 
         if (this->pProperties) {
             obj_Release(this->pProperties);

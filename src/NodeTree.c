@@ -2824,7 +2824,7 @@ extern "C" {
      back indices.  Subtrees may have multiple parents.
      */
     ERESULT         NodeTree_Verify(
-        NODETREE_DATA    *this,
+        NODETREE_DATA   *this,
         const
         char            **pWhy
     )
@@ -2988,7 +2988,7 @@ extern "C" {
         ARRAY_DATA      *pQueue = OBJ_NIL;
         NODETREE_VISIT  visit = {0};
         NODETREE_VISIT  visit2 = {0};
-        NODETREE_VISIT  pVisit;
+        //NODETREE_VISIT  pVisit;
 
         // Do initialization.
 #ifdef NDEBUG

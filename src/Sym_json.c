@@ -110,7 +110,7 @@ extern "C" {
         Sym_setNameA(pObject, AStr_getData(pWrk));
         (void)JsonIn_FindU8NodeInHashA(pParser,  "fFlgs1",  &pObject->entry.fFlgs1);
         (void)JsonIn_FindU8NodeInHashA(pParser,  "fFlgs2",  &pObject->entry.fFlgs2);
-        (void)JsonIn_FindU8NodeInHashA(pParser,  "extra1",  &pObject->entry.extra1);
+        (void)JsonIn_FindU8NodeInHashA(pParser,  "level",   &pObject->entry.level);
         (void)JsonIn_FindU32NodeInHashA(pParser, "hash",    &pObject->entry.hash);
         (void)JsonIn_FindU32NodeInHashA(pParser, "token",   &pObject->entry.token);
         (void)JsonIn_FindI32NodeInHashA(pParser, "cls",     &pObject->entry.cls);
@@ -319,7 +319,7 @@ extern "C" {
         AStr_AppendPrint(pStr, "\tname:\"%s\",\n", NameA);
         (void)JsonOut_Append_u8("fFlgs1",   this->entry.fFlgs1, pStr);
         (void)JsonOut_Append_u8("fFlgs2",   this->entry.fFlgs2, pStr);
-        (void)JsonOut_Append_u8("extra1",   this->entry.extra1, pStr);
+        (void)JsonOut_Append_u8("level",    this->entry.level, pStr);
         (void)JsonOut_Append_u32("hash",    this->entry.hash, pStr);
         (void)JsonOut_Append_u32("token",   this->entry.token, pStr);
         (void)JsonOut_Append_i32("cls",     this->entry.cls, pStr);

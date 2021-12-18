@@ -60,23 +60,29 @@ extern "C" {
 
     
     /* The following tables were generated from:
-     * "sym_prim.txt"
+     * "sym_c_prim.txt"
      * If you want to change this enum, you
      * should alter the above file and
      * regenerate using genEnum!
      */
 
     // This table is in enum order and provides
-    // the index + 1 into the Sym_Prim_entries
+    // the index + 1 into the Sym_C_Prim_entries
     // table. 0 means no enum entry.
     const
-    uint16_t    Sym_Prim_index[15] = {
-        11, 1, 7, 3, 9, 15, 13, 2,
-        8, 5, 12, 14, 4, 6, 10,
+    uint16_t    Sym_C_Prim_index[41] = {
+        37, 5, 1, 2, 13, 14, 27, 28,
+        15, 16, 23, 24, 38, 39, 6, 7,
+        17, 18, 29, 30, 8, 11, 19, 22,
+        31, 34, 9, 10, 20, 21, 32, 33,
+        40, 41, 3, 4, 25, 26, 35, 36,
+        12,
     };
 
     const
-    uint32_t    cSym_Prim_index = 15;
+    uint32_t    cSym_C_Prim_index = 41;
+
+
 
 
     typedef struct {
@@ -85,31 +91,120 @@ extern "C" {
         char            *pDesc;
         char            *pName;
         uint32_t        value;
-    } Sym_Prim_entry;
+    } Sym_C_Prim_entry;
 
     // This table is in alphanumeric order to be searched
     // with a sequential or binary search by description.
 
     const
-    Sym_Prim_entry    Sym_Prim_entries[] = {
-        {"SYM_PRIM_CHAR", "", "CHAR", 1},
-        {"SYM_PRIM_DBLWORD", "", "DBLWORD", 7},
-        {"SYM_PRIM_HALF", "", "HALF", 3},
-        {"SYM_PRIM_POINTER", "", "POINTER", 12},
-        {"SYM_PRIM_QUAD", "", "QUAD", 9},
-        {"SYM_PRIM_STRUCT", "", "STRUCT", 13},
-        {"SYM_PRIM_UCHAR", "", "UCHAR", 2},
-        {"SYM_PRIM_UDBLWORD", "", "UDBLWORD", 8},
-        {"SYM_PRIM_UHALF", "", "UHALF", 4},
-        {"SYM_PRIM_UNION", "", "UNION", 14},
-        {"SYM_PRIM_UNKNOWN", "", "UNKNOWN", 0},
-        {"SYM_PRIM_UQUAD", "", "UQUAD", 10},
-        {"SYM_PRIM_UWORD", "", "UWORD", 6},
-        {"SYM_PRIM_VOID", "", "VOID", 11},
-        {"SYM_PRIM_WORD", "", "WORD", 5},
+    Sym_C_Prim_entry    Sym_C_Prim_entries[] = {
+        {"SYM_C_PRIM_CHAR", "", "CHAR", 2},
+        {"SYM_C_PRIM_CHAR_PTR", "", "CHAR_PTR", 3},
+        {"SYM_C_PRIM_ENUM", "", "ENUM", 34},
+        {"SYM_C_PRIM_ENUM_PTR", "", "ENUM_PTR", 35},
+        {"SYM_C_PRIM_FUNC_PTR", "", "FUNC_PTR", 1},
+        {"SYM_C_PRIM_INT", "", "INT", 14},
+        {"SYM_C_PRIM_INT_PTR", "", "INT_PTR", 15},
+        {"SYM_C_PRIM_LONG", "", "LONG", 20},
+        {"SYM_C_PRIM_LONGLONG", "", "LONGLONG", 26},
+        {"SYM_C_PRIM_LONGLONG_PTR", "", "LONGLONG_PTR", 27},
+        {"SYM_C_PRIM_LONG_PTR", "", "LONG_PTR", 21},
+        {"SYM_C_PRIM_MACRO", "", "MACRO", 40},
+        {"SYM_C_PRIM_SCHAR", "", "SCHAR", 4},
+        {"SYM_C_PRIM_SCHAR_PTR", "", "SCHAR_PTR", 5},
+        {"SYM_C_PRIM_SHORT", "", "SHORT", 8},
+        {"SYM_C_PRIM_SHORT_PTR", "", "SHORT_PTR", 9},
+        {"SYM_C_PRIM_SINT", "", "SINT", 16},
+        {"SYM_C_PRIM_SINT_PTR", "", "SINT_PTR", 17},
+        {"SYM_C_PRIM_SLONG", "", "SLONG", 22},
+        {"SYM_C_PRIM_SLONGLONG", "", "SLONGLONG", 28},
+        {"SYM_C_PRIM_SLONGLONG_PTR", "", "SLONGLONG_PTR", 29},
+        {"SYM_C_PRIM_SLONG_PTR", "", "SLONG_PTR", 23},
+        {"SYM_C_PRIM_SSHORT", "", "SSHORT", 10},
+        {"SYM_C_PRIM_SSHORT_PTR", "", "SSHORT_PTR", 11},
+        {"SYM_C_PRIM_STRUCT", "", "STRUCT", 36},
+        {"SYM_C_PRIM_STRUCT_PTR", "", "STRUCT_PTR", 37},
+        {"SYM_C_PRIM_UCHAR", "", "UCHAR", 6},
+        {"SYM_C_PRIM_UCHAR_PTR", "", "UCHAR_PTR", 7},
+        {"SYM_C_PRIM_UINT", "", "UINT", 18},
+        {"SYM_C_PRIM_UINT_PTR", "", "UINT_PTR", 19},
+        {"SYM_C_PRIM_ULONG", "", "ULONG", 24},
+        {"SYM_C_PRIM_ULONGLONG", "", "ULONGLONG", 30},
+        {"SYM_C_PRIM_ULONGLONG_PTR", "", "ULONGLONG_PTR", 31},
+        {"SYM_C_PRIM_ULONG_PTR", "", "ULONG_PTR", 25},
+        {"SYM_C_PRIM_UNION", "", "UNION", 38},
+        {"SYM_C_PRIM_UNION_PTR", "", "UNION_PTR", 39},
+        {"SYM_C_PRIM_UNKNOWN", "", "UNKNOWN", 0},
+        {"SYM_C_PRIM_USHORT", "", "USHORT", 12},
+        {"SYM_C_PRIM_USHORT_PTR", "", "USHORT_PTR", 13},
+        {"SYM_C_PRIM_VOID", "", "VOID", 32},
+        {"SYM_C_PRIM_VOID_PTR", "", "VOID_PTR", 33},
     };
 
-    uint32_t    cSym_Prim_entries = 15;
+    uint32_t    cSym_C_Prim_entries = 41;
+
+
+
+
+    /* The following tables were generated from:
+     * "sym_phy_prim.txt"
+     * If you want to change this enum, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // This table is in enum order and provides
+    // the index + 1 into the Sym_Phy_Prim_entries
+    // table. 0 means no enum entry.
+    const
+    uint16_t    Sym_Phy_Prim_index[20] = {
+        16, 1, 6, 12, 3, 8, 14, 11,
+        20, 18, 2, 7, 13, 5, 9, 17,
+        19, 4, 10, 15,
+    };
+
+    const
+    uint32_t    cSym_Phy_Prim_index = 20;
+
+
+
+
+    typedef struct {
+        const
+        char            *pEnum;
+        char            *pDesc;
+        char            *pName;
+        uint32_t        value;
+    } Sym_Phy_Prim_entry;
+
+    // This table is in alphanumeric order to be searched
+    // with a sequential or binary search by description.
+
+    const
+    Sym_Phy_Prim_entry    Sym_Phy_Prim_entries[] = {
+        {"SYM_PHY_PRIM_CHAR", "", "CHAR", 1},
+        {"SYM_PHY_PRIM_DBLWORD", "", "DBLWORD", 10},
+        {"SYM_PHY_PRIM_HALF", "", "HALF", 4},
+        {"SYM_PHY_PRIM_POINTER", "", "POINTER", 17},
+        {"SYM_PHY_PRIM_QUAD", "", "QUAD", 13},
+        {"SYM_PHY_PRIM_SCHAR", "", "SCHAR", 2},
+        {"SYM_PHY_PRIM_SDBLWORD", "", "SDBLWORD", 11},
+        {"SYM_PHY_PRIM_SHALF", "", "SHALF", 5},
+        {"SYM_PHY_PRIM_SQUAD", "", "SQUAD", 14},
+        {"SYM_PHY_PRIM_STRUCT", "", "STRUCT", 18},
+        {"SYM_PHY_PRIM_SWORD", "", "SWORD", 7},
+        {"SYM_PHY_PRIM_UCHAR", "", "UCHAR", 3},
+        {"SYM_PHY_PRIM_UDBLWORD", "", "UDBLWORD", 12},
+        {"SYM_PHY_PRIM_UHALF", "", "UHALF", 6},
+        {"SYM_PHY_PRIM_UNION", "", "UNION", 19},
+        {"SYM_PHY_PRIM_UNKNOWN", "", "UNKNOWN", 0},
+        {"SYM_PHY_PRIM_UQUAD", "", "UQUAD", 15},
+        {"SYM_PHY_PRIM_UWORD", "", "UWORD", 9},
+        {"SYM_PHY_PRIM_VOID", "", "VOID", 16},
+        {"SYM_PHY_PRIM_WORD", "", "WORD", 8},
+    };
+
+    uint32_t    cSym_Phy_Prim_entries = 20;
 
 
 
@@ -121,7 +216,7 @@ extern "C" {
     ****************************************************************/
 
     /* The following routine was generated from:
-     * "sym_prim.txt"
+     * "sym_c_prim.txt"
      * If you want to change it, you
      * should alter the above file and
      * regenerate using genEnum!
@@ -129,15 +224,15 @@ extern "C" {
 
     // Given an enum value, return its character format.
     const
-    char *            Sym_PrimToEnum (
+    char *            Sym_C_PrimToEnum (
         uint32_t        value
     )
     {
-        if (value >= cSym_Prim_index) {
+        if (value >= cSym_C_Prim_index) {
             return "<<<Unknown Enum Value>>>";
         }
-        if (Sym_Prim_index[value]) {
-            return Sym_Prim_entries[Sym_Prim_index[value] - 1].pEnum;
+        if (Sym_C_Prim_index[value]) {
+            return Sym_C_Prim_entries[Sym_C_Prim_index[value] - 1].pEnum;
         } else {
             return "<<<Unknown Enum Value>>>";
         }
@@ -145,15 +240,15 @@ extern "C" {
 
     // Given an enum value, return its name.
     const
-    char *            Sym_PrimToName (
+    char *            Sym_C_PrimToName (
         uint32_t        value
     )
     {
-        if (value >= cSym_Prim_index) {
+        if (value >= cSym_C_Prim_index) {
             return NULL;
         }
-        if (Sym_Prim_index[value]) {
-            return Sym_Prim_entries[Sym_Prim_index[value] - 1].pName;
+        if (Sym_C_Prim_index[value]) {
+            return Sym_C_Prim_entries[Sym_C_Prim_index[value] - 1].pName;
         } else {
             return NULL;
         }
@@ -162,7 +257,7 @@ extern "C" {
 
 
     /* The following routine was generated from:
-     * "sym_prim.txt"
+     * "sym_c_prim.txt"
      * If you want to change it, you
      * should alter the above file and
      * regenerate using genEnum!
@@ -171,23 +266,101 @@ extern "C" {
     // Given an enum description, return its value + 1 or
     // 0 for not found.
     const
-    uint32_t        Sym_EnumToPrim (
-        char            *pDesc
+    uint32_t        Sym_EnumToC_Prim (
+        char            *pDescA
     )
     {
-        Sym_Prim_entry  *pEntry  = NULL;
+        Sym_C_Prim_entry    *pEntry = NULL;
         uint32_t        value = 0;
 
-        pEntry =    misc_SearchBinary(
-                                      pDesc,
-                                      (void *)Sym_Prim_entries,
-                                      cSym_Prim_entries,
-                                      sizeof(Sym_Prim_entry),
-                                      offsetof(Sym_Prim_entry, pEnum),
-                                      (void *)strcmp
-                    );
-        if (pEntry) {
-            value = pEntry->value + 1;
+        if (pDescA) {
+            pEntry = misc_SearchBinary(
+                        pDescA,
+                        (void *)Sym_C_Prim_entries,
+                        cSym_C_Prim_entries,
+                        sizeof(Sym_C_Prim_entry),
+                        offsetof(Sym_C_Prim_entry, pEnum),
+                        (void *)strcmp
+                );
+            if (pEntry) {
+                value = pEntry->value + 1;
+            }
+        }
+        return value;
+    }
+
+
+
+    /* The following routine was generated from:
+     * "sym_phy_prim.txt"
+     * If you want to change it, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // Given an enum value, return its character format.
+    const
+    char *            Sym_Phy_PrimToEnum (
+        uint32_t        value
+    )
+    {
+        if (value >= cSym_Phy_Prim_index) {
+            return "<<<Unknown Enum Value>>>";
+        }
+        if (Sym_Phy_Prim_index[value]) {
+            return Sym_Phy_Prim_entries[Sym_Phy_Prim_index[value] - 1].pEnum;
+        } else {
+            return "<<<Unknown Enum Value>>>";
+        }
+    }
+
+    // Given an enum value, return its name.
+    const
+    char *            Sym_Phy_PrimToName (
+        uint32_t        value
+    )
+    {
+        if (value >= cSym_Phy_Prim_index) {
+            return NULL;
+        }
+        if (Sym_Phy_Prim_index[value]) {
+            return Sym_Phy_Prim_entries[Sym_Phy_Prim_index[value] - 1].pName;
+        } else {
+            return NULL;
+        }
+    }
+
+
+
+    /* The following routine was generated from:
+     * "sym_phy_prim.txt"
+     * If you want to change it, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // Given an enum description, return its value + 1 or
+    // 0 for not found.
+    const
+    uint32_t        Sym_EnumToPhy_Prim (
+        char            *pDescA
+    )
+    {
+        Sym_Phy_Prim_entry    *pEntry = NULL;
+        uint32_t        value = 0;
+
+        if (pDescA) {
+            pEntry = misc_SearchBinary(
+                        pDescA,
+                        (void *)Sym_Phy_Prim_entries,
+                        cSym_Phy_Prim_entries,
+                        sizeof(Sym_Phy_Prim_entry),
+                        offsetof(Sym_Phy_Prim_entry, pEnum),
+                        (void *)strcmp
+                );
+            if (pEntry) {
+                value = pEntry->value + 1;
+            }
         }
         return value;
     }
@@ -655,45 +828,8 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                        E x t r a
+    //                          E x t r a 2
     //---------------------------------------------------------------
-
-    uint8_t         Sym_getExtra1 (
-        SYM_DATA        *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Sym_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        return Sym_getEntry(this)->extra1;
-    }
-
-
-    bool            Sym_setExtra1 (
-        SYM_DATA        *this,
-        uint8_t         value
-    )
-    {
-#ifdef NDEBUG
-#else
-        if (!Sym_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        Sym_getEntry(this)->extra1 = value;
-
-        return true;
-    }
-
 
     uint8_t *       Sym_getExtra2 (
         SYM_DATA        *this
@@ -1309,6 +1445,48 @@ extern "C" {
 #endif
 
         Sym_getEntry(this)->len = value;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          L e v e l
+    //---------------------------------------------------------------
+
+    uint8_t         Sym_getLevel (
+        SYM_DATA        *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Sym_getEntry(this)->level;
+    }
+
+
+    bool            Sym_setLevel (
+        SYM_DATA        *this,
+        uint8_t         value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sym_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Sym_getEntry(this)->level = value;
 
         return true;
     }
@@ -2615,7 +2793,7 @@ extern "C" {
         char            *pNameA
     )
     {
-        ERESULT         eRc;
+        //ERESULT         eRc;
         SYM_DATA        *pSym = OBJ_NIL;
 
         // Do initialization.

@@ -132,6 +132,31 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //          L o o k  A h e a d  I n t e r f a c e
+    //---------------------------------------------------------------
+
+    LA_INTERFACE *  LexTri_getLaInterface (
+        LEXTRI_DATA     *this
+    )
+    {
+        LEX_DATA        *pLex;
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!LexTri_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pLex = LexTri_getLex(this);
+
+        return Lex_getLaInterface(pLex);
+    }
+
+
+
+    //---------------------------------------------------------------
     //               L e x i c a l  S c a n n e r
     //---------------------------------------------------------------
 

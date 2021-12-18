@@ -104,16 +104,48 @@ extern "C" {
         // method names to the vtbl definition in SrcFile_object.c.
         // Properties:
         // Methods:
-        // Advance() advances the current input source num elements.
-        TOKEN_DATA *     (*pAdvance)(
-                OBJ_ID,
-                uint16_t        num
+
+        /*! Advance() advances the current input source num elements.
+         @param     this    object pointer
+         @param     num     number of tokens to advance
+         @param     ppToken optional pointer to return token pointer into
+                            (If this token needs to be retained, then it
+                            must be copied. The lexical analyzer may re-
+                            use it.)
+         @return    token type and token address if ppToken is non-null;
+                    otherwise, EOF(-1).
+         */
+        int32_t             (*pAdvance)(
+                OBJ_ID          this,
+                uint16_t        num,
+                TOKEN_DATA      *ppToken    // Optional Token pointer
         );
 
-        // Advance() advances the current input source num elements.
-        TOKEN_DATA *     (*pLookAhead)(
+        /*! LookAhead() returns the requested token if it is within its
+            look-ahead buffer. The look-ahead queue size is set when the
+            Lexical Analyzer is created.
+         @param     this    object pointer
+         @param     num     number of tokens to advance
+         @param     ppToken optional pointer to return token pointer into
+                            (If this token needs to be retained, then it
+                            must be copied. The lexical analyzer may re-
+                            use it.)
+         @return    token type and token address if ppToken is non-null;
+                    otherwise, EOF(-1).
+         */
+        int32_t             (*pLookAhead)(
                 OBJ_ID,
-                uint16_t        num
+                uint16_t        num,
+                TOKEN_DATA      *ppToken    // Optional Token pointer
+        );
+
+        /*! BufferSize() returns the Lexical Analyzer's look-ahead queue
+         size.
+         @param     this    object pointer
+         @return    the Lexical Analyzer's look-ahead queue size
+         */
+        int32_t             (*pQueueSize)(
+                OBJ_ID          this
         );
 
     } SRCFILE_VTBL;
@@ -236,6 +268,20 @@ extern "C" {
     );
 
 
+    LA_INTERFACE *  SrcFile_getLaInterface (
+        SRCFILE_DATA    *this
+    );
+
+
+    /*!
+     @property QueueSize contains the size of the
+     Input Queue which contains thee scanned tokens.
+     */
+    uint16_t        SrcFile_getQueueSize (
+        SRCFILE_DATA    *this
+    );
+
+
     /*!
      The Remove NL property allows for NLs to be skipped as
      input but still reflected in the statistics.
@@ -310,6 +356,12 @@ extern "C" {
         uint16_t        numChrs
     );
 
+    int32_t         SrcFile_InputAdvance2 (
+        SRCFILE_DATA    *this,
+        uint16_t        num,
+        TOKEN_DATA      **ppToken
+    );
+
 
     /*!
      Look ahead the number of characters specified.
@@ -320,6 +372,12 @@ extern "C" {
     TOKEN_DATA *    SrcFile_InputLookAhead (
         SRCFILE_DATA    *this,
         uint16_t        num
+    );
+
+    int32_t         SrcFile_InputLookAhead2 (
+        SRCFILE_DATA    *this,
+        uint16_t        num,
+        TOKEN_DATA      **ppToken
     );
 
 

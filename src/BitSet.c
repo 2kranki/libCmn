@@ -849,6 +849,45 @@ extern "C" {
         
         
     //---------------------------------------------------------------
+    //                          N o t
+    //---------------------------------------------------------------
+
+    ERESULT         BitSet_Not (
+        BITSET_DATA     *this,
+        uint32_t        index
+    )
+    {
+        //ERESULT         eRc;
+        uint32_t        *pData;
+        uint32_t        i;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !BitSet_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (index && ((index-1) < this->cBits))
+            ;
+        else {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        pData = (uint32_t *)array_getData(this->pData);
+
+        i = BitSet_GetInternal(pData, index);
+        BitSet_SetInternal(pData, index, (i ? false : true));
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     

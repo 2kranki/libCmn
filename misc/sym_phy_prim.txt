@@ -1,14 +1,19 @@
-# genEnum --prefix=Sym --name=Prim misc/sym_prim.txt
+# genEnum --prefix=Sym --name=Phy_Prim misc/sym_phy_prim.txt
         UNKNOWN
         CHAR,
+        SCHAR,
         UCHAR
         HALF
+        SHALF
         UHALF
+        SWORD,
         WORD,
         UWORD
         DBLWORD
+        SDBLWORD
         UDBLWORD,
         QUAD
+        SQUAD
         UQUAD,
         VOID
         POINTER

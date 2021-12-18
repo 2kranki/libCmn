@@ -122,6 +122,28 @@ extern "C" {
     //                      P r o p e r t i e s
     //===============================================================
 
+    //---------------------------------------------------------------
+    //          L o o k  A h e a d  I n t e r f a c e
+    //---------------------------------------------------------------
+
+    LA_INTERFACE *  SrcFiles_getLaInterface (
+        SRCFILES_DATA   *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SrcFiles_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return (LA_INTERFACE *)this;
+    }
+
+
     OBJARRAY_DATA *     SrcFiles_getPaths(
         SRCFILES_DATA       *this
     )
@@ -163,6 +185,32 @@ extern "C" {
         return true;
     }
 
+
+
+    //---------------------------------------------------------------
+    //              L o o k  A h e a d  Q u e u e
+    //---------------------------------------------------------------
+
+    uint16_t        SrcFiles_getQueueSize (
+        SRCFILES_DATA   *this
+    )
+    {
+        uint16_t        size = 0;
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!SrcFiles_Validate(this)) {
+            DEBUG_BREAK();
+            return size;
+        }
+#endif
+
+        if (this->pTop) {
+            size = SrcFile_getQueueSize(this->pTop);
+        }
+        return size;
+    }
 
 
     bool            SrcFiles_getReuse(
@@ -672,6 +720,31 @@ extern "C" {
     }
 
 
+    int32_t         SrcFiles_InputAdvance2 (
+        SRCFILES_DATA   *this,
+        uint16_t        num,
+        TOKEN_DATA      **ppToken
+    )
+    {
+        int32_t         class = -1;
+        TOKEN_DATA      *pToken;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !SrcFiles_Validate( this ) ) {
+            DEBUG_BREAK();
+            return class;
+        }
+#endif
+
+        class = SrcFile_InputAdvance2(this->pTop, num, ppToken);
+
+        // Return to caller.
+        return class;
+    }
+
+
 
     //--------------------------------------------------------------
     //               I n p u t  L o o k  A h e a d
@@ -697,6 +770,30 @@ extern "C" {
 
         // Return to caller.
         return pToken;
+    }
+
+
+    int32_t         SrcFiles_InputLookAhead2 (
+        SRCFILES_DATA   *this,
+        uint16_t        num,
+        TOKEN_DATA      **ppToken
+    )
+    {
+        int32_t         class = -1;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !SrcFiles_Validate( this ) ) {
+            DEBUG_BREAK();
+            return class;
+        }
+#endif
+
+        class = SrcFile_InputLookAhead2(this->pTop, num, ppToken);
+
+        // Return to caller.
+        return class;
     }
 
 

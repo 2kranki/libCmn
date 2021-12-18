@@ -290,11 +290,12 @@ ERESULT         Test_Syms_Test02 (
     ERESULT         eRc = ERESULT_SUCCESS;
     SYMS_DATA       *pObj = OBJ_NIL;
     bool            fRc;
+    int             iRc;
     SYM_DATA        *pSym;
     SYM_DATA        *pSymFnd;
     uint32_t        i;
     uint32_t        cnt;
-    ASTR_DATA       *pStr;
+    //ASTR_DATA       *pStr;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -319,7 +320,7 @@ ERESULT         Test_Syms_Test02 (
             TestForTrue((index == i+1), "");
             cnt = Syms_getSize(pObj);
             TestForTrue((cnt == (i+1)), "");
-            fprintf(stderr, "\tAdded %p - %s\n", pSym, pStrings[i]);
+            fprintf(stderr, "\tAdded %p - %d - %s\n", pSym, index, pStrings[i]);
             fprintf(stderr, "\tLooking for: %s\n", pStrings[i]);
             pSymFnd = Syms_FindA(pObj, 0, pStrings[i]);
             TestForNotNull(pSymFnd, "");
@@ -327,6 +328,19 @@ ERESULT         Test_Syms_Test02 (
             obj_Release(pSym);
             pSym = OBJ_NIL;
         }
+
+        pSymFnd = Syms_FindIndex(pObj, 1);
+        TestForNotNull(pSymFnd, "");
+        iRc = Sym_CompareA(pSymFnd, 0, "bob");
+        TestForTrue((iRc == 0), "");
+        pSymFnd = Syms_FindIndex(pObj, 32);
+        TestForNotNull(pSymFnd, "");
+        iRc = Sym_CompareA(pSymFnd, 0, "this");
+        TestForTrue((iRc == 0), "");
+        pSymFnd = Syms_FindIndex(pObj, 19);
+        TestForNotNull(pSymFnd, "");
+        iRc = Sym_CompareA(pSymFnd, 0, "of");
+        TestForTrue((iRc == 0), "");
 
         {
             ASTR_DATA       *pStr = Syms_ToDebugString(pObj, 4);

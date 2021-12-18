@@ -246,7 +246,25 @@ extern "C" {
         BITSET_DATA     *pOther
     );
     
-    
+
+    /*! Invert the given bit. This method requires that
+     the bit must exist in the set.
+     @param this    object pointer
+     @param index   the index to the bit (relative to 1)
+     @return        ERESULT_SUCCESS or an ERESULT_* error code
+     */
+    ERESULT         BitSet_Not (
+        BITSET_DATA     *this,
+        uint32_t        index
+    );
+
+
+    /*! Set the given bit expanding the bit set if necessary.
+     @param this    object pointer
+     @param index   the index to the bit (relative to 1)
+     @param value   true or false
+     @return        ERESULT_SUCCESS or an ERESULT_* error code
+     */
     ERESULT         BitSet_Set (
         BITSET_DATA     *this,
         uint32_t        index,
@@ -254,6 +272,10 @@ extern "C" {
     );
     
     
+    /*! Set all the bits currently in the set to true.
+     @param this    object pointer
+     @return        ERESULT_SUCCESS or an ERESULT_* error code
+     */
     ERESULT         BitSet_SetAll (
         BITSET_DATA     *this
     );

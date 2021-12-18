@@ -1166,7 +1166,7 @@ extern "C" {
         pCapsPrefix = AStr_NewUpperA(pPrefixA);
         eRc = Path_SplitPath(pInputPath, OBJ_NIL, OBJ_NIL, &pFileName);
 
-        fprintf(pOut, "#include\t\t<misc.h>\n");
+        fprintf(pOut, "#include\t\t<misc.h>\n\n\n");
         fprintf(pOut, "\t/* The following routine was generated from:\n");
         fprintf(pOut, "\t * \"%s\"\n", Path_getData(pFileName));
         fprintf(pOut, "\t * If you want to change it, you\n");

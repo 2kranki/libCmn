@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/17/2021  5:30:57.000)
+# (12/18/2021 20:19:48.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -530,62 +530,62 @@ $(OBJDIR)/JsonPP_object.o: $(SRCDIR)/JsonPP_object.c $(SRCDIR)/JsonPP.h $(SRCDIR
 
 OBJS += $(OBJDIR)/Lex.o
 
-$(OBJDIR)/Lex.o: $(SRCDIR)/Lex.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/Lex.o: $(SRCDIR)/Lex.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Lex01.o
 
-$(OBJDIR)/Lex01.o: $(SRCDIR)/Lex01.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex01.h $(SRCDIR)/Lex01_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/Lex01.o: $(SRCDIR)/Lex01.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex01.h $(SRCDIR)/Lex01_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Lex01_object.o
 
-$(OBJDIR)/Lex01_object.o: $(SRCDIR)/Lex01_object.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex01.h $(SRCDIR)/Lex01_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/Lex01_object.o: $(SRCDIR)/Lex01_object.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex01.h $(SRCDIR)/Lex01_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/LexC.o
 
-$(OBJDIR)/LexC.o: $(SRCDIR)/LexC.c $(SRCDIR)/Lex.h $(SRCDIR)/LexC.h $(SRCDIR)/LexC_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/LexC.o: $(SRCDIR)/LexC.c $(SRCDIR)/Lex.h $(SRCDIR)/LexC.h $(SRCDIR)/LexC_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/LexC_object.o
 
-$(OBJDIR)/LexC_object.o: $(SRCDIR)/LexC_object.c $(SRCDIR)/Lex.h $(SRCDIR)/LexC.h $(SRCDIR)/LexC_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/LexC_object.o: $(SRCDIR)/LexC_object.c $(SRCDIR)/Lex.h $(SRCDIR)/LexC.h $(SRCDIR)/LexC_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/LexJ.o
 
-$(OBJDIR)/LexJ.o: $(SRCDIR)/LexJ.c $(SRCDIR)/LexJ.h $(SRCDIR)/LexJ_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/LexJ.o: $(SRCDIR)/LexJ.c $(SRCDIR)/Lex.h $(SRCDIR)/LexJ.h $(SRCDIR)/LexJ_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/LexJ_object.o
 
-$(OBJDIR)/LexJ_object.o: $(SRCDIR)/LexJ_object.c $(SRCDIR)/LexJ.h $(SRCDIR)/LexJ_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/LexJ_object.o: $(SRCDIR)/LexJ_object.c $(SRCDIR)/Lex.h $(SRCDIR)/LexJ.h $(SRCDIR)/LexJ_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/LexKW.o
 
-$(OBJDIR)/LexKW.o: $(SRCDIR)/LexKW.c $(SRCDIR)/Lex.h $(SRCDIR)/LexKW.h $(SRCDIR)/LexKW_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/LexKW.o: $(SRCDIR)/LexKW.c $(SRCDIR)/Lex.h $(SRCDIR)/LexKW.h $(SRCDIR)/LexKW_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/LexKW_object.o
 
-$(OBJDIR)/LexKW_object.o: $(SRCDIR)/LexKW_object.c $(SRCDIR)/Lex.h $(SRCDIR)/LexKW.h $(SRCDIR)/LexKW_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/LexKW_object.o: $(SRCDIR)/LexKW_object.c $(SRCDIR)/Lex.h $(SRCDIR)/LexKW.h $(SRCDIR)/LexKW_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/LexTri.o
 
-$(OBJDIR)/LexTri.o: $(SRCDIR)/LexTri.c $(SRCDIR)/LexTri.h $(SRCDIR)/LexTri_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/LexTri.o: $(SRCDIR)/LexTri.c $(SRCDIR)/Lex.h $(SRCDIR)/LexTri.h $(SRCDIR)/LexTri_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/LexTri_object.o
 
-$(OBJDIR)/LexTri_object.o: $(SRCDIR)/LexTri_object.c $(SRCDIR)/LexTri.h $(SRCDIR)/LexTri_internal.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/LexTri_object.o: $(SRCDIR)/LexTri_object.c $(SRCDIR)/Lex.h $(SRCDIR)/LexTri.h $(SRCDIR)/LexTri_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Lex_object.o
 
-$(OBJDIR)/Lex_object.o: $(SRCDIR)/Lex_object.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+$(OBJDIR)/Lex_object.o: $(SRCDIR)/Lex_object.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/LineIndex.o
@@ -2340,37 +2340,37 @@ JsonPP_test: $(TEST_SRC)/JsonPP_test.c $(SRCDIR)/JsonPP.h $(SRCDIR)/JsonPP_inter
 
 TESTS += Lex01_test
 
-Lex01_test: $(TEST_SRC)/Lex01_test.c $(SRCDIR)/Lex01.h $(SRCDIR)/Lex01_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+Lex01_test: $(TEST_SRC)/Lex01_test.c $(SRCDIR)/Lex01.h $(SRCDIR)/Lex01_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
 TESTS += LexC_test
 
-LexC_test: $(TEST_SRC)/LexC_test.c $(SRCDIR)/LexC.h $(SRCDIR)/LexC_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+LexC_test: $(TEST_SRC)/LexC_test.c $(SRCDIR)/LexC.h $(SRCDIR)/LexC_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
 TESTS += LexJ_test
 
-LexJ_test: $(TEST_SRC)/LexJ_test.c $(SRCDIR)/LexJ.h $(SRCDIR)/LexJ_internal.h $(SRCDIR)/cmn_defs.h 
+LexJ_test: $(TEST_SRC)/LexJ_test.c $(SRCDIR)/LexJ.h $(SRCDIR)/LexJ_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
 TESTS += LexKW_test
 
-LexKW_test: $(TEST_SRC)/LexKW_test.c $(SRCDIR)/LexKW.h $(SRCDIR)/LexKW_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+LexKW_test: $(TEST_SRC)/LexKW_test.c $(SRCDIR)/LexKW.h $(SRCDIR)/LexKW_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
 TESTS += LexTri_test
 
-LexTri_test: $(TEST_SRC)/LexTri_test.c $(SRCDIR)/LexTri.h $(SRCDIR)/LexTri_internal.h $(SRCDIR)/cmn_defs.h 
+LexTri_test: $(TEST_SRC)/LexTri_test.c $(SRCDIR)/LexTri.h $(SRCDIR)/LexTri_internal.h $(SRCDIR)/Lex.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
 TESTS += Lex_test
 
-Lex_test: $(TEST_SRC)/Lex_test.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/cmn_defs.h 
+Lex_test: $(TEST_SRC)/Lex_test.c $(SRCDIR)/Lex.h $(SRCDIR)/Lex_internal.h $(SRCDIR)/Token.h $(SRCDIR)/TokenList.h $(SRCDIR)/laInterface.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

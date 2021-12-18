@@ -476,8 +476,12 @@ SRCFILES_VTBL     SrcFiles_Vtbl = {
     // Put other object method names below this.
     // Properties:
     // Methods:
-    //SrcFiles_IsEnabled,
- 
+    /* The following must conform to the laInterface.
+     */
+    (void *)SrcFiles_InputAdvance2,
+    (void *)SrcFiles_InputLookAhead2,
+    (void *)SrcFiles_getQueueSize,
+
 };
 
 

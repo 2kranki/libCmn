@@ -1524,7 +1524,7 @@ extern "C" {
         );
         fprintf(
                 pOutput,
-                "  to use the tables. --prefix and --name options are required.\n"
+                "  to use the tables. --prefix and --name options are required.\n\n"
         );
         fprintf(
                 pOutput,
@@ -1564,7 +1564,7 @@ extern "C" {
         );
         fprintf(
                 pOutput,
-                "  within the enumeration.\n"
+                "  within the enumeration.\n\n"
         );
         fprintf(
                 pOutput,
