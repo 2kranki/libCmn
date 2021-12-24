@@ -727,7 +727,7 @@ extern "C" {
     )
     {
         int32_t         class = -1;
-        TOKEN_DATA      *pToken;
+        //TOKEN_DATA      *pToken;
 
         // Do initialization.
 #ifdef NDEBUG

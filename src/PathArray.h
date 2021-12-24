@@ -350,6 +350,18 @@ extern "C" {
     );
 
 
+    /*!
+     Create a directory string from the contents of this object.
+     @param     this    object pointer
+     @return    If successful, a Path object which must be released containing the
+                directory, otherwise OBJ_NIL.
+     @warning  Remember to release the returned Path object.
+     */
+    PATH_DATA *     PathArray_ToDir (
+        PATHARRAY_DATA  *this
+    );
+
+
 #ifdef  PATHARRAY_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in

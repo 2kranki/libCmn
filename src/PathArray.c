@@ -1318,8 +1318,6 @@ extern "C" {
         uint32_t        begin;
         uint32_t        end;
         uint32_t        begDir = 1;
-        uint32_t        begDrv;
-        uint32_t        endDrv;
         W32CHR_T        chr;
         ASTR_DATA       *pStr = OBJ_NIL;
 
@@ -1401,6 +1399,58 @@ extern "C" {
 
         // Return to caller.
         return ERESULT_SUCCESS;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                       T o  D i r
+    //---------------------------------------------------------------
+
+    /*!
+     Create a directory string from the contents of this object.
+     @param     this    object pointer
+     @return    If successful, a Path object which must be released containing the
+                directory, otherwise OBJ_NIL.
+     @warning  Remember to release the returned Path object.
+     */
+    PATH_DATA *     PathArray_ToDir (
+        PATHARRAY_DATA  *this
+    )
+    {
+        //ERESULT         eRc;
+        PATH_DATA       *pPath;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!PathArray_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        pPath = Path_NewA("/");
+        if (OBJ_NIL == pPath) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+
+        if (this->pArray) {
+            iMax = ObjArray_getSize(this->pArray);
+            for (i=0; i<iMax; i++) {
+                PATH_DATA       *pWrk = ObjArray_Get(this->pArray, i+1);
+                if (pWrk) {
+                    AStr_AppendA((ASTR_DATA *)pPath, Path_getData(pWrk));
+                }
+                AStr_AppendA((ASTR_DATA *)pPath, "/");
+            }
+        }
+
+        Path_Clean(pPath);
+        return pPath;
     }
 
 
