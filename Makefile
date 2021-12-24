@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/18/2021 20:19:48.000)
+# (12/24/2021 14:25:05.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -1021,6 +1021,21 @@ $(OBJDIR)/Parser_object.o: $(SRCDIR)/Parser_object.c $(SRCDIR)/Parser.h $(SRCDIR
 OBJS += $(OBJDIR)/Path.o
 
 $(OBJDIR)/Path.o: $(SRCDIR)/Path.c $(SRCDIR)/AStr.h $(SRCDIR)/Path.h $(SRCDIR)/Path_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/PathArray.o
+
+$(OBJDIR)/PathArray.o: $(SRCDIR)/PathArray.c $(SRCDIR)/AStr.h $(SRCDIR)/Path.h $(SRCDIR)/PathArray.h $(SRCDIR)/PathArray_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/PathArray_json.o
+
+$(OBJDIR)/PathArray_json.o: $(SRCDIR)/PathArray_json.c $(SRCDIR)/PathArray.h $(SRCDIR)/PathArray_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/Path.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/PathArray_object.o
+
+$(OBJDIR)/PathArray_object.o: $(SRCDIR)/PathArray_object.c $(SRCDIR)/AStr.h $(SRCDIR)/Path.h $(SRCDIR)/PathArray.h $(SRCDIR)/PathArray_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Path_json.o
@@ -2563,6 +2578,12 @@ Opcodes_test: $(TEST_SRC)/Opcodes_test.c $(SRCDIR)/Opcodes.h $(SRCDIR)/Opcodes_i
 TESTS += Parser_test
 
 Parser_test: $(TEST_SRC)/Parser_test.c $(SRCDIR)/Parser.h $(SRCDIR)/Parser_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += PathArray_test
+
+PathArray_test: $(TEST_SRC)/PathArray_test.c $(SRCDIR)/PathArray.h $(SRCDIR)/PathArray_internal.h $(SRCDIR)/AStr.h $(SRCDIR)/Path.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

@@ -211,7 +211,8 @@
         {name:"Opcodes", "deps":["szBT.h", "Opcode.h"], json:true,
                 desc:"Universal Opcode Table"},
         {name:"Parser", desc:"Parser Base"},
-        {name:"Path", deps:["AStr.h"], json:true},
+        {name:"Path",           desc:"File Path",deps:["AStr.h"], json:true},
+        {name:"PathArray",      desc:"An Array of Paths",deps:["AStr.h","Path.h"], json:true},
         {name:"prt"},
         /*  The Posix Classes are an attempt to create classes that can be used in
             various O/S's to simulate the Posix functionality.

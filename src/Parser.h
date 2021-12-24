@@ -82,8 +82,8 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct Parser_data_s	PARSER_DATA;            // Inherits from OBJ
-    typedef struct Parser_class_data_s PARSER_CLASS_DATA;   // Inherits from OBJ
+    typedef struct Parser_data_s	    PARSER_DATA;        // Inherits from OBJ
+    typedef struct Parser_class_data_s  PARSER_CLASS_DATA;  // Inherits from OBJ
 
     typedef struct Parser_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
@@ -113,12 +113,15 @@ extern "C" {
 
     typedef struct Parser_common_s {
         TOKEN_DATA      *pToken;
-        int32_t         tokenType;
         LA_INTERFACE    *pLA;           // Look-ahead Lexical Interface
         LEX_DATA        *pLex;
         NODETREE_DATA   *pTree;         // Parse Tree
         SYMS_DATA       *pGlobals;      // Global Symbols
         SYMS_DATA       *pLocals;
+        OBJ_ID          pAux1;
+        OBJ_ID          pAux2;
+        int32_t         tokenClass;
+        uint32_t        xtra[15];       // Extra space to be used as needed
     } PARSER_COMMON;
 
 
@@ -237,7 +240,7 @@ extern "C" {
     );
 
 
-    OBJLIST_DATA *  Parser_getSemanticStack (
+    OBJARRAY_DATA * Parser_getSemanticStack (
         PARSER_DATA     *this
     );
 
@@ -340,15 +343,17 @@ extern "C" {
      @return:   If successful, the current token after the advance
                 which must NOT be released, otherwise OBJ_NIL.
      */
-    TOKEN_DATA *    Parser_InputAdvance (
+    int32_t         Parser_Advance (
         PARSER_DATA     *this,
-        uint16_t        numChrs
+        uint16_t        num,
+        TOKEN_DATA      **ppToken   // Optional Token pointer
     );
     
     
-    TOKEN_DATA *    Parser_InputLookAhead (
+    int32_t         Parser_LookAhead (
         PARSER_DATA     *this,
-        uint16_t        num
+        uint16_t        num,
+        TOKEN_DATA      **ppToken   // Optional Token pointer
     );
     
     
@@ -433,13 +438,13 @@ extern "C" {
     
     
     ERESULT         Parser_PropertyAdd (
-        PARSER_DATA        *this,
+        PARSER_DATA     *this,
         NODE_DATA       *pData
     );
     
     
     uint16_t        Parser_PropertyCount (
-        PARSER_DATA        *this
+        PARSER_DATA     *this
     );
     
     

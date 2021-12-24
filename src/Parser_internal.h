@@ -78,15 +78,12 @@ struct Parser_data_s	{
     PARSER_COMMON   common;
     COMPILER_DATA   *pCompiler;
     SRCERRORS_DATA  *pErrors;
-    OBJ_ID          pAux1;
-    OBJ_ID          pAux2;
     NODEHASH_DATA   *pProperties;
 
     // Input Data/Routines
-    OBJ_ID          *pSrcInput;
-    TOKEN_DATA *    (*pSrcChrAdvance)(OBJ_ID, uint16_t);
-    TOKEN_DATA *    (*pSrcChrLookAhead)(OBJ_ID, uint16_t);
-    OBJ_ID          pSrcObj;
+    TOKEN_DATA *    (*pAdvance)(OBJ_ID, uint16_t);
+    TOKEN_DATA *    (*pLookAhead)(OBJ_ID, uint16_t);
+    OBJ_ID          pLaObj;
     uint16_t        sizeInputs;
     uint16_t        curInputs;
     TOKEN_DATA      *pInputs;
@@ -94,7 +91,7 @@ struct Parser_data_s	{
     // Parse Data
     bool            (*pParse)(OBJ_ID, NODETREE_DATA **);
     OBJ_ID          pParseObj;
-    OBJLIST_DATA    *pSemanticStack;
+    OBJARRAY_DATA   *pSemanticStack;
     
     uint32_t        numErrors;
 
@@ -131,6 +128,17 @@ struct Parser_data_s	{
     //---------------------------------------------------------------
 
     OBJ_IUNKNOWN *  Parser_getSuperVtbl (
+        PARSER_DATA     *this
+    );
+
+
+    ERESULT         Parser_Assign (
+        PARSER_DATA     *this,
+        PARSER_DATA     *pOther
+    );
+
+
+    PARSER_DATA *   Parser_Copy (
         PARSER_DATA     *this
     );
 

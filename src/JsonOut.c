@@ -282,6 +282,50 @@ extern "C" {
     }
 
 
+    void            JsonOut_Append_AStr_array (
+        const
+        char            *pNameA,
+        ASTRARRAY_DATA  *pArray,
+        ASTR_DATA       *pStr
+    )
+    {
+        uint32_t        i;
+        uint32_t        iMax;
+
+        if (pStr && pArray) {
+            AStr_AppendPrint(pStr, "\t\"%s\":[\n\t\t", pNameA);
+            iMax = AStrArray_getSize(pArray);
+            if (iMax) {
+                for (i=0; i<(iMax - 1); i++) {
+                    ASTR_DATA       *pWrk = AStrArray_Get(pArray, i+1);
+                    ASTR_DATA       *pWrk2;
+                    if (pWrk) {
+                        pWrk2 = AStr_ToChrCon(pWrk);
+                        if (pWrk2) {
+                            AStr_AppendPrint(pStr, "\"%s\",\n\t\t", AStr_getData(pWrk2));
+                            obj_Release(pWrk2);
+                            pWrk2 = OBJ_NIL;
+                        }
+                    }
+                }
+                {
+                    ASTR_DATA       *pWrk = AStrArray_Get(pArray, i+1);
+                    ASTR_DATA       *pWrk2;
+                    if (pWrk) {
+                        pWrk2 = AStr_ToChrCon(pWrk);
+                        if (pWrk2) {
+                            AStr_AppendPrint(pStr, "\"%s\"\n", AStr_getData(pWrk2));
+                            obj_Release(pWrk2);
+                            pWrk2 = OBJ_NIL;
+                        }
+                    }
+                }
+            }
+            AStr_AppendPrint(pStr, "\t],\n");
+        }
+    }
+
+
     void            JsonOut_Append_StrA (
         const
         char            *pNameA,

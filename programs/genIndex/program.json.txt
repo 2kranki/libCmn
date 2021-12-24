@@ -1,0 +1,17 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+
+{
+    "program":{
+        "name":"genIndex",
+        "deps":["Cmn"],
+        "hdrs":["Main_defs.h"],
+        "main":"mainProgram.c"
+    },
+    "objects":[
+        // {name:"Dict"},
+        {name:"Exec",       desc:"Execute a command"},
+        {name:"Index",      desc:"Generate an index for a subdirectory"},
+        {name:"Item",       desc:"Description Item"},
+        {name:"Main"},
+    ]
+}

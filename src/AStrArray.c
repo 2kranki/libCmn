@@ -187,6 +187,77 @@ extern "C" {
 
 
 
+    ASTRARRAY_DATA * AStrArray_NewFromListA (
+        const
+        char            *pStrA,
+        ...
+    )
+    {
+        ASTRARRAY_DATA  *pArray = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+        va_list         pList;
+
+        if (NULL == pStrA) {
+            return OBJ_NIL;
+        }
+        pArray = AStrArray_New( );
+        if (pArray) {
+            pStr = AStr_NewA(pStrA);
+            if (pStr) {
+                AStrArray_AppendStr(pArray, pStr, NULL);
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+            va_start(pList, pStrA);
+            for (;;) {
+                char        *pStrA = va_arg(pList, char *);
+                if (pStrA) {
+                    pStr = AStr_NewA(pStrA);
+                    if (pStr) {
+                        AStrArray_AppendStr(pArray, pStr, NULL);
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    }
+                }
+                else
+                    break;
+            }
+            va_end(pList);
+        }
+
+        return pArray;
+    }
+
+
+    ASTRARRAY_DATA * AStrArray_NewFromList (
+        va_list         pList
+    )
+    {
+        ASTRARRAY_DATA  *pArray = OBJ_NIL;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        pArray = AStrArray_New( );
+        if (pArray) {
+            for (;;) {
+                char        *pStrA = va_arg(pList, char *);
+                if (pStrA) {
+                    pStr = AStr_NewA(pStrA);
+                    if (pStr) {
+                        AStrArray_AppendStr(pArray, pStr, NULL);
+                        obj_Release(pStr);
+                        pStr = OBJ_NIL;
+                    }
+                }
+                else
+                    break;
+            }
+        }
+
+        return pArray;
+    }
+
+
+
     ASTRARRAY_DATA * AStrArray_NewFromUtf8File(
         PATH_DATA       *pPath,
         int             maxLineLength
@@ -276,6 +347,7 @@ extern "C" {
     )
     {
         uint32_t            i = 0;
+
 #ifdef NDEBUG
 #else
         if (!AStrArray_Validate(this)) {
@@ -297,6 +369,24 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
+    OBJARRAY_DATA * AStrArray_getSuper (
+        ASTRARRAY_DATA  *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!AStrArray_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pArray;
+    }
+
+
     OBJ_IUNKNOWN *  AStrArray_getSuperVtbl (
         ASTRARRAY_DATA     *this
     )

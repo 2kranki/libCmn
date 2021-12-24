@@ -89,7 +89,7 @@ struct AStrArray_data_s  {
     //---------------------------------------------------------------
 
 #ifdef  ASTRARRAY_SINGLETON
-    ASTRARRAY_DATA *     AStrArray_getSingleton (
+    ASTRARRAY_DATA * AStrArray_getSingleton (
         void
     );
 
@@ -104,19 +104,23 @@ struct AStrArray_data_s  {
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
+    OBJARRAY_DATA * AStrArray_getSuper (
+        ASTRARRAY_DATA  *this
+    );
+
     OBJ_IUNKNOWN *  AStrArray_getSuperVtbl (
-        ASTRARRAY_DATA     *this
+        ASTRARRAY_DATA  *this
     );
 
 
     ERESULT         AStrArray_Assign (
-        ASTRARRAY_DATA    *this,
-        ASTRARRAY_DATA    *pOther
+        ASTRARRAY_DATA  *this,
+        ASTRARRAY_DATA  *pOther
     );
 
 
-    ASTRARRAY_DATA *       AStrArray_Copy (
-        ASTRARRAY_DATA     *this
+    ASTRARRAY_DATA * AStrArray_Copy (
+        ASTRARRAY_DATA  *this
     );
 
 
@@ -132,7 +136,7 @@ struct AStrArray_data_s  {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    ASTRARRAY_DATA *       AStrArray_ParseJsonObject (
+    ASTRARRAY_DATA * AStrArray_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -148,7 +152,7 @@ struct AStrArray_data_s  {
      */
     ERESULT         AStrArray_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        ASTRARRAY_DATA     *pObject
+        ASTRARRAY_DATA  *pObject
     );
 #endif
 
@@ -174,7 +178,7 @@ struct AStrArray_data_s  {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     AStrArray_ToJson (
-        ASTRARRAY_DATA      *this
+        ASTRARRAY_DATA  *this
     );
 
 
@@ -188,7 +192,7 @@ struct AStrArray_data_s  {
                 error code.
      */
     ERESULT         AStrArray_ToJsonFields (
-        ASTRARRAY_DATA     *this,
+        ASTRARRAY_DATA  *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -199,7 +203,7 @@ struct AStrArray_data_s  {
 #ifdef NDEBUG
 #else
     bool            AStrArray_Validate (
-        ASTRARRAY_DATA       *this
+        ASTRARRAY_DATA  *this
     );
 #endif
 

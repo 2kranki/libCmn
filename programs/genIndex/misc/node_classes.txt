@@ -1,0 +1,8 @@
+# genEnum --prefix=IndexNode --name=Class misc/node_classes.txt
+        UNKNOWN
+        COMMENT
+        GENERAL
+	HEADING
+        LINK
+        TITLE
+        WEBSITES

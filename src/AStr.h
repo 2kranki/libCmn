@@ -764,7 +764,8 @@ extern "C" {
     
     /*!
      Convert this string to an ascii character constant format using escape
-     sequences for non-printable characters.
+     sequences for non-printable characters. The string is not surrounded
+     by double-quotes.
      @param     this    object pointer
      @return    If successful, an AStr object which must be released,
                 otherwise OBJ_NIL.

@@ -157,7 +157,7 @@ extern "C" {
 
 
     /*!
-     Create a string that describes this object and the objects within it.
+     Create an array of strings from the provided array of strings.
      @param     ppArgV  pointer to NULL-terminated array of strings
      @return    If successful, an AStrArray object which must be released
                 containing the array of strings, otherwise OBJ_NIL.
@@ -166,6 +166,25 @@ extern "C" {
     ASTRARRAY_DATA * AStrArray_NewFromArrayA (
         const
         char            *ppArgV[]
+    );
+
+
+    /*!
+     Create an array of strings from the provided list of strings which
+     must have a trailing NULL.
+     @param     pStrA  pointer to first NUL-terminated string
+     @return    If successful, an AStrArray object which must be released
+                containing the array of strings, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTRARRAY_DATA * AStrArray_NewFromListA (
+        const
+        char            *pStrA,
+        ...
+    );
+
+    ASTRARRAY_DATA * AStrArray_NewFromList (
+        va_list         pList
     );
 
 

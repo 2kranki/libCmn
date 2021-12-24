@@ -51,6 +51,7 @@
 
 #include        <cmn_defs.h>
 #include        <AStr.h>
+#include        <AStrArray.h>
 
 
 #ifndef         JSONOUT_H
@@ -244,6 +245,13 @@ extern "C" {
         const
         char            *pNameA,
         ASTR_DATA       *pObj,
+        ASTR_DATA       *pStr
+    );
+
+    void            JsonOut_Append_AStr_array (
+        const
+        char            *pNameA,
+        ASTRARRAY_DATA  *pArray,
         ASTR_DATA       *pStr
     );
 

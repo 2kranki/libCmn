@@ -143,7 +143,7 @@ extern "C" {
         }
 #endif
         
-        return this->pAux1;
+        return this->common.pAux1;
     }
     
     
@@ -161,10 +161,10 @@ extern "C" {
 #endif
 
         obj_Retain(pValue);
-        if (this->pAux1) {
-            obj_Release(this->pAux1);
+        if (this->common.pAux1) {
+            obj_Release(this->common.pAux1);
         }
-        this->pAux1 = pValue;
+        this->common.pAux1 = pValue;
         
         return true;
     }
@@ -184,7 +184,7 @@ extern "C" {
         }
 #endif
         
-        return this->pAux2;
+        return this->common.pAux2;
     }
     
     
@@ -202,10 +202,10 @@ extern "C" {
 #endif
 
         obj_Retain(pValue);
-        if (this->pAux2) {
-            obj_Release(this->pAux2);
+        if (this->common.pAux2) {
+            obj_Release(this->common.pAux2);
         }
-        this->pAux2 = pValue;
+        this->common.pAux2 = pValue;
         
         return true;
     }
@@ -357,7 +357,7 @@ extern "C" {
     //                 S e m a n t i c  S t a c k
     //---------------------------------------------------------------
     
-    OBJLIST_DATA *  Parser_getSemanticStack (
+    OBJARRAY_DATA * Parser_getSemanticStack (
         PARSER_DATA     *this
     )
     {
@@ -377,7 +377,7 @@ extern "C" {
     
     bool            Parser_setSemanticStack (
         PARSER_DATA     *this,
-        OBJLIST_DATA    *pValue
+        OBJARRAY_DATA   *pValue
     )
     {
 #ifdef NDEBUG
@@ -426,9 +426,9 @@ extern "C" {
     
     bool            Parser_setSourceFunction (
         PARSER_DATA     *this,
-        TOKEN_DATA *    (*pSrcChrAdvance)(OBJ_ID,uint16_t),
-        TOKEN_DATA *    (*pSrcChrLookAhead)(OBJ_ID,uint16_t),
-        OBJ_ID          pSrcObj
+        TOKEN_DATA *    (*pAdvance)(OBJ_ID,uint16_t),
+        TOKEN_DATA *    (*pLookAhead)(OBJ_ID,uint16_t),
+        OBJ_ID          pLaObj
     )
     {
 #ifdef NDEBUG
@@ -439,57 +439,10 @@ extern "C" {
         }
 #endif
 
-        this->pSrcChrAdvance = pSrcChrAdvance;
-        this->pSrcChrLookAhead = pSrcChrLookAhead;
-        this->pSrcObj = pSrcObj;
+        this->pAdvance = pAdvance;
+        this->pLookAhead = pLookAhead;
+        this->pLaObj = pLaObj;
         
-        return true;
-    }
-
-
-
-    //---------------------------------------------------------------
-    //              S o u r c e  I n p u t
-    //---------------------------------------------------------------
-
-    OBJ_ID          Parser_getSourceInput (
-        PARSER_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Parser_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-
-        return this->pSrcInput;
-    }
-
-
-    bool            Parser_setSourceInput (
-        PARSER_DATA     *this,
-        OBJ_ID          pValue
-    )
-    {
-
-#ifdef NDEBUG
-#else
-        if (!Parser_Validate(this)) {
-            DEBUG_BREAK();
-            return false;
-        }
-#endif
-
-        obj_Retain(pValue);
-        if (this->pSrcInput) {
-            obj_Release(this->pSrcInput);
-        }
-        this->pSrcInput = pValue;
-
         return true;
     }
 
@@ -933,10 +886,10 @@ extern "C" {
      @warning   Remember to release the returned object.
      */
     PARSER_DATA *     Parser_Copy (
-        PARSER_DATA       *this
+        PARSER_DATA     *this
     )
     {
-        PARSER_DATA       *pOther = OBJ_NIL;
+        PARSER_DATA     *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
@@ -1169,66 +1122,81 @@ extern "C" {
      
 
     //--------------------------------------------------------------
-    //                  I n p u t  A d v a n c e
+    //                      A d v a n c e
     //--------------------------------------------------------------
     
-    TOKEN_DATA *    Parser_InputAdvance(
+    int32_t         Parser_Advance (
         PARSER_DATA     *this,
-        uint16_t        numChrs
+        uint16_t        num,
+        TOKEN_DATA      **ppToken   // Optional Token pointer
     )
     {
         uint32_t        i;
+        TOKEN_DATA      *pToken;
+        int32_t         cls = -1;
         
         // Do initialization.
-        TRC_OBJ( this, "parser_InputAdvance: %d\n", numChrs );
+        TRC_OBJ( this, "parser_InputAdvance: %d\n", num );
 #ifdef NDEBUG
 #else
         if( !Parser_Validate(this) ) {
             DEBUG_BREAK();
-            return NULL;
+            return cls;
         }
 #endif
         
         // Shift inputs.
-        for (i=0; i<numChrs; ++i) {
+        for (i=0; i<num; ++i) {
             Parser_InputNextChar(this);
         }
-        
+        pToken = &this->pInputs[this->curInputs];
+        if (pToken) {
+            cls = Token_getClass(pToken);
+        }
+
         // Return to caller.
-        return &this->pInputs[this->curInputs];
+        if (ppToken)
+            *ppToken = pToken;
+        return cls;
     }
     
     
     
     //--------------------------------------------------------------
-    //               I n p u t  L o o k  A h e a d
+    //                      L o o k  A h e a d
     //--------------------------------------------------------------
     
-    TOKEN_DATA *    Parser_InputLookAhead(
+    int32_t         Parser_LookAhead (
         PARSER_DATA     *this,
-        uint16_t        num
+        uint16_t        num,
+        TOKEN_DATA      **ppToken   // Optional Token pointer
     )
     {
         uint16_t        idx;
         TOKEN_DATA      *pToken;
-        
+        int32_t         cls = -1;
+
         // Do initialization.
         TRC_OBJ( this, "parser_InputLookAhead: %d\n", num );
 #ifdef NDEBUG
 #else
         if( !Parser_Validate(this) ) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return cls;
         }
 #endif
         
         if (!obj_IsFlag(this, PARSER_INIT_DONE)) {
-            Parser_InputAdvance(this, this->sizeInputs);
+            Parser_Advance(this, this->sizeInputs, NULL);
             obj_FlagOn(this, PARSER_INIT_DONE);
         }
         
         idx = (this->curInputs + num - 1) % this->sizeInputs;
         pToken = &this->pInputs[idx];
+        pToken = &this->pInputs[this->curInputs];
+        if (pToken) {
+            cls = Token_getClass(pToken);
+        }
 #ifdef NDEBUG
 #else
         if (obj_Trace(this)) {
@@ -1239,7 +1207,9 @@ extern "C" {
 #endif
         
         // Return to caller.
-        return pToken;
+        if (ppToken)
+            *ppToken = pToken;
+        return cls;
     }
     
     
@@ -1265,15 +1235,15 @@ extern "C" {
             return ERESULT_INVALID_OBJECT;
         }
 #endif
-        BREAK_NULL(this->pSrcChrLookAhead);
-        BREAK_NULL(this->pSrcChrAdvance);
+        BREAK_NULL(this->pLookAhead);
+        BREAK_NULL(this->pAdvance);
         
         // Release top token;
         //Token_ReleaseDataIfObj(&this->pInputs[this->curInputs]);
         
         // Add the next char to the queue.
         pToken = &this->pInputs[this->curInputs];
-        scp = this->pSrcChrLookAhead(this->pSrcObj, 1);
+        scp = this->pLookAhead(this->pLaObj, 1);
         BREAK_NULL(scp);
 #ifdef NDEBUG
 #else
@@ -1285,7 +1255,7 @@ extern "C" {
 #endif
         Token_Assign(scp, pToken);
         this->curInputs = (this->curInputs + 1) % this->sizeInputs;
-        this->pSrcChrAdvance(this->pSrcObj,1);
+        this->pAdvance(this->pLaObj,1);
         
         
         // Return to caller.
@@ -1818,7 +1788,7 @@ extern "C" {
         }
 #endif
         if( this->pSemanticStack ) {
-            pItem = ObjList_Get(this->pSemanticStack, index);
+            pItem = ObjArray_Get(this->pSemanticStack, index);
         }
         
         // Return to caller.
@@ -1865,7 +1835,7 @@ extern "C" {
         /* Pop 1 element from the top of the semantic stack.
          */
         if( this->pSemanticStack ) {
-            pItem = ObjList_Pop(this->pSemanticStack);
+            pItem = ObjArray_Pop(this->pSemanticStack);
         }
         
         // Return to caller.
@@ -1900,14 +1870,14 @@ extern "C" {
         }
         
         if (this->pSemanticStack == OBJ_NIL) {
-            this->pSemanticStack = ObjList_New();
+            this->pSemanticStack = ObjArray_New();
             if (this->pSemanticStack == OBJ_NIL) {
                 DEBUG_BREAK();
                 return false;
             }
         }
         
-        eRc = ObjList_Push(this->pSemanticStack, pItem);
+        eRc = ObjArray_Push(this->pSemanticStack, pItem);
         if (ERESULT_IS_SUCCESSFUL(eRc))
             ;
         else {
@@ -1941,7 +1911,7 @@ extern "C" {
 #endif
 
         if( this->pSemanticStack ) {
-            pItem = ObjList_Top(this->pSemanticStack);
+            pItem = ObjArray_Top(this->pSemanticStack);
         }
         
         // Return to caller.

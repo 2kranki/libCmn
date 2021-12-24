@@ -1,0 +1,23 @@
+# vi:nu:et:sts=4 ts=4 sw=4
+
+* misc.h contains a binary search which should be used instead of
+        generating one.
+
+*   Maybe use as input a csv file:
+    name,value,description
+    *   Description would be generated in the enum only.
+    *   value would be optional and only used for non-contiguous enums.
+    *   To do this:
+        *   Change read method in Exec to read its current input or
+            a json input or csv file.
+        *   Change the generate methods to output using a NodeArray
+            of NodeArrays (name, value (decimal), description/documentation.
+
+*   Allow blank lines to bump value, but not generate entry.
+
+*   If values are not contiguous, generate double index (??), first index
+    is uint16_t to index + 1 into second array which contains name,value pairs
+    (as we have now). 0 in first index would indicate no entry.
+    cPrefixType would still be max allowed.
+
+

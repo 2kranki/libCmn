@@ -433,6 +433,8 @@ extern "C" {
         OBJ_IDENT_PASSTR_CLASS,
         OBJ_IDENT_PATH,                 // File Path
         OBJ_IDENT_PATH_CLASS,
+        OBJ_IDENT_PATHARRAY,            // An Array of File Paths
+        OBJ_IDENT_PATHARRAY_CLASS,
         OBJ_IDENT_PBXPROJ,              // Xcode pbxproj file parser
         OBJ_IDENT_PBXPROJ_CLASS,
         OBJ_IDENT_PLIST,                // PLIST Parser

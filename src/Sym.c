@@ -2850,7 +2850,7 @@ extern "C" {
     {
         SYM_DATA     *this = objId;
         const
-        char            *pStr = pData;
+        char         *pStr = pData;
         
         if (OBJ_NIL == this) {
             return NULL;
