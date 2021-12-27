@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include        <Path_internal.h>
 #include        <PathArray_internal.h>
-#include        <misc.h>
+#include        <Misc.h>
 #include        <trace.h>
 
 
@@ -2085,7 +2085,7 @@ extern "C" {
         if (pPatternA) {
             eRc = Path_SplitPath(this, OBJ_NIL, OBJ_NIL, &pFileName);
             if (ERESULT_OK(eRc)) {
-                fRc =   misc_PatternMatchA(
+                fRc =   Misc_PatternMatchA(
                                            pPatternA,
                                            Path_getData(pFileName),
                                            NULL,

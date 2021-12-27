@@ -48,7 +48,7 @@
 #include    <crc.h>
 #include    <dec.h>
 #include    <hex.h>
-#include    <misc.h>
+#include    <Misc.h>
 #include    <str.h>
 #include    <W32Str.h>
 #include    <stdio.h>
@@ -2751,7 +2751,7 @@ extern "C" {
 #endif
         
         if (pPattern) {
-            fRc =   misc_PatternMatchA(
+            fRc =   Misc_PatternMatchA(
                         pPattern,
                         AStr_getData(this),
                         NULL,

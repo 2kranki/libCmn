@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/24/2021 15:03:21.000)
+# (12/27/2021 19:58:35.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -611,6 +611,16 @@ $(OBJDIR)/Log.o: $(SRCDIR)/Log.c $(SRCDIR)/Appl.h $(SRCDIR)/FileIO.h $(SRCDIR)/L
 OBJS += $(OBJDIR)/Log_object.o
 
 $(OBJDIR)/Log_object.o: $(SRCDIR)/Log_object.c $(SRCDIR)/Appl.h $(SRCDIR)/FileIO.h $(SRCDIR)/Log.h $(SRCDIR)/Log_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Misc.o
+
+$(OBJDIR)/Misc.o: $(SRCDIR)/Misc.c $(SRCDIR)/Misc.h $(SRCDIR)/Misc_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Misc_object.o
+
+$(OBJDIR)/Misc_object.o: $(SRCDIR)/Misc_object.c $(SRCDIR)/Misc.h $(SRCDIR)/Misc_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Money64.o
@@ -1818,16 +1828,6 @@ OBJS += $(OBJDIR)/memMac64_object.o
 $(OBJDIR)/memMac64_object.o: $(SRCDIR)/memMac64_object.c $(SRCDIR)/listdl.h $(SRCDIR)/memMac64.h $(SRCDIR)/memMac64_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/misc.o
-
-$(OBJDIR)/misc.o: $(SRCDIR)/misc.c $(SRCDIR)/misc.h $(SRCDIR)/misc_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/misc_object.o
-
-$(OBJDIR)/misc_object.o: $(SRCDIR)/misc_object.c $(SRCDIR)/misc.h $(SRCDIR)/misc_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/msgBus.o
 
 $(OBJDIR)/msgBus.o: $(SRCDIR)/msgBus.c $(SRCDIR)/msgBus.h $(SRCDIR)/msgBus_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2401,6 +2401,12 @@ Log_test: $(TEST_SRC)/Log_test.c $(SRCDIR)/Log.h $(SRCDIR)/Log_internal.h $(SRCD
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
+TESTS += Misc_test
+
+Misc_test: $(TEST_SRC)/Misc_test.c $(SRCDIR)/Misc.h $(SRCDIR)/Misc_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
 TESTS += Money64_test
 
 Money64_test: $(TEST_SRC)/Money64_test.c $(SRCDIR)/Money64.h $(SRCDIR)/Money64_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2962,12 +2968,6 @@ lru_test: $(TEST_SRC)/lru_test.c $(SRCDIR)/lru.h $(SRCDIR)/lru_internal.h $(SRCD
 TESTS += memMac64_test
 
 memMac64_test: $(TEST_SRC)/memMac64_test.c $(SRCDIR)/memMac64.h $(SRCDIR)/memMac64_internal.h $(SRCDIR)/listdl.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F) --no_int3
-
-TESTS += misc_test
-
-misc_test: $(TEST_SRC)/misc_test.c $(SRCDIR)/misc.h $(SRCDIR)/misc_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include        <LexC_internal.h>
 #include        <JsonIn.h>
-#include        <misc.h>
+#include        <Misc.h>
 #include        <trace.h>
 #include        <utf8.h>
 
@@ -139,7 +139,7 @@ extern "C" {
 
         pStrA = W32Str_CStringA(pStrW32, 0);
         if (pStrA) {
-            pEntry =    misc_SearchBinary(
+            pEntry =    Misc_SearchBinary(
                                           (void *)pStrA,
                                           (void *)Kwd2Tok,
                                           cKwd2Tok,

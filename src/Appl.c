@@ -44,7 +44,7 @@
 #include        <Appl_internal.h>
 #include        <ascii.h>
 #include        <Dir.h>
-#include        <misc.h>
+#include        <Misc.h>
 #include        <Scanner.h>
 #include        <str.h>
 #include        <trace.h>

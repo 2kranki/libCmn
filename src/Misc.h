@@ -1,20 +1,20 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 
 //****************************************************************
-//          Miscellaneous Routines (misc) Header
+//                  Miscellaneous Routines (Misc) Header
 //****************************************************************
 /*
  * Program
- *			Miscellaneous Routines (misc)
+ *          Miscellaneous Routines (Misc)
  * Purpose
- *			This object provides Miscellaneous Routines which
- *          do not fit into other objects.
+ *          This object provides a group of routines that do not
+ *          fit in any other category.
  *
  * Remarks
- *	1.      None
+ *  1.      None
  *
  * History
- *	11/25/2015 Generated
+ *  12/27/2021 Generated
  */
 
 
@@ -54,11 +54,22 @@
 
 
 #ifndef         MISC_H
-#define         MISC_H 1
+#define         MISC_H
+
+
+//#define   MISC_IS_IMMUTABLE     1
+//#define   MISC_JSON_SUPPORT     1
+//#define   MISC_SINGLETON        1
+//#define       MISC_LOG   1
+
+
+#ifdef   MISC_LOG
+#include        <logInterface.h>
+#endif
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -68,23 +79,33 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct misc_data_s	MISC_DATA;
+    typedef struct Misc_data_s  MISC_DATA;          // Inherits from MISC
+    typedef struct Misc_class_data_s MISC_CLASS_DATA;  // Inherits from OBJ
 
-    typedef struct misc_vtbl_s	{
+    typedef struct Misc_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        //Misc_VTBL    iVtbl;              // Inherited Vtbl.
         // Put other methods below this as pointers and add their
-        // method names to the vtbl definition in fatFCB_object.c.
+        // method names to the vtbl definition in Misc_object.c.
         // Properties:
         // Methods:
-        //bool        (*pIsEnabled)(FATFCB_DATA *);
+        //bool        (*pIsEnabled)(MISC_DATA *);
     } MISC_VTBL;
-    
-    
+
+    typedef struct Misc_class_vtbl_s    {
+        OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
+        // Put other methods below this as pointers and add their
+        // method names to the vtbl definition in Misc_object.c.
+        // Properties:
+        // Methods:
+        //bool        (*pIsEnabled)(MISC_DATA *);
+    } MISC_CLASS_VTBL;
+
 
 
 
     /****************************************************************
-    * * * * * * * * * * *  Routine Definitions	* * * * * * * * * * *
+    * * * * * * * * * * *  Routine Definitions  * * * * * * * * * * *
     ****************************************************************/
 
 
@@ -92,21 +113,17 @@ extern "C" {
     //                      *** Class Methods ***
     //---------------------------------------------------------------
 
-    /* Alloc() allocates an area large enough for the misc including
-     * the stack.  If 0 is passed for the stack size, then an ap-
-     * propriate default is chosen. The stack size is passed to Init()
-     * via obj_misc1.
-     */
-    MISC_DATA *     misc_Alloc(
+#ifdef  MISC_SINGLETON
+    MISC_DATA *     Misc_Shared (
         void
     );
-    
-    
-    MISC_DATA *     misc_New(
+
+    void            Misc_SharedReset (
         void
     );
-    
-    
+#endif
+
+
     /* AbbrevA() tests whether or not the input string, "text", is a valid
      * abbreviation of the pattern string, "pattern".  The pattern is a
      * string giving the input expected, with mandatory characters in
@@ -122,45 +139,43 @@ extern "C" {
      *     misc_AbbrevA("ext", "eXact") == true;
      *     misc_AbbrevA("xray", "eXact") == false;
      */
-    
-    bool        misc_AbbrevA(
+
+    bool        Misc_AbbrevA(
         const
-        char            *pPattern,	// Pattern to match it against;
+        char            *pPattern,    // Pattern to match it against;
                                     // lowercase letters are optional
         const
-        char            *pText		// Text to test
+        char            *pText        // Text to test
+    );
+
+
+   /*!
+     Allocate a new Object and partially initialize. Also, this sets an
+     indicator that the object was alloc'd which is tested when the object is
+     released.
+     @return    pointer to Misc object if successful, otherwise OBJ_NIL.
+     */
+    MISC_DATA *     Misc_Alloc (
+        void
     );
     
     
     /*! Reverse the bits in the supplied 32-bit value.
      */
-    uint32_t        misc_BitReversal32(
+    uint32_t        Misc_BitReversal32(
         uint32_t        a
     );
-    
+
 
     /*! Reverse the bits in the supplied 64-bit value.
      */
-    uint64_t        misc_BitReversal64(
+    uint64_t        Misc_BitReversal64(
         uint64_t        x
     );
-    
-    
-    /*! Compute even parity given a value.
-     @param     value   integer value of which we need the parity for
-     @return    true if even parity, otherwise false.
-     */
-    
-    bool            misc_ComputeEvenParity32(
-        uint32_t        value
-    );
-    
-    bool            misc_ComputeEvenParity16(
-        uint16_t        value
-    );
-    
-    bool            misc_ComputeEvenParity8(
-        uint8_t         value
+
+
+    OBJ_ID          Misc_Class (
+        void
     );
     
     
@@ -172,34 +187,54 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS.  Othewise, an ERESULT_* error
                 code.
      */
-    ERESULT         misc_Exchange(
+    ERESULT         Misc_Exchange(
         void            *pData1,
         void            *pData2,
         uint32_t        size
     );
-    
-    
-    /*!
-     Compare two numbers against a range value.
-     @param     amt1    integer amount
-     @param     amt2    integer amount
-     @param     epsilon variance allowed
-     @return    1 if absolute value of the difference between amt1 and amt2
-                is less than or equal to epsilon, otherwise, 0.
+
+
+    /*! Compute even parity given a value.
+     @param     value   integer value of which we need the parity for
+     @return    true if even parity, otherwise false.
      */
-    int             misc_RangeCmpI32(
-        int32_t         amt1,
-        int32_t         amt2,
-        uint32_t        epsilon
+
+    bool            Misc_IsEvenParity32(
+        uint32_t        value
     );
-    
-    
+
+    bool            Misc_IsEvenParity16(
+        uint16_t        value
+    );
+
+    bool            Misc_IsEvenParity8(
+        uint8_t         value
+    );
+
+
     // Simple but slow routine to check if a number is prime.
-    bool            misc_IsPrime(
+    bool            Misc_IsPrime(
         uint64_t        amt
     );
+
+
+    MISC_DATA *     Misc_New (
+        void
+    );
     
     
+#ifdef  MISC_JSON_SUPPORT
+    MISC_DATA *   Misc_NewFromJsonString (
+        ASTR_DATA       *pString
+    );
+
+    MISC_DATA *   Misc_NewFromJsonStringA (
+        const
+        char            *pStringA
+    );
+#endif
+
+
     /*!
      * PatternMatch() is a generalized procedure for working with "wild card"
      * names using the '*' and '?' conventions.  It is superior to the wild
@@ -229,7 +264,7 @@ extern "C" {
      * asterisk in the input string, or (2) any number of consecutive question
      * marks in the input string.
      */
-    bool            misc_PatternMatchA(
+    bool            Misc_PatternMatchA(
         const
         char            *pPattern,          // UTF-8 Pattern String
         const
@@ -238,9 +273,9 @@ extern "C" {
         char            *pEquiv,            // UTF-8 Equivalent String
         char            *pNewname           // Optional UTF-8 Output String
     );
-    
-    
-    
+
+
+
     /*!
      Create a string that describes this object and the objects within it.
      Example:
@@ -251,16 +286,17 @@ extern "C" {
      @return    0 If unsuccessful, othwise a prime number slightly greater than
                 2 ** amt (ie 2 to the amt'th power)
      */
-    uint32_t        misc_Pwr2_Prime(
+    uint32_t        Misc_Pwr2_Prime(
         uint32_t        amt
     );
-    
-    
-    uint32_t        misc_Pwr2_Shift(
+
+
+    uint32_t        Misc_Pwr2_Shift(
         uint32_t        amt
     );
-    
-    
+
+
+
     /*!    Generic Search for an Element in a Sorted Array
      This routine performs a Binary Search on a provided sorted
      array trying to located a specific entry.  It is assumed
@@ -278,7 +314,7 @@ extern "C" {
                         first key > second key
      @return    If successful, array element pointer; Othwise, NULL.
      */
-    void  *         misc_SearchBinary(
+    void  *         Misc_SearchBinary(
         void            *pKey,
         void            *pArray,
         size_t          Num,
@@ -291,11 +327,44 @@ extern "C" {
     );
 
 
+    /*!    Generic Search for an Element in a Sorted Array
+     This routine performs a Binary Search on a provided sorted
+     array trying to located a specific entry.  It is assumed
+     that the array is in ascending order by key and that the
+     key is a string pointer in each table entry.
+     Also, if the array is small, a simple search is performed
+     rather than a binary one.
+     @param     pKey    Key pointer with same type as key within element
+     @param     pArray  Address of Sorted Array
+     @param     Num     Number of elements in the Sorted Array
+     @param     Width   Size of an element in bytes
+     @param     Offset  Offset of the key within an element in bytes
+     @return    If successful, array element pointer; Othwise, NULL.
+     */
+    void  *         Misc_SearchBinaryStrA(
+        void            *pKey,
+        void            *pArray,
+        size_t          Num,
+        size_t          Width,
+        size_t          Offset
+    );
+
 
 
     //---------------------------------------------------------------
     //                      *** Properties ***
     //---------------------------------------------------------------
+
+#ifdef MISC_LOG
+    /*! @property   Logging
+        Allows information and warning messages to be issued for this
+        object. Messages will be skipped if Log is not set.
+     */
+    bool            Misc_setLog (
+        MISC_DATA    *this,
+        OBJ_ID          pObj
+    );
+#endif
 
 
     
@@ -303,40 +372,68 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    /*! 
-     * Init() sets up the default TaskBody() outlined above
-     * and initializes other fields needed. Init() assumes 
-     * that the size of the stack is passed to in obj_misc1.
-     */
-    MISC_DATA *   misc_Init(
+    ERESULT     Misc_Disable (
+        MISC_DATA       *this
+    );
+
+
+    ERESULT     Misc_Enable (
+        MISC_DATA       *this
+    );
+
+   
+    MISC_DATA *   Misc_Init (
         MISC_DATA     *this
     );
+
+
+    ERESULT     Misc_IsEnabled (
+        MISC_DATA       *this
+    );
+    
+ 
+#ifdef  MISC_JSON_SUPPORT
+    /*!
+     Create a string that describes this object and the objects within it in
+     HJSON formt. (See hjson object for details.)
+     Example:
+     @code
+     ASTR_DATA      *pDesc = Misc_ToJson(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, an AStr object which must be released containing the
+                JSON text, otherwise OBJ_NIL.
+     @warning   Remember to release the returned AStr object.
+     */
+    ASTR_DATA *     Misc_ToJson (
+        MISC_DATA   *this
+    );
+#endif
 
 
     /*!
      Create a string that describes this object and the objects within it.
      Example:
-     @code:
-     ASTR_DATA      *pDesc = misc_ToDebugString(this,4);
-     @endcode:
-     @param     this    MISC object pointer
+     @code 
+        ASTR_DATA      *pDesc = Misc_ToDebugString(this,4);
+     @endcode 
+     @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
      @return    If successful, an AStr object which must be released containing the
                 description, otherwise OBJ_NIL.
-     @warning   Remember to release the returned AStr object when you are done
-                with it.
+     @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *    misc_ToDebugString(
-        MISC_DATA       *this,
+    ASTR_DATA *     Misc_ToDebugString (
+        MISC_DATA     *this,
         int             indent
     );
     
     
 
     
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* MISC_H */
+#endif  /* MISC_H */
 

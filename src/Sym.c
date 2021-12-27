@@ -43,7 +43,7 @@
 
 /* Header File Inclusion */
 #include        <Sym_internal.h>
-#include        <misc.h>
+#include        <Misc.h>
 #include        <str.h>
 #include        <trace.h>
 #include        <utf8.h>
@@ -274,13 +274,12 @@ extern "C" {
         uint32_t        value = 0;
 
         if (pDescA) {
-            pEntry = misc_SearchBinary(
+            pEntry = Misc_SearchBinaryStrA(
                         pDescA,
                         (void *)Sym_C_Prim_entries,
                         cSym_C_Prim_entries,
                         sizeof(Sym_C_Prim_entry),
-                        offsetof(Sym_C_Prim_entry, pEnum),
-                        (void *)strcmp
+                        offsetof(Sym_C_Prim_entry, pEnum)
                 );
             if (pEntry) {
                 value = pEntry->value + 1;
@@ -350,13 +349,12 @@ extern "C" {
         uint32_t        value = 0;
 
         if (pDescA) {
-            pEntry = misc_SearchBinary(
+            pEntry = Misc_SearchBinaryStrA(
                         pDescA,
                         (void *)Sym_Phy_Prim_entries,
                         cSym_Phy_Prim_entries,
                         sizeof(Sym_Phy_Prim_entry),
-                        offsetof(Sym_Phy_Prim_entry, pEnum),
-                        (void *)strcmp
+                        offsetof(Sym_Phy_Prim_entry, pEnum)
                 );
             if (pEntry) {
                 value = pEntry->value + 1;

@@ -166,7 +166,7 @@
         {name:"lru",            deps:["listdl.h"]},
         {name:"memMac64",       deps:["listdl.h"], os:["macos64"]},
         {name:"memWin32",       deps:["memWin32.h","memWin32_internal.h"], os:["win32"], test:false},
-        {name:"misc"},
+        {name:"Misc"            desc:"Miscellaneous Routines"},
         {name:"Money64",        desc:"Monetary Amounts based on 64-bit Signed Integer", json:true},
         {name:"msgBus",         test:{"srcs":[objTest.c, objTest_object.c]}},
         {name:"MsgData", json:true},
