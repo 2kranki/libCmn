@@ -11,12 +11,15 @@
  *          (<li></li> entry). It can represent a directory, a
  *          file link or a comment. The comment can be to define
  *          an external name for the current directory or for a
- *          directory link.
+ *          directory link if it is not for the current directory.
  *
  *          A file link should include a file name and
  *          a description since both are required to generate
  *          the link. Optionally, an identifier can be specified
  *          as well.
+ *
+ *          A comment item only needs the description since there
+ *          are no other links or data needed.
  *
  * Remarks
  *  1.      None
@@ -106,6 +109,23 @@ extern "C" {
         //bool        (*pIsEnabled)(ITEM_DATA *);
     } ITEM_CLASS_VTBL;
 
+
+    /* The following enum was generated from:
+     * "item_types.txt"
+     * If you want to change this enum, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    typedef enum Item_Type_e {
+        ITEM_TYPE_UNKNOWN=0,
+        ITEM_TYPE_COMMENT=1,
+        ITEM_TYPE_GENERAL=2,
+        ITEM_TYPE_HEADING=3,
+        ITEM_TYPE_LINK=4,
+        ITEM_TYPE_TITLE=5,
+        ITEM_TYPE_WEBSITES=6,
+    } ITEM_TYPES;
 
 
 
@@ -237,17 +257,30 @@ extern "C" {
     );
 
 
-    /*! @property   Type defines what type of Item that is present.
-     The allowed types are "file", "dir", "comment".
-     If no type is specified, then "file" is assumed.
+    /*! @property   Priority provides the ability to
+     control the placement of the item within its
+     grouping. (Default is 0.)
      */
-    ASTR_DATA *     Item_getType (
+    int32_t         Item_getPriority (
+        ITEM_DATA       *this
+    );
+
+    bool            Item_setPriority (
+        ITEM_DATA       *this,
+        int32_t         value
+    );
+
+
+    /*! @property   Type defines what type of Item that is present.
+     See ITEM_TYPES for valid values.
+     */
+    uint32_t        Item_getType (
         ITEM_DATA       *this
     );
 
     bool            Item_setType (
         ITEM_DATA       *this,
-        ASTR_DATA       *pValue
+        uint32_t        value
     );
 
 

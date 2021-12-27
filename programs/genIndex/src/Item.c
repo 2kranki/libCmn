@@ -43,6 +43,7 @@
 /* Header File Inclusion */
 #include        <Item_internal.h>
 #include        <JsonIn.h>
+#include        <misc.h>
 #include        <trace.h>
 #include        <utf8.h>
 
@@ -64,6 +65,57 @@ extern "C" {
     // Place constant internal data here. Generally, it should be
     // 'static' so that it does not interfere with other objects.
 
+    /* The following tables were generated from:
+     * "item_types.txt"
+     * If you want to change this enum, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // This table is in enum order and provides
+    // the index + 1 into the Item_Type_entries
+    // table. 0 means no enum entry.
+    static
+    const
+    uint16_t    Item_Type_index[7] = {
+        6, 1, 2, 3, 4, 5, 7,
+    };
+
+    static
+    const
+    uint32_t    cItem_Type_index = 7;
+
+
+
+
+    typedef struct {
+        const
+        char            *pEnum;
+        char            *pDesc;
+        char            *pName;
+        uint32_t        value;
+    } Item_Type_entry;
+
+    // This table is in alphanumeric order to be searched
+    // with a sequential or binary search by description.
+
+    static
+    const
+    Item_Type_entry    Item_Type_entries[] = {
+        {"ITEM_TYPE_COMMENT", "", "COMMENT", 1},
+        {"ITEM_TYPE_GENERAL", "", "GENERAL", 2},
+        {"ITEM_TYPE_HEADING", "", "HEADING", 3},
+        {"ITEM_TYPE_LINK", "", "LINK", 4},
+        {"ITEM_TYPE_TITLE", "", "TITLE", 5},
+        {"ITEM_TYPE_UNKNOWN", "", "UNKNOWN", 0},
+        {"ITEM_TYPE_WEBSITES", "", "WEBSITES", 6},
+    };
+
+    static
+    uint32_t    cItem_Type_entries = 7;
+
+
+
 
  
     /****************************************************************
@@ -76,16 +128,80 @@ extern "C" {
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
 
-#ifdef XYZZY
-    static
-    void            Item_task_body (
-        void            *pData
+    /* The following routine was generated from:
+     * "item_types.txt"
+     * If you want to change it, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // Given an enum value, return its character format.
+    const
+    char *            Item_TypeToEnum (
+        uint32_t        value
     )
     {
-        //ITEM_DATA  *this = pData;
-        
+        if (value >= cItem_Type_index) {
+            return "<<<Unknown Enum Value>>>";
+        }
+        if (Item_Type_index[value]) {
+            return Item_Type_entries[Item_Type_index[value] - 1].pEnum;
+        } else {
+            return "<<<Unknown Enum Value>>>";
+        }
     }
-#endif
+
+    // Given an enum value, return its name.
+    const
+    char *            Item_TypeToName (
+        uint32_t        value
+    )
+    {
+        if (value >= cItem_Type_index) {
+            return NULL;
+        }
+        if (Item_Type_index[value]) {
+            return Item_Type_entries[Item_Type_index[value] - 1].pName;
+        } else {
+            return NULL;
+        }
+    }
+
+
+
+    /* The following routine was generated from:
+     * "item_types.txt"
+     * If you want to change it, you
+     * should alter the above file and
+     * regenerate using genEnum!
+     */
+
+    // Given an enum description, return its value + 1 or
+    // 0 for not found.
+    const
+    uint32_t        Item_EnumToType (
+        char            *pDescA
+    )
+    {
+        Item_Type_entry *pEntry = NULL;
+        uint32_t        value = 0;
+
+        if (pDescA) {
+            pEntry = misc_SearchBinary(
+                        pDescA,
+                        (void *)Item_Type_entries,
+                        cItem_Type_entries,
+                        sizeof(Item_Type_entry),
+                        offsetof(Item_Type_entry, pEnum),
+                        (void *)strcmp
+                );
+            if (pEntry) {
+                value = pEntry->value + 1;
+            }
+        }
+        return value;
+    }
+
 
 
 
@@ -457,8 +573,8 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        Item_getPriority (
-        ITEM_DATA     *this
+    int32_t         Item_getPriority (
+        ITEM_DATA       *this
     )
     {
 
@@ -471,14 +587,13 @@ extern "C" {
         }
 #endif
 
-        //return this->priority;
-        return 0;
+        return this->priority;
     }
 
 
     bool            Item_setPriority (
-        ITEM_DATA     *this,
-        uint16_t        value
+        ITEM_DATA       *this,
+        int32_t         value
     )
     {
 #ifdef NDEBUG
@@ -489,7 +604,7 @@ extern "C" {
         }
 #endif
 
-        //this->priority = value;
+        this->priority = value;
 
         return true;
     }
@@ -564,7 +679,7 @@ extern "C" {
     //                          T y p e
     //---------------------------------------------------------------
 
-    ASTR_DATA *     Item_getType (
+    uint32_t        Item_getType (
         ITEM_DATA       *this
     )
     {
@@ -574,17 +689,17 @@ extern "C" {
 #else
         if (!Item_Validate(this)) {
             DEBUG_BREAK();
-            return OBJ_NIL;
+            return 0;
         }
 #endif
 
-        return this->pType;
+        return this->type;
     }
 
 
     bool            Item_setType (
         ITEM_DATA       *this,
-        ASTR_DATA       *pValue
+        uint32_t        value
     )
     {
 #ifdef NDEBUG
@@ -595,11 +710,7 @@ extern "C" {
         }
 #endif
 
-        obj_Retain(pValue);
-        if (this->pType) {
-            obj_Release(this->pType);
-        }
-        this->pType = pValue;
+        this->type = value;
 
         return true;
     }
@@ -783,10 +894,6 @@ extern "C" {
             obj_Release(pOther->pName);
             pOther->pName = OBJ_NIL;
         }
-        if (pOther->pType) {
-            obj_Release(pOther->pType);
-            pOther->pType = OBJ_NIL;
-        }
 
         // Create a copy of objects and areas in this object placing
         // them in other.
@@ -815,11 +922,9 @@ extern "C" {
         if (this->pName) {
             pOther->pName = AStr_Copy(this->pName);
         }
-        if (this->pType) {
-            pOther->pType = AStr_Copy(this->pType);
-        }
 
         // Copy other data from this object to other.
+        pOther->type = this->type;
 
         // Return to caller.
         eRc = ERESULT_SUCCESS;
@@ -966,7 +1071,6 @@ extern "C" {
         Item_setIdent(this, OBJ_NIL);
         Item_setKeyWords(this, OBJ_NIL);
         Item_setName(this, OBJ_NIL);
-        Item_setType(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -1196,7 +1300,7 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)Item_Init((ITEM_DATA *)this);   // Needed for Inheritance
+        //this = (OBJ_ID)Node_Init((NODE_DATA *)this);    // Needed for Inheritance
         // If you use inheritance, remember to change the obj_ClassObj reference 
         // in the OBJ_INFO at the end of Item_object.c
         this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_ITEM);
@@ -1676,16 +1780,10 @@ extern "C" {
                         AStr_getData(this->pName)
                 );
         }
-        if (this->pType) {
-            if (indent) {
-                AStr_AppendCharRepeatA(pStr, indent+4, ' ');
-            }
-            eRc = AStr_AppendPrint(
-                        pStr,
-                        "type=\"%s\"\n",
-                        AStr_getData(this->pType)
-                );
+        if (indent) {
+            AStr_AppendCharRepeatA(pStr, indent+4, ' ');
         }
+        eRc = AStr_AppendPrint(pStr, "type=%d\n", this->type);
 
 #ifdef  XYZZY        
         if (this->pData) {

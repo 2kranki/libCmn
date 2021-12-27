@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/22/2021 18:40:10.000)
+# (12/27/2021  2:23:13.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -79,6 +79,11 @@ $(OBJDIR)/Index_object.o: $(SRCDIR)/Index_object.c $(SRCDIR)/Index.h $(SRCDIR)/I
 OBJS += $(OBJDIR)/Item.o
 
 $(OBJDIR)/Item.o: $(SRCDIR)/Item.c $(SRCDIR)/Item.h $(SRCDIR)/Item_internal.h $(SRCDIR)/Main_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Item_json.o
+
+$(OBJDIR)/Item_json.o: $(SRCDIR)/Item_json.c $(SRCDIR)/Item.h $(SRCDIR)/Item_internal.h $(SRCDIR)/Main_defs.h $(LIBCMN_BASE)/include/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Item_object.o

@@ -11,7 +11,7 @@
         // {name:"Dict"},
         {name:"Exec",       desc:"Execute a command"},
         {name:"Index",      desc:"Generate an index for a subdirectory"},
-        {name:"Item",       desc:"Description Item"},
+        {name:"Item",       desc:"Description Item", json:true},
         {name:"Main"},
     ]
 }

@@ -120,8 +120,8 @@ ERESULT         Test_Index_Copy01 (
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    INDEX_DATA       *pObj1 = OBJ_NIL;
-    INDEX_DATA       *pObj2 = OBJ_NIL;
+    INDEX_DATA      *pObj1 = OBJ_NIL;
+    INDEX_DATA      *pObj2 = OBJ_NIL;
     bool            fRc;
 #if defined(INDEX_JSON_SUPPORT) && defined(XYZZY)
     ASTR_DATA       *pStr = OBJ_NIL;
@@ -240,6 +240,146 @@ ERESULT         Test_Index_Test01 (
 
 
 
+ERESULT         Test_Index_Test02 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    INDEX_DATA       *pObj = OBJ_NIL;
+    bool            fRc;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = Index_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_INDEX);
+        TestForTrue(fRc, "Failed Ident Test");
+        TestForSuccess("");
+#ifdef   INDEX_LOG
+        Index_setLog(pObj, this);
+#endif
+
+        {
+            ASTR_DATA       *pStr = Index_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_Index_Test03 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    INDEX_DATA       *pObj = OBJ_NIL;
+    bool            fRc;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = Index_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_INDEX);
+        TestForTrue(fRc, "Failed Ident Test");
+        TestForSuccess("");
+#ifdef   INDEX_LOG
+        Index_setLog(pObj, this);
+#endif
+
+        {
+            ASTR_DATA       *pStr = Index_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_Index_Test04 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    INDEX_DATA      *pObj = OBJ_NIL;
+    bool            fRc;
+    const
+    char            *pTestDirA = TEST_FILES_DIR "/Compiler/Parsing/";
+    PATH_DATA       *pDir = OBJ_NIL;
+
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pDir = Path_NewA(pTestDirA);
+    TestForNotNull(pDir, "");
+    pObj = Index_New( );
+
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_INDEX);
+        TestForTrue(fRc, "Failed Ident Test");
+        TestForSuccess("");
+#ifdef   INDEX_LOG
+        Index_setLog(pObj, this);
+#endif
+
+        eRc = Index_GatherItems(pObj, pDir);
+
+        {
+            ASTR_DATA       *pStr = Index_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    obj_Release(pDir);
+    pDir = OBJ_NIL;
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
 
 int     main (
     int         cArgs,
@@ -276,6 +416,9 @@ int     main (
     TestExec("OpenClose", Test_Index_OpenClose, NULL, NULL);
     //TestExec("Copy01", Test_Index_Copy01, NULL, NULL);
     TestExec("Test01", Test_Index_Test01, NULL, NULL);
+    TestExec("Test02", Test_Index_Test02, NULL, NULL);
+    TestExec("Test03", Test_Index_Test03, NULL, NULL);
+    TestExec("Test04", Test_Index_Test04, NULL, NULL);
 
     obj_Release(pTest);
     pTest = OBJ_NIL;

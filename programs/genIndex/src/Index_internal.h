@@ -69,8 +69,13 @@ struct Index_data_s  {
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
+    ASTR_DATA       *pDrv;
+    PATHARRAY_DATA  *pExcludes;
+    PATHARRAY_DATA  *pTop;
+    PATH_DATA       *pDir;
     PATH_DATA       *pPath;
     NODETREE_DATA   *pTree;
+    OBJARRAY_DATA   *pItems;
 
 #ifdef   INDEX_LOG
     // Informational and Warning Log Messages
@@ -124,7 +129,7 @@ struct Index_data_s  {
     );
 
 
-    INDEX_DATA *       Index_Copy (
+    INDEX_DATA *    Index_Copy (
         INDEX_DATA     *this
     );
 
@@ -136,6 +141,19 @@ struct Index_data_s  {
 
     INDEX_DATA *     Index_DeepCopy (
         INDEX_DATA       *this
+    );
+
+
+    /*!
+     Gather up the items that will make up the main and site link indices.
+     @param     this    object pointer
+     @param     pPath   Path object pointer to subdirectory with items in it.
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Index_GatherItems (
+        INDEX_DATA      *this,
+        PATH_DATA       *pPath
     );
 
 

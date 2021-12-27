@@ -1230,6 +1230,7 @@ extern "C" {
             else
                 break;
         }
+        va_end(pList);
 
         // Return to caller.
         return ERESULT_SUCCESS;

@@ -303,7 +303,7 @@ extern "C" {
             for (i=0; i<Num; i++) {
                 pWrkPtr = ((uint8_t *)pArray) + (i * Width) + Offset;
                 iRc = (*pCmp)(pKey, (void *)pWrkPtr);
-                if (iRc > 0)
+                if (iRc < 0)
                     return NULL;
                 else if (iRc == 0)
                     return (void *)(pWrkPtr - Offset);

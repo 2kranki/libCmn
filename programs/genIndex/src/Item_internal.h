@@ -41,6 +41,7 @@
 
 #include        <Item.h>
 #include        <JsonIn.h>
+#include        <Node_internal.h>
 
 
 #ifndef ITEM_INTERNAL_H
@@ -76,7 +77,8 @@ struct Item_data_s  {
     ASTRARRAY_DATA  *pKeyWords;
     ASTR_DATA       *pDesc;
     ASTR_DATA       *pName;
-    ASTR_DATA       *pType;
+    uint32_t        type;
+    int32_t         priority;
 };
 #pragma pack(pop)
 
@@ -110,18 +112,18 @@ struct Item_data_s  {
     //---------------------------------------------------------------
 
     OBJ_IUNKNOWN *  Item_getSuperVtbl (
-        ITEM_DATA     *this
+        ITEM_DATA       *this
     );
 
 
     ERESULT         Item_Assign (
-        ITEM_DATA    *this,
-        ITEM_DATA    *pOther
+        ITEM_DATA       *this,
+        ITEM_DATA       *pOther
     );
 
 
     ITEM_DATA *     Item_Copy (
-        ITEM_DATA     *this
+        ITEM_DATA       *this
     );
 
 
@@ -135,6 +137,22 @@ struct Item_data_s  {
     );
 
 
+    const
+    uint32_t        Item_EnumToType (
+        char            *pDescA
+    );
+
+    const
+    char *          Item_TypeToEnum (
+        uint32_t        value
+    );
+
+    const
+    char *          Item_TypeToName (
+        uint32_t        value
+    );
+
+
 #ifdef  ITEM_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
@@ -142,7 +160,7 @@ struct Item_data_s  {
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    ITEM_DATA *       Item_ParseJsonObject (
+    ITEM_DATA *     Item_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -158,7 +176,7 @@ struct Item_data_s  {
      */
     ERESULT         Item_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        ITEM_DATA     *pObject
+        ITEM_DATA       *pObject
     );
 #endif
 
@@ -184,7 +202,7 @@ struct Item_data_s  {
      @warning   Remember to release the returned AStr object.
      */
     ASTR_DATA *     Item_ToJson (
-        ITEM_DATA      *this
+        ITEM_DATA       *this
     );
 
 
@@ -198,7 +216,7 @@ struct Item_data_s  {
                 error code.
      */
     ERESULT         Item_ToJsonFields (
-        ITEM_DATA     *this,
+        ITEM_DATA       *this,
         ASTR_DATA       *pStr
     );
 #endif

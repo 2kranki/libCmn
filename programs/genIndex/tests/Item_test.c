@@ -137,6 +137,7 @@ ERESULT         Test_Item_Copy01 (
         TestForSuccess("");
         eRc = Item_AddKeyWordsA(pObj1, "x", "y", NULL);
         TestForSuccess("");
+        Item_setType(pObj1, ITEM_TYPE_GENERAL);
         {
             ASTR_DATA       *pStr = Item_ToDebugString(pObj1, 4);
             if (pStr) {
@@ -154,6 +155,7 @@ ERESULT         Test_Item_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_ITEM);
         TestForTrue(fRc, "Failed Ident Test");
+        TestForTrue((ITEM_TYPE_GENERAL == pObj2->type), "");
         {
             ASTR_DATA       *pStr = Item_ToDebugString(pObj2, 4);
             if (pStr) {
@@ -172,6 +174,7 @@ ERESULT         Test_Item_Copy01 (
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_ITEM);
         TestForTrue(fRc, "Failed Ident Test");
+        TestForTrue((ITEM_TYPE_GENERAL == pObj2->type), "");
         {
             ASTR_DATA       *pStr = Item_ToDebugString(pObj2, 4);
             if (pStr) {
@@ -192,6 +195,7 @@ ERESULT         Test_Item_Copy01 (
         TestForNotNull(pObj2, "Missing JSON created object");
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_ITEM);
         TestForTrue(fRc, "Failed Ident Test");
+        TestForTrue((ITEM_TYPE_GENERAL == pObj2->type), "");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         {

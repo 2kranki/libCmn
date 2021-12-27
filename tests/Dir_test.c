@@ -454,7 +454,6 @@ int         test_Dir_Enum01(
     DIRENTRY_DATA   *pEntry;
     uint32_t        count;
     uint32_t        i;
-    PATH_DATA       *pWrkPath = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
 
@@ -487,7 +486,6 @@ int         test_Dir_Enum01(
                             DirEntry_getType(pEntry),
                             DirEntry_getGenerationNumber(pEntry)
                     );
-                    obj_Release(pWrkPath);
                     ++i;
                 }
                 obj_Release(pEnum);

@@ -18,7 +18,6 @@
 		C40A9F132773ACB4007E055A /* libCmn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C40A9F122773ACB4007E055A /* libCmn.a */; };
 		C40A9F152773ACDB007E055A /* Item_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C40A9F142773ACDB007E055A /* Item_test.c */; };
 		C40A9F182773AFDD007E055A /* Item_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C40A9F162773AFDD007E055A /* Item_json.c */; };
-		C40A9F192773AFDD007E055A /* Index_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C40A9F172773AFDD007E055A /* Index_json.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,7 +54,7 @@
 		C40A9F122773ACB4007E055A /* libCmn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCmn.a; path = ../../../../../Support/lib/macos64/libCmn/libCmn.a; sourceTree = "<group>"; };
 		C40A9F142773ACDB007E055A /* Item_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Item_test.c; sourceTree = "<group>"; };
 		C40A9F162773AFDD007E055A /* Item_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Item_json.c; sourceTree = "<group>"; };
-		C40A9F172773AFDD007E055A /* Index_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Index_json.c; sourceTree = "<group>"; };
+		C40A9F222778BBC2007E055A /* test_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = test_defs.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +91,7 @@
 			isa = PBXGroup;
 			children = (
 				C40A9F142773ACDB007E055A /* Item_test.c */,
+				C40A9F222778BBC2007E055A /* test_defs.h */,
 			);
 			name = testGenIndex;
 			path = ../../tests;
@@ -106,7 +106,6 @@
 				C40A9EFA2773AB7E007E055A /* Exec.c */,
 				C40A9F002773AB7E007E055A /* Exec.h */,
 				C40A9F072773AB7E007E055A /* Index_internal.h */,
-				C40A9F172773AFDD007E055A /* Index_json.c */,
 				C40A9F082773AB7E007E055A /* Index_object.c */,
 				C40A9F052773AB7E007E055A /* Index.c */,
 				C40A9EFF2773AB7E007E055A /* Index.h */,
@@ -192,7 +191,6 @@
 				C40A9F182773AFDD007E055A /* Item_json.c in Sources */,
 				C40A9F0B2773AB7E007E055A /* Main.c in Sources */,
 				C40A9F0D2773AB7E007E055A /* Exec_object.c in Sources */,
-				C40A9F192773AFDD007E055A /* Index_json.c in Sources */,
 				C40A9F0A2773AB7E007E055A /* Exec.c in Sources */,
 				C40A9F0E2773AB7E007E055A /* Item_object.c in Sources */,
 				C40A9F152773ACDB007E055A /* Item_test.c in Sources */,

@@ -82,9 +82,10 @@ extern "C" {
     //* * * * * * * * * * * *  Data Definitions  * * * * * * * * * * *
     //****************************************************************
 
-
-    typedef struct PathArray_data_s  PATHARRAY_DATA;            // Inherits from OBJ
-    typedef struct PathArray_class_data_s PATHARRAY_CLASS_DATA; // Inherits from OBJ
+    // PATHARRAY_DATA and PATHARRAY_CLASS_DATA are found in "Path.h"
+    // to eliminate recursive headers.
+    //typedef struct PathArray_data_s  PATHARRAY_DATA;            // Inherits from OBJ
+    //typedef struct PathArray_class_data_s PATHARRAY_CLASS_DATA; // Inherits from OBJ
 
     typedef struct PathArray_vtbl_s  {
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.
@@ -217,6 +218,19 @@ extern "C" {
     //---------------------------------------------------------------
     //                      *** Methods ***
     //---------------------------------------------------------------
+
+    /*!
+     Add the elements from the other array to the end of this array.
+     @param     this    object pointer
+     @param     pOther  array object pointer to be appended
+     @return    If successful, ERESULT_SUCCESS, otherwise an ERESULT_*
+                error.
+     */
+    ERESULT         PathArray_Append (
+        PATHARRAY_DATA  *this,
+        PATHARRAY_DATA  *pOther
+    );
+
 
     /*!
      Append the given string to the array and return its index.

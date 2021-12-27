@@ -417,6 +417,39 @@ extern "C" {
     //                          A p p e n d
     //---------------------------------------------------------------
 
+    ERESULT         PathArray_Append (
+        PATHARRAY_DATA  *this,
+        PATHARRAY_DATA  *pOther
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  PATHARRAY_SINGLETON
+        if (OBJ_NIL == this) {
+            this = PathArray_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!PathArray_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (!PathArray_Validate(pOther)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = ObjArray_Append(this->pArray, pOther->pArray);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
     ERESULT         PathArray_AppendPath(
         PATHARRAY_DATA  *this,
         PATH_DATA       *pPath,
@@ -833,7 +866,7 @@ extern "C" {
                 error code.
      */
     ERESULT         PathArray_Enable (
-        PATHARRAY_DATA       *this
+        PATHARRAY_DATA  *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;

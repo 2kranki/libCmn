@@ -246,6 +246,190 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                           D i r
+    //---------------------------------------------------------------
+
+    PATH_DATA *     Index_getDir (
+        INDEX_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pDir;
+    }
+
+
+    bool            Index_setDir (
+        INDEX_DATA      *this,
+        PATH_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pDir) {
+            obj_Release(this->pDir);
+        }
+        this->pDir = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                           D r i v e
+    //---------------------------------------------------------------
+
+    ASTR_DATA *     Index_getDrive (
+        INDEX_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pDrv;
+    }
+
+
+    bool            Index_setDrive (
+        INDEX_DATA      *this,
+        ASTR_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pDrv) {
+            obj_Release(this->pDrv);
+        }
+        this->pDrv = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        E x c l u d e s
+    //---------------------------------------------------------------
+
+    PATHARRAY_DATA * Index_getExcludes (
+        INDEX_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pExcludes;
+    }
+
+
+    bool            Index_setExcludes (
+        INDEX_DATA      *this,
+        PATHARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pExcludes) {
+            obj_Release(this->pExcludes);
+        }
+        this->pExcludes = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        I t e m s
+    //---------------------------------------------------------------
+
+    OBJARRAY_DATA * Index_getItems (
+        INDEX_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pItems;
+    }
+
+
+    bool            Index_setItems (
+        INDEX_DATA      *this,
+        OBJARRAY_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pItems) {
+            obj_Release(this->pItems);
+        }
+        this->pItems = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                          L o g
     //---------------------------------------------------------------
 
@@ -422,6 +606,98 @@ extern "C" {
     }
     
   
+
+    //---------------------------------------------------------------
+    //                        T o p
+    //---------------------------------------------------------------
+
+    PATHARRAY_DATA * Index_getTop (
+        INDEX_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pTop;
+    }
+
+
+    bool            Index_setTop (
+        INDEX_DATA      *this,
+        PATHARRAY_DATA  *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pTop) {
+            obj_Release(this->pTop);
+        }
+        this->pTop = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                           T r e e
+    //---------------------------------------------------------------
+
+    NODETREE_DATA * Index_getTree (
+        INDEX_DATA      *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pTree;
+    }
+
+
+    bool            Index_setTree (
+        INDEX_DATA      *this,
+        NODETREE_DATA   *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pTree) {
+            obj_Release(this->pTree);
+        }
+        this->pTree = pValue;
+
+        return true;
+    }
+
+
 
 
     //===============================================================
@@ -612,6 +888,56 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //            C r e a t e  D i r e c t o r y  P a t h
+    //---------------------------------------------------------------
+
+    /*!
+     Create the path to directory to be indexed.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    PATH_DATA *     Index_CreateDirPath (
+        INDEX_DATA      *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        PATH_DATA       *pPath = OBJ_NIL;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  INDEX_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Index_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return OBJ_NIL;
+        }
+#endif
+
+        pPath = Path_NewFromDriveDirFilename(this->pDrv, OBJ_NIL, OBJ_NIL);
+        if (pPath) {
+            if (this->pExcludes) {
+                eRc = Path_AppendDirs(pPath, this->pExcludes);
+            }
+            if (this->pTop) {
+                eRc = Path_AppendDirs(pPath, this->pTop);
+            }
+            eRc = Path_AppendDir(pPath, (ASTR_DATA *)this->pDir);
+        }
+
+        // Return to caller.
+        return pPath;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                        D e a l l o c
     //---------------------------------------------------------------
 
@@ -640,7 +966,13 @@ extern "C" {
         }
 #endif
 
+        Index_setDir(this, OBJ_NIL);
+        Index_setDrive(this, OBJ_NIL);
+        Index_setExcludes(this, OBJ_NIL);
+        Index_setItems(this, OBJ_NIL);
         Index_setPath(this, OBJ_NIL);
+        Index_setTop(this, OBJ_NIL);
+        Index_setTree(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
@@ -710,7 +1042,7 @@ extern "C" {
                 error code.
      */
     ERESULT         Index_Disable (
-        INDEX_DATA       *this
+        INDEX_DATA      *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -752,7 +1084,7 @@ extern "C" {
                 error code.
      */
     ERESULT         Index_Enable (
-        INDEX_DATA       *this
+        INDEX_DATA      *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -782,6 +1114,157 @@ extern "C" {
 
         // Put code here...
         
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                  G a t h e r  I t e m s
+    //---------------------------------------------------------------
+
+    /*!
+     Gather up the items that will make up the main and site link indices.
+     @param     this    object pointer
+     @param     pPath   Path object pointer to subdirectory with items in it.
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Index_GatherItems (
+        INDEX_DATA      *this,
+        PATH_DATA       *pPath
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        DIR_DATA        *pDir = OBJ_NIL;
+        OBJENUM_DATA    *pEnum;
+        DIRENTRY_DATA   *pEntry;
+        uint32_t        count;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  INDEX_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Index_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (
+            (OBJ_NIL == pPath)
+            || !obj_IsKindOf(pPath, OBJ_IDENT_PATH)
+            || !Path_IsDir(pPath)
+        ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
+#ifdef   INDEX_MSGS
+        if (this->pMsgInfo) {
+            this->pMsgInfo(this->pMsgObj, "Enabling object!\n");
+        }
+#endif
+        pDir = Dir_New();
+        if (OBJ_NIL == pDir) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        pEnum = Dir_EnumDir(pDir, pPath, false);
+        if (OBJ_NIL == pEnum) {
+            obj_Release(pDir);
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        if (OBJ_NIL == this->pItems) {
+            this->pItems = ObjArray_New();
+            if (OBJ_NIL == this->pItems) {
+                obj_Release(pDir);
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+
+        for (;;) {
+            eRc = ObjEnum_Next(pEnum, 1, (void **)&pEntry, &count);
+            if (ERESULT_FAILED(eRc) || (OBJ_NIL == pEntry)) {
+                break;
+            }
+            DirEntry_Complete(pEntry);
+#ifdef NDEBUG
+#else
+            if (obj_Trace(this)) {
+                fprintf(
+                        stderr,
+                        "\tname: %-25s  type: %2d  gen: %d\n",
+                        Path_getData(DirEntry_getFullPath(pEntry)),
+                        DirEntry_getType(pEntry),
+                        DirEntry_getGenerationNumber(pEntry)
+                );
+            }
+#endif
+            eRc = DirEntry_MatchA(pEntry, "*.json.txt");
+            if (ERESULT_OK(eRc)) {
+                ITEM_DATA       *pItem;
+                ASTR_DATA       *pStr;
+                TRC_OBJ(this,"\t\tIs Index Link!\n");
+                // Read Item and add it to the table.
+                pStr = AStr_NewFromUtf8File(DirEntry_getFullPath(pEntry));
+                pItem = Item_NewFromJsonString(pStr);
+                if (pItem) {
+                    ObjArray_Append(this->pItems, (OBJ_ID)pItem);
+                    obj_Release(pItem);
+                }
+                obj_Release(pStr);
+            }
+        }
+        obj_Release(pEnum);
+        obj_Release(pDir);
+        eRc = ERESULT_SUCCESS;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                      G e n e r a t e
+    //---------------------------------------------------------------
+
+    ERESULT         Index_Generate (
+        INDEX_DATA      *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        PATH_DATA       *pPath;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  INDEX_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Index_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        pPath = Index_CreateDirPath(this);
+        if (pPath) {
+            return ERESULT_DATA_MISSING;
+        }
+        if (!Path_IsDir(pPath)) {
+            return ERESULT_DATA_MISSING;
+        }
+
         // Return to caller.
         return eRc;
     }
@@ -1034,6 +1517,53 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                      S e t u p
+    //---------------------------------------------------------------
+
+    ERESULT         Index_Setup (
+        INDEX_DATA      *this,
+        ASTR_DATA       *pDrv,
+        PATHARRAY_DATA  *pExcludes,
+        PATHARRAY_DATA  *pTop,
+        PATH_DATA       *pDir
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        NODETREE_DATA   *pTree = OBJ_NIL;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  INDEX_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Index_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        Index_setDrive(this, pDrv);
+        Index_setExcludes(this, pExcludes);
+        Index_setTop(this, pTop);
+        Index_setDir(this, pDir);
+        Index_setPath(this, OBJ_NIL);
+        if (this->pTree) {
+            pTree = NodeTree_New();
+            Index_setTree(this, pTree);
+            obj_Release(pTree);
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------

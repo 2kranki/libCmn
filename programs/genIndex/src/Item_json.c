@@ -142,9 +142,12 @@ extern "C" {
         if (ERESULT_OK(eRc)) {
             obj_Retain(pObject->pName);
         }
-        eRc = JsonIn_FindStrNodeInHashA(pParser, "type", &pObject->pType);
-        if (ERESULT_OK(eRc)) {
-            obj_Retain(pObject->pType);
+        (void)JsonIn_FindI32NodeInHashA(pParser, "priority", &pObject->priority);
+        pWrk = OBJ_NIL;
+        eRc = JsonIn_FindStrNodeInHashA(pParser, "type", &pWrk);
+        if (pWrk) {
+            uint32_t            type = Item_EnumToType((void *)AStr_getData(pWrk));
+            pObject->type = type;
         }
 
         eRc = ERESULT_SUCCESS;
@@ -391,12 +394,8 @@ extern "C" {
             obj_Release(pWrkStr);
             pWrkStr = OBJ_NIL;
         }
-        if (this->pType) {
-            pWrkStr = AStr_ToChrCon(this->pType);
-            AStr_AppendPrint(pStr, "\t\"type\": \"%s\",\n", AStr_getData(pWrkStr));
-            obj_Release(pWrkStr);
-            pWrkStr = OBJ_NIL;
-        }
+        JsonOut_Append_i32("priority", this->priority, pStr);
+        AStr_AppendPrint(pStr, "\t\"type\": \"%s\",\n", Item_TypeToEnum(this->type));
 
 #ifdef XYZZZY
         JsonOut_Append_i32("x", this->x, pStr);

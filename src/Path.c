@@ -42,6 +42,7 @@
 
 /* Header File Inclusion */
 #include        <Path_internal.h>
+#include        <PathArray_internal.h>
 #include        <misc.h>
 #include        <trace.h>
 
@@ -781,6 +782,54 @@ extern "C" {
         chr = AStr_CharGetLastW32((ASTR_DATA *)this);
         if ((chr < 0) || !(chr == '/')) {
             eRc = AStr_AppendA((ASTR_DATA *)this, "/");
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Path_AppendDirs(
+        PATH_DATA       *this,
+        PATHARRAY_DATA  *pDirs
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        W32CHR_T        chr;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Path_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if( !PathArray_Validate(pDirs) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        chr = AStr_CharGetLastW32((ASTR_DATA *)this);
+        if ((chr < 0) || !(chr == '/')) {
+            eRc = AStr_AppendA((ASTR_DATA *)this, "/");
+        }
+        if (pDirs && obj_IsKindOf(pDirs, OBJ_IDENT_PATHARRAY)) {
+            iMax = PathArray_getSize(pDirs);
+            for (i=0; i<iMax; i++) {
+                PATH_DATA       *pPath = PathArray_Get(pDirs, i+1);
+                Path_AppendDir(this, (ASTR_DATA *)pPath);
+                chr = AStr_CharGetLastW32((ASTR_DATA *)pPath);
+                if ((chr < 0) || !(chr == '/')) {
+                    eRc = AStr_AppendA((ASTR_DATA *)this, "/");
+                }
+            }
+            chr = AStr_CharGetLastW32((ASTR_DATA *)this);
+            if ((chr < 0) || !(chr == '/')) {
+                eRc = AStr_AppendA((ASTR_DATA *)this, "/");
+            }
         }
 
         // Return to caller.

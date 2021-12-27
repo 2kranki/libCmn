@@ -1,3 +1,4 @@
+// vi:nu:et:sts=4 ts=4 sw=4
 /*
  *	Generated 06/05/2017 21:57:10
  */
@@ -25,6 +26,45 @@
 #include    <cmn_defs.h>
 #include    <trace.h>
 #include    <misc_internal.h>
+
+
+    typedef enum Item_Type_e {
+        ITEM_TYPE_UNKNOWN=0,
+        ITEM_TYPE_COMMENT=1,
+        ITEM_TYPE_GENERAL=2,
+        ITEM_TYPE_HEADING=3,
+        ITEM_TYPE_LINK=4,
+        ITEM_TYPE_TITLE=5,
+        ITEM_TYPE_WEBSITES=6,
+    } ITEM_TYPES;
+
+
+    typedef struct {
+        const
+        char            *pEnum;
+        char            *pDesc;
+        char            *pName;
+        uint32_t        value;
+    } Item_Type_entry;
+
+    // This table is in alphanumeric order to be searched
+    // with a sequential or binary search by description.
+
+    static
+    const
+    Item_Type_entry    Item_Type_entries[] = {
+        {"ITEM_TYPE_COMMENT", "", "COMMENT", 1},
+        {"ITEM_TYPE_GENERAL", "", "GENERAL", 2},
+        {"ITEM_TYPE_HEADING", "", "HEADING", 3},
+        {"ITEM_TYPE_LINK", "", "LINK", 4},
+        {"ITEM_TYPE_TITLE", "", "TITLE", 5},
+        {"ITEM_TYPE_UNKNOWN", "", "UNKNOWN", 0},
+        {"ITEM_TYPE_WEBSITES", "", "WEBSITES", 6},
+    };
+
+    static
+    uint32_t    cItem_Type_entries = 7;
+
 
 
 
@@ -301,8 +341,50 @@ int         test_misc_Prime01(
 
 
 
+int         test_misc_SearchBinary01 (
+    const
+    char        *pTestName
+)
+{
+    MISC_DATA	*pObj = OBJ_NIL;
+    Item_Type_entry *pEntry = NULL;
+    uint32_t        value = 0;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+    
+    pObj = misc_Alloc( );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = misc_Init( pObj );
+    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    if (pObj) {
+
+            pEntry = misc_SearchBinary(
+                        "ITEM_TYPE_COMMENT",
+                        (void *)Item_Type_entries,
+                        cItem_Type_entries,
+                        sizeof(Item_Type_entry),
+                        offsetof(Item_Type_entry, pEnum),
+                        (void *)strcmp
+                );
+            TINYTEST_FALSE( (NULL == pEntry) );
+            if (pEntry) {
+                value = pEntry->value + 1;
+            }
+    	    TINYTEST_TRUE( (ITEM_TYPE_COMMENT == value) );
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n", pTestName);
+    return 1;
+}
+
+
+
 
 TINYTEST_START_SUITE(test_misc);
+    TINYTEST_ADD_TEST(test_misc_SearchBinary01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_misc_Prime01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_misc_Match01,setUp,tearDown);
     TINYTEST_ADD_TEST(test_misc_Parity01,setUp,tearDown);

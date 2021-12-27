@@ -81,8 +81,12 @@ extern "C" {
     //****************************************************************
 
 
+    // PATH_DATA and PATH_CLASS_DATA definitions are found in "cmn_defs.h",
+    // because they are used so frequently.
     //typedef struct Path_data_s	PATH_DATA;            // Inherits from OBJ
     //typedef struct Path_class_data_s PATH_CLASS_DATA;   // Inherits from OBJ
+    typedef struct PathArray_data_s  PATHARRAY_DATA;            // Inherits from OBJ
+    typedef struct PathArray_class_data_s PATHARRAY_CLASS_DATA; // Inherits from OBJ
 
 #ifdef DEFINED_IN_CMNDEFS
     typedef struct Path_vtbl_s	{
@@ -308,8 +312,6 @@ extern "C" {
     );
 
 
-    // AppendDir() first appends a '/'. Then it appends the
-    // directory component.
     /*!
      Append a '/' if needed followed by the directory entry if it is present
      and insure that the Path is terminated by a '/'.
@@ -327,6 +329,22 @@ extern "C" {
         PATH_DATA       *this,
         const
         char            *pDirA
+    );
+
+
+    /*!
+     Append a '/' if needed followed by the directory entries if present
+     and insure that the Path is terminated by a '/'. This assumes that
+     the pDirs object is an array of directory components as created by
+     PathArray_SplitDir().
+     @param     this    object pointer
+     @param     pDirs   optional Directory Components
+     @return    ERESULT_SUCCESS if successful.  Otherwise, an ERESULT_* error code
+                is returned.
+     */
+    ERESULT         Path_AppendDirs(
+        PATH_DATA       *this,
+        PATHARRAY_DATA  *pDirs
     );
 
 
