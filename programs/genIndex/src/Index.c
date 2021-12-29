@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include        <Index_internal.h>
 #include        <JsonIn.h>
-#include        <misc.h>
+#include        <Misc.h>
 #include        <trace.h>
 #include        <utf8.h>
 
@@ -65,53 +65,6 @@ extern "C" {
     // Place constant internal data here. Generally, it should be
     // 'static' so that it does not interfere with other objects.
 
-    /* The following tables were generated from:
-     * "node_classes.txt"
-     * If you want to change this enum, you
-     * should alter the above file and
-     * regenerate using genEnum!
-     */
-
-    // This table is in enum order and provides
-    // the index + 1 into the IndexNode_Class_entries
-    // table. 0 means no enum entry.
-    const
-    uint16_t    IndexNode_Class_index[7] = {
-        6, 1, 2, 3, 4, 5, 7,
-    };
-
-    const
-    uint32_t    cIndexNode_Class_index = 7;
-
-
-
-
-    typedef struct {
-        const
-        char            *pEnum;
-        char            *pDesc;
-        char            *pName;
-        uint32_t        value;
-    } IndexNode_Class_entry;
-
-    // This table is in alphanumeric order to be searched
-    // with a sequential or binary search by description.
-
-    const
-    IndexNode_Class_entry    IndexNode_Class_entries[] = {
-        {"INDEXNODE_CLASS_COMMENT", "", "COMMENT", 1},
-        {"INDEXNODE_CLASS_GENERAL", "", "GENERAL", 2},
-        {"INDEXNODE_CLASS_HEADING", "", "HEADING", 3},
-        {"INDEXNODE_CLASS_LINK", "", "LINK", 4},
-        {"INDEXNODE_CLASS_TITLE", "", "TITLE", 5},
-        {"INDEXNODE_CLASS_UNKNOWN", "", "UNKNOWN", 0},
-        {"INDEXNODE_CLASS_WEBSITES", "", "WEBSITES", 6},
-    };
-
-    uint32_t    cIndexNode_Class_entries = 7;
-
-
-
 
 
  
@@ -124,82 +77,6 @@ extern "C" {
     /****************************************************************
     * * * * * * * * * * *  Internal Subroutines   * * * * * * * * * *
     ****************************************************************/
-
-    /* The following routine was generated from:
-     * "node_classes.txt"
-     * If you want to change it, you
-     * should alter the above file and
-     * regenerate using genEnum!
-     */
-
-    // Given an enum value, return its character format.
-    const
-    char *            IndexNode_ClassToEnum (
-        uint32_t        value
-    )
-    {
-        if (value >= cIndexNode_Class_index) {
-            return "<<<Unknown Enum Value>>>";
-        }
-        if (IndexNode_Class_index[value]) {
-            return IndexNode_Class_entries[IndexNode_Class_index[value] - 1].pEnum;
-        } else {
-            return "<<<Unknown Enum Value>>>";
-        }
-    }
-
-    // Given an enum value, return its name.
-    const
-    char *            IndexNode_ClassToName (
-        uint32_t        value
-    )
-    {
-        if (value >= cIndexNode_Class_index) {
-            return NULL;
-        }
-        if (IndexNode_Class_index[value]) {
-            return IndexNode_Class_entries[IndexNode_Class_index[value] - 1].pName;
-        } else {
-            return NULL;
-        }
-    }
-
-
-
-    /* The following routine was generated from:
-     * "node_classes.txt"
-     * If you want to change it, you
-     * should alter the above file and
-     * regenerate using genEnum!
-     */
-
-    // Given an enum description, return its value + 1 or
-    // 0 for not found.
-    const
-    uint32_t        IndexNode_EnumToClass (
-        char            *pDescA
-    )
-    {
-        IndexNode_Class_entry    *pEntry = NULL;
-        uint32_t        value = 0;
-
-        if (pDescA) {
-            pEntry = misc_SearchBinary(
-                        pDescA,
-                        (void *)IndexNode_Class_entries,
-                        cIndexNode_Class_entries,
-                        sizeof(IndexNode_Class_entry),
-                        offsetof(IndexNode_Class_entry, pEnum),
-                        (void *)strcmp
-                );
-            if (pEntry) {
-                value = pEntry->value + 1;
-            }
-        }
-        return value;
-    }
-
-
 
 
 
@@ -706,6 +583,44 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          A d d
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Index_AddHeadings (
+        INDEX_DATA      *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  INDEX_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Index_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       A s s i g n
     //---------------------------------------------------------------
     
@@ -787,6 +702,104 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                   B u i l d  P a r e n t s
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Index_BuildParents (
+        INDEX_DATA      *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  INDEX_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Index_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                   B u i l d  T r e e
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Index_BuildTree (
+        INDEX_DATA      *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        uint32_t        i;
+        uint32_t        iMax;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  INDEX_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Index_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        // Add Root;
+        if (ObjArray_getSize(this->pItems)) {
+            NODE_DATA       *pNode;
+            pNode = Node_NewWithUTF8AndClass(0, "root", OBJ_NIL);
+            if (pNode) {
+                eRc = NodeTree_ChildAdd(this->pTree, 0, pNode);
+                obj_Release(pNode);
+            }
+        }
+
+        // Add sub-headings to tree;
+        iMax = ObjArray_getSize(this->pItems);
+        for (i=0; i<iMax; i++) {
+            ITEM_DATA           *pItem = ObjArray_Get(this->pItems, i+1);
+            if (ITEM_TYPE_HEADING == Item_getType(pItem)) {
+                NODE_DATA       *pNode;
+                pNode = Node_NewWithUTF8AndClass(ITEM_TYPE_HEADING, "heading", pItem);
+
+            }
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
     //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
@@ -1215,7 +1228,7 @@ extern "C" {
                 pStr = AStr_NewFromUtf8File(DirEntry_getFullPath(pEntry));
                 pItem = Item_NewFromJsonString(pStr);
                 if (pItem) {
-                    ObjArray_Append(this->pItems, (OBJ_ID)pItem);
+                    ObjArray_AppendObj(this->pItems, (OBJ_ID)pItem, NULL);
                     obj_Release(pItem);
                 }
                 obj_Release(pStr);
@@ -1264,6 +1277,147 @@ extern "C" {
         if (!Path_IsDir(pPath)) {
             return ERESULT_DATA_MISSING;
         }
+
+        eRc = Index_GatherItems(this, pPath);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        eRc = Index_BuildParents(this);
+
+        eRc = Index_BuildTree(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        eRc = Index_GenHeading(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        eRc = Index_GenBody(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        eRc = Index_GenTrailer(this);
+        if (ERESULT_FAILED(eRc)) {
+            return eRc;
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //               G e n e r a t e  B o d y
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Index_GenBody (
+        INDEX_DATA      *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  INDEX_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Index_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //               G e n e r a t e  H e a d i n g
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Index_GenHeading (
+        INDEX_DATA      *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  INDEX_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Index_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //               G e n e r a t e  T r a i l e r
+    //---------------------------------------------------------------
+
+    /*!
+     Enable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Index_GenTrailer (
+        INDEX_DATA      *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  INDEX_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Index_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Index_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
 
         // Return to caller.
         return eRc;

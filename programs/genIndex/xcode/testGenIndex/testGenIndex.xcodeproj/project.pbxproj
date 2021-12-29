@@ -16,7 +16,7 @@
 		C40A9F0F2773AB7E007E055A /* Index.c in Sources */ = {isa = PBXBuildFile; fileRef = C40A9F052773AB7E007E055A /* Index.c */; };
 		C40A9F102773AB7E007E055A /* Index_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C40A9F082773AB7E007E055A /* Index_object.c */; };
 		C40A9F132773ACB4007E055A /* libCmn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C40A9F122773ACB4007E055A /* libCmn.a */; };
-		C40A9F152773ACDB007E055A /* Item_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C40A9F142773ACDB007E055A /* Item_test.c */; };
+		C40A9F152773ACDB007E055A /* Index_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C40A9F142773ACDB007E055A /* Index_test.c */; };
 		C40A9F182773AFDD007E055A /* Item_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C40A9F162773AFDD007E055A /* Item_json.c */; };
 /* End PBXBuildFile section */
 
@@ -52,7 +52,7 @@
 		C40A9F072773AB7E007E055A /* Index_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Index_internal.h; sourceTree = "<group>"; };
 		C40A9F082773AB7E007E055A /* Index_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Index_object.c; sourceTree = "<group>"; };
 		C40A9F122773ACB4007E055A /* libCmn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCmn.a; path = ../../../../../Support/lib/macos64/libCmn/libCmn.a; sourceTree = "<group>"; };
-		C40A9F142773ACDB007E055A /* Item_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Item_test.c; sourceTree = "<group>"; };
+		C40A9F142773ACDB007E055A /* Index_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Index_test.c; sourceTree = "<group>"; };
 		C40A9F162773AFDD007E055A /* Item_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Item_json.c; sourceTree = "<group>"; };
 		C40A9F222778BBC2007E055A /* test_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = test_defs.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -90,7 +90,7 @@
 		C40A9EEF2773A922007E055A /* testGenIndex */ = {
 			isa = PBXGroup;
 			children = (
-				C40A9F142773ACDB007E055A /* Item_test.c */,
+				C40A9F142773ACDB007E055A /* Index_test.c */,
 				C40A9F222778BBC2007E055A /* test_defs.h */,
 			);
 			name = testGenIndex;
@@ -193,7 +193,7 @@
 				C40A9F0D2773AB7E007E055A /* Exec_object.c in Sources */,
 				C40A9F0A2773AB7E007E055A /* Exec.c in Sources */,
 				C40A9F0E2773AB7E007E055A /* Item_object.c in Sources */,
-				C40A9F152773ACDB007E055A /* Item_test.c in Sources */,
+				C40A9F152773ACDB007E055A /* Index_test.c in Sources */,
 				C40A9F0C2773AB7E007E055A /* Item.c in Sources */,
 				C40A9F102773AB7E007E055A /* Index_object.c in Sources */,
 				C40A9F092773AB7E007E055A /* Main_object.c in Sources */,

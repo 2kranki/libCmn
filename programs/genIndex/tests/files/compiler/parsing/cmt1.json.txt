@@ -1,6 +1,8 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 {
+    "objectType":"Item",
     headings:[],
     desc:"Comment 1",
     keywords:["Who", "What", "When", "Where"],
+    type:"ITEM_TYPE_COMMENT",
 }

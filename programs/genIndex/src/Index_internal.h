@@ -157,6 +157,21 @@ struct Index_data_s  {
     );
 
 
+    ERESULT         Index_GenBody (
+        INDEX_DATA      *this
+    );
+
+
+    ERESULT         Index_GenHeading (
+        INDEX_DATA      *this
+    );
+
+
+    ERESULT         Index_GenTrailer (
+        INDEX_DATA      *this
+    );
+
+
 #ifdef  INDEX_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.

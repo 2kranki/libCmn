@@ -1308,7 +1308,7 @@ extern "C" {
         fprintf(pOut, "\t\tuint32_t\t\tvalue = 0;\n");
         fprintf(pOut, "\n");
         fprintf(pOut, "\t\tif (pDescA) {\n");
-        fprintf(pOut, "\t\t\tpEntry = misc_SearchBinary(\n");
+        fprintf(pOut, "\t\t\tpEntry = misc_SearchBinaryStrA(\n");
         fprintf(pOut, "\t\t\t\t\t\tpDescA,\n");
         fprintf(pOut, "\t\t\t\t\t\t(void *)%s_%s_entries,\n", pPrefixA, pNameA);
         fprintf(pOut, "\t\t\t\t\t\tc%s_%s_entries,\n", pPrefixA, pNameA);
@@ -1317,7 +1317,7 @@ extern "C" {
         fprintf(pOut, "\t\t\t\t\t\t(void *)strcmp\n");
         fprintf(pOut, "\t\t\t\t);\n");
         fprintf(pOut, "\t\t\tif (pEntry) {\n");
-        fprintf(pOut, "\t\t\t\tvalue = pEntry->value + 1;\n");
+        fprintf(pOut, "\t\t\t\tvalue = pEntry->value;\n");
         fprintf(pOut, "\t\t\t}\n");
         fprintf(pOut, "\t\t}\n");
         fprintf(pOut, "\t\treturn value;\n");

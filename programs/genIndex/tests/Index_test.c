@@ -292,8 +292,14 @@ ERESULT         Test_Index_Test03 (
     ERESULT         eRc = ERESULT_SUCCESS;
     INDEX_DATA       *pObj = OBJ_NIL;
     bool            fRc;
+    const
+    char            *pTestDirA = TEST_FILES_DIR "/Compiler/Parsing/";
+    PATH_DATA       *pDir = OBJ_NIL;
 
     fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pDir = Path_NewA(pTestDirA);
+    TestForNotNull(pDir, "");
 
     pObj = Index_New( );
     TestForNotNull(pObj, "Missing Test object");
@@ -319,6 +325,9 @@ ERESULT         Test_Index_Test03 (
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
+
+    obj_Release(pDir);
+    pDir = OBJ_NIL;
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
     return eRc;
@@ -348,7 +357,7 @@ ERESULT         Test_Index_Test04 (
     TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
-        //obj_TraceSet(pObj, true);
+        obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_INDEX);
         TestForTrue(fRc, "Failed Ident Test");
         TestForSuccess("");

@@ -1,7 +1,9 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 {
+    "objectType":"Item",
     headings:[],
     dir:"parsing",
     desc:"Parsing",
+    type:"ITEM_TYPE_LINKDOWN",
     keywords:[""],
 }

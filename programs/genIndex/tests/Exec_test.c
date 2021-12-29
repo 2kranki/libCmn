@@ -399,8 +399,8 @@ int     main (
     TestExec("OpenClose", Test_Exec_OpenClose, NULL, NULL);
     //TestExec("Copy01", Test_Exec_Copy01, pTest, NULL, NULL);
     TestExec("Test01", Test_Exec_Test01, NULL, NULL);
-    TestExec("Read01", Test_Exec_Read01, NULL, NULL);
-    TestExec("Read02", Test_Exec_Read02, NULL, NULL);
+    //TestExec("Read01", Test_Exec_Read01, NULL, NULL);
+    //TestExec("Read02", Test_Exec_Read02, NULL, NULL);
 
     obj_Release(pTest);
     pTest = OBJ_NIL;

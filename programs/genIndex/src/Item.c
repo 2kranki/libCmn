@@ -43,7 +43,7 @@
 /* Header File Inclusion */
 #include        <Item_internal.h>
 #include        <JsonIn.h>
-#include        <misc.h>
+#include        <Misc.h>
 #include        <trace.h>
 #include        <utf8.h>
 
@@ -75,13 +75,11 @@ extern "C" {
     // This table is in enum order and provides
     // the index + 1 into the Item_Type_entries
     // table. 0 means no enum entry.
-    static
     const
     uint16_t    Item_Type_index[7] = {
         6, 1, 2, 3, 4, 5, 7,
     };
 
-    static
     const
     uint32_t    cItem_Type_index = 7;
 
@@ -99,19 +97,17 @@ extern "C" {
     // This table is in alphanumeric order to be searched
     // with a sequential or binary search by description.
 
-    static
     const
     Item_Type_entry    Item_Type_entries[] = {
-        {"ITEM_TYPE_COMMENT", "", "COMMENT", 1},
-        {"ITEM_TYPE_GENERAL", "", "GENERAL", 2},
-        {"ITEM_TYPE_HEADING", "", "HEADING", 3},
-        {"ITEM_TYPE_LINK", "", "LINK", 4},
-        {"ITEM_TYPE_TITLE", "", "TITLE", 5},
+        {"ITEM_TYPE_COMMENT", "comment line item with no link", "COMMENT", 1},
+        {"ITEM_TYPE_HEADING", "heading which starts a sublist", "HEADING", 2},
+        {"ITEM_TYPE_LINK", "regular file/directory link", "LINK", 3},
+        {"ITEM_TYPE_LINKDOWN", "directory down link", "LINKDOWN", 4},
+        {"ITEM_TYPE_TITLE", "current directory title", "TITLE", 5},
         {"ITEM_TYPE_UNKNOWN", "", "UNKNOWN", 0},
-        {"ITEM_TYPE_WEBSITES", "", "WEBSITES", 6},
+        {"ITEM_TYPE_WEBSITES", "website link to be added to trailer", "WEBSITES", 6},
     };
 
-    static
     uint32_t    cItem_Type_entries = 7;
 
 
@@ -187,16 +183,15 @@ extern "C" {
         uint32_t        value = 0;
 
         if (pDescA) {
-            pEntry = misc_SearchBinary(
+            pEntry = Misc_SearchBinaryStrA(
                         pDescA,
                         (void *)Item_Type_entries,
                         cItem_Type_entries,
                         sizeof(Item_Type_entry),
-                        offsetof(Item_Type_entry, pEnum),
-                        (void *)strcmp
+                        offsetof(Item_Type_entry, pEnum)
                 );
             if (pEntry) {
-                value = pEntry->value + 1;
+                value = pEntry->value;
             }
         }
         return value;

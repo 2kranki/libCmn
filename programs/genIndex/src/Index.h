@@ -130,24 +130,6 @@ extern "C" {
     } INDEX_CLASS_VTBL;
 
 
-    /* The following enum was generated from:
-     * "node_classes.txt"
-     * If you want to change this enum, you
-     * should alter the above file and
-     * regenerate using genEnum!
-     */
-
-    typedef enum IndexNode_Class_e {
-        INDEXNODE_CLASS_UNKNOWN=0,
-        INDEXNODE_CLASS_COMMENT=1,
-        INDEXNODE_CLASS_GENERAL=2,
-        INDEXNODE_CLASS_HEADING=3,
-        INDEXNODE_CLASS_LINK=4,
-        INDEXNODE_CLASS_TITLE=5,
-        INDEXNODE_CLASS_WEBSITES=6,
-    } INDEXNODE_CLASSS;
-
-
 
 
 

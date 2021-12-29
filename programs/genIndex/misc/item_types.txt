@@ -1,8 +1,8 @@
 # genEnum --prefix=Item --name=Type misc/item_types.txt
         UNKNOWN
-        COMMENT
-        GENERAL
-	HEADING
-        LINK
-        TITLE
-        WEBSITES
+        COMMENT,"comment line item with no link"
+	HEADING,"heading which starts a sublist"
+        LINK,"regular file/directory link"
+        LINKDOWN,"directory down link"
+        TITLE,"current directory title"
+        WEBSITES,"website link to be added to trailer"

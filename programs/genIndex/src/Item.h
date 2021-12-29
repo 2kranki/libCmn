@@ -119,12 +119,12 @@ extern "C" {
 
     typedef enum Item_Type_e {
         ITEM_TYPE_UNKNOWN=0,
-        ITEM_TYPE_COMMENT=1,
-        ITEM_TYPE_GENERAL=2,
-        ITEM_TYPE_HEADING=3,
-        ITEM_TYPE_LINK=4,
-        ITEM_TYPE_TITLE=5,
-        ITEM_TYPE_WEBSITES=6,
+        ITEM_TYPE_COMMENT=1,        // comment line item with no link
+        ITEM_TYPE_HEADING=2,        // heading which starts a sublist
+        ITEM_TYPE_LINK=3,           // regular file/directory link
+        ITEM_TYPE_LINKDOWN=4,       // directory down link
+        ITEM_TYPE_TITLE=5,          // current directory title
+        ITEM_TYPE_WEBSITES=6,       // website link to be added to trailer
     } ITEM_TYPES;
 
 
