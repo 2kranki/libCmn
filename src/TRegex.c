@@ -62,7 +62,7 @@ extern "C" {
     /* compileOne: compiles one regex token, returns number of chars eaten */
     int             TRegex_CompileOne(
         TREGEX_DATA     *this,
-        re_Token        *pCompiled,
+        uint32_t        ri,
         const
         char            *pPattern,
         ClassChar       cclbuf[CCLBUFLEN],
@@ -70,30 +70,35 @@ extern "C" {
     );
     /* compileoneclc: compiles one class character, returns number of chars eaten */
     int             TRegex_CompileOneCLC(
+        TREGEX_DATA     *this,
         ClassChar       *pCompiled,
         const
         char            *pPattern
     );
     /* compilerange: compiles a range, returns number of chars eaten */
     int             TRegex_CompileRange(
+        TREGEX_DATA     *this,
         ClassChar       *pCompiled,
         const
         char            *pPattern
     );
     /* compilequantifier: compiles a quantifier, returns number of chars eaten */
     int             TRegex_CompileQuantifier(
+        TREGEX_DATA     *this,
         re_Token        *pCompiled,
         const
         char            *pPattern
     );
     /* compilegreedy: sets whether the quantifier is greedy, returns number of chars eaten */
     int             TRegex_CompileGreedy(
+        TREGEX_DATA     *this,
         re_Token        *pCompiled,
         const
         char            *pPattern
     );
     /* compileatomic: sets whether the quantifier is atomic, returns number of chars eaten */
     int             TRegex_CompileAtomic(
+        TREGEX_DATA     *this,
         re_Token        *pCompiled,
         const
         char            *pPattern
@@ -318,11 +323,13 @@ extern "C" {
  */
 
 int         TRegex_CompileGreedy(
+    TREGEX_DATA     *this,
     re_Token*       pToken,
     const
     char*           pPattern
 )
 {
+    TRC_OBJ(this, "TRegex_CompileGreedy pat=%s\n", pPattern);
     switch (pPattern[0]) {
         case '?':
             pToken->greedy = false;
@@ -336,11 +343,13 @@ int         TRegex_CompileGreedy(
 
 
 int          TRegex_CompileAtomic(
-    re_Token*       pToken,
+    TREGEX_DATA     *this,
+    re_Token        *pToken,
     const
-    char*           pPattern
+    char            *pPattern
 )
 {
+    TRC_OBJ(this, "TRegex_CompileAtomic pat=%s\n", pPattern);
     switch (pPattern[0]) {
         case '+':
             pToken->atomic = true;
@@ -354,13 +363,15 @@ int          TRegex_CompileAtomic(
 
 
 int      TRegex_CompileQuantifier(
-    re_Token    *pToken,
+    TREGEX_DATA     *this,
+    re_Token        *pToken,
     const
-    char        *pPattern
+    char            *pPattern
 )
 {
     int         i;
 
+    TRC_OBJ(this, "TRegex_CompileQuantifier pat=%s\n", pPattern);
     pToken->quantifierMin = 1;
     pToken->quantifierMax = 1;
 
@@ -435,11 +446,13 @@ int      TRegex_CompileQuantifier(
  return number of chars eaten
  */
 int          TRegex_CompileOneCLC(
+    TREGEX_DATA     *this,
     ClassChar       *pCCL,
     const
     char*           pPattern
 )
 {
+    TRC_OBJ(this, "TRegex_CompileOneCLC pat=%s\n", pPattern);
     switch (pPattern[0]) {
         case '\\':
             if (!pPattern[1]) {
@@ -476,12 +489,14 @@ int          TRegex_CompileOneCLC(
 
 
 int         TRegex_CompileRange(
-    ClassChar*  pCCL,
+    TREGEX_DATA     *this,
+    ClassChar*      pCCL,
     const
-    char*       pattern
+    char*           pPattern
 )
 {
-    if (pattern[0] != '-') {
+    TRC_OBJ(this, "TRegex_CompileRange pat=%s\n", pPattern);
+    if (pPattern[0] != '-') {
         /* not a range */
         if (pCCL->type == CCL_CHARRANGE)
             pCCL->last = pCCL->first;
@@ -493,22 +508,22 @@ int         TRegex_CompileRange(
         return 0;
     }
     // pattern[0] == '-'
-    switch (pattern[1]) {
+    switch (pPattern[1]) {
         case '\\':
-            if (pattern[2] == '\0') {
+            if (pPattern[2] == '\0') {
                 /* invalid regex, ends on a backslash */
                 errno = EINVAL;
                 return 0;
             }
             for (int i = 0; i < cMetabsls; ++i) {
-                if (pattern[2] == Metabsls[i].pattern) {
+                if (pPattern[2] == Metabsls[i].pattern) {
                     /* a range from a character to a metabsl; error (e.g. [b-\w] )*/
                     errno = EINVAL;
                     return 0;
                 }
             }
             /* range from a character to an escaped literal char (e.g. [H-\Z]) */
-            pCCL->last = pattern[2];
+            pCCL->last = pPattern[2];
             return 4;
         case ']':
             /* ccl ends on dash; (e.g. [asdf-]); treat dash as literal */
@@ -520,7 +535,7 @@ int         TRegex_CompileRange(
             return 0;
         default:
             /* regular range from char to char */
-            pCCL->last = pattern[1];
+            pCCL->last = pPattern[1];
             return 2;
     }
     /* UNREACHABLE */
@@ -534,18 +549,22 @@ int         TRegex_CompileRange(
  */
 int         TRegex_CompileOne(
     TREGEX_DATA     *this,
-    re_Token        *pToken,
+    uint32_t        ri,
     const
     char            *pPattern,
     ClassChar       cclbuf[CCLBUFLEN],
-    int             *ccli)
+    int             *ccli
+)
 {
     int             i;
-    
+    re_Token        *pToken = &this->pTokens[ri];
+
+    TRC_OBJ(this, "TRegex_CompileOne pat=%s\n", pPattern);
     switch (pPattern[0]) {
         case '\\':
-            if (!pPattern[1]) {
+            if ('\0' == pPattern[1]) {
                 /* invalid regex, has \ as last character */
+                TRC_OBJ(this, "\tInvalid Regex has '\' as last char! pat=%s\n", pPattern);
                 errno = EINVAL;
                 return 0;
             }
@@ -576,26 +595,29 @@ int         TRegex_CompileOne(
                 errno = 0;
                 if (*ccli >= CCLBUFLEN) {
                     /* buffer is too small */
+                    TRC_OBJ(this, "\tCCL buffer is too small!\n");
                     errno = ENOBUFS; /* technically, this errno code refers to
                                       buffer space in a file stream, but I think
                                       it is still appropriate */
                     return 0;
                 }
-                i += TRegex_CompileOneCLC(&cclbuf[*ccli], pPattern+i);
+                i += TRegex_CompileOneCLC(this, &cclbuf[*ccli], pPattern+i);
                 if (errno)
                     return 0;
-                i += TRegex_CompileRange(&cclbuf[*ccli], pPattern+i);
+                i += TRegex_CompileRange(this, &cclbuf[*ccli], pPattern+i);
                 if (errno)
                     return 0;
                 ++*ccli;
             }
-            if (!pPattern[i]) {
+            if ('\0' == pPattern[i]) {
                 /* invalid regex, doesn't close the [ */
+                TRC_OBJ(this, "Invalid regex, no close for '['!\n");
                 errno = EINVAL;
                 return 0;
             }
             if (*ccli >= CCLBUFLEN) {
                 /* buffer is too small for null terminator */
+                TRC_OBJ(this, "\tCCL buffer is too small for null terminator!\n");
                 errno = ENOBUFS;
                 return 0;
             }
@@ -645,22 +667,27 @@ modifierFound:
                 ++i;
             }
 
-            ptrArray_Push(this->pTokenStack, pToken);
+            u32Array_Push(this->pTokenStack, ri);
 
             return i;
         case ')':
             /* group end */
             pToken->type = TOKEN_END;
-            if (0 == ptrArray_getSize(this->pTokenStack)) {
+            if (0 == u32Array_getSize(this->pTokenStack)) {
+                TRC_OBJ(this, "\tInvalid Regex has ')' but token stack is empty!\n");
                 errno = EINVAL;
                 return 0;
             }
-            re_Token        *pSavedToken = ptrArray_Pop(this->pTokenStack);
+            uint32_t        bgn = u32Array_Pop(this->pTokenStack);
+            re_Token        *pSavedToken = &this->pTokens[bgn];
             pToken->grouplen = pSavedToken->grouplen
-                             = (int)(pToken - pSavedToken);
+                             = ri - bgn;
+            TRC_OBJ(this, "\tgrplen:%d  bgn:%d ri:%d\n", pToken->grouplen, bgn, ri);
             return 1;
         case '\0':
             /* shouldn't happen */
+            TRC_OBJ(this, "\tInvalid Regex has '\0', but expecting something else!\n");
+            DEBUG_BREAK();
             errno = EINVAL;
             return 0;
         default:
@@ -683,7 +710,7 @@ modifierFound:
 
 
 
-void            TRegex_CompilePattern(
+void            TRegex_CompilePattern (
     TREGEX_DATA     *this,
     const
     char            *pPattern
@@ -692,7 +719,8 @@ void            TRegex_CompilePattern(
     int         pi = 0; /* index into pattern  */
     int         ri = 0; /* index into tokens */
 
-    ptrArray_DeleteAll(this->pTokenStack);
+    TRC_OBJ(this, "TRegex_CompilePattern pat=%s\n", pPattern);
+    u32Array_DeleteAll(this->pTokenStack);
     TRegex_DeleteTokens(this);
     this->ccli = 0;
 
@@ -700,13 +728,13 @@ void            TRegex_CompilePattern(
         errno = 0;
         TRegex_ExpandTokens(this, ri+1);
         ++this->sizeTokens;
-        if (!ri)
+        if (0 == ri)
             this->pTokens[ri].modifiers = 0;
         else
             this->pTokens[ri].modifiers = this->pTokens[ri-1].modifiers;
         pi +=   TRegex_CompileOne(
                                 this,
-                                &this->pTokens[ri],
+                                ri,
                                 &pPattern[pi],
                                 this->cclbuf,
                                 &this->ccli
@@ -714,18 +742,33 @@ void            TRegex_CompilePattern(
         if (errno)
             return;
     
-        pi += TRegex_CompileQuantifier(&this->pTokens[ri], &pPattern[pi]);
+        pi += TRegex_CompileQuantifier(this, &this->pTokens[ri], &pPattern[pi]);
         if (errno)
             return;
-        pi += TRegex_CompileGreedy(&this->pTokens[ri], &pPattern[pi]);
+        pi += TRegex_CompileGreedy(this, &this->pTokens[ri], &pPattern[pi]);
         if (errno)
             return;
-        pi += TRegex_CompileAtomic(&this->pTokens[ri], &pPattern[pi]);
+        pi += TRegex_CompileAtomic(this, &this->pTokens[ri], &pPattern[pi]);
         if (errno)
             return;
         
         if (this->pTokens[ri].type == TOKEN_END) {
             int         adj = ri - this->pTokens[ri].grouplen;
+            TRC_OBJ(
+                    this,
+                    "\tAdjusting end of group.   adj:%d, ri:%d, grplen:%d \n",
+                    adj,
+                    ri,
+                    this->pTokens[ri].grouplen
+            );
+#ifdef NDEBUG
+#else
+            if (obj_Trace(this)) {
+                ASTR_DATA           *pStr = TRegex_PrintOne(&this->pTokens[ri]);
+                fprintf(stderr, "\t\t%s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+            }
+#endif
             this->pTokens[adj].quantifierMin = this->pTokens[ri].quantifierMin;
             this->pTokens[adj].quantifierMax = this->pTokens[ri].quantifierMax;
             this->pTokens[adj].atomic = this->pTokens[ri].atomic;
@@ -741,8 +784,10 @@ void            TRegex_CompilePattern(
     this->pTokens[ri].type = TOKEN_END;
     this->pTokens[ri].grouplen = -1;
 
-    if (ptrArray_getSize(this->pTokenStack))
+    if (u32Array_getSize(this->pTokenStack)) {
+        TRC_OBJ(this, "\tError, token stack should be empty!\n");
         errno = EINVAL;
+    }
 }
 
 
@@ -1382,7 +1427,6 @@ int             TRegex_Matchg(
 
     
     
-    static
     ASTR_DATA *     TRegex_PrintOne(
         re_Token        *pToken
     )
@@ -1736,6 +1780,7 @@ int             TRegex_Matchg(
     )
     {
 
+        TRC_OBJ(this, "TRegex_Compile pat=%s\n", pPattern);
 #ifdef NDEBUG
 #else
         if (!TRegex_Validate(this)) {
@@ -1746,6 +1791,21 @@ int             TRegex_Matchg(
         this->sizeTokens = 0;
 
         TRegex_CompilePattern(this, pPattern);
+        if (errno) {
+            return ERESULT_INVALID_SYNTAX;
+        }
+#ifdef NDEBUG
+#else
+        if (obj_Trace(this)) {
+            uint32_t            i;
+            fprintf(stderr, "\t%d Tokens:\n", this->sizeTokens);
+            for (i=0; i<this->sizeTokens; i++) {
+                ASTR_DATA           *pStr = TRegex_PrintOne(&this->pTokens[i]);
+                fprintf(stderr, "\t\t%s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+            }
+        }
+#endif
 
         return ERESULT_SUCCESS;
     }
@@ -1998,7 +2058,7 @@ int             TRegex_Matchg(
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&TRegex_Vtbl);
         
-        this->pTokenStack = ptrArray_New();
+        this->pTokenStack = u32Array_New();
         if (OBJ_NIL == this->pTokenStack) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -2067,6 +2127,7 @@ int             TRegex_Matchg(
         int             length = 0;
 
                 // Do initialization.
+        TRC_OBJ(this, "TRegex_MatchP text=%s\n", pText);
         #ifdef NDEBUG
         #else
                 if (!TRegex_Validate(this)) {
@@ -2089,7 +2150,7 @@ int             TRegex_Matchg(
     int             TRegex_Match(
         TREGEX_DATA     *this,
         const
-        char            *pattern,
+        char            *pPattern,
         const
         char            *pText,
         int             *pLength
@@ -2098,6 +2159,7 @@ int             TRegex_Matchg(
         ERESULT         eRc;
         
         // Do initialization.
+        TRC_OBJ(this, "TRegex_Match pat=%s\n", pPattern);
 #ifdef NDEBUG
 #else
         if (!TRegex_Validate(this)) {
@@ -2105,34 +2167,29 @@ int             TRegex_Matchg(
             //return ERESULT_INVALID_OBJECT;
             return -1;
         }
-#endif
-                
-        eRc = TRegex_Compile(this, pattern);
-        if (ERESULT_FAILED(eRc)) {
-            //return eRc;
+        if (NULL == pPattern) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
             return -1;
         }
-        
+        if (NULL == pText) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_PARAMETER;
+            return -1;
+        }
+#endif
+                
+        eRc = TRegex_Compile(this, pPattern);
+        if (ERESULT_FAILED(eRc)) {
+            //return eRc;
+            return -2;
+        }
+
       return TRegex_MatchP(this, pText, pLength);
     }
 
     
 
-    //---------------------------------------------------------------
-    //                P a r s e  J s o n  O b j e c t
-    //---------------------------------------------------------------
-    
-#ifdef  TREGEX_JSON_SUPPORT
-     TREGEX_DATA * TRegex_ParseJsonObject (
-         JSONIN_DATA     *pParser
-    )
-    {
-        return OBJ_NIL;
-    }
-#endif
-        
-        
-        
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
@@ -2258,47 +2315,6 @@ int             TRegex_Matchg(
         
         return this->pSuperVtbl->pQueryInfo(objId, type, pData);
     }
-    
-    
-    
-    //---------------------------------------------------------------
-    //                       T o  J S O N
-    //---------------------------------------------------------------
-    
-#ifdef  TREGEX_JSON_SUPPORT
-     ASTR_DATA *     TRegex_ToJson (
-        TREGEX_DATA      *this
-    )
-    {
-        ERESULT         eRc;
-        //int             j;
-        ASTR_DATA       *pStr;
-        const
-        OBJ_INFO        *pInfo;
-        
-#ifdef NDEBUG
-#else
-        if (!TRegex_Validate(this)) {
-            DEBUG_BREAK();
-            return OBJ_NIL;
-        }
-#endif
-        pInfo = obj_getInfo(this);
-        
-        pStr = AStr_New();
-        if (pStr) {
-            eRc =   AStr_AppendPrint(
-                        pStr,
-                        "{\"objectType\":\"%s\"",
-                        pInfo->pClassName
-                    );
-            
-            AStr_AppendA(pStr, "}\n");
-        }
-        
-        return pStr;
-    }
-#endif
     
     
     

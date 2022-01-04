@@ -187,6 +187,8 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*! @property Desc provides the description/??? for the ??? of a
+     */
     ASTR_DATA *     Item_getDesc (
         ITEM_DATA       *this
     );

@@ -587,16 +587,21 @@ extern "C" {
     //---------------------------------------------------------------
 
     /*!
-     Enable operation of this object.
+     Add headings without Items for now if not already defined.
      @param     this    object pointer
+     @param     this    heading name heirarchy object pointer
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
     ERESULT         Index_AddHeadings (
-        INDEX_DATA      *this
+        INDEX_DATA      *this,
+        ASTRARRAY_DATA  *pArray
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
+        NODE_DATA       *pNode = OBJ_NIL;
+        uint32_t        i;
+        uint32_t        iMax;
 
         // Do initialization.
         TRC_OBJ(this, "%s:\n", __func__);
@@ -613,6 +618,20 @@ extern "C" {
         }
 #endif
 
+        iMax = AStrArray_getSize(pArray);
+        for (i=0; i<iMax; i++) {
+            ASTR_DATA           *pStr = AStrArray_Get(pArray, i+1);
+            if (pNode) {
+
+            } else {
+
+            }
+            if (pStr) {
+                NODE_DATA       *pNode;
+                pNode = Node_NewWithUTF8AndClass(ITEM_TYPE_HEADING, AStr_getData(pStr), OBJ_NIL);
+
+            }
+        }
 
         // Return to caller.
         return eRc;
@@ -773,7 +792,7 @@ extern "C" {
         }
 #endif
 
-        // Add Root;
+        // Add Root.
         if (ObjArray_getSize(this->pItems)) {
             NODE_DATA       *pNode;
             pNode = Node_NewWithUTF8AndClass(0, "root", OBJ_NIL);
@@ -789,7 +808,11 @@ extern "C" {
             ITEM_DATA           *pItem = ObjArray_Get(this->pItems, i+1);
             if (ITEM_TYPE_HEADING == Item_getType(pItem)) {
                 NODE_DATA       *pNode;
-                pNode = Node_NewWithUTF8AndClass(ITEM_TYPE_HEADING, "heading", pItem);
+                pNode = Node_NewWithUTF8AndClass(
+                                    ITEM_TYPE_HEADING,
+                                    AStr_getData(Item_getDesc(pItem)),
+                                                 pItem
+                        );
 
             }
         }

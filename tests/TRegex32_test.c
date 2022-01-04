@@ -1,33 +1,75 @@
 // vi:nu:et:sts=4 ts=4 sw=4
+//****************************************************************
+//                      Test Object Program
+//****************************************************************
 /*
- *	Generated 12/19/2019 23:09:03
+ * Program
+ *          Test Object Program
+ * Purpose
+ *          This program tests a particular object given certain
+ *          parameters.
+ *
+ * Remarks
+ *  1.      This relies on the fact that we can add to the Test
+ *          Object by simply coding methods that use the Test
+ *          Object.
+ *
+ * History
+ *  08/29/2021 Generated
+ */
+
+
+/*
+ This is free and unencumbered software released into the public domain.
+ 
+ Anyone is free to copy, modify, publish, use, compile, sell, or
+ distribute this software, either in source code form or as a compiled
+ binary, for any purpose, commercial or non-commercial, and by any
+ means.
+ 
+ In jurisdictions that recognize copyright laws, the author or authors
+ of this software dedicate any and all copyright interest in the
+ software to the public domain. We make this dedication for the benefit
+ of the public at large and to the detriment of our heirs and
+ successors. We intend this dedication to be an overt act of
+ relinquishment in perpetuity of all present and future rights to this
+ software under copyright law.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+ 
+ For more information, please refer to <http://unlicense.org/>
+ */
+
+
+
+
+/*
+ TestForFail(error_sttring)         <= Tests eRc for failure
+ TestForFalse(test, error_sttring)
+ TestForNotNull(test, error)
+ TestForNull(test, error)
+ TestForSuccess(error)              <= Tests eRc for success
+ TestForTrue(test, error)
  */
 
 
 
 
 
-// All code under test must be linked into the Unit Test bundle
-// Test Macros:
-//      TINYTEST_ASSERT(condition)
-//      TINYTEST_ASSERT_MSG(condition,msg)
-//      TINYTEST_EQUAL(expected, actual)
-//      TINYTEST_EQUAL_MSG(expected, actual, msg)
-//      TINYTEST_FALSE_MSG(condition,msg)
-//      TINYTEST_FALSE(condition)
-//      TINYTEST_TRUE_MSG(pointer,msg)
-//      TINYTEST_TRUE(condition)
-
-
-
-
-
-#include    <tinytest.h>
-#include    <cmn_defs.h>
-#include    <JsonIn.h>
+#include    <test_defs.h>
+#include    <Test_internal.h>
 #include    <trace.h>
-#include    <W32Str.h>
 #include    <TRegex32_internal.h>
+#include    <JsonIn.h>
+#include    <SrcErrors.h>
+#include    <szTbl.h>
+
 
 
 struct {
@@ -233,51 +275,6 @@ size_t      ntests = sizeof(test_vector) / sizeof(*test_vector);
 
 
 
-
-int             setUp(
-    const
-    char            *pTestName
-)
-{
-    mem_Init( );
-    trace_Shared( ); 
-    // Put setup code here. This method is called before the invocation of each
-    // test method in the class.
-    
-    return 1; 
-}
-
-
-int             tearDown(
-    const
-    char            *pTestName
-)
-{
-    // Put teardown code here. This method is called after the invocation of each
-    // test method in the class.
-
-    
-    JsonIn_RegisterReset();
-    trace_SharedReset( ); 
-    if (mem_Dump( ) ) {
-        fprintf(
-                stderr,
-                "\x1b[1m"
-                "\x1b[31m"
-                "ERROR: "
-                "\x1b[0m"
-                "Leaked memory areas were found!\n"
-        );
-        exitCode = 4;
-        return 0;
-    }
-    mem_Release( );
-    
-    return 1; 
-}
-
-
-
 void            printResult(
     TREGEX32_DATA   *this,
     int             lineNo,
@@ -347,143 +344,268 @@ void            printResult(
 
 
 
-bool            testPattern(
-    const
-    char            *pPattern,
-    const
-    char            *pText,
-    bool            fShouldSucceed,
-    int             mCheck,
-    int             mLength
-)
-{
-    //ERESULT         eRc = ERESULT_SUCCESS;
-    TREGEX32_DATA   *pObj = OBJ_NIL;
-    bool            fRc = true;
-    int             m;
-    int             length = 0;
-    bool            fDump = true;
-    W32STR_DATA     *pPat32 = OBJ_NIL;
-    W32STR_DATA     *pTxt32 = OBJ_NIL;
 
-    pObj = TRegex32_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    if (pObj) {
-        
-        //obj_TraceSet(pObj, true);
-        fRc = obj_IsKindOf(pObj, OBJ_IDENT_TREGEX32);
-        TINYTEST_TRUE( (fRc) );
-        
-        pPat32 = W32Str_NewA(pPattern);
-        TINYTEST_FALSE( (OBJ_NIL == pPat32) );
-        pTxt32 = W32Str_NewA(pText);
-        TINYTEST_FALSE( (OBJ_NIL == pTxt32) );
-        m = TRegex32_Match(
-                           pObj,
-                           W32Str_getData(pPat32),
-                           W32Str_getData(pTxt32),
-                           &length
-            );
-        if (fDump) {
-            printResult(pObj, 0, pPattern, pText, mCheck, mLength, m, length);
-        }
-
-        if (fShouldSucceed) {
-            if (!((m == mCheck) && (length == mLength))) {
-                if (!fDump) {
-                    printResult(pObj, 0, pPattern, pText, mCheck, mLength, m, length);
-                }
-                fprintf(
-                        stderr,
-                        "Error: check:(%d,%d)  found: (%d,%d)\n",
-                        mCheck, mLength, m, length
-                );
-                fRc = false;
-            }
-        }
-        else {
-            if (m || mLength) {
-                if (!fDump) {
-                    printResult(
-                                pObj,
-                                0,
-                                pPattern,
-                                pText,
-                                mCheck,
-                                mLength,
-                                m,
-                                length
-                    );
-                }
-                fprintf(
-                        stderr,
-                        "Error: check:(%d,%d)  found: (%d,%d)\n",
-                        mCheck, mLength, m, length
-                );
-                fRc = false;
-            }
-        }
-        
-        obj_Release(pPat32);
-        pPat32 = OBJ_NIL;
-        obj_Release(pTxt32);
-        pTxt32 = OBJ_NIL;
-
-        obj_Release(pObj);
-        pObj = OBJ_NIL;
-    }
-
-    return fRc;
-}
-
-
-
-
-
-
-int             test_TRegex32_OpenClose(
+ERESULT         Test_TRegex32_OpenClose (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
     ERESULT         eRc = ERESULT_SUCCESS;
-    TREGEX32_DATA	    *pObj = OBJ_NIL;
+    TREGEX32_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = TRegex32_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Alloc() object");
     pObj = TRegex32_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Init() object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_TREGEX32);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+#ifdef   TREGEX32_MSGS
+        TRegex32_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
         
         // Test something.
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("test failed");
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_TRegex32_Test01(
+ERESULT         Test_TRegex32_Copy01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
-    //ERESULT         eRc = ERESULT_SUCCESS;
-    TREGEX32_DATA   *pObj = OBJ_NIL;
-    ASTR_DATA       *pStr = OBJ_NIL;
+    ERESULT         eRc = ERESULT_SUCCESS;
+    TREGEX32_DATA       *pObj1 = OBJ_NIL;
+    TREGEX32_DATA       *pObj2 = OBJ_NIL;
     bool            fRc;
+#if defined(TREGEX32_JSON_SUPPORT) && defined(XYZZY)
+    ASTR_DATA       *pStr = OBJ_NIL;
+#endif
+    //int             iRc;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj1 = TRegex32_New( );
+    TestForNotNull(pObj1, "Missing Test object");
+    if (pObj1) {
+
+        //obj_TraceSet(pObj1, true);       
+        fRc = obj_IsKindOf(pObj1, OBJ_IDENT_TREGEX32);
+        TestForTrue(fRc, "Failed Ident Test");
+#ifdef   TREGEX32_MSGS
+        TRegex32_setMsg(pObj1, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
+        
+        // Test assign.
+        pObj2 = TRegex32_New();
+        TestForNotNull(pObj2, "Missing copied object");
+        eRc = TRegex32_Assign(pObj1, pObj2);
+        TestForFalse((ERESULT_FAILED(eRc)), "Assignment failed");
+
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_TREGEX32);
+        TestForTrue(fRc, "Failed Ident Test");
+        //iRc = TRegex32_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
+        //TODO: Add More tests here!
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        // Test copy.
+        pObj2 = TRegex32_Copy(pObj1);
+        TestForNotNull(pObj2, "");
+
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_TREGEX32);
+        TestForTrue(fRc, "Failed Ident Test");
+        //iRc = TRegex32_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
+        //TODO: Add More tests here!
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+
+        // Test json support.
+#if defined(TREGEX32_JSON_SUPPORT) && defined(XYZZY)
+        pStr = TRegex32_ToJson(pObj1);
+        TestForNotNull(pStr, "Missing JSON output");
+        fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
+        pObj2 = TRegex32_NewFromJsonString(pStr);
+        TestForNotNull(pObj2, "Missing JSON created object");
+        fRc = obj_IsKindOf(pObj2, OBJ_IDENT_TREGEX32);
+        TestForTrue(fRc, "Failed Ident Test");
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+        //iRc = TRegex32_Compare(pObj1, pObj2);
+        //TestForTrue((0 == iRc), "Failed Compare");
+
+        obj_Release(pObj2);
+        pObj2 = OBJ_NIL;
+#endif
+
+        obj_Release(pObj1);
+        pObj1 = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_TRegex32_Test01 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    TREGEX32_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = TRegex32_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_TREGEX32);
+        TestForTrue(fRc, "Failed Ident Test");
+        TestForSuccess("");
+#ifdef   TREGEX32_LOG
+        TRegex32_setLog(pObj, this);
+#endif
+                
+        {
+            ASTR_DATA       *pStr = TRegex32_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_TRegex32_Test02 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    TREGEX32_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = TRegex32_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_TREGEX32);
+        TestForTrue(fRc, "Failed Ident Test");
+        TestForSuccess("");
+#ifdef   TREGEX32_LOG
+        TRegex32_setLog(pObj, this);
+#endif
+                
+        {
+            ASTR_DATA       *pStr = TRegex32_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_TRegex32_Test03 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    TREGEX32_DATA    *pObj = OBJ_NIL;
+    bool            fRc;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = TRegex32_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_TREGEX32);
+        TestForTrue(fRc, "Failed Ident Test");
+        TestForSuccess("");
+#ifdef   TREGEX32_LOG
+        TRegex32_setLog(pObj, this);
+#endif
+                
+        {
+            ASTR_DATA       *pStr = TRegex32_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_TRegex32_Test04 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    TREGEX32_DATA   *pObj = OBJ_NIL;
+    bool            fRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
     char*           text;
     char*           pattern;
     int             fShouldSucceed;
@@ -496,19 +618,21 @@ int             test_TRegex32_Test01(
     W32STR_DATA     *pTxt32 = OBJ_NIL;
     int             mLength;
     int             length;
-
+   
     fprintf(stderr, "Performing: %s\n", pTestName);
 
-    pObj = TRegex32_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
-    pObj = TRegex32_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    pObj = TRegex32_New( );
+    TestForNotNull(pObj, "");
     if (pObj) {
-        
-        //obj_TraceSet(pObj, true);
+
+        //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_TREGEX32);
-        TINYTEST_TRUE( (fRc) );
-        
+        TestForTrue(fRc, "Failed Ident Test");
+        TestForSuccess("");
+#ifdef   TREGEX32_LOG
+        TRegex32_setLog(pObj, this);
+#endif
+                
         for (i = 0; i < ntests; ++i) {
             pattern = test_vector[i].pPattern;
             text = test_vector[i].pData;
@@ -518,9 +642,9 @@ int             test_TRegex32_Test01(
             length = 0;
 
             pPat32 = W32Str_NewA(pattern);
-            TINYTEST_FALSE( (OBJ_NIL == pPat32) );
+            TestForNotNull(pPat32, "");
             pTxt32 = W32Str_NewA(text);
-            TINYTEST_FALSE( (OBJ_NIL == pTxt32) );
+            TestForNotNull(pTxt32, "");
             m = TRegex32_Match(
                                pObj,
                                W32Str_getData(pPat32),
@@ -578,20 +702,57 @@ int             test_TRegex32_Test01(
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
 
-TINYTEST_START_SUITE(test_TRegex32);
-    TINYTEST_ADD_TEST(test_TRegex32_Test01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_TRegex32_OpenClose,setUp,tearDown);
-TINYTEST_END_SUITE();
+int     main (
+    int         cArgs,
+    const
+    char        *ppArgs[],
+    const
+    char        *ppEnv[]
+)
+{
+    ERESULT     eRc;
+    TEST_DATA   test = {0};
+    TEST_DATA   *pTest = OBJ_NIL;
+    int         i;
+    const
+    char        *pTestNameA = NULL;
 
-TINYTEST_MAIN_SINGLE_SUITE(test_TRegex32);
+    pTest = Test_Init(&test);
+    if (OBJ_NIL == pTest) {
+        fprintf(
+                stderr,
+                "\x1b[1m\x1b[31mFATAL\x1b[0m: Could not create Test object!\n\n\n"
+        );
+        exit(201);
+    }
 
+    // Scan args.
+    for (i=0; i<cArgs; i++) {
+        if (0 == strcmp("--no_int3", ppArgs[i])) {
+            Test_setAllowInt3(pTest, false);
+        }
+    }
 
+    // Execute tests.
+    TestExec("OpenClose", Test_TRegex32_OpenClose, NULL, NULL);
+    //TestExec("Copy01", Test_TRegex32_Copy01, NULL, NULL);
+    TestExec("Test01", Test_TRegex32_Test01, NULL, NULL);
+    TestExec("Test02", Test_TRegex32_Test02, NULL, NULL);
+    TestExec("Test03", Test_TRegex32_Test03, NULL, NULL);
+    TestExec("Test04", Test_TRegex32_Test04, NULL, NULL);
+
+    obj_Release(pTest);
+    pTest = OBJ_NIL;
+
+    // Return to Operating System.
+    return 0;
+}
 
 
 

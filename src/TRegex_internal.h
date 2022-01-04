@@ -43,6 +43,7 @@
 #include        <JsonIn.h>
 #include        <array.h>
 #include        <ptrArray.h>
+#include        <u32Array.h>
 
 
 #ifndef TREGEX_INTERNAL_H
@@ -92,31 +93,33 @@ extern "C" {
 
      /* the different types that each regex token can be */
      typedef enum TokenType_e {
-         TOKEN_END, /* the end of the regex or lookaround */
-         TOKEN_GROUP, /* group */
-         TOKEN_CGROUP, /* capturing group */
-         TOKEN_LOOKAROUND, /* lookaround */
-         TOKEN_INVLOOKAROUND, /* inverted lookaround */
-         TOKEN_METABSL, /* metabackslash: meta character sequences that begin with backslash */
-         TOKEN_METACHAR, /* a metachar, such as $ */
-         TOKEN_CHARCLASS, /* a character class that is surrounded by [...] */
-         TOKEN_INVCHARCLASS, /* a character class that is inverted by placing a ^ at the start [^...] */
-         TOKEN_CHAR /* a literal character */
+         TOKEN_END,             // the end of the regex or lookaround
+         TOKEN_GROUP,           // group
+         TOKEN_CGROUP,          // capturing group
+         TOKEN_LOOKAROUND,      // lookaround
+         TOKEN_INVLOOKAROUND,   // inverted lookaround
+         TOKEN_METABSL,         // metabackslash: meta character sequences that
+         //                     // begin with backslash
+         TOKEN_METACHAR,        // a metachar, such as $
+         TOKEN_CHARCLASS,       // a character class that is surrounded by [...]
+         TOKEN_INVCHARCLASS,    // a character class that is inverted by placing
+         //                     // a ^ at the start [^...]
+         TOKEN_CHAR             // a literal character
      } TokenType;
 
     /* struct for each regex token */
     typedef struct re_Token_s {
         int         index;      // Index in pTolens for this token.
-        TokenType type;
+        TokenType   type;
         union {
             int         grouplen;   /* END/GROUP/CGROUP/LOOKAROUND/INVLOOKAROUND:
                                     length of the group */
             int         meta;       /* METABSL/INVMETABSL/METACHAR:
                                     index in metabsls/metachars */
-            ClassChar* ccl;        /* CHARCLASS/INVCHARCLASS:
+            ClassChar*  ccl;        /* CHARCLASS/INVCHARCLASS:
                                     a pointer to characters in class (pointer to
                                     somewhere in cclbuf) */
-            char       ch;         /* CHAR: the character itself */
+            char        ch;         /* CHAR: the character itself */
         };
         Modifiers      modifiers;
         Quantifier     quantifierMin;
@@ -153,8 +156,7 @@ struct TRegex_data_s	{
     // Common Data
     /*  The sizes of the two static arrays below substantiates the dynamic
         RAM usage of this module.
-        MAX_REGEXP_OBJECTS is the max number of symbols in the expression.
-        MAX_CHAR_CLASS_LEN determines the size of buffer for chars in all
+        CCLBUFLEN determines the size of buffer for chars in all
         char-classes in the expression.
      */
     ClassChar       cclbuf[CCLBUFLEN];  /* buffer in which character class strings
@@ -163,7 +165,7 @@ struct TRegex_data_s	{
     uint32_t        maxTokens;
     uint32_t        sizeTokens;
     re_Token        *pTokens;         // array of tokens in regex
-    PTRARRAY_DATA   *pTokenStack;
+    U32ARRAY_DATA   *pTokenStack;
     
 };
 #pragma pack(pop)
@@ -202,6 +204,41 @@ struct TRegex_data_s	{
     );
 
 
+    /*!
+     Assign the contents of this object to the other object (ie
+     this -> other).  Any objects in other will be released before
+     a copy of the object is performed.
+     Example:
+     @code
+        ERESULT eRc = TRegex_Assign(this,pOther);
+     @endcode
+     @param     this    object pointer
+     @param     pOther  a pointer to another TREGEX object
+     @return    If successful, ERESULT_SUCCESS otherwise an
+                ERESULT_* error
+     */
+    ERESULT         TRegex_Assign (
+        TREGEX_DATA        *this,
+        TREGEX_DATA     *pOther
+    );
+
+
+    /*!
+     Copy the current object creating a new object.
+     Example:
+     @code
+        TRegex      *pCopy = TRegex_Copy(this);
+     @endcode
+     @param     this    object pointer
+     @return    If successful, a TREGEX object which must be
+                released, otherwise OBJ_NIL.
+     @warning   Remember to release the returned object.
+     */
+    TREGEX_DATA *   TRegex_Copy (
+        TREGEX_DATA     *this
+    );
+
+
     void            TRegex_Dealloc (
         OBJ_ID          objId
     );
@@ -224,6 +261,10 @@ struct TRegex_data_s	{
     );
 #endif
 
+
+    ASTR_DATA *     TRegex_PrintOne(
+        re_Token        *pToken
+    );
 
     void *          TRegex_QueryInfo (
         OBJ_ID          objId,

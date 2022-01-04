@@ -70,7 +70,7 @@ extern "C" {
         /* compileOne: compiles one regex token, returns number of chars eaten */
         int             TRegex32_CompileOne(
             TREGEX32_DATA   *this,
-            re_Token        *pCompiled,
+            uint32_t        ri,
             const
             W32CHR_T        *pPattern,
             ClassChar       cclbuf[CCLBUFLEN],
@@ -542,18 +542,21 @@ extern "C" {
      */
     int         TRegex32_CompileOne(
         TREGEX32_DATA   *this,
-        re_Token        *pToken,
+        uint32_t        ri,
         const
         W32CHR_T        *pPattern,
         ClassChar       cclbuf[CCLBUFLEN],
         int             *ccli)
     {
         int             i;
-        
+        re_Token        *pToken = &this->pTokens[ri];
+
+        TRC_OBJ(this, "TRegex_CompileOne pat=%s\n", pPattern);
         switch (pPattern[0]) {
             case '\\':
                 if (!pPattern[1]) {
                     /* invalid regex, has \ as last character */
+                    TRC_OBJ(this, "\tInvalid Regex has '\' as last char! pat=%s\n", pPattern);
                     errno = EINVAL;
                     return 0;
                 }
@@ -584,6 +587,7 @@ extern "C" {
                     errno = 0;
                     if (*ccli >= CCLBUFLEN) {
                         /* buffer is too small */
+                        TRC_OBJ(this, "\tCCL buffer is too small!\n");
                         errno = ENOBUFS; /* technically, this errno code refers to
                                           buffer space in a file stream, but I think
                                           it is still appropriate */
@@ -599,11 +603,13 @@ extern "C" {
                 }
                 if (pPattern[i] == '\0') {
                     /* invalid regex, doesn't close the [ */
+                    TRC_OBJ(this, "Invalid regex, no close for '['!\n");
                     errno = EINVAL;
                     return 0;
                 }
                 if (*ccli >= CCLBUFLEN) {
                     /* buffer is too small for null terminator */
+                    TRC_OBJ(this, "\tCCL buffer is too small for null terminator!\n");
                     errno = ENOBUFS;
                     return 0;
                 }
@@ -653,22 +659,27 @@ extern "C" {
                     ++i;
                 }
 
-                ptrArray_Push(this->pTokenStack, pToken);
+                u32Array_Push(this->pTokenStack, ri);
 
                 return i;
             case ')':
                 /* group end */
                 pToken->type = TOKEN_END;
-                if (0 == ptrArray_getSize(this->pTokenStack)) {
+                if (0 == u32Array_getSize(this->pTokenStack)) {
+                    TRC_OBJ(this, "\tInvalid Regex has ')' but token stack is empty!\n");
                     errno = EINVAL;
                     return 0;
                 }
-                re_Token        *pSavedToken = ptrArray_Pop(this->pTokenStack);
+                uint32_t        bgn = u32Array_Pop(this->pTokenStack);
+                re_Token        *pSavedToken = &this->pTokens[bgn];
                 pToken->grouplen = pSavedToken->grouplen
-                                 = (int)(pToken->index - pSavedToken->index);
+                                 = ri - bgn;
+                TRC_OBJ(this, "\tgrplen:%d  bgn:%d ri:%d\n", pToken->grouplen, bgn, ri);
                 return 1;
             case '\0':
                 /* shouldn't happen */
+                TRC_OBJ(this, "\tInvalid Regex has '\0', but expecting something else!\n");
+                DEBUG_BREAK();
                 errno = EINVAL;
                 return 0;
             default:
@@ -700,7 +711,8 @@ extern "C" {
         int             pi = 0; /* index into pattern  */
         int             ri = 0; /* index into tokens */
 
-        ptrArray_DeleteAll(this->pTokenStack);
+        TRC_OBJ(this, "TRegex_CompilePattern pat=%s\n", pPattern);
+        u32Array_DeleteAll(this->pTokenStack);
         TRegex32_DeleteTokens(this);
         this->ccli = 0;
 
@@ -714,7 +726,7 @@ extern "C" {
                 this->pTokens[ri].modifiers = this->pTokens[ri-1].modifiers;
             pi +=   TRegex32_CompileOne(
                                     this,
-                                    &this->pTokens[ri],
+                                    ri,
                                     &pPattern[pi],
                                     this->cclbuf,
                                     &this->ccli
@@ -734,6 +746,13 @@ extern "C" {
             
             if (this->pTokens[ri].type == TOKEN_END) {
                 int         adj = ri - this->pTokens[ri].grouplen;
+                TRC_OBJ(
+                        this,
+                        "\tAdjusting end of group.   adj:%d, ri:%d, grplen:%d \n",
+                        adj,
+                        ri,
+                        this->pTokens[ri].grouplen
+                );
                 this->pTokens[adj].quantifierMin = this->pTokens[ri].quantifierMin;
                 this->pTokens[adj].quantifierMax = this->pTokens[ri].quantifierMax;
                 this->pTokens[adj].atomic = this->pTokens[ri].atomic;
@@ -749,7 +768,7 @@ extern "C" {
         this->pTokens[ri].type = TOKEN_END;
         this->pTokens[ri].grouplen = -1;
 
-        if (ptrArray_getSize(this->pTokenStack))
+        if (u32Array_getSize(this->pTokenStack))
             errno = EINVAL;
     }
 
@@ -2007,7 +2026,7 @@ extern "C" {
         this->pSuperVtbl = obj_getVtbl(this);
         obj_setVtbl(this, (OBJ_IUNKNOWN *)&TRegex32_Vtbl);
         
-        this->pTokenStack = ptrArray_New();
+        this->pTokenStack = u32Array_New();
         if (OBJ_NIL == this->pTokenStack) {
             DEBUG_BREAK();
             obj_Release(this);

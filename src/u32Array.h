@@ -176,6 +176,11 @@ extern "C" {
     );
     
     
+    ERESULT             u32Array_DeleteAll(
+        U32ARRAY_DATA    *this
+    );
+
+
     uint32_t        u32Array_DeleteFirst(
         U32ARRAY_DATA	*this
     );
@@ -228,6 +233,17 @@ extern "C" {
     );
     
     
+    uint32_t        u32Array_Pop(
+        U32ARRAY_DATA   *this
+    );
+
+
+    ERESULT         u32Array_Push(
+        U32ARRAY_DATA   *this,
+        uint32_t        data
+    );
+
+
     ERESULT         u32Array_SetData(
         U32ARRAY_DATA   *this,
         uint32_t        index,

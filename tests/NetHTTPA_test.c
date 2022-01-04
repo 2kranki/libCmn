@@ -1,90 +1,82 @@
 // vi:nu:et:sts=4 ts=4 sw=4
+//****************************************************************
+//                      Test Object Program
+//****************************************************************
 /*
- *  Generated 07/07/2021 09:55:22
+ * Program
+ *          Test Object Program
+ * Purpose
+ *          This program tests a particular object given certain
+ *          parameters.
+ *
+ * Remarks
+ *  1.      This relies on the fact that we can add to the Test
+ *          Object by simply coding methods that use the Test
+ *          Object.
+ *
+ * History
+ *  08/29/2021 Generated
+ */
+
+
+/*
+ This is free and unencumbered software released into the public domain.
+ 
+ Anyone is free to copy, modify, publish, use, compile, sell, or
+ distribute this software, either in source code form or as a compiled
+ binary, for any purpose, commercial or non-commercial, and by any
+ means.
+ 
+ In jurisdictions that recognize copyright laws, the author or authors
+ of this software dedicate any and all copyright interest in the
+ software to the public domain. We make this dedication for the benefit
+ of the public at large and to the detriment of our heirs and
+ successors. We intend this dedication to be an overt act of
+ relinquishment in perpetuity of all present and future rights to this
+ software under copyright law.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+ 
+ For more information, please refer to <http://unlicense.org/>
+ */
+
+
+
+
+/*
+ TestForFail(error_sttring)         <= Tests eRc for failure
+ TestForFalse(test, error_sttring)
+ TestForNotNull(test, error)
+ TestForNull(test, error)
+ TestForSuccess(error)              <= Tests eRc for success
+ TestForTrue(test, error)
  */
 
 
 
 
 
-// All code under test must be linked into the Unit Test bundle
-// Test Macros:
-//      TINYTEST_ASSERT(condition)
-//      TINYTEST_ASSERT_MSG(condition,msg)
-//      TINYTEST_EQUAL(expected, actual)
-//      TINYTEST_EQUAL_MSG(expected, actual, msg)
-//      TINYTEST_FALSE_MSG(condition,msg)
-//      TINYTEST_FALSE(condition)
-//      TINYTEST_TRUE_MSG(pointer,msg)
-//      TINYTEST_TRUE(condition)
-
-
-
-
-
-#include    <tinytest.h>
 #include    <test_defs.h>
+#include    <Test_internal.h>
 #include    <trace.h>
 #include    <NetHTTPA_internal.h>
 #include    <JsonIn.h>
-#ifdef  NETHTTPA_JSON_SUPPORT
-#   include    <SrcErrors.h>
-#   include    <szTbl.h>
-#endif
-
-
-
-int             setUp (
-    const
-    char            *pTestName
-)
-{
-    mem_Init( );
-    trace_Shared( ); 
-    // Put setup code here. This method is called before the invocation of each
-    // test method in the class.
-    
-    return 1; 
-}
-
-
-int             tearDown (
-    const
-    char            *pTestName
-)
-{
-    // Put teardown code here. This method is called after the invocation of each
-    // test method in the class.
-
-#ifdef  NETHTTPA_JSON_SUPPORT
-    SrcErrors_SharedReset( );
-    szTbl_SharedReset( );
-#endif
-    JsonIn_RegisterReset();
-    trace_SharedReset( ); 
-    if (mem_Dump( ) ) {
-        fprintf(
-                stderr,
-                "\x1b[1m"
-                "\x1b[31m"
-                "ERROR: "
-                "\x1b[0m"
-                "Leaked memory areas were found!\n"
-        );
-        exitCode = 4;
-        return 0;
-    }
-    mem_Release( );
-    
-    return 1; 
-}
+#include    <SrcErrors.h>
+#include    <szTbl.h>
 
 
 
 
 
 
-int             test_NetHTTPA_OpenClose (
+ERESULT         Test_NetHTTPA_OpenClose (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
@@ -96,29 +88,33 @@ int             test_NetHTTPA_OpenClose (
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = NetHTTPA_Alloc( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Alloc() object");
     pObj = NetHTTPA_Init( pObj );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test Init() object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_NETHTTPA);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+#ifdef   NETHTTPA_MSGS
+        NetHTTPA_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
         
         // Test something.
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForSuccess("test failed");
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_NetHTTPA_Copy01 (
+ERESULT         Test_NetHTTPA_Copy01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
@@ -135,23 +131,26 @@ int             test_NetHTTPA_Copy01 (
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj1 = NetHTTPA_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj1) );
+    TestForNotNull(pObj1, "Missing Test object");
     if (pObj1) {
 
         //obj_TraceSet(pObj1, true);       
         fRc = obj_IsKindOf(pObj1, OBJ_IDENT_NETHTTPA);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
+#ifdef   NETHTTPA_MSGS
+        NetHTTPA_setMsg(pObj1, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
         
         // Test assign.
         pObj2 = NetHTTPA_New();
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
         eRc = NetHTTPA_Assign(pObj1, pObj2);
-        TINYTEST_FALSE( (ERESULT_FAILED(eRc)) );
+        TestForFalse((ERESULT_FAILED(eRc)), "Assignment failed");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NETHTTPA);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         //iRc = NetHTTPA_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == iRc) );
+        //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -159,12 +158,12 @@ int             test_NetHTTPA_Copy01 (
 
         // Test copy.
         pObj2 = NetHTTPA_Copy(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing copied object");
 
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NETHTTPA);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         //iRc = NetHTTPA_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == iRc) );
+        //TestForTrue((0 == iRc), "Failed Compare");
         //TODO: Add More tests here!
 
         obj_Release(pObj2);
@@ -173,16 +172,16 @@ int             test_NetHTTPA_Copy01 (
         // Test json support.
 #if defined(NETHTTPA_JSON_SUPPORT) && defined(XYZZY)
         pStr = NetHTTPA_ToJson(pObj1);
-        TINYTEST_FALSE( (OBJ_NIL == pStr) );
+        TestForNotNull(pStr, "Missing JSON output");
         fprintf(stderr, "JSON: %s\n", AStr_getData(pStr));
         pObj2 = NetHTTPA_NewFromJsonString(pStr);
-        TINYTEST_FALSE( (OBJ_NIL == pObj2) );
+        TestForNotNull(pObj2, "Missing JSON created object");
         fRc = obj_IsKindOf(pObj2, OBJ_IDENT_NETHTTPA);
-        TINYTEST_TRUE( (fRc) );
+        TestForTrue(fRc, "Failed Ident Test");
         obj_Release(pStr);
         pStr = OBJ_NIL;
         //iRc = NetHTTPA_Compare(pObj1, pObj2);
-        //TINYTEST_TRUE( (0 == iRc) );
+        //TestForTrue((0 == iRc), "Failed Compare");
 
         obj_Release(pObj2);
         pObj2 = OBJ_NIL;
@@ -193,31 +192,35 @@ int             test_NetHTTPA_Copy01 (
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
-int             test_NetHTTPA_Test01 (
+ERESULT         Test_NetHTTPA_Test01 (
+    TEST_DATA       *this,
     const
     char            *pTestName
 )
 {
-    //ERESULT         eRc = ERESULT_SUCCESS;
+    ERESULT         eRc = ERESULT_SUCCESS;
     NETHTTPA_DATA       *pObj = OBJ_NIL;
     bool            fRc;
    
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = NetHTTPA_New( );
-    TINYTEST_FALSE( (OBJ_NIL == pObj) );
+    TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_NETHTTPA);
-        TINYTEST_TRUE( (fRc) );
-        //TINYTEST_TRUE( (ERESULT_OK(eRc)) );
-        
+        TestForTrue(fRc, "Failed Ident Test");
+        TestForSuccess("");
+#ifdef   NETHTTPA_LOG
+        NetHTTPA_setLog(pObj, this);
+#endif
+                
         {
             ASTR_DATA       *pStr = NetHTTPA_ToDebugString(pObj, 4);
             if (pStr) {
@@ -232,21 +235,54 @@ int             test_NetHTTPA_Test01 (
     }
 
     fprintf(stderr, "...%s completed.\n\n\n", pTestName);
-    return 1;
+    return eRc;
 }
 
 
 
 
-TINYTEST_START_SUITE(test_NetHTTPA);
-    TINYTEST_ADD_TEST(test_NetHTTPA_Test01,setUp,tearDown);
-    //TINYTEST_ADD_TEST(test_NetHTTPA_Copy01,setUp,tearDown);
-    TINYTEST_ADD_TEST(test_NetHTTPA_OpenClose,setUp,tearDown);
-TINYTEST_END_SUITE();
+int     main (
+    int         cArgs,
+    const
+    char        *ppArgs[],
+    const
+    char        *ppEnv[]
+)
+{
+    ERESULT     eRc;
+    TEST_DATA   test = {0};
+    TEST_DATA   *pTest = OBJ_NIL;
+    int         i;
+    const
+    char        *pTestNameA = NULL;
 
-TINYTEST_MAIN_SINGLE_SUITE(test_NetHTTPA);
+    pTest = Test_Init(&test);
+    if (OBJ_NIL == pTest) {
+        fprintf(
+                stderr,
+                "\x1b[1m\x1b[31mFATAL\x1b[0m: Could not create Test object!\n\n\n"
+        );
+        exit(201);
+    }
 
+    // Scan args.
+    for (i=0; i<cArgs; i++) {
+        if (0 == strcmp("--no_int3", ppArgs[i])) {
+            Test_setAllowInt3(pTest, false);
+        }
+    }
 
+    // Execute tests.
+    TestExec("OpenClose", Test_NetHTTPA_OpenClose, NULL, NULL);
+    //TestExec("Copy01", Test_NetHTTPA_Copy01, NULL, NULL);
+    TestExec("Test01", Test_NetHTTPA_Test01, NULL, NULL);
+
+    obj_Release(pTest);
+    pTest = OBJ_NIL;
+
+    // Return to Operating System.
+    return 0;
+}
 
 
 

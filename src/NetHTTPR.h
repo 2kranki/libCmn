@@ -7,10 +7,14 @@
  * Program
  *          TCP/IP Network HTTP Request (NetHTTPR)
  * Purpose
- *          This object provides a standardized way of handling
- *          a separate NetHTTPR to run things without complications
- *          of interfering with the main NetHTTPR. A NetHTTPR may be 
- *          called a NetHTTPR on other O/S's.
+ *          This object parses an HTTP Request and ...
+ *
+ *          In general, a request consists of a header which
+ *          must contain 3 fields. The first is the request
+ *          type such as GET. The second is the URI and the
+ *          third is the 
+ *
+ *          It conforms to RFC 7230, RFC 7231.
  *
  * Remarks
  *  1.      None

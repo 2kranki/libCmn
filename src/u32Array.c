@@ -498,6 +498,28 @@ extern "C" {
     }
     
     
+    ERESULT             u32Array_DeleteAll(
+        U32ARRAY_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u32Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        eRc = array_Truncate((ARRAY_DATA *)this, 0);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
     uint32_t         u32Array_DeleteFirst(
         U32ARRAY_DATA	*this
     )
@@ -777,6 +799,72 @@ extern "C" {
     
     
     
+    //---------------------------------------------------------------
+    //                          P o p
+    //---------------------------------------------------------------
+
+    uint32_t        u32Array_Pop(
+        U32ARRAY_DATA   *this
+    )
+    {
+        //ERESULT         eRc;
+        uint32_t        data = 0;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u32Array_Validate(this) ) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return 0;
+        }
+#endif
+
+        data = u32Array_Delete(this, array_getSize((ARRAY_DATA *)this));
+
+        // Return to caller.
+        return data;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          P u s h
+    //---------------------------------------------------------------
+
+    ERESULT         u32Array_Push(
+        U32ARRAY_DATA   *this,
+        uint32_t        data
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !u32Array_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc =   array_InsertData(
+                                 (ARRAY_DATA *)this,
+                                 (array_getSize((ARRAY_DATA *)this) + 1),
+                                 1,
+                                 &data
+                );
+        if (ERESULT_HAS_FAILED(eRc)) {
+            DEBUG_BREAK();
+            return eRc;
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
+    }
+
+
+
     //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------

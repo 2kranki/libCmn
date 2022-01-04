@@ -97,7 +97,6 @@
         {name:"CmdProc",        desc:"Command Processor", json:true},
         {name:"CmdUtl",         desc:"Command Line Parsing/Control Utilities"},
         {name:"Compiler"},
-        {name:"consumer",       desc:"Consumer side of Consumer/Producer", note:"Used in libJ1939"},
         {name:"crc",            "test":null},
         {name:"CsvFile",        deps:["ObjArray.h","Path.h","srcFile.h"]},
         {name:"CsvRcd",         desc:"Comma-Delimited Record"},

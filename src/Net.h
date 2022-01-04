@@ -15,6 +15,8 @@
  *              NetHTTPR - TCP/IP Network HTTP Request
  *              NetIO    - Network I/O using Unix Sockets
  *              NetMIME  - Network MIME Support
+ *              Base64   - Base 64 Encoding/Decoding
+ *              Uri      - Uniform Resource Identifier - RFC 3986
  *
  * Remarks
  *  1.      None

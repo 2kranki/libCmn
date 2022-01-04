@@ -76,6 +76,7 @@ struct NetHTTPR_data_s  {
     uint16_t        minRel;         // HTTP Minor Release
     ASTR_DATA       *pBody;
     ASTR_DATA       *pURI;
+    ASTRARRAY_DATA  *pProperties;
 
 };
 #pragma pack(pop)

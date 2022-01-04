@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next generation!
-# (12/27/2021 19:58:35.000)
+# ( 1/ 4/2022 15:30:21.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -1698,16 +1698,6 @@ OBJS += $(OBJDIR)/cmnMac64.o
 $(OBJDIR)/cmnMac64.o: $(SRCDIR)/cmnMac64.c $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/consumer.o
-
-$(OBJDIR)/consumer.o: $(SRCDIR)/consumer.c $(SRCDIR)/consumer.h $(SRCDIR)/consumer_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/consumer_object.o
-
-$(OBJDIR)/consumer_object.o: $(SRCDIR)/consumer_object.c $(SRCDIR)/consumer.h $(SRCDIR)/consumer_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/crc.o
 
 $(OBJDIR)/crc.o: $(SRCDIR)/crc.c $(SRCDIR)/crc.h $(SRCDIR)/crc_internal.h $(SRCDIR)/cmn_defs.h 
@@ -2896,12 +2886,6 @@ cb_test: $(TEST_SRC)/cb_test.c $(SRCDIR)/cb.h $(SRCDIR)/cb_internal.h $(SRCDIR)/
 TESTS += cfa_test
 
 cfa_test: $(TEST_SRC)/cfa_test.c $(SRCDIR)/cfa.h $(SRCDIR)/cfa_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
-	$(TEST_BIN)/$(@F) --no_int3
-
-TESTS += consumer_test
-
-consumer_test: $(TEST_SRC)/consumer_test.c $(SRCDIR)/consumer.h $(SRCDIR)/consumer_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 

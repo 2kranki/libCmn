@@ -42,6 +42,7 @@
 #include        <TRegex32.h>
 #include        <JsonIn.h>
 #include        <ptrArray.h>
+#include        <u32Array.h>
 
 
 #ifndef TREGEX32_INTERNAL_H
@@ -158,7 +159,7 @@ struct TRegex32_data_s	{
     uint32_t        maxTokens;
     uint32_t        sizeTokens;
     re_Token        *pTokens;         // array of tokens in regex
-    PTRARRAY_DATA   *pTokenStack;
+    U32ARRAY_DATA   *pTokenStack;
 
 };
 #pragma pack(pop)
@@ -194,6 +195,17 @@ struct TRegex32_data_s	{
 
     OBJ_IUNKNOWN *  TRegex32_getSuperVtbl (
         TREGEX32_DATA     *this
+    );
+
+
+    ERESULT         TRegex32_Assign (
+        TREGEX32_DATA   *this,
+        TREGEX32_DATA   *pOther
+    );
+
+
+    TREGEX32_DATA *     TRegex32_Copy (
+        TREGEX32_DATA       *this
     );
 
 
