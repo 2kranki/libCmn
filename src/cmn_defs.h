@@ -207,6 +207,8 @@ extern "C" {
         OBJ_IDENT_BPT32INDEX_CLASS,
         OBJ_IDENT_BPT32LEAF,            // B-Plus 32-Bit Tree Leaf Block
         OBJ_IDENT_BPT32LEAF_CLASS,
+        OBJ_IDENT_BPT32RQ,              // B-Plus 32-Bit Tree Request Processor
+        OBJ_IDENT_BPT32RQ_CLASS,
         OBJ_IDENT_BTP,                  /* Binary Search Tree */
         OBJ_IDENT_BTP_CLASS,
         OBJ_IDENT_CB,                   /* Generic Circular Buffer */

@@ -84,6 +84,14 @@
                                 deps:["BlkdRcds16.h","$(OBJDIR)/BlkdRcds16.o"],
                                 status:"NOT working/NOT fully tested"
         },
+        {name:"BPT32Req",       desc:"B-Plus Tree Request Processor", 
+                                deps:[
+                                        "BPT32Index.h", "$(OBJDIR)/BPT32Index.o",
+                                        "BPT32Leaf.h", "$(OBJDIR)/BPT32Leaf.o",
+                                        "RRDS.h", "$(OBJDIR)/RRDS.o"
+                                ],
+                                status:"NOT working/NOT fully tested"
+        },
  *** TEMPORARY ***/
 
         {name:"cb",             desc:"Generic Circular Buffer", 

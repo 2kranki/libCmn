@@ -1,0 +1,10 @@
+# genEnum --prefix=BPT32 --name=Request misc/bpt32_request.txt
+UNKNOWN
+NEW_LBN,"Return an unallocated Logical Block Number (LBN)"           
+NEW_INDEX,"Return an unallocated empty Index block"
+NEW_LEAF,"Return an unallocated empty Leaf block"
+PARENT,"Return Parent of given block"
+READ,"Read a block  from disk"
+SPLIT,"Split occurred, handle parent updating"
+SET_TAIL,"Change Data Tail LBN to given block."
+WRITE,"Write a block to disk"
