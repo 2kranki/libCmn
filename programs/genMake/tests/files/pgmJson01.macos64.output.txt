@@ -3,8 +3,8 @@ SHELL=/bin/sh
 
 PGMNAM=genMake
 SYS=macos64
-TEMP=/tmp
-BASE_OBJ = $(TEMP)/$(PGMNAM)
+BUILD=./.build
+BASE_OBJ = $(BUILD)/$(PGMNAM)
 SRCDIR = ./src
 TEST_SRC = ./tests
 INSTALL_BASE = $(HOME)/Support/bin
@@ -109,7 +109,7 @@ NodeLib_test: $(TEST_SRC)/NodeLib_test.c $(SRCDIR)/NodeLib.h $(SRCDIR)/NodeLib_i
 
 
 .PHONY: all
-all:  clean create_dirs link
+all:  create_dirs link
 
 
 .PHONY: build
@@ -122,13 +122,14 @@ check: $(TESTS)
 
 .PHONY: clean
 clean:
-	-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)
+	-rm -fr $(BUILD)/$(PGMNAM)
 
 
 .PHONY: create_dirs
 create_dirs:
-	[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)
-	[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)
+	-mkdir -p $(BUILD)
+	-mkdir -p $(TEST_OBJ)
+	-mkdir -p $(TEST_BIN)
 
 
 .PHONY: install

@@ -8,6 +8,7 @@
 *.pyc
 *.swp
 *.tmp
+.build/
 
 # GNU LibTool Files and Directories
 .lib/
@@ -26,7 +27,6 @@ project.xcworkspace/
 # Python modules
 MANIFEST
 dist/
-#build/
 
 # Backup files
 *~.nib

@@ -1,13 +1,13 @@
 # Generated file - Edits will be discarded by next generation!
-# (10/17/2021 18:33:45.000)
+# ( 1/13/2022 18:58:52.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
 
 PGMNAM=genMake
 SYS=macos64
-TEMP=/tmp
-BASE_OBJ = $(TEMP)/$(PGMNAM)
+BUILD=./.build
+BASE_OBJ = $(BUILD)/$(PGMNAM)
 SRCDIR = ./src
 TEST_SRC = ./tests
 INSTALL_BASE = $(HOME)/Support/bin
@@ -331,7 +331,7 @@ SrcParse_test: $(TEST_SRC)/SrcParse_test.c $(SRCDIR)/SrcParse.h $(SRCDIR)/SrcPar
 
 
 .PHONY: all
-all:  clean create_dirs link
+all:  create_dirs link
 
 
 .PHONY: build
@@ -344,13 +344,14 @@ check: $(TESTS)
 
 .PHONY: clean
 clean:
-	-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)
+	-rm -fr $(BUILD)/$(PGMNAM)
 
 
 .PHONY: create_dirs
 create_dirs:
-	[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)
-	[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)
+	-mkdir -p $(BUILD)
+	-mkdir -p $(TEST_OBJ)
+	-mkdir -p $(TEST_BIN)
 
 
 .PHONY: install

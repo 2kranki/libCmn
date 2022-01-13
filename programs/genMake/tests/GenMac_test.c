@@ -25,6 +25,7 @@
 #include    <tinytest.h>
 #include    <cmn_defs.h>
 #include    <hjson.h>
+#include    <JsonIn.h>
 #include    <SrcErrors.h>
 #include    <szTbl.h>
 #include    <str.h>
@@ -57,6 +58,7 @@ int             tearDown(
     
     szTbl_SharedReset( );
     SrcErrors_SharedReset( );
+    JsonIn_RegisterReset();
     trace_SharedReset( );
     if (mem_Dump( ) ) {
         fprintf(

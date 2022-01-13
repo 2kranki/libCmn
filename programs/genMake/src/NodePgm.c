@@ -946,7 +946,7 @@ extern "C" {
         //AStr_AppendA(pStr, "CC=clang\n");
         AStr_AppendPrint(pStr, "PGMNAM=%s\n", AStrC_getData(NodePgm_getName(this)));
         AStr_AppendA(pStr, "SYS=macos64\n");
-        AStr_AppendA(pStr, "TEMP=/tmp\nBASE_OBJ = $(TEMP)/$(PGMNAM)\n");
+        AStr_AppendA(pStr, "BUILD=./.build\nBASE_OBJ = $(BUILD)/$(PGMNAM)\n");
         AStr_AppendA(pStr, "SRCDIR = ./src\n");
         AStr_AppendA(pStr, "TEST_SRC = ./tests\n");
         AStr_AppendA(pStr, "INSTALL_BASE = $(HOME)/Support/bin\n");
@@ -1035,7 +1035,7 @@ extern "C" {
         }
 
         AStr_AppendA(pStr, ".PHONY: all\n");
-        AStr_AppendA(pStr, "all:  clean create_dirs link\n\n\n");
+        AStr_AppendA(pStr, "all:  create_dirs link\n\n\n");
 
         AStr_AppendA(pStr, ".PHONY: build\n");
         AStr_AppendA(pStr, "build:  create_dirs link\n\n\n");
@@ -1044,13 +1044,13 @@ extern "C" {
         AStr_AppendPrint(pStr, "check: $(%s)\n\n\n", Dict_GetA(pDict, testsVarID));
          
         AStr_AppendA(pStr, ".PHONY: clean\nclean:\n");
-        AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(PGMNAM) ] "
-                            "&& rm -fr $(PGMNAM)\n\n\n");
+        AStr_AppendA(pStr, "\t-rm -fr $(BUILD)/$(PGMNAM)\n\n\n");
 
         AStr_AppendA(pStr, ".PHONY: create_dirs\n");
         AStr_AppendA(pStr, "create_dirs:\n");
-        AStr_AppendPrint(pStr, "\t[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)\n");
-        AStr_AppendPrint(pStr, "\t[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)\n\n\n");
+        AStr_AppendPrint(pStr, "\t-mkdir -p $(BUILD)\n");
+        AStr_AppendPrint(pStr, "\t-mkdir -p $(TEST_OBJ)\n");
+        AStr_AppendPrint(pStr, "\t-mkdir -p $(TEST_BIN)\n\n\n");
 
         AStr_AppendA(pStr, ".PHONY: install\ninstall:\n");
         AStr_AppendA(pStr, "\t-cd $(INSTALL_BASE) ; [ -d $(PGMNAM) ] "

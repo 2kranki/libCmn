@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C434C0C126B0E17A00C903C1 /* Main_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C434C0C026B0E17A00C903C1 /* Main_test.c */; };
+		C434C0C126B0E17A00C903C1 /* NodePgm_test.c in Sources */ = {isa = PBXBuildFile; fileRef = C434C0C026B0E17A00C903C1 /* NodePgm_test.c */; };
 		C456275D2389837B00603132 /* Dict_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C456275B2389837A00603132 /* Dict_object.c */; };
 		C456275E2389837B00603132 /* Dict.c in Sources */ = {isa = PBXBuildFile; fileRef = C456275C2389837A00603132 /* Dict.c */; };
 		C4562763238983A900603132 /* Main.c in Sources */ = {isa = PBXBuildFile; fileRef = C456275F238983A800603132 /* Main.c */; };
@@ -58,7 +58,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C434C0C026B0E17A00C903C1 /* Main_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Main_test.c; sourceTree = "<group>"; };
+		C434C0C026B0E17A00C903C1 /* NodePgm_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NodePgm_test.c; sourceTree = "<group>"; };
 		C451F3DF26DD1DFF00D9CC69 /* test_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = test_defs.h; sourceTree = "<group>"; };
 		C45573DD20CC0140002F9BFE /* genMake_Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = genMake_Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		C455775320CC0378002F9BFE /* genMake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genMake.h; sourceTree = "<group>"; };
@@ -165,7 +165,7 @@
 		C45573DF20CC0140002F9BFE /* genMake_Tests */ = {
 			isa = PBXGroup;
 			children = (
-				C434C0C026B0E17A00C903C1 /* Main_test.c */,
+				C434C0C026B0E17A00C903C1 /* NodePgm_test.c */,
 				C451F3DF26DD1DFF00D9CC69 /* test_defs.h */,
 				C4BE26C62378853800D0B580 /* data_test.c */,
 			);
@@ -334,7 +334,7 @@
 				C4BE26CD2378D3D000D0B580 /* ExpandNodes_object.c in Sources */,
 				C45B9CBC2389C31E00F9A1A3 /* GenBase_object.c in Sources */,
 				C482FCED2370EF6C00521CD8 /* NodeTest.c in Sources */,
-				C434C0C126B0E17A00C903C1 /* Main_test.c in Sources */,
+				C434C0C126B0E17A00C903C1 /* NodePgm_test.c in Sources */,
 				C482FCF02370EF6C00521CD8 /* NodeObj_object.c in Sources */,
 				C482FCE92370EF6C00521CD8 /* NodePgm.c in Sources */,
 				C482FCE82370EF6C00521CD8 /* NodeRtn_object.c in Sources */,

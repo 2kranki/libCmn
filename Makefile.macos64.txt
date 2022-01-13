@@ -1,13 +1,13 @@
-# Generated file - Edits will be discarded by next generation!
-# ( 1/ 4/2022 15:30:21.000)
+# Generated file - Edits will be discarded by next file generation!
+# ( 1/13/2022 18:39:17.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
 
 LIBNAM=libCmn
 SYS=macos64
-TEMP=/tmp
-BASE_OBJ = $(TEMP)/$(LIBNAM)
+BUILD=./build
+BASE_OBJ = $(BUILD)/$(LIBNAM)
 SRCDIR = ./src
 TEST_SRC = ./tests
 INSTALL_BASE = $(HOME)/Support/lib/$(SYS)
@@ -3115,7 +3115,7 @@ $(LIB_PATH):  $(OBJS)
 
 
 .PHONY: all
-all:  clean create_dirs $(LIB_PATH) check install
+all:  create_dirs $(LIB_PATH) check install
 
 
 .PHONY: build
@@ -3128,13 +3128,14 @@ check: $(TESTS)
 
 .PHONY: clean
 clean:
-	-cd $(TEMP) ; [ -d $(LIBNAM) ] && rm -fr $(LIBNAM)
+	-rm -fr $(BUILD)/$(LIBNAM)
 
 
 .PHONY: create_dirs
 create_dirs:
-	[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)
-	[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)
+	-mkdir -p $(BUILD)
+	-mkdir -p $(TEST_OBJ)
+	-mkdir -p $(TEST_BIN)
 
 
 .PHONY: install

@@ -322,6 +322,7 @@ extern "C" {
      this routine.
      @param     this    object pointer
      @param     pPath   dataset path pointer
+     @param     fMem     true == memory based file, false == disk based
      @Return    If successful, ERESULT_SUCCESS; otherwise an ERESULT_*
                 error.
      */

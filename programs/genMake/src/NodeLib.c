@@ -830,7 +830,7 @@ extern "C" {
         }
 
         AStr_AppendA(pStr,
-                     "# Generated file - Edits will be discarded by next generation!\n");
+                     "# Generated file - Edits will be discarded by next file generation!\n");
         pDate = DateTime_NewCurrent();
         if (pDate) {
             ASTR_DATA       *pWrk;
@@ -850,7 +850,7 @@ extern "C" {
         //AStr_AppendA(pStr, "CC=clang\n");
         AStr_AppendPrint(pStr, "LIBNAM=lib%s\n", AStrC_getData(NodeLib_getName(this)));
         AStr_AppendA(pStr, "SYS=macos64\n");
-        AStr_AppendA(pStr, "TEMP=/tmp\nBASE_OBJ = $(TEMP)/$(LIBNAM)\n");
+        AStr_AppendA(pStr, "BUILD=./.build\nBASE_OBJ = $(BUILD)/$(LIBNAM)\n");
         AStr_AppendA(pStr, "SRCDIR = ./src\n");
         AStr_AppendA(pStr, "TEST_SRC = ./tests\n");
         AStr_AppendA(pStr, "INSTALL_BASE = $(HOME)/Support/lib/$(SYS)\n");
@@ -947,7 +947,7 @@ extern "C" {
                          Dict_GetA(pDict, objsVarID));
 
         AStr_AppendA(pStr, ".PHONY: all\n");
-        AStr_AppendA(pStr, "all:  clean create_dirs $(LIB_PATH) check install\n\n\n");
+        AStr_AppendA(pStr, "all:  create_dirs $(LIB_PATH) check install\n\n\n");
 
         AStr_AppendA(pStr, ".PHONY: build\n");
         AStr_AppendA(pStr, "build:  create_dirs $(LIB_PATH)\n\n\n");
@@ -956,14 +956,14 @@ extern "C" {
         AStr_AppendPrint(pStr, "check: $(%s)\n\n\n", Dict_GetA(pDict, testsVarID));
          
         AStr_AppendA(pStr, ".PHONY: clean\nclean:\n");
-        AStr_AppendA(pStr, "\t-cd $(TEMP) ; [ -d $(LIBNAM) ] "
-                            "&& rm -fr $(LIBNAM)\n\n\n");
+        AStr_AppendA(pStr, "\t-rm -fr $(BUILD)/$(LIBNAM)\n\n\n");
 
         AStr_AppendA(pStr, ".PHONY: create_dirs\n");
         AStr_AppendA(pStr, "create_dirs:\n");
         AStr_AppendPrint(pStr,
-                         "\t[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)\n"
-                         "\t[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)\n\n\n"
+                         "\t-mkdir -p $(BUILD)\n"
+                         "\t-mkdir -p $(TEST_OBJ)\n"
+                         "\t-mkdir -p $(TEST_BIN)\n\n\n"
         );
 
         AStr_AppendA(pStr, ".PHONY: install\ninstall:\n");
