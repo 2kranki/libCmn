@@ -1,12 +1,12 @@
 # Generated file - Edits will be discarded by next file generation!
-# ( 1/13/2022 18:39:17.000)
+# ( 1/14/2022 13:43:11.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
 
 LIBNAM=libCmn
 SYS=macos64
-BUILD=./build
+BUILD=./.build
 BASE_OBJ = $(BUILD)/$(LIBNAM)
 SRCDIR = ./src
 TEST_SRC = ./tests

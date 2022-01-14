@@ -576,6 +576,52 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                      P u b l i c s
+    //---------------------------------------------------------------
+
+    SYMS_DATA *     Sect_getPublics (
+        SECT_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        return this->pPublics;
+    }
+
+
+    bool            Sect_setPublics (
+        SECT_DATA       *this,
+        SYMS_DATA       *pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pPublics) {
+            obj_Release(this->pPublics);
+        }
+        this->pPublics = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       S e c t i o n
     //---------------------------------------------------------------
 
@@ -1023,6 +1069,7 @@ extern "C" {
         Sect_setData(this, OBJ_NIL);
         Sect_setExterns(this, OBJ_NIL);
         Sect_setName(this, OBJ_NIL);
+        Sect_setPublics(this, OBJ_NIL);
 
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super

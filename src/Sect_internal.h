@@ -82,6 +82,7 @@ struct Sect_data_s  {
     ASTR_DATA       *pName;
     U8ARRAY_DATA    *pData;
     SYMS_DATA       *pExterns;
+    SYMS_DATA       *pPublics;
     //???_DATA        *pReloc;        // Relocation Dictionary
 
 };
