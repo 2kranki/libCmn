@@ -2842,6 +2842,63 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       P r e p e n d
+    //---------------------------------------------------------------
+    
+    ERESULT         AStr_PrependA(
+        ASTR_DATA       *this,
+        const
+        char            *pStrA
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_DATA;
+        }
+#endif
+        
+        eRc = AStr_InsertA(this, 1, pStrA);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    ERESULT         AStr_PrependW32(
+        ASTR_DATA       *this,
+        const
+        W32CHR_T        *pStrW32
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_DATA;
+        }
+        if( (NULL == pStrW32) ) {
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        eRc = AStr_InsertW32(this, 1, pStrW32);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     

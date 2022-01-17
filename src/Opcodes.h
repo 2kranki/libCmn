@@ -207,9 +207,23 @@ extern "C" {
 
 
     /*!
-     Search the entries for a particular symbol entry using the
-     characteristics of the given node and its compare function.
-     @return    If successful, an SYM object is returned.  Otherwise,
+     Search the opcode entries by opcode using opcode(s) and mask(s)
+     to compare against the given opcode(s).
+     @param     this        Object Pointer
+     @param     pOpc        Binary Opcode(s) Pointer (may be multiple bytes)
+     @return    If successful, an Opcode object is returned.  Otherwise,
+                OBJ_NIL.
+     */
+    OPCODE_DATA *   Opcodes_Find (
+        OPCODES_DATA    *this,
+        const
+        uint8_t         *pOpc
+    );
+
+
+    /*!
+     Search the opcode entries by name.
+     @return    If successful, an Opcode object is returned.  Otherwise,
                 OBJ_NIL.
      */
     OPCODE_DATA *   Opcodes_FindA (

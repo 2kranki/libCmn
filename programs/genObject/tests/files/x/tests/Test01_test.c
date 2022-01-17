@@ -210,12 +210,142 @@ ERESULT         Test_Test01_Test01 (
     fprintf(stderr, "Performing: %s\n", pTestName);
 
     pObj = Test01_New( );
-    TestForNotNull(pObj, "Missing Test object");
+    TestForNotNull(pObj, "");
     if (pObj) {
 
         //obj_TraceSet(pObj, true);       
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_TEST01);
-        TestForTrue(fRc, "Failed Ident Test");
+        TestForFalse(!fRc, "");
+        TestForTrue(fRc, "");
+#ifdef   TEST01_MSGS
+        Test01_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
+                
+        {
+            ASTR_DATA       *pStr = Test01_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_Test01_Test02 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    TEST01_DATA       *pObj = OBJ_NIL;
+    bool            fRc;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = Test01_New( );
+    TestForNotNull(pObj, "");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_TEST01);
+        TestForFalse(!fRc, "");
+        TestForTrue(fRc, "");
+#ifdef   TEST01_MSGS
+        Test01_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
+                
+        {
+            ASTR_DATA       *pStr = Test01_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_Test01_Test03 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    TEST01_DATA       *pObj = OBJ_NIL;
+    bool            fRc;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = Test01_New( );
+    TestForNotNull(pObj, "");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_TEST01);
+        TestForFalse(!fRc, "");
+        TestForTrue(fRc, "");
+#ifdef   TEST01_MSGS
+        Test01_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
+                
+        {
+            ASTR_DATA       *pStr = Test01_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_Test01_Test04 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    TEST01_DATA       *pObj = OBJ_NIL;
+    bool            fRc;
+   
+    fprintf(stderr, "Performing: %s\n", pTestName);
+
+    pObj = Test01_New( );
+    TestForNotNull(pObj, "");
+    if (pObj) {
+
+        //obj_TraceSet(pObj, true);       
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_TEST01);
+        TestForFalse(!fRc, "");
+        TestForTrue(fRc, "");
 #ifdef   TEST01_MSGS
         Test01_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
 #endif
@@ -275,6 +405,9 @@ int     main (
     TestExec("OpenClose", Test_Test01_OpenClose, NULL, NULL);
     //TestExec("Copy01", Test_Test01_Copy01, NULL, NULL);
     TestExec("Test01", Test_Test01_Test01, NULL, NULL);
+    TestExec("Test02", Test_Test01_Test02, NULL, NULL);
+    TestExec("Test03", Test_Test01_Test03, NULL, NULL);
+    TestExec("Test04", Test_Test01_Test04, NULL, NULL);
 
     obj_Release(pTest);
     pTest = OBJ_NIL;

@@ -692,6 +692,26 @@ extern "C" {
     );
     
     
+    /*!
+     Insert the given string at the beginning of the string.
+     @param     this    object pointer
+     @param     pStrA   required string pointer
+     @return    If successful, ERESULT_SUCCESS is returned, otherwise an ERESULT_*
+                 error is returned.
+     */
+    ERESULT         AStr_PrependA(
+        ASTR_DATA       *this,
+        const
+        char            *pStrA
+    );
+
+    ERESULT         AStr_PrependW32(
+        ASTR_DATA       *this,
+        const
+        W32CHR_T        *pStrW32
+    );
+
+
     ERESULT         AStr_Remove (
         ASTR_DATA		*this,
         uint32_t        offset,

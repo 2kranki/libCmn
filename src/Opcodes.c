@@ -97,13 +97,58 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                  F i n d  E x i t
+    //---------------------------------------------------------------
+
+    ERESULT         Opcodes_FindExit (
+        OPCODES_DATA    *this,
+        uint8_t         *pOpcode,       // Byte(s) of Opcode data
+        OPCODE_DATA     *pData,
+        OPCODE_DATA     **ppFound
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             i;
+        OPCODE_ENTRY    *pEntry;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Opcodes_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+        if (OBJ_NIL == pData) {
+            return ERESULT_FAILURE;
+        }
+        pEntry = Opcode_getEntry(pData);
+        
+        for (i=0; i<pEntry->cCode; i++) {
+            if ((pOpcode[i] & pEntry->iMask[i]) == pEntry->iCode[i]) {
+                continue;
+            } else {
+                return ERESULT_SUCCESS;
+            }
+        }
+        if (ppFound) {
+            *ppFound = pData;
+        }
+
+        // Return to caller.
+        return ERESULT_FAILURE;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                  S c a n  E x i t
     //---------------------------------------------------------------
 
     ERESULT         Opcodes_ScanExit (
         OPCODES_DATA    *this,
         const
-        char            *pKey,
+        char            *pKeyA,
         OPCODE_DATA     *pData,
         OBJENUM_DATA    *pEnum
     )
@@ -795,8 +840,8 @@ extern "C" {
         uint8_t         *pOpc
     )
     {
-        //ERESULT         eRc;
-        OPCODE_DATA     *pEntry = OBJ_NIL;
+        ERESULT         eRc;
+        OPCODE_DATA     *pOpcode = OBJ_NIL;
 
         // Do initialization.
         TRC_OBJ(this, "%s:\n", __func__);
@@ -809,10 +854,10 @@ extern "C" {
         }
 #endif
 
-        //pEntry = (OPCODE_DATA *)NodeBT_FindA(this->pTree, 0, (char *)pOpc);
+        eRc = szBT_ForEach(this->pTree, (void *)Opcodes_FindExit, this, &pOpcode);
 
         // Return to caller.
-        return pEntry;
+        return pOpcode;
     }
 
 

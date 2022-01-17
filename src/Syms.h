@@ -184,9 +184,9 @@ extern "C" {
      Add the given Symbol object to the Tree.
      @param     this        Object Pointer
      @param     pSym        Symbol Entry Object Pointer
-     @param     pIndex  An required pointer to uint32_t which will contain
-                a unique number for the object if it is added to the Hash
-                successfully.
+     @param     pIndex      An optional pointer to uint32_t which will contain
+                            a unique number for the object if it is added to the
+                            Hash successfully.
      @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
                 error code is returned.
      */
@@ -202,9 +202,9 @@ extern "C" {
      @param     this        Object Pointer
      @param     scope       scope level (relative to 0)
      @param     pSym        Symbol Entry Object Pointer
-     @param     pIndex  An required pointer to uint32_t which will contain
-                a unique number for the object if it is added to the Hash
-                successfully.
+     @param     pIndex      A required pointer to uint32_t which will contain
+                            a unique number for the object if it is added to the Hash
+                            successfully.
      @return    If successful, ERESULT_SUCCESS; otherwise, an ERESULT_*
                 error code is returned.
      */
@@ -219,7 +219,7 @@ extern "C" {
     /*!
      Add an object to the Hash Table as a singleton entry which will not
      be added to the hash or scope indices.  It can only be accessed with
-     ObjHash_FindIndex() and deleted with DeleteUnlinked(). It will not
+     ObjHash_FindIndex() and deleted with DeleteUnlinked(). It will not be
      added into the ObjHash's indices.
      @param     this    object pointer
      @param     pSym    Symbol to be added to the table

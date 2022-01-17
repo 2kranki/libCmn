@@ -688,8 +688,27 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
+    OBJ_DATA *      Sect_getSuper (
+        SECT_DATA       *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Sect_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        
+        return (OBJ_DATA *)this;
+    }
+    
+  
     OBJ_IUNKNOWN *  Sect_getSuperVtbl (
-        SECT_DATA     *this
+        SECT_DATA       *this
     )
     {
 

@@ -326,6 +326,16 @@ extern "C" {
     );
 
 
+    uint32_t        Opcode_getUnique (
+        OPCODE_DATA     *this
+    );
+
+    bool            Opcode_setUnique (
+        OPCODE_DATA     *this,
+        uint32_t        value
+    );
+
+
 
     //---------------------------------------------------------------
     //                      *** Methods ***

@@ -2350,14 +2350,7 @@ extern "C" {
         }
 #endif
 
-        i = this->entry.cls - pOther->entry.cls;
-        if (0 == i) {
-            i = utf8_StrCmp(this->entry.nameA, pOther->entry.nameA);
-        }
-        if (i < 0)
-            i =  -1;
-        else if (i > 0)
-            i = 1;
+        i = Sym_CompareA(this, pOther->entry.cls, pOther->entry.nameA);
         
         return i;
     }
@@ -2388,8 +2381,7 @@ extern "C" {
 
         if (0 == cls) {
             i = utf8_StrCmp(this->entry.nameA, pNameA);
-        }
-        else {
+        } else {
             i = this->entry.cls - cls;
             if (0 == i) {
                 i = utf8_StrCmp(this->entry.nameA, pNameA);

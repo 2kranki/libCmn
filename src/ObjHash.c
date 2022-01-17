@@ -228,6 +228,7 @@ extern "C" {
         OBJHASH_DATA    *this,
         uint32_t        hash,
         OBJ_ID          pObject,
+        P_OBJ_COMPARE   pCompare,
         int32_t         index       // (0..n)th entry in chain
     )
     {
@@ -244,13 +245,13 @@ extern "C" {
         pNode = listdl_Head(pNodeList);
         while ( pNode ) {
             if (pNode->hash == hash) {
-                iRc = pVtbl->pCompare(pObject, pNode->pObject);
+                iRc = pCompare(pNode->pObject, pObject);
                 if (0 == iRc) {
                     index--;
                     if (index < 0)
                         return pNode;
                 }
-                if (iRc < 0) {
+                if (iRc > 0) {
                     break;
                 }
             }
@@ -1104,7 +1105,7 @@ extern "C" {
         hash = pVtbl->pHash(pObject);
         pNodeList = ObjHash_NodeListFromHash(this, hash);
 
-        pNode = ObjHash_FindNode(this, hash, pObject, 0);
+        pNode = ObjHash_FindNode(this, hash, pObject, pVtbl->pCompare, 0);
         if (pNode) {
             listdl_Delete(pNodeList, pNode);
             pReturn = pNode->pObject;
@@ -1370,7 +1371,40 @@ extern "C" {
 
         hash = pVtbl->pHash(pObject);
 
-        pNode = ObjHash_FindNode(this, hash, pObject, 0);
+        pNode = ObjHash_FindNode(this, hash, pObject, pVtbl->pCompare, 0);
+        if (pNode) {
+            return pNode->pObject;
+        }
+
+        // Return to caller.
+        return OBJ_NIL;
+    }
+
+
+    OBJ_ID          ObjHash_FindCmp(
+        OBJHASH_DATA    *this,
+        OBJ_ID          pObject,
+        P_OBJ_COMPARE   pCmp
+    )
+    {
+        OBJHASH_NODE    *pNode;
+        uint32_t        hash;
+        const
+        OBJ_IUNKNOWN    *pVtbl;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !ObjHash_Validate(this) ) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+        pVtbl = obj_getVtbl(pObject);
+
+        hash = pVtbl->pHash(pObject);
+
+        pNode = ObjHash_FindNode(this, hash, pObject, pCmp, 0);
         if (pNode) {
             return pNode->pObject;
         }
@@ -1431,7 +1465,7 @@ extern "C" {
 
         hash = pVtbl->pHash(pObject);
 
-        pNode = ObjHash_FindNode(this, hash, pObject, (int32_t)index);
+        pNode = ObjHash_FindNode(this, hash, pObject, pVtbl->pCompare ,(int32_t)index);
         if (pNode) {
             return pNode->pObject;
         }

@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
  * File:   Test01.c
- *  Generated 11/26/2021 18:53:11
+ *  Generated 01/15/2022 15:14:28
  *
  */
 
@@ -275,25 +275,6 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    OBJ_IUNKNOWN *  Test01_getSuperVtbl (
-        TEST01_DATA     *this
-    )
-    {
-
-        // Validate the input parameters.
-#ifdef NDEBUG
-#else
-        if (!Test01_Validate(this)) {
-            DEBUG_BREAK();
-            return 0;
-        }
-#endif
-
-        
-        return this->pSuperVtbl;
-    }
-    
-  
     OBJ_DATA *  Test01_getSuper (
         TEST01_DATA     *this
     )
@@ -313,6 +294,25 @@ extern "C" {
     }
 
     
+    OBJ_IUNKNOWN *  Test01_getSuperVtbl (
+        TEST01_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Test01_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        
+        return this->pSuperVtbl;
+    }
+    
+  
 
     //===============================================================
     //                          M e t h o d s

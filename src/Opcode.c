@@ -612,6 +612,47 @@ extern "C" {
 
 
 
+    //---------------------------------------------------------------
+    //                        U n i q u e
+    //---------------------------------------------------------------
+
+    uint32_t        Opcode_getUnique (
+        OPCODE_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return Opcode_getEntry(this)->unique;
+    }
+
+
+    bool            Opcode_setUnique (
+        OPCODE_DATA     *this,
+        uint32_t        value
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Opcode_Validate(this)) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        Opcode_getEntry(this)->unique = value;
+
+        return true;
+    }
+
+
 
 
     //===============================================================

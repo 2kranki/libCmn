@@ -6,6 +6,10 @@
  * Notes:
  *  --  N/A
  *
+ * Todo:
+ *  --  Debug information (see DWARF specification???)
+ *  --  Relocation information
+ *
  */
 
 
@@ -76,14 +80,15 @@ struct Sect_data_s  {
     uint8_t         rsvd8_2;
     uint32_t        section;        // Section Identifier (Used in Symbols)
     uint32_t        esid;           // Internal Identifier
-    uint32_t        addr;           // address
-    uint32_t        len;            //
-    uint32_t        offset;         //
+    uint32_t        addr;           // virtual address
+    uint32_t        len;            // section length ???
+    uint32_t        offset;         // offset of what ???
     ASTR_DATA       *pName;
     U8ARRAY_DATA    *pData;
     SYMS_DATA       *pExterns;
     SYMS_DATA       *pPublics;
     //???_DATA        *pReloc;        // Relocation Dictionary
+    //???_DATA        *pReloc;        // Debug Data (see DWARF specification???)
 
 };
 #pragma pack(pop)
@@ -116,6 +121,11 @@ struct Sect_data_s  {
     //---------------------------------------------------------------
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
+
+    OBJ_DATA *      Sect_getSuper (
+        SECT_DATA       *this
+    );
+
 
     OBJ_IUNKNOWN *  Sect_getSuperVtbl (
         SECT_DATA     *this

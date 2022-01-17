@@ -1,13 +1,13 @@
 # Generated file - Edits will be discarded by next generation!
-# (11/26/2021 23:53:02.000)
+# ( 1/15/2022 20:14:17.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
 
 PGMNAM=genObject
 SYS=macos64
-TEMP=/tmp
-BASE_OBJ = $(TEMP)/$(PGMNAM)
+BUILD=./.build
+BASE_OBJ = $(BUILD)/$(PGMNAM)
 SRCDIR = ./src
 TEST_SRC = ./tests
 INSTALL_BASE = $(HOME)/Support/bin
@@ -334,7 +334,7 @@ PropItems_test: $(TEST_SRC)/PropItems_test.c $(SRCDIR)/PropItems.h $(SRCDIR)/Pro
 
 
 .PHONY: all
-all:  clean create_dirs link
+all:  create_dirs link
 
 
 .PHONY: build
@@ -347,13 +347,14 @@ check: $(TESTS)
 
 .PHONY: clean
 clean:
-	-cd $(TEMP) ; [ -d $(PGMNAM) ] && rm -fr $(PGMNAM)
+	-rm -fr $(BUILD)/$(PGMNAM)
 
 
 .PHONY: create_dirs
 create_dirs:
-	[ ! -d $(TEST_OBJ) ] && mkdir -p $(TEST_OBJ)
-	[ ! -d $(TEST_BIN) ] && mkdir -p $(TEST_BIN)
+	-mkdir -p $(BUILD)
+	-mkdir -p $(TEST_OBJ)
+	-mkdir -p $(TEST_BIN)
 
 
 .PHONY: install

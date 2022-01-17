@@ -7,10 +7,9 @@
  * Program
  *          Section Table Entry (Sect)
  * Purpose
- *          This object provides support for a program section
- *          or segment. It contains all the fields necessary
- *          for use in assemblers, compilers, dis-assemblers or
- *          linkers.
+ *          This object provides support for a generic program section
+ *          or segment. It contains all the fields necessary for use
+ *          in assemblers, compilers, disassemblers or linkers.
  *
  * Remarks
  *  1.      None

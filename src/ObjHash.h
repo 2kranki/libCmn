@@ -285,9 +285,9 @@ extern "C" {
      added into the ObjHash's indices.
      @param     this    object pointer
      @param     pObject object pointer to be added to the table
-     @param     pIndex  An required pointer to uint32_t which will contain
-                a unique number for the object if it is added to the Hash
-                successfully.
+     @param     pIndex  An optional pointer to uint32_t which will contain
+                        a unique number for the object if it is added to the
+                        Hash successfully.
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
@@ -416,6 +416,13 @@ extern "C" {
     OBJ_ID          ObjHash_Find (
         OBJHASH_DATA    *this,
         OBJ_ID          pObject
+    );
+
+
+    OBJ_ID          ObjHash_FindCmp(
+        OBJHASH_DATA    *this,
+        OBJ_ID          pObject,
+        P_OBJ_COMPARE   pCmp
     );
 
 
