@@ -242,6 +242,15 @@ extern "C" {
     );
     
     
+    /*!
+     @return:   returns the total number of bytes in the string
+                including the trailing NUL.
+     */
+    uint32_t        AStr_getSizeData (
+        ASTR_DATA      *this
+    );
+
+
 
     
     //---------------------------------------------------------------
@@ -699,13 +708,13 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS is returned, otherwise an ERESULT_*
                  error is returned.
      */
-    ERESULT         AStr_PrependA(
+    ERESULT         AStr_PrependA (
         ASTR_DATA       *this,
         const
         char            *pStrA
     );
 
-    ERESULT         AStr_PrependW32(
+    ERESULT         AStr_PrependW32 (
         ASTR_DATA       *this,
         const
         W32CHR_T        *pStrW32

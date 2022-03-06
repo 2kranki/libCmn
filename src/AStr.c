@@ -613,7 +613,24 @@ extern "C" {
     }
     
     
+    uint32_t        AStr_getSizeData(
+        ASTR_DATA       *this
+    )
+    {
+        uint32_t        len;
+#ifdef NDEBUG
+#else
+        if( !AStr_Validate(this) ) {
+            DEBUG_BREAK();
+        }
+#endif
+        len =  array_getSize(this->pData);
+        
+        return len;
+    }
     
+    
+
 
     
 

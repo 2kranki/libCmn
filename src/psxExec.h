@@ -155,12 +155,16 @@ extern "C" {
 
 
     /*!
-     Execute a posix shell command.
+     Execute a posix shell command without output.
      @param     pCommand    command to be executed
      @return    If successful, the comand's return code.
      */
-    int             psxExec_System(
+    int             psxExec_System (
         ASTR_DATA       *pCommand
+    );
+    int             psxExec_SystemA (
+        const
+        char            *pCommandA
     );
 
 
@@ -174,8 +178,13 @@ extern "C" {
                 Otherwise EOF and ppOutput set to OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    int             psxExec_SystemWithOutput(
+    int             psxExec_SystemWithOutput (
         ASTR_DATA       *pCommand,
+        ASTR_DATA       **ppOutput
+    );
+    int             psxExec_SystemWithOutputA (
+        const
+        char            *pCommandA,
         ASTR_DATA       **ppOutput
     );
 

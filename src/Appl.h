@@ -14,7 +14,7 @@
  *          specialized for the actual Application.
  *
  * Remarks
- *    1.    Argument switches, --force(f), --debug(-d), --verbose(-v),
+ *  1.      Argument switches, --force(f), --debug(-d), --verbose(-v),
  *          and --help(-?,-h), are handled by this object. However,
  *          the supplied options provided will override these in the
  *          search.
@@ -24,16 +24,10 @@
  *          object which would add the specialization needed by
  *          the particular Application.
  *  4.      Normal Program flow looks like:
- *                Appl_SetupFromArgV()
- *                ParseArgsDefaults()       // Parse options and do option
- *                                          // execs() per cmdutl
- *                do {
- *                    Appl_ProcessOptions() // Merge in the next set of options
- *                    if (!Appl_IsMore())
- *                        break
- *                    Appl_NextArg()
- *                    // process this argument
- *                } (forever)
+ *              pAppl = Appl_New();
+ *              --- supplied needed data and methods (See properties).
+ *              iRc = Appl_ExecArgV();
+ *              Appl_Exit(pAppl, iRc);
  *
  * History
  *  06/05/2017 Generated
@@ -290,6 +284,11 @@ extern "C" {
     //                      *** Properties ***
     //---------------------------------------------------------------
 
+    /*! @property   Secondary_Program_Switches
+        This property is used when command line options and arguments
+        are processed. It should be supplied by inheriting objects.
+        It must be set before Appl_ExecArgV() is executed.
+     */
     bool            Appl_setArgDefs (
         APPL_DATA       *this,
         CMDUTL_OPTION   *pProgramArgs
@@ -318,6 +317,63 @@ extern "C" {
 
     LOG_DATA *      Appl_getLog (
         APPL_DATA       *this
+    );
+
+
+    /*!
+     Parse the object from an established parser. This helps facilitate
+     parsing the fields from an inheriting object. Normally, you would
+     call this from the Init() method of the inheriting program.
+     It must be executed before Appl_ExecArgV() is executed.
+     @param this            Object Pointer
+     @param pValueDefaults  an Object to be filled in with the
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    bool            Appl_setParseArgs(
+        APPL_DATA       *this,
+        OBJ_ID          pObj,
+        ERESULT         (*pValueDefaults)(OBJ_ID),
+        int             (*pValueLong)(
+                                      OBJ_ID          this,
+                                      bool            fTrue,
+                                      ASTR_DATA       *pName,
+                                      ASTR_DATA       *pWrk,
+                                      uint32_t        index,
+                                      ASTRARRAY_DATA  *pArgs
+                        ),
+        int             (*pValueShort)(OBJ_ID, int *, const char ***)
+    );
+
+
+    /*!
+     @param this            Object Pointer
+     @param pValue          method to be called before processing any arguments or options
+                            to set default values
+     */
+    bool            Appl_setParseArgsDefaults(
+        APPL_DATA       *this,
+        ERESULT         (*pValue)(OBJ_ID)
+    );
+
+
+    /*!
+     Set up to process the arguments that were previously scanned.
+     @param this            Object Pointer
+     @param pProcessInit    Optional method to be called before processing any arguments
+     @param pProcessArg     Optional method to be called for each command line argument. If
+                            there are no arguements, then this will not be called.
+     @param pProcessTerm    Optional method to be called after processing all arguments
+                            irregardless of whether there were previous arguments or not.
+     @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
+                error code.
+     */
+    bool            Appl_setProcessArgs(
+        APPL_DATA       *this,
+        OBJ_ID          pObj,
+        ERESULT         (*pProcessInit)(OBJ_ID),
+        ERESULT         (*pProcessArg)(OBJ_ID, ASTR_DATA *),
+        ERESULT         (*pProcessTerm)(OBJ_ID)
     );
 
 
@@ -355,8 +411,25 @@ extern "C" {
     //                      *** Methods ***
     //---------------------------------------------------------------
 
-    int             Appl_Exec (
-        APPL_DATA       *this
+    /*!
+     Once this object has been initialized, you would execute this
+     method if you have options, arguments and environment that
+     would normally come from the "main" routine. It will cause the
+     command line options and arguments to be parsed via
+     Appl_SetupFromArgV and processed via Appl_Process() method.
+     @param     this        Object Pointer
+     @param     cArgs       number of charater strings in ppArgs
+     @param     ppArgV      pointer to a charater string array of
+                            command line options and arguments
+                            from the operating system.
+     @param     ppEnv       pointer to a charater string array of
+                            environment variables.
+     */
+    int             Appl_ExecArgV (
+        APPL_DATA       *this,
+        int             cArgs,
+        char            *ppArgV[],
+        char            **ppEnv
     );
 
 
@@ -452,16 +525,51 @@ extern "C" {
     );
 
 
-    ERESULT         Appl_PropertyAdd (
-        APPL_DATA       *this,
-        NODE_DATA       *pData
-    );
-
-
-    NODE_DATA *     Appl_PropertyFind (
+    ERESULT         Appl_PropertyAddA (
         APPL_DATA       *this,
         const
-        char            *pName
+        char            *pNameA,
+        OBJ_ID          pData
+    );
+
+    ERESULT         Appl_PropertyAddUpdateA (
+        APPL_DATA       *this,
+        const
+        char            *pNameA,
+        OBJ_ID          pData
+    );
+
+    ERESULT         Appl_PropertyAddAStrA (
+        APPL_DATA       *this,
+        const
+        char            *pNameA,
+        ASTR_DATA       *pData
+    );
+
+    ERESULT         Appl_PropertyAddStrA (
+        APPL_DATA       *this,
+        const
+        char            *pNameA,
+        const
+        char            *pDataA
+    );
+
+    ERESULT         Appl_PropertyDeleteA (
+        APPL_DATA       *this,
+        const
+        char            *pNameA
+    );
+
+    bool            Appl_PropertyExistsA (
+        APPL_DATA       *this,
+        const
+        char            *pNameA
+    );
+
+    OBJ_ID          Appl_PropertyFindA (
+        APPL_DATA       *this,
+        const
+        char            *pNameA
     );
 
 
@@ -469,9 +577,11 @@ extern "C" {
      Set up to parse the given input resetting any prior parse data.
      @param     this        object pointer
      @param     cArgs       number of charater strings in ppArgs
-     @param     ppArgV      pointer to a charater string array
-     @param     pPgmOptDefns pointer to an array of APPL_CLO elements
-                            and
+     @param     ppArgV      pointer to a charater string array of
+                            command line options and arguments
+                            from the operating system.
+     @param     ppEnv       pointer to a charater string array of
+                            environment variables.
      @return    If successful, ERESULT_SUCCESS.  Otherwise,
                 an ERESULT_* error code
      */
@@ -479,8 +589,7 @@ extern "C" {
         APPL_DATA       *this,
         uint16_t        cArgs,
         char            *ppArgV[],
-        char            **ppEnv,
-        CMDUTL_OPTION   *pPgmOptDefns
+        char            **ppEnv
     );
 
 

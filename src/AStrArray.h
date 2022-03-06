@@ -383,6 +383,19 @@ extern "C" {
     );
     
     
+    /*!
+     Create a C string array from this array. The returned array will
+     have NULL index entries for those entries in this array that are
+     missing.  The last entry in the index is always NULL. You may
+     free the array by using Mem_Free() on the address returneed.
+     @param     this    object pointer
+     @return    If successful, a String Array containing a copy of the
+                strings in this array.
+     @warning  Remember to free the returned array using Mem_Free().
+     */
+    char **         AStrArray_ToStrArray (
+        ASTRARRAY_DATA  *this
+    );
 
     
 #ifdef  __cplusplus

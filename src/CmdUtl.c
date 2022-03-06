@@ -1297,9 +1297,11 @@ extern "C" {
         }
 #endif
 
-        pArg = this->ppArgV[this->optIndex];
-        if (pArg) {
-            return true;
+        if (this->ppArgV) {
+            pArg = this->ppArgV[this->optIndex];
+            if (pArg) {
+                return true;
+            }
         }
 
         return false;
@@ -1321,22 +1323,24 @@ extern "C" {
 #else
         if( !CmdUtl_Validate(this) ) {
             DEBUG_BREAK();
-            return false;
+            return NULL;
         }
         if (NULL == this->ppArgV) {
             DEBUG_BREAK();
-            return false;
+            return NULL;
         }
 #endif
 
-        pArg = this->ppArgV[this->optIndex];
-        this->optopt = 0;
-        this->subopt = 0;
-        if (pArg) {
-            if ('-' == *pArg) {
-                return NULL;
+        if (this->ppArgV) {
+            pArg = this->ppArgV[this->optIndex];
+            this->optopt = 0;
+            this->subopt = 0;
+            if (pArg) {
+                if ('-' == *pArg) {
+                    return NULL;
+                }
+                ++this->optIndex;
             }
-            ++this->optIndex;
         }
 
         return pArg;

@@ -980,6 +980,49 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                          O t h e r
+    //---------------------------------------------------------------
+
+    OBJ_ID          Scanner_getOther (
+        SCANNER_DATA    *this
+    )
+    {
+#ifdef NDEBUG
+#else
+        if (!Scanner_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->pOther;
+    }
+
+    bool            Scanner_setOther(
+        SCANNER_DATA    *this,
+        OBJ_ID          pValue
+    )
+    {
+#ifdef NDEBUG
+#else
+        if( !Scanner_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        obj_Retain(pValue);
+        if (this->pOther) {
+            obj_Release(this->pOther);
+        }
+        this->pOther = pValue;
+
+        return true;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                     S e p e r a t o r
     //---------------------------------------------------------------
 

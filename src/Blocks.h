@@ -352,8 +352,9 @@ extern "C" {
 
 
     /*!
-     If there are no active records, add an index for the unique identifier
-     in the record which greatly speeds up access by index number.
+     If there is an active index, then remove it.  Add a new index for
+     the unique identifiers in the record and add all current records to
+     it which greatly speeds up access by index number.
      @param     this    object pointer
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.

@@ -118,7 +118,7 @@ extern "C" {
 
 
 
-    int                 psxExec_System(
+    int                 psxExec_System (
         ASTR_DATA           *pCommand
     )
     {
@@ -134,9 +134,41 @@ extern "C" {
     }
 
 
+    int             psxExec_SystemA (
+        const
+        char            *pCommandA
+    )
+    {
+        //ERESULT         eRc;
+        int             iRc = EOF;
+
+        // Do initialization.
+
+        iRc = system(pCommandA);
+
+        // Return to caller.
+        return iRc;
+    }
+
+
     int                 psxExec_SystemWithOutput(
         ASTR_DATA           *pCommand,
         ASTR_DATA           **ppOutput
+    )
+    {
+        int             iRc = EOF;
+
+        iRc = psxExec_SystemWithOutputA(AStr_getData(pCommand), ppOutput);
+
+        // Return to caller.
+        return iRc;
+    }
+
+
+    int             psxExec_SystemWithOutputA (
+        const
+        char            *pCommandA,
+        ASTR_DATA       **ppOutput
     )
     {
         ERESULT         eRc;
@@ -155,7 +187,7 @@ extern "C" {
             return iRc;
         }
 
-        pPipeOut = popen(AStr_getData(pCommand), "r");
+        pPipeOut = popen(pCommandA, "r");
         if (NULL == pPipeOut) {
             DEBUG_BREAK();
             obj_Release(pOutput);

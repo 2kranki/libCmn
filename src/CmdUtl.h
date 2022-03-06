@@ -232,7 +232,7 @@ extern "C" {
     );
     
     
-    CMDUTL_DATA *   CmdUtl_NewArgs(
+    CMDUTL_DATA *   CmdUtl_NewArgs (
         int             cArgs,
         char            **ppArgs
     );

@@ -498,8 +498,7 @@ extern "C" {
     APPL_DATA *     Appl_NewWithArgV(
         int             cArgs,
         char            *ppArgs[],
-        char            **ppEnv,
-        CMDUTL_OPTION   *pPgmOptDefns
+        char            **ppEnv
     )
     {
         APPL_DATA       *this;
@@ -509,7 +508,7 @@ extern "C" {
         if (this) {
             this = Appl_Init(this);
             if (this) {
-                eRc = Appl_SetupFromArgV(this, cArgs, ppArgs, ppEnv, pPgmOptDefns);
+                eRc = Appl_SetupFromArgV(this, cArgs, ppArgs, ppEnv);
             }
         }
         return this;
@@ -896,7 +895,8 @@ extern "C" {
         APPL_DATA       *this,
         OBJ_ID          pObj,
         ERESULT         (*pProcessInit)(OBJ_ID),
-        ERESULT         (*pProcessArg)(OBJ_ID, ASTR_DATA *)
+        ERESULT         (*pProcessArg)(OBJ_ID, ASTR_DATA *),
+        ERESULT         (*pProcessTerm)(OBJ_ID)
     )
     {
 #ifdef NDEBUG
@@ -910,6 +910,7 @@ extern "C" {
         this->pObjProcess = pObj;
         this->pProcessInit = pProcessInit;
         this->pProcessArg = pProcessArg;
+        this->pProcessTerm = pProcessTerm;
 
         return true;
     }
@@ -1458,6 +1459,7 @@ extern "C" {
         //ERESULT         eRc;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1498,6 +1500,7 @@ extern "C" {
         //ERESULT         eRc;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1525,14 +1528,19 @@ extern "C" {
     //                          E x e c
     //---------------------------------------------------------------
 
-    int             Appl_Exec(
-        APPL_DATA       *this
+    int             Appl_ExecArgV(
+        APPL_DATA       *this,
+        int             cArgs,
+        char            *ppArgV[],
+        char            **ppEnv
     )
     {
-        //ERESULT         eRc;
-        //ASTR_DATA       *pStr;
+        ERESULT         eRc;
+        ASTR_DATA       *pStr;
+        int             iRc;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1546,34 +1554,16 @@ extern "C" {
         }
 #endif
 
-#ifdef XYZZY
-        eRc = Appl_ParseArgs(this);
+        eRc = Appl_SetupFromArgV(this, cArgs, ppArgV, ppEnv);
         if (ERESULT_FAILED(eRc)) {
-            return 16;
+            fprintf(stderr, "FATAL - Failed to set up arguments!\n\n\n");
+            return 8;
         }
-
-        if (this->pProcessArg) {
-            if (this->pProcessInit) {
-                eRc = this->pProcessInit(this->pObjProcess);
-                if (ERESULT_FAILED(eRc)) {
-                    return 16;
-                }
-            }
-            for (;;) {
-                pStr = Appl_NextArg(this);
-                if (OBJ_NIL == pStr) {
-                    break;
-                }
-                eRc = this->pProcessArg(this->pObjProcess, pStr);
-                if (ERESULT_FAILED(eRc)) {
-                    return 16;
-                }
-            }
-        }
-#endif
+        
+        iRc = this->pProcess(this->pObjProcess);
 
         // Return to caller.
-        return 0;
+        return iRc;
     }
 
 
@@ -1591,6 +1581,7 @@ extern "C" {
         //ASTR_DATA       *pStr;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1617,13 +1608,14 @@ extern "C" {
     //                          H e l p
     //---------------------------------------------------------------
 
-    ERESULT         Appl_Help(
+    ERESULT         Appl_Help (
         APPL_DATA       *this,
         ASTR_DATA       *pStr
     )
     {
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1695,6 +1687,9 @@ extern "C" {
             return OBJ_NIL;
         }
         Log_setAppl(this->pLog, this);
+        
+        this->pObjProcess = this;
+        this->pProcess = (void *)Appl_Process;
 
 #ifdef NDEBUG
 #else
@@ -1729,6 +1724,7 @@ extern "C" {
         //ERESULT         eRc;
         
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1756,13 +1752,14 @@ extern "C" {
     //                       I s M o r e
     //---------------------------------------------------------------
 
-    bool            Appl_IsMore(
+    bool            Appl_IsMore (
         APPL_DATA       *this
     )
     {
         bool            fRc;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1788,7 +1785,7 @@ extern "C" {
     //                       M e s s a g e s
     //---------------------------------------------------------------
 
-    void            Appl_MsgFatal(
+    void            Appl_MsgFatal (
         APPL_DATA       *this,
         const
         char            *fmt,
@@ -1798,6 +1795,7 @@ extern "C" {
         va_list         argsp;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1824,7 +1822,7 @@ extern "C" {
 
 
 
-    void            Appl_MsgInfo(
+    void            Appl_MsgInfo (
         APPL_DATA       *this,
         const
         char            *fmt,
@@ -1834,6 +1832,7 @@ extern "C" {
         va_list         argsp;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1860,7 +1859,7 @@ extern "C" {
 
 
 
-    void            Appl_MsgWarn(
+    void            Appl_MsgWarn (
         APPL_DATA       *this,
         uint16_t        iVerbose,
         const
@@ -1871,6 +1870,7 @@ extern "C" {
         va_list         argsp;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1901,13 +1901,14 @@ extern "C" {
     //                  N e x t  A r g u m e n t
     //---------------------------------------------------------------
 
-    char *          Appl_NextArg(
+    char *          Appl_NextArg (
         APPL_DATA       *this
     )
     {
         char            *pData = NULL;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1933,13 +1934,14 @@ extern "C" {
     //              N u m b e r  O f  P r o p e r t i e s
     //---------------------------------------------------------------
 
-    uint16_t        Appl_NumberOfProperties(
+    uint16_t        Appl_NumberOfProperties (
         APPL_DATA       *this
     )
     {
         uint16_t        num = 0;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1963,16 +1965,89 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                 P r o c e s s  O p t i o n s
+    //                       P r o c e s s
     //---------------------------------------------------------------
 
-    ERESULT         Appl_ProcessOptions(
+    int             Appl_Process (
         APPL_DATA       *this
     )
     {
         ERESULT         eRc;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if( !Appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (this->pProcessInit) {
+            eRc = this->pProcessInit(this->pObjProcess);
+            if (ERESULT_FAILED(eRc)) {
+                return 16;
+            }
+        }
+
+        if (this->pProcessArg) {
+            for (;;) {
+                char            *pStrA;
+                ASTR_DATA       *pStr = OBJ_NIL;
+                bool            fRc;
+
+                fRc = Appl_IsMore((APPL_DATA *)this);
+                if (!fRc) {
+                    break;
+                }
+
+                pStrA = Appl_NextArg(this);
+                if (pStrA) {
+                    pStr = AStr_NewA(pStrA);
+                    if (OBJ_NIL == pStr) {
+                        break;
+                    }
+                    eRc = this->pProcessArg(this->pObjProcess, pStr);
+                    if (ERESULT_FAILED(eRc)) {
+                        return 16;
+                    }
+                    obj_Release(pStr);
+                    pStr = OBJ_NIL;
+                }
+            }
+        }
+
+        if (this->pProcessTerm) {
+            eRc = this->pProcessTerm(this->pObjProcess);
+            if (ERESULT_FAILED(eRc)) {
+                return 16;
+            }
+        }
+
+        // Return to caller.
+        return 0;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                 P r o c e s s  O p t i o n s
+    //---------------------------------------------------------------
+
+    ERESULT         Appl_ProcessOptions (
+        APPL_DATA       *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -1997,14 +2072,170 @@ extern "C" {
     //                     P r o p e r t y  A d d
     //---------------------------------------------------------------
 
-    ERESULT         Appl_PropertyAdd(
+    ERESULT         Appl_PropertyAddA (
         APPL_DATA       *this,
-        NODE_DATA       *pData
+        const
+        char            *pNameA,
+        OBJ_ID          pData
+    )
+    {
+        ERESULT         eRc;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pNameA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (OBJ_NIL == this->pProperties) {
+            this->pProperties = NodeHash_NewWithSize(NODEHASH_TABLE_SIZE_LARGE);
+            if (OBJ_NIL == this->pProperties) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+        }
+        eRc = NodeHash_AddA(this->pProperties, 0, pNameA, pData);
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+    ERESULT         Appl_PropertyAddAStrA (
+        APPL_DATA       *this,
+        const
+        char            *pNameA,
+        ASTR_DATA       *pData
     )
     {
         ERESULT         eRc;
 
         // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pNameA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        eRc = Appl_PropertyAddA(this, pNameA, (OBJ_ID)pData);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Appl_PropertyAddStrA (
+        APPL_DATA       *this,
+        const
+        char            *pNameA,
+        const
+        char            *pDataA
+    )
+    {
+        ERESULT         eRc;
+        ASTR_DATA       *pStr = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pNameA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+
+        if (pDataA) {
+            pStr = AStr_NewA(pDataA);
+        }
+        eRc = Appl_PropertyAddAStrA(this, pNameA, pStr);
+        obj_Release(pStr);
+        //pStr = OBJ_NIL;
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Appl_PropertyAddUpdateA (
+        APPL_DATA       *this,
+        const
+        char            *pNameA,
+        OBJ_ID          pData
+    )
+    {
+        ERESULT         eRc;
+        NODE_DATA       *pNode = OBJ_NIL;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if( !Appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (NULL == pNameA) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+        if (OBJ_NIL == pData) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (this->pProperties) {
+            pNode = NodeHash_FindA(this->pProperties, 0, pNameA);
+            if (pNode) {
+                eRc = NodeHash_DeleteA(this->pProperties, 0, pNameA);
+            }
+            eRc = NodeHash_AddA(this->pProperties, 0, pNameA, pData);
+        } else {
+            this->pProperties = NodeHash_NewWithSize(NODEHASH_TABLE_SIZE_LARGE);
+            if (OBJ_NIL == this->pProperties) {
+                DEBUG_BREAK();
+                return ERESULT_OUT_OF_MEMORY;
+            }
+            eRc = NodeHash_AddA(this->pProperties, 0, pNameA, pData);
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+    
+    
+
+    //---------------------------------------------------------------
+    //                  P r o p e r t y  D e l e t e
+    //---------------------------------------------------------------
+
+    ERESULT          Appl_PropertyDeleteA (
+        APPL_DATA       *this,
+        const
+        char            *pNameA
+    )
+    {
+        ERESULT         eRc = ERESULT_FAILURE;
+        NODE_DATA       *pNode = OBJ_NIL;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -2016,19 +2247,14 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (OBJ_NIL == pData) {
-            return ERESULT_INVALID_PARAMETER;
-        }
 #endif
 
-        if (OBJ_NIL == this->pProperties) {
-            this->pProperties = NodeHash_New( );
-            if (OBJ_NIL == this->pProperties) {
-                return ERESULT_INSUFFICIENT_MEMORY;
+        if (this->pProperties) {
+            pNode = NodeHash_FindA(this->pProperties, 0, pNameA);
+            if (pNode) {
+                eRc = NodeHash_DeleteA(this->pProperties, 0, pNameA);
             }
         }
-
-        eRc = NodeHash_Add(this->pProperties, pData);
 
         // Return to caller.
         return eRc;
@@ -2037,19 +2263,63 @@ extern "C" {
 
 
     //---------------------------------------------------------------
-    //                    P r o p e r t y  F i n d
+    //                    P r o p e r t y  E x i s t s
     //---------------------------------------------------------------
 
-    NODE_DATA *     Appl_PropertyFind(
+    bool            Appl_PropertyExistsA (
         APPL_DATA       *this,
         const
-        char            *pName
+        char            *pNameA
     )
     {
         //ERESULT         eRc;
-        NODE_DATA       *pProperty = OBJ_NIL;
+        bool            fRc = false;
+        NODE_DATA       *pNode = OBJ_NIL;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if( !Appl_Validate(this) ) {
+            DEBUG_BREAK();
+            return false;
+        }
+#endif
+
+        if (this->pProperties) {
+            pNode = NodeHash_FindA(this->pProperties, 0, pNameA);
+            if (pNode) {
+                fRc = true;
+            }
+        }
+
+        // Return to caller.
+        return fRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                    P r o p e r t y  F i n d
+    //---------------------------------------------------------------
+
+    OBJ_ID          Appl_PropertyFindA (
+        APPL_DATA       *this,
+        const
+        char            *pNameA
+    )
+    {
+        //ERESULT         eRc;
+        NODE_DATA       *pNode = OBJ_NIL;
+        OBJ_ID          pProperty = OBJ_NIL;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -2064,7 +2334,10 @@ extern "C" {
 #endif
 
         if (this->pProperties) {
-            pProperty = NodeHash_FindA(this->pProperties, 0, pName);
+            pNode = NodeHash_FindA(this->pProperties, 0, pNameA);
+            if (pNode) {
+                pProperty = Node_getData(pNode);
+            }
         }
 
         // Return to caller.
@@ -2226,12 +2499,11 @@ extern "C" {
      @return    If successful, ERESULT_SUCCESS.  Otherwise,
                 an ERESULT_* error code
      */
-    ERESULT         Appl_SetupFromArgV(
+    ERESULT         Appl_SetupFromArgV (
         APPL_DATA       *this,
         uint16_t        cArgs,
         char            *ppArgV[],
-        char            **ppEnv,
-        CMDUTL_OPTION   *pPgmOptDefns
+        char            **ppEnv
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
@@ -2239,6 +2511,7 @@ extern "C" {
         PATH_DATA       *pPath;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -2287,7 +2560,6 @@ extern "C" {
                 obj_Release(pArgs);
             }
         }
-        this->pPgmOptDefns = pPgmOptDefns;
 
         this->pCmd = CmdUtl_NewArgs(cArgs, ppArgV);
         if (OBJ_NIL == this->pCmd) {
@@ -2295,7 +2567,7 @@ extern "C" {
             return ERESULT_OUT_OF_MEMORY;
         }
         CmdUtl_setObject(this->pCmd, this);
-        eRc = CmdUtl_SetupOptions(this->pCmd, defaultOptDefns, pPgmOptDefns);
+        eRc = CmdUtl_SetupOptions(this->pCmd, defaultOptDefns, this->pPgmOptDefns);
         if (ERESULT_FAILED(eRc)) {
             DEBUG_BREAK();
             return eRc;
@@ -2329,6 +2601,7 @@ extern "C" {
         ASTRARRAY_DATA  *pArgs;
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -2392,7 +2665,7 @@ extern "C" {
 #endif
         *(this->ppArg) = "";     // Set program name.
 
-        // Scan off the each parameter.
+        // Scan off each parameter.
         while( *pCmdStr ) {
             pCurCmd = NULL;
 
@@ -2446,7 +2719,8 @@ extern "C" {
 #endif
 
         // Return to caller.
-        return ERESULT_SUCCESS;
+        //return ERESULT_SUCCESS;
+        return ERESULT_NOT_IMPLEMENTED;
     }
 
 
@@ -2557,6 +2831,7 @@ extern "C" {
         const
         char            *pNameA = "???";
 
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -2602,6 +2877,7 @@ extern "C" {
         ERESULT         eRc;
         int32_t         len;
 
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -2654,6 +2930,7 @@ extern "C" {
         int             i;
         ASTR_DATA       *pStr = OBJ_NIL;
 
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -2778,6 +3055,7 @@ extern "C" {
     {
 
         // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();

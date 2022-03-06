@@ -1,7 +1,7 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /*
- * File:   ${NAMEL}.c
- *	Generated ${DATE} ${TIME}
+ * File:   Ansi.c
+ *  Generated 02/20/2022 17:28:22
  *
  */
 
@@ -41,17 +41,20 @@
 //*****************************************************************
 
 /* Header File Inclusion */
-#include        <${NAMEL}_internal.h>
+#include        <Ansi_internal.h>
 #include        <JsonIn.h>
 #include        <trace.h>
 #include        <utf8.h>
+#include        <fcntl.h>
+#include        <unistd.h>
+#include        <sys/ioctl.h>
 
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
     
@@ -78,12 +81,11 @@ extern "C" {
 
 #ifdef XYZZY
     static
-    void            ${NAMEL}_task_body (
+    void            Ansi_task_body (
         void            *pData
     )
     {
-        //${NAMEU}_DATA  *this = pData;
-        TRC_OBJ(this, "%s:\n", __func__);
+        //ANSI_DATA  *this = pData;
         
     }
 #endif
@@ -94,12 +96,12 @@ extern "C" {
     //                      *** Class Methods ***
     //===============================================================
 
-    ${NAMEU}_DATA *     ${NAMEL}_Alloc (
+    ANSI_DATA *     Ansi_Alloc (
         void
     )
     {
-        ${NAMEU}_DATA       *this;
-        uint32_t        cbSize = sizeof(${NAMEU}_DATA);
+        ANSI_DATA       *this;
+        uint32_t        cbSize = sizeof(ANSI_DATA);
         
         // Do initialization.
         
@@ -111,15 +113,15 @@ extern "C" {
 
 
 
-    ${NAMEU}_DATA *     ${NAMEL}_New (
+    ANSI_DATA *     Ansi_New (
         void
     )
     {
-        ${NAMEU}_DATA       *this;
+        ANSI_DATA       *this;
         
-        this = ${NAMEL}_Alloc( );
+        this = Ansi_Alloc( );
         if (this) {
-            this = ${NAMEL}_Init(this);
+            this = Ansi_Init(this);
         } 
         return this;
     }
@@ -133,12 +135,35 @@ extern "C" {
     //===============================================================
 
     //---------------------------------------------------------------
+    //                            C o l s
+    //---------------------------------------------------------------
+    
+    uint16_t        Ansi_getCols (
+        ANSI_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->cols;
+    }
+
+    
+
+    //---------------------------------------------------------------
     //                      M e s s a g e s
     //---------------------------------------------------------------
 
-#ifdef   ${NAMEU}_MSGS
-    bool            ${NAMEL}_setMsgs (
-        ${NAMEU}_DATA    *this,
+#ifdef   ANSI_MSGS
+    bool            Ansi_setMsgs (
+        ANSI_DATA    *this,
         void            (*pMsgInfo)(OBJ_ID, const char *, ...),
         void            (*pMsgWarn)(OBJ_ID, uint16_t, const char *, ...),
         OBJ_ID          pObj
@@ -146,7 +171,7 @@ extern "C" {
     {
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -166,15 +191,15 @@ extern "C" {
     //                          P r i o r i t y
     //---------------------------------------------------------------
     
-    uint16_t        ${NAMEL}_getPriority (
-        ${NAMEU}_DATA     *this
+    uint16_t        Ansi_getPriority (
+        ANSI_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -185,14 +210,14 @@ extern "C" {
     }
 
 
-    bool            ${NAMEL}_setPriority (
-        ${NAMEU}_DATA     *this,
+    bool            Ansi_setPriority (
+        ANSI_DATA     *this,
         uint16_t        value
     )
     {
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -206,16 +231,39 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                            R o w s
+    //---------------------------------------------------------------
+    
+    uint16_t        Ansi_getRows (
+        ANSI_DATA     *this
+    )
+    {
+
+        // Validate the input parameters.
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return 0;
+        }
+#endif
+
+        return this->rows;
+    }
+
+    
+
+    //---------------------------------------------------------------
     //                              S i z e
     //---------------------------------------------------------------
     
-    uint32_t        ${NAMEL}_getSize (
-        ${NAMEU}_DATA       *this
+    uint32_t        Ansi_getSize (
+        ANSI_DATA       *this
     )
     {
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -230,15 +278,15 @@ extern "C" {
     //                              S t r
     //---------------------------------------------------------------
     
-    ASTR_DATA * ${NAMEL}_getStr (
-        ${NAMEU}_DATA     *this
+    ASTR_DATA * Ansi_getStr (
+        ANSI_DATA     *this
     )
     {
         
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -248,14 +296,14 @@ extern "C" {
     }
     
     
-    bool        ${NAMEL}_setStr (
-        ${NAMEU}_DATA     *this,
+    bool        Ansi_setStr (
+        ANSI_DATA     *this,
         ASTR_DATA   *pValue
     )
     {
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return false;
         }
@@ -276,34 +324,34 @@ extern "C" {
     //                          S u p e r
     //---------------------------------------------------------------
     
-    ${SUPERU}_DATA *  ${NAMEL}_getSuper (
-        ${NAMEU}_DATA     *this
+    ANSI_DATA *  Ansi_getSuper (
+        ANSI_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
 #endif
 
         
-        return (${SUPERU}_DATA *)this;
+        return (ANSI_DATA *)this;
     }
 
     
-    OBJ_IUNKNOWN *  ${NAMEL}_getSuperVtbl (
-        ${NAMEU}_DATA     *this
+    OBJ_IUNKNOWN *  Ansi_getSuperVtbl (
+        ANSI_DATA     *this
     )
     {
 
         // Validate the input parameters.
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return 0;
         }
@@ -330,29 +378,28 @@ extern "C" {
      a copy of the object is performed.
      Example:
      @code 
-        ERESULT eRc = ${NAMEL}_Assign(this,pOther);
+        ERESULT eRc = Ansi_Assign(this,pOther);
      @endcode 
      @param     this    object pointer
-     @param     pOther  a pointer to another ${NAMEU} object
+     @param     pOther  a pointer to another ANSI object
      @return    If successful, ERESULT_SUCCESS otherwise an 
                 ERESULT_* error 
      */
-    ERESULT         ${NAMEL}_Assign (
-        ${NAMEU}_DATA		*this,
-        ${NAMEU}_DATA     *pOther
+    ERESULT         Ansi_Assign (
+        ANSI_DATA       *this,
+        ANSI_DATA     *pOther
     )
     {
         ERESULT     eRc;
         
         // Do initialization.
-        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if (!${NAMEL}_Validate(pOther)) {
+        if (!Ansi_Validate(pOther)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -404,6 +451,217 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                          C l e a r
+    //---------------------------------------------------------------
+
+    ERESULT         Ansi_ClearLine (
+        ANSI_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        printf("\x1b[2K");
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Ansi_ClearScreen (
+        ANSI_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        printf("\x1b[2J");
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Ansi_ClearToBeginOfLine (
+        ANSI_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        printf("\x1b[1K");
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Ansi_ClearToBottom (
+        ANSI_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        printf("\x1b[0J");
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Ansi_ClearToEndOfLine (
+        ANSI_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        printf("\x1b[0K");
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Ansi_ClearToTop (
+        ANSI_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        printf("\x1b[1J");
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                          C o l o r
+    //---------------------------------------------------------------
+
+    ERESULT         Ansi_ColorSet (
+        ANSI_DATA       *this,
+        uint16_t        oolor,
+        bool            fBright
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        if (fBright) {
+            printf("\x1b[%d1m", oolor);
+        } else {
+            printf("\x1b[%dm", oolor);
+        }
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+    //---------------------------------------------------------------
     //                      C o m p a r e
     //---------------------------------------------------------------
     
@@ -413,9 +671,9 @@ extern "C" {
                 <0 if this < other
                 >0 if this > other
      */
-    int             ${NAMEL}_Compare (
-        ${NAMEU}_DATA     *this,
-        ${NAMEU}_DATA     *pOther
+    int             Ansi_Compare (
+        ANSI_DATA     *this,
+        ANSI_DATA     *pOther
     )
     {
         int             iRc = -1;
@@ -426,20 +684,19 @@ extern "C" {
         char            *pStr2;
 #endif
         
-        TRC_OBJ(this, "%s:\n", __func__);
-#ifdef  ${NAMEU}_SINGLETON
+#ifdef  ANSI_SINGLETON
         if (OBJ_NIL == this) {
-            this = ${NAMEL}_Shared();
+            this = Ansi_Shared();
         }
 #endif
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_OBJECT;
             return -2;
         }
-        if (!${NAMEL}_Validate(pOther)) {
+        if (!Ansi_Validate(pOther)) {
             DEBUG_BREAK();
             //return ERESULT_INVALID_PARAMETER;
             return -2;
@@ -461,37 +718,36 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        ${NAMEL}      *pCopy = ${NAMEL}_Copy(this);
+        Ansi      *pCopy = Ansi_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ${NAMEU} object which must be 
+     @return    If successful, a ANSI object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ${NAMEU}_DATA *     ${NAMEL}_Copy (
-        ${NAMEU}_DATA       *this
+    ANSI_DATA *     Ansi_Copy (
+        ANSI_DATA       *this
     )
     {
-        ${NAMEU}_DATA       *pOther = OBJ_NIL;
+        ANSI_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
-        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-#ifdef ${NAMEU}_IS_IMMUTABLE
+#ifdef ANSI_IS_IMMUTABLE
         obj_Retain(this);
         pOther = this;
 #else
-        pOther = ${NAMEL}_New( );
+        pOther = Ansi_New( );
         if (pOther) {
-            eRc = ${NAMEL}_Assign(this, pOther);
+            eRc = Ansi_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -506,24 +762,174 @@ extern "C" {
     
     
     //---------------------------------------------------------------
-    //                        D e a l l o c
+    //                      C u r s o r
     //---------------------------------------------------------------
 
-    void            ${NAMEL}_Dealloc (
-        OBJ_ID          objId
+    ERESULT         Ansi_CursorDown (
+        ANSI_DATA       *this,
+        uint16_t        rows
     )
     {
-        ${NAMEU}_DATA   *this = objId;
-        //ERESULT         eRc;
+        ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
         TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        printf("\x1b[%dB", rows);
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Ansi_CursorLeft (
+        ANSI_DATA       *this,
+        uint16_t        cols
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        printf("\x1b[%dD", cols);
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Ansi_CursorMove (
+        ANSI_DATA       *this,
+        uint16_t        y,                          // Row
+        uint16_t        x                           // Column
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        printf("\x1b[%d;%df", y, x);;
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Ansi_CursorRight (
+        ANSI_DATA       *this,
+        uint16_t        cols
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        printf("\x1b[%dC", cols);
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+    ERESULT         Ansi_CursorUp (
+        ANSI_DATA       *this,
+        uint16_t        rows
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        printf("\x1b[%dA", rows);
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //                        D e a l l o c
+    //---------------------------------------------------------------
+
+    void            Ansi_Dealloc (
+        OBJ_ID          objId
+    )
+    {
+        ANSI_DATA   *this = objId;
+        //ERESULT         eRc;
+
+        // Do initialization.
         if (NULL == this) {
             return;
         }        
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return;
         }
@@ -531,12 +937,14 @@ extern "C" {
 
 #ifdef XYZZY
         if (obj_IsEnabled(this)) {
-            ((${NAMEU}_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
+            ((ANSI_VTBL *)obj_getVtbl(this))->devVtbl.pStop((OBJ_DATA *)this,NULL);
         }
 #endif
 
-        ${NAMEL}_setStr(this, OBJ_NIL);
+        Ansi_setStr(this, OBJ_NIL);
 
+        tcsetattr(STDIN_FILENO, TCSANOW, &this->keyboardAttrsInitial);
+        
         obj_setVtbl(this, this->pSuperVtbl);
         // pSuperVtbl is saved immediately after the super
         // object which we inherit from is initialized.
@@ -556,33 +964,32 @@ extern "C" {
      Copy the current object creating a new object.
      Example:
      @code 
-        ${NAMEL}      *pDeepCopy = ${NAMEL}_Copy(this);
+        Ansi      *pDeepCopy = Ansi_Copy(this);
      @endcode 
      @param     this    object pointer
-     @return    If successful, a ${NAMEU} object which must be 
+     @return    If successful, a ANSI object which must be 
                 released, otherwise OBJ_NIL.
      @warning   Remember to release the returned object.
      */
-    ${NAMEU}_DATA *     ${NAMEL}_DeepCopy (
-        ${NAMEU}_DATA       *this
+    ANSI_DATA *     Ansi_DeepCopy (
+        ANSI_DATA       *this
     )
     {
-        ${NAMEU}_DATA       *pOther = OBJ_NIL;
+        ANSI_DATA       *pOther = OBJ_NIL;
         ERESULT         eRc;
         
         // Do initialization.
-        TRC_OBJ(this, "%s:\n", __func__);
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
 #endif
         
-        pOther = ${NAMEL}_New( );
+        pOther = Ansi_New( );
         if (pOther) {
-            eRc = ${NAMEL}_Assign(this, pOther);
+            eRc = Ansi_Assign(this, pOther);
             if (ERESULT_HAS_FAILED(eRc)) {
                 obj_Release(pOther);
                 pOther = OBJ_NIL;
@@ -605,22 +1012,22 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ${NAMEL}_Disable (
-        ${NAMEU}_DATA		*this
+    ERESULT         Ansi_Disable (
+        ANSI_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
         TRC_OBJ(this, "%s:\n", __func__);
-#ifdef  ${NAMEU}_SINGLETON
+#ifdef  ANSI_SINGLETON
         if (OBJ_NIL == this) {
-            this = ${NAMEL}_Shared();
+            this = Ansi_Shared();
         }
 #endif
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -647,29 +1054,29 @@ extern "C" {
      @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         ${NAMEL}_Enable (
-        ${NAMEU}_DATA		*this
+    ERESULT         Ansi_Enable (
+        ANSI_DATA       *this
     )
     {
         ERESULT         eRc = ERESULT_SUCCESS;
 
         // Do initialization.
         TRC_OBJ(this, "%s:\n", __func__);
-#ifdef  ${NAMEU}_SINGLETON
+#ifdef  ANSI_SINGLETON
         if (OBJ_NIL == this) {
-            this = ${NAMEL}_Shared();
+            this = Ansi_Shared();
         }
 #endif
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
 #endif
         
         TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
-#ifdef   ${NAMEU}_MSGS
+#ifdef   ANSI_MSGS
         if (this->pMsgInfo) {
             this->pMsgInfo(this->pMsgObj, "Enabling object!\n");
         }
@@ -688,11 +1095,11 @@ extern "C" {
     //                          I n i t
     //---------------------------------------------------------------
 
-    ${NAMEU}_DATA *   ${NAMEL}_Init (
-        ${NAMEU}_DATA       *this
+    ANSI_DATA *   Ansi_Init (
+        ANSI_DATA       *this
     )
     {
-        uint32_t        cbSize = sizeof(${NAMEU}_DATA);
+        uint32_t        cbSize = sizeof(ANSI_DATA);
         //ERESULT         eRc;
         
         if (OBJ_NIL == this) {
@@ -709,10 +1116,10 @@ extern "C" {
             return OBJ_NIL;
         }
 
-        //this = (OBJ_ID)${SUPERL}_Init((${SUPERU}_DATA *)this);   // Needed for Inheritance
+        //this = (OBJ_ID)Ansi_Init((ANSI_DATA *)this);   // Needed for Inheritance
         // If you use inheritance, remember to change the obj_ClassObj reference 
-        // in the OBJ_INFO at the end of ${NAMEL}_object.c
-        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_${NAMEU});
+        // in the OBJ_INFO at the end of Ansi_object.c
+        this = (OBJ_ID)obj_Init(this, cbSize, OBJ_IDENT_ANSI);
         if (OBJ_NIL == this) {
             DEBUG_BREAK();
             obj_Release(this);
@@ -720,11 +1127,12 @@ extern "C" {
         }
         obj_setSize(this, cbSize);
         this->pSuperVtbl = obj_getVtbl(this);
-        obj_setVtbl(this, (OBJ_IUNKNOWN *)&${NAMEL}_Vtbl);
-#ifdef  ${NAMEU}_JSON_SUPPORT
-        JsonIn_RegisterClass(${NAMEL}_Class());
+        obj_setVtbl(this, (OBJ_IUNKNOWN *)&Ansi_Vtbl);
+#ifdef  ANSI_JSON_SUPPORT
+        JsonIn_RegisterClass(Ansi_Class());
 #endif
         
+        tcgetattr(STDIN_FILENO, &this->keyboardAttrsInitial);
         /*
         this->pArray = ObjArray_New( );
         if (OBJ_NIL == this->pArray) {
@@ -736,7 +1144,7 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             obj_Release(this);
             return OBJ_NIL;
@@ -745,11 +1153,11 @@ extern "C" {
 //#if defined(__APPLE__)
         fprintf(
                 stderr, 
-                "${NAMEL}::sizeof(${NAMEU}_DATA) = %lu\n", 
-                sizeof(${NAMEU}_DATA)
+                "Ansi::sizeof(ANSI_DATA) = %lu\n", 
+                sizeof(ANSI_DATA)
         );
 #endif
-        BREAK_NOT_BOUNDARY4(sizeof(${NAMEU}_DATA));
+        BREAK_NOT_BOUNDARY4(sizeof(ANSI_DATA));
 #endif
 
         return this;
@@ -761,22 +1169,22 @@ extern "C" {
     //                      I s  E n a b l e d
     //---------------------------------------------------------------
     
-    ERESULT         ${NAMEL}_IsEnabled (
-        ${NAMEU}_DATA		*this
+    ERESULT         Ansi_IsEnabled (
+        ANSI_DATA       *this
     )
     {
         //ERESULT         eRc;
         
         // Do initialization.
         TRC_OBJ(this, "%s:\n", __func__);
-#ifdef  ${NAMEU}_SINGLETON
+#ifdef  ANSI_SINGLETON
         if (OBJ_NIL == this) {
-            this = ${NAMEL}_Shared();
+            this = Ansi_Shared();
         }
 #endif
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
@@ -793,6 +1201,351 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                         K e y b o a r d
+    //---------------------------------------------------------------
+
+    ERESULT         Ansi_KeyboardMode (
+        ANSI_DATA       *this,
+        bool            fEcho,
+        bool            fRaw,
+        bool            fBreak
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        int             iRc;
+        struct termios  tio;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        iRc = tcgetattr(STDIN_FILENO, &tio);
+        if (0 == iRc) {
+            if (fEcho)
+                tio.c_iflag |= ECHO;
+            else
+                tio.c_iflag &= ~ECHO;
+            if (fRaw)
+                tio.c_iflag |= ICANON;
+            else
+                tio.c_iflag &= ~ICANON;
+            if (fBreak)
+                tio.c_iflag |= ISIG;
+            else
+                tio.c_iflag &= ~ISIG;
+            iRc = tcsetattr(STDIN_FILENO, TCSANOW, &tio);
+            if (0 == iRc)
+                ;
+            else {
+                eRc = ERESULT_FAILURE;
+            }
+        } else {
+            eRc = ERESULT_FAILURE;
+        }
+
+        // Return to caller.
+        return eRc;
+    }
+
+    
+    int             Ansi_KeyboardGet (
+        ANSI_DATA       *this
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        int             ch;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        ch = getchar();
+        
+        // Return to caller.
+        return ch;
+    }
+
+    
+    bool            Ansi_KeyboardHit (
+        ANSI_DATA       *this
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        struct termios  tioNew;
+        struct termios  tioOld;
+        int             iRc;
+        int             ch;
+        int             fcntlOld;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        iRc = tcgetattr(STDIN_FILENO, &tioNew);
+        if (0 == iRc)
+            ;
+        else {
+            return ERESULT_FAILURE;
+        }
+        tioOld = tioNew;
+        tioNew.c_lflag &= ~(ICANON | ECHO);
+        iRc = tcsetattr(STDIN_FILENO, TCSANOW, &tioNew);
+
+        fcntlOld = fcntl(STDIN_FILENO, F_GETFL, 0);
+        iRc = fcntl(STDIN_FILENO, F_SETFL, fcntlOld | O_NONBLOCK);
+
+        ch = getchar();
+        
+        iRc = tcsetattr(STDIN_FILENO, TCSANOW, &tioOld);
+        fcntl(STDIN_FILENO, F_SETFL, fcntlOld);
+        
+        if (ch == EOF) {
+            return false;
+        }
+        
+        // Return to caller.
+        ungetc(ch, stdin);
+        return true;
+    }
+
+    
+    bool            Ansi_KeyboardIsBreak (
+        ANSI_DATA       *this
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        struct termios  tio;
+        int             iRc;
+        bool            fRc = false;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        iRc = tcgetattr(STDIN_FILENO, &tio);
+        if (0 == iRc) {
+            if (tio.c_iflag & ISIG)
+                fRc = true;;
+        }
+
+        // Return to caller.
+        return fRc;
+    }
+
+    
+    bool            Ansi_KeyboardIsEcho (
+        ANSI_DATA       *this
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        struct termios  tio;
+        int             iRc;
+        bool            fRc = false;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        iRc = tcgetattr(STDIN_FILENO, &tio);
+        if (0 == iRc) {
+            if (tio.c_iflag & ECHO)
+                fRc = true;;
+        }
+
+        // Return to caller.
+        return fRc;
+    }
+
+    
+    bool            Ansi_KeyboardIsRaw (
+        ANSI_DATA       *this
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        struct termios  tio;
+        int             iRc;
+        bool            fRc = false;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        iRc = tcgetattr(STDIN_FILENO, &tio);
+        if (0 == iRc) {
+            if (tio.c_iflag & ICANON)
+                fRc = true;;
+        }
+
+        // Return to caller.
+        return fRc;
+    }
+
+    
+    bool            Ansi_KeyboardIsTTY (
+        ANSI_DATA       *this
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        struct termios  tio;
+        int             iRc;
+        bool            fRc = false;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        iRc = tcgetattr(STDIN_FILENO, &tio);
+        if (0 == iRc) {
+            fRc = true;;
+        }
+
+        // Return to caller.
+        return fRc;
+    }
+
+    
+    bool            Ansi_KeyboardIsUTF8 (
+        ANSI_DATA       *this
+    )
+    {
+        //ERESULT         eRc = ERESULT_SUCCESS;
+        struct termios  tio;
+        int             iRc;
+        bool            fRc = false;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        iRc = tcgetattr(STDIN_FILENO, &tio);
+        if (0 == iRc) {
+            if (tio.c_iflag & IUTF8)
+                fRc = true;;
+        }
+
+        // Return to caller.
+        return fRc;
+    }
+
+    
+    ERESULT         Ansi_KeyboardReset (
+        ANSI_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        tcsetattr(STDIN_FILENO, TCSANOW, &this->keyboardAttrsInitial);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                     Q u e r y  I n f o
     //---------------------------------------------------------------
     
@@ -803,14 +1556,14 @@ extern "C" {
      Example:
      @code
         // Return a method pointer for a string or NULL if not found. 
-        void        *pMethod = ${NAMEL}_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
+        void        *pMethod = Ansi_QueryInfo(this, OBJ_QUERYINFO_TYPE_METHOD, "xyz");
      @endcode 
      @param     objId   object pointer
      @param     type    one of OBJ_QUERYINFO_TYPE members (see obj.h)
      @param     pData   for OBJ_QUERYINFO_TYPE_INFO, this field is not used,
                         for OBJ_QUERYINFO_TYPE_METHOD, this field points to a 
                         character string which represents the method name without
-                        the object name, "${NAMEL}", prefix,
+                        the object name, "Ansi", prefix,
                         for OBJ_QUERYINFO_TYPE_PTR, this field contains the
                         address of the method to be found.
      @return    If unsuccessful, NULL. Otherwise, for:
@@ -818,13 +1571,13 @@ extern "C" {
                 OBJ_QUERYINFO_TYPE_METHOD: method pointer,
                 OBJ_QUERYINFO_TYPE_PTR: constant UTF-8 method name pointer
      */
-    void *          ${NAMEL}_QueryInfo (
+    void *          Ansi_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     )
     {
-        ${NAMEU}_DATA     *this = objId;
+        ANSI_DATA     *this = objId;
         const
         char            *pStr = pData;
         
@@ -833,7 +1586,7 @@ extern "C" {
         }
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return NULL;
         }
@@ -842,11 +1595,11 @@ extern "C" {
         switch (type) {
                 
             case OBJ_QUERYINFO_TYPE_OBJECT_SIZE:
-                return (void *)sizeof(${NAMEU}_DATA);
+                return (void *)sizeof(ANSI_DATA);
                 break;
             
             case OBJ_QUERYINFO_TYPE_CLASS_OBJECT:
-                return (void *)${NAMEL}_Class();
+                return (void *)Ansi_Class();
                 break;
                               
             case OBJ_QUERYINFO_TYPE_DATA_PTR:
@@ -872,37 +1625,37 @@ extern "C" {
                         
                     case 'D':
                         if (str_Compare("Disable", (char *)pStr) == 0) {
-                            return ${NAMEL}_Disable;
+                            return Ansi_Disable;
                         }
                         break;
 
                     case 'E':
                         if (str_Compare("Enable", (char *)pStr) == 0) {
-                            return ${NAMEL}_Enable;
+                            return Ansi_Enable;
                         }
                         break;
 
                     case 'P':
-#ifdef  ${NAMEU}_JSON_SUPPORT
+#ifdef  ANSI_JSON_SUPPORT
                         if (str_Compare("ParseJsonFields", (char *)pStr) == 0) {
-                            return ${NAMEL}_ParseJsonFields;
+                            return Ansi_ParseJsonFields;
                         }
                         if (str_Compare("ParseJsonObject", (char *)pStr) == 0) {
-                            return ${NAMEL}_ParseJsonObject;
+                            return Ansi_ParseJsonObject;
                         }
 #endif
                         break;
 
                     case 'T':
                         if (str_Compare("ToDebugString", (char *)pStr) == 0) {
-                            return ${NAMEL}_ToDebugString;
+                            return Ansi_ToDebugString;
                         }
-#ifdef  ${NAMEU}_JSON_SUPPORT
+#ifdef  ANSI_JSON_SUPPORT
                         if (str_Compare("ToJsonFields", (char *)pStr) == 0) {
-                            return ${NAMEL}_ToJsonFields;
+                            return Ansi_ToJsonFields;
                         }
                         if (str_Compare("ToJson", (char *)pStr) == 0) {
-                            return ${NAMEL}_ToJson;
+                            return Ansi_ToJson;
                         }
 #endif
                         break;
@@ -913,10 +1666,10 @@ extern "C" {
                 break;
                 
             case OBJ_QUERYINFO_TYPE_PTR:
-                if (pData == ${NAMEL}_ToDebugString)
+                if (pData == Ansi_ToDebugString)
                     return "ToDebugString";
-#ifdef  ${NAMEU}_JSON_SUPPORT
-                if (pData == ${NAMEL}_ToJson)
+#ifdef  ANSI_JSON_SUPPORT
+                if (pData == Ansi_ToJson)
                     return "ToJson";
 #endif
                 break;
@@ -938,7 +1691,7 @@ extern "C" {
      Create a string that describes this object and the objects within it.
      Example:
      @code 
-        ASTR_DATA      *pDesc = ${NAMEL}_ToDebugString(this,4);
+        ASTR_DATA      *pDesc = Ansi_ToDebugString(this,4);
      @endcode 
      @param     this    object pointer
      @param     indent  number of characters to indent every line of output, can be 0
@@ -946,8 +1699,8 @@ extern "C" {
                 description, otherwise OBJ_NIL.
      @warning  Remember to release the returned AStr object.
      */
-    ASTR_DATA *     ${NAMEL}_ToDebugString (
-        ${NAMEU}_DATA      *this,
+    ASTR_DATA *     Ansi_ToDebugString (
+        ANSI_DATA      *this,
         int             indent
     )
     {
@@ -962,7 +1715,7 @@ extern "C" {
         // Do initialization.
 #ifdef NDEBUG
 #else
-        if (!${NAMEL}_Validate(this)) {
+        if (!Ansi_Validate(this)) {
             DEBUG_BREAK();
             return OBJ_NIL;
         }
@@ -983,7 +1736,7 @@ extern "C" {
                     "{%p(%s) size=%d retain=%d\n",
                     this,
                     pInfo->pClassName,
-                    ${NAMEL}_getSize(this),
+                    Ansi_getSize(this),
                     obj_getRetainCount(this)
             );
 
@@ -1023,15 +1776,15 @@ extern "C" {
 
 #ifdef NDEBUG
 #else
-    bool            ${NAMEL}_Validate (
-        ${NAMEU}_DATA      *this
+    bool            Ansi_Validate (
+        ANSI_DATA      *this
     )
     {
  
         // WARNING: We have established that we have a valid pointer
         //          in 'this' yet.
        if (this) {
-            if (obj_IsKindOf(this, OBJ_IDENT_${NAMEU}))
+            if (obj_IsKindOf(this, OBJ_IDENT_ANSI))
                 ;
             else {
                 // 'this' is not our kind of data. We really don't
@@ -1047,7 +1800,7 @@ extern "C" {
         // 'this'.
 
 
-        if (!(obj_getSize(this) >= sizeof(${NAMEU}_DATA))) {
+        if (!(obj_getSize(this) >= sizeof(ANSI_DATA))) {
             return false;
         }
 
@@ -1058,9 +1811,57 @@ extern "C" {
 
 
     
+    //---------------------------------------------------------------
+    //                      D i s a b l e
+    //---------------------------------------------------------------
+
+    /*!
+     Disable operation of this object.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Ansi_WinSize (
+        ANSI_DATA       *this
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+        struct winsize  ws;
+        int             iRc;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  ANSI_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Ansi_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Ansi_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        iRc = ioctl(STDIN_FILENO, TIOCGWINSZ, &ws);
+        if (0 == iRc) {
+            this->cols = ws.ws_col;
+            this->rows = ws.ws_row;
+        }
+
+        TRC_OBJ(this,"\tEnabled?: %s:\n", obj_Enable(this) ? "true" : "false");
+        obj_Disable(this);
+        
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+
     
-    
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

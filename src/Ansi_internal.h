@@ -1,10 +1,10 @@
 // vi:nu:et:sts=4 ts=4 sw=4
 /* 
- * File:   Scanner_internal.h
- *	Generated 03/04/2020 21:17:29
+ * File:   Ansi_internal.h
+ *  Generated 02/20/2022 17:28:22
  *
  * Notes:
- *  --	N/A
+ *  --  N/A
  *
  */
 
@@ -39,19 +39,25 @@
 
 
 
-#include        <Scanner.h>
+#include        <Ansi.h>
 #include        <JsonIn.h>
-#include        <W32StrC_internal.h>
+#include        <fcntl.h>
+
+#include        <sys/types.h>
+#include        <sys/stat.h>
+#include        <unistd.h>
+#include        <sys/ioctl.h>
+#include        <sys/termios.h>
 
 
-#ifndef SCANNER_INTERNAL_H
-#define	SCANNER_INTERNAL_H
+#ifndef ANSI_INTERNAL_H
+#define ANSI_INTERNAL_H
 
 
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -63,31 +69,39 @@ extern "C" {
     //---------------------------------------------------------------
 
 #pragma pack(push, 1)
-struct Scanner_data_s	{
+struct Ansi_data_s  {
     /* Warning - OBJ_DATA must be first in this object!
      */
-    W32STRC_DATA    super;
+    OBJ_DATA        super;
     OBJ_IUNKNOWN    *pSuperVtbl;    // Needed for Inheritance
 
     // Common Data
-    W32CHR_T        sep;            // Special Seperator/Terminator Character
-    // Find an Identifier for its value. If not found, return 0.
-    int32_t         (*pFindValueA)(OBJ_ID, const char *);
-    OBJ_ID          pObjFind;
-    bool            (*pIsLabelCharW32)(W32CHR_T chr);
-    bool            (*pIsLabel1stCharW32)(W32CHR_T chr);
-    OBJ_ID          pOther;
+    ASTR_DATA       *pStr;
+    uint16_t        size;           // maximum number of elements
+    uint16_t        rsvd16;
+    struct termios  keyboardAttrsInitial;
+    //       tcgetattr(tty,TCSANOW, &keyboardAttrsInitial);
+    //       tcsetattr(tty,TCSANOW, &keyboardAttrsInitial);
+    uint16_t        cols;
+    uint16_t        rows;
 
 
+
+#ifdef   ANSI_MSGS
+    // Informational and Warning Log Messages
+    void            (*pMsgInfo)(OBJ_ID, const char *, ...);
+    void            (*pMsgWarn)(OBJ_ID, uint16_t, const char *, ...);
+    OBJ_ID          pMsgObj;
+#endif
 };
 #pragma pack(pop)
 
     extern
-    struct Scanner_class_data_s  Scanner_ClassObj;
+    struct Ansi_class_data_s  Ansi_ClassObj;
 
     extern
     const
-    SCANNER_VTBL         Scanner_Vtbl;
+    ANSI_VTBL         Ansi_Vtbl;
 
 
 
@@ -95,13 +109,13 @@ struct Scanner_data_s	{
     //              Class Object Method Forward Definitions
     //---------------------------------------------------------------
 
-#ifdef  SCANNER_SINGLETON
-    SCANNER_DATA *  Scanner_getSingleton (
+#ifdef  ANSI_SINGLETON
+    ANSI_DATA *     Ansi_getSingleton (
         void
     );
 
-    bool            Scanner_setSingleton (
-     SCANNER_DATA       *pValue
+    bool            Ansi_setSingleton (
+     ANSI_DATA       *pValue
 );
 #endif
 
@@ -111,118 +125,45 @@ struct Scanner_data_s	{
     //              Internal Method Forward Definitions
     //---------------------------------------------------------------
 
-    OBJ_IUNKNOWN *  Scanner_getSuperVtbl (
-        SCANNER_DATA     *this
+    ANSI_DATA *  Ansi_getSuper (
+        ANSI_DATA     *this
     );
 
 
-    ERESULT         Scanner_Assign (
-        SCANNER_DATA    *this,
-        SCANNER_DATA    *pOther
+    OBJ_IUNKNOWN *  Ansi_getSuperVtbl (
+        ANSI_DATA     *this
     );
 
 
-    SCANNER_DATA *  Scanner_Copy (
-        SCANNER_DATA     *this
+    ERESULT         Ansi_Assign (
+        ANSI_DATA    *this,
+        ANSI_DATA    *pOther
     );
 
 
-    void            Scanner_Dealloc (
+    ANSI_DATA *       Ansi_Copy (
+        ANSI_DATA     *this
+    );
+
+
+    void            Ansi_Dealloc (
         OBJ_ID          objId
     );
 
 
-    bool            Scanner_IsSeparator(
-        W32CHR_T        chr,
-        bool            fTermWS             // true == whitespace trminates string
+    ANSI_DATA *     Ansi_DeepCopy (
+        ANSI_DATA       *this
     );
 
 
-    bool            Scanner_IsSeparatorExtended(
-        W32CHR_T        chr,
-        bool            fTermWS             // true == whitespace trminates string
-    );
-
-
-    bool            Scanner_IsTerminator(
-        SCANNER_DATA    *this,
-        W32CHR_T        chr,
-        bool            fTermWS             // true == whitespace trminates string
-    );
-
-
-    ASTR_DATA *     Scanner_ScanStringToAStrInt(
-        SCANNER_DATA    *this,
-        bool            fTermWS             // true == whitespace trminates string
-    );
-
-
-    //      >>> Expression Parsing Methods <<<
-    int32_t         Scanner_Add(
-        SCANNER_DATA    *this
-    );
-
-    int32_t         Scanner_And(
-        SCANNER_DATA    *this
-    );
-
-    int32_t         Scanner_Cond(
-        SCANNER_DATA    *this
-    );
-
-    int32_t         Scanner_Eq(
-        SCANNER_DATA    *this
-    );
-
-    int32_t         Scanner_Expr(
-         SCANNER_DATA    *this
-   );
-
-    int32_t         Scanner_LogicalAnd(
-        SCANNER_DATA    *this
-    );
-
-    int32_t         Scanner_LogicalOr(
-        SCANNER_DATA    *this
-    );
-
-    int32_t         Scanner_Mult(
-        SCANNER_DATA    *this
-    );
-
-    int32_t         Scanner_Number(
-        SCANNER_DATA    *this
-    );
-
-    int32_t         Scanner_Or(
-        SCANNER_DATA    *this
-    );
-
-    int32_t         Scanner_Primary(
-        SCANNER_DATA    *this
-    );
-
-    int32_t         Scanner_Rel(
-        SCANNER_DATA    *this
-    );
-
-    int32_t         Scanner_Shift(
-        SCANNER_DATA    *this
-    );
-
-    int32_t         Scanner_Xor(
-        SCANNER_DATA    *this
-    );
-
-
-#ifdef  SCANNER_JSON_SUPPORT
+#ifdef  ANSI_JSON_SUPPORT
     /*!
      Parse the new object from an established parser.
      @param pParser an established jsonIn Parser Object
      @return    a new object if successful, otherwise, OBJ_NIL
      @warning   Returned object must be released.
      */
-    SCANNER_DATA *  Scanner_ParseJsonObject (
+    ANSI_DATA *       Ansi_ParseJsonObject (
         JSONIN_DATA     *pParser
     );
 
@@ -236,36 +177,35 @@ struct Scanner_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Scanner_ParseJsonFields (
+    ERESULT         Ansi_ParseJsonFields (
         JSONIN_DATA     *pParser,
-        SCANNER_DATA    *pObject
+        ANSI_DATA     *pObject
     );
 #endif
 
 
-    void *          Scanner_QueryInfo (
+    void *          Ansi_QueryInfo (
         OBJ_ID          objId,
         uint32_t        type,
         void            *pData
     );
 
 
-#ifdef  SCANNER_JSON_SUPPORT
+#ifdef  ANSI_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in
      HJSON formt. (See hjson object for details.)
      Example:
      @code
-     ASTR_DATA      *pDesc = Scanner_ToJson(this);
+     ASTR_DATA      *pDesc = Ansi_ToJson(this);
      @endcode
      @param     this    object pointer
      @return    If successful, an AStr object which must be released containing the
-                JSON text, otherwise OBJ_NIL and LastError set to an appropriate
-                ERESULT_* error code.
+                JSON text, otherwise OBJ_NIL.
      @warning   Remember to release the returned AStr object.
      */
-    ASTR_DATA *     Scanner_ToJson (
-        SCANNER_DATA    *this
+    ASTR_DATA *     Ansi_ToJson (
+        ANSI_DATA      *this
     );
 
 
@@ -278,8 +218,8 @@ struct Scanner_data_s	{
      @return    If successful, ERESULT_SUCCESS. Otherwise, an ERESULT_*
                 error code.
      */
-    ERESULT         Scanner_ToJsonFields (
-        SCANNER_DATA    *this,
+    ERESULT         Ansi_ToJsonFields (
+        ANSI_DATA     *this,
         ASTR_DATA       *pStr
     );
 #endif
@@ -289,16 +229,16 @@ struct Scanner_data_s	{
 
 #ifdef NDEBUG
 #else
-    bool			Scanner_Validate (
-        SCANNER_DATA    *this
+    bool            Ansi_Validate (
+        ANSI_DATA       *this
     );
 #endif
 
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* SCANNER_INTERNAL_H */
+#endif  /* ANSI_INTERNAL_H */
 

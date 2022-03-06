@@ -505,6 +505,19 @@ extern "C" {
     );
 
 
+    /*!
+     If there is an active index, then remove it.  Add a new index for
+     the unique identifiers in the record and add all current records to
+     it which greatly speeds up access by index number.
+     @param     this    object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         ObjHash_SetupIndex (
+        OBJHASH_DATA    *this
+    );
+
+
 #ifdef  OBJHASH_JSON_SUPPORT
     /*!
      Create a string that describes this object and the objects within it in

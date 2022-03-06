@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next file generation!
-# ( 1/14/2022 13:43:11.000)
+# ( 3/ 5/2022 17:31:35.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -111,6 +111,16 @@ $(OBJDIR)/AStr_json.o: $(SRCDIR)/AStr_json.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_int
 OBJS += $(OBJDIR)/AStr_object.o
 
 $(OBJDIR)/AStr_object.o: $(SRCDIR)/AStr_object.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Ansi.o
+
+$(OBJDIR)/Ansi.o: $(SRCDIR)/Ansi.c $(SRCDIR)/Ansi.h $(SRCDIR)/Ansi_internal.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Ansi_object.o
+
+$(OBJDIR)/Ansi_object.o: $(SRCDIR)/Ansi_object.c $(SRCDIR)/Ansi.h $(SRCDIR)/Ansi_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Appl.o
@@ -1683,16 +1693,6 @@ OBJS += $(OBJDIR)/cb_object.o
 $(OBJDIR)/cb_object.o: $(SRCDIR)/cb_object.c $(SRCDIR)/cb.h $(SRCDIR)/cb_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
-OBJS += $(OBJDIR)/cfa.o
-
-$(OBJDIR)/cfa.o: $(SRCDIR)/cfa.c $(SRCDIR)/cfa.h $(SRCDIR)/cfa_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
-OBJS += $(OBJDIR)/cfa_object.o
-
-$(OBJDIR)/cfa_object.o: $(SRCDIR)/cfa_object.c $(SRCDIR)/cfa.h $(SRCDIR)/cfa_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
-
 OBJS += $(OBJDIR)/cmnMac64.o
 
 $(OBJDIR)/cmnMac64.o: $(SRCDIR)/cmnMac64.c $(SRCDIR)/cmn_defs.h 
@@ -2124,6 +2124,12 @@ AStrC_test: $(TEST_SRC)/AStrC_test.c $(SRCDIR)/AStrC.h $(SRCDIR)/AStrC_internal.
 TESTS += AStr_test
 
 AStr_test: $(TEST_SRC)/AStr_test.c $(SRCDIR)/AStr.h $(SRCDIR)/AStr_internal.h $(SRCDIR)/array.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
+	$(TEST_BIN)/$(@F) --no_int3
+
+TESTS += Ansi_test
+
+Ansi_test: $(TEST_SRC)/Ansi_test.c $(SRCDIR)/Ansi.h $(SRCDIR)/Ansi_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
@@ -2881,12 +2887,6 @@ TESTS += cb_test
 
 cb_test: $(TEST_SRC)/cb_test.c $(SRCDIR)/cb.h $(SRCDIR)/cb_internal.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $(TEST_SRC)/objTest.c $(TEST_SRC)/objTest_object.c $<
-	$(TEST_BIN)/$(@F) --no_int3
-
-TESTS += cfa_test
-
-cfa_test: $(TEST_SRC)/cfa_test.c $(SRCDIR)/cfa.h $(SRCDIR)/cfa_internal.h $(SRCDIR)/cmn_defs.h 
-	$(CC) $(CFLAGS) $(CFLAGS_TEST) -o $(TEST_BIN)/$(@F) $(OBJS) -I$(TEST_SRC) -I$(SRCDIR) $<
 	$(TEST_BIN)/$(@F) --no_int3
 
 TESTS += crc_test

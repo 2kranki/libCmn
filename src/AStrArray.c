@@ -1414,6 +1414,77 @@ extern "C" {
     
     
     //---------------------------------------------------------------
+    //                       T o  S t r  A r r a y
+    //---------------------------------------------------------------
+    
+    /*!
+     Create a C string array from this array. The returned array will
+     have NULL index entries for those entries in the array that are
+     missing.  The last entry in the index is always NULL. You may
+     free the array by using Mem_Free() on the address returneed.
+     @param     this    object pointer
+     @return    If successful, a String Array containing a copy of the
+                strings in this array.
+     @warning  Remember to free the returned array.
+     */
+    char **         AStrArray_ToStrArray (
+        ASTRARRAY_DATA  *this
+    )
+    {
+        uint32_t        i;
+        uint32_t        sizeData = 0;
+        uint32_t        sizeIndex = 0;
+        char            **ppStrIndex = NULL;
+        char            *pData = NULL;
+        
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!AStrArray_Validate(this)) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+        if (OBJ_NIL == this->pArray) {
+            DEBUG_BREAK();
+            return OBJ_NIL;
+        }
+#endif
+
+        sizeIndex = ObjArray_getSize(this->pArray) + 1;
+        
+        // Calculate data size.
+        for (i=0; i<sizeIndex; i++) {
+            ASTR_DATA       *pWrk = ObjArray_Get(this->pArray, i+1);
+            if (pWrk) {
+                sizeData += AStr_getSizeData(pWrk);
+            }
+        }
+        
+        i = ((sizeIndex + 1) * sizeof(char *)) + sizeData + 1;
+        i = ROUNDUP4(i);
+        ppStrIndex = mem_Malloc(i);
+        if (ppStrIndex) {
+            pData = (char *)ppStrIndex + ((sizeIndex + 1) * sizeof(char *));
+            for (i=0; i<sizeIndex; i++) {
+                ASTR_DATA       *pWrk = ObjArray_Get(this->pArray, i+1);
+                if (pWrk) {
+                    ppStrIndex[i] = pData;
+                    memcpy(pData, AStr_getData(pWrk), AStr_getSizeData(pWrk));
+                    pData += AStr_getSizeData(pWrk);
+                } else {
+                    ppStrIndex[i] = NULL;
+                }
+            }
+            ppStrIndex[sizeIndex] = NULL;
+            *pData = '\0';
+        }
+        
+        return ppStrIndex;
+    }
+    
+    
+    
+    //---------------------------------------------------------------
     //                      V a l i d a t e
     //---------------------------------------------------------------
 

@@ -334,13 +334,14 @@ ERESULT         Test_Appl_Test01 (
     TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
-        //obj_TraceSet(pObj, true);       
+        obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_APPL);
         TestForTrue(fRc, "Failed Ident Test");
 #ifdef   APPL_MSGS
         Appl_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
 #endif
-                
+        Appl_setArgDefs(pObj, pPgmArgs1);
+
         {
             ASTR_DATA       *pStr = Appl_ToDebugString(pObj, 4);
             if (pStr) {
@@ -386,14 +387,15 @@ ERESULT         Test_Appl_Test02 (
     TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
-        //obj_TraceSet(pObj, true);
+        obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_APPL);
         TestForTrue(fRc, "Failed Ident Test");
 #ifdef   APPL_MSGS
         Appl_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
 #endif
+        Appl_setArgDefs(pObj, pPgmArgs1);
 
-        eRc = Appl_SetupFromArgV((APPL_DATA *)pObj, cArgs1, ppArgs1, NULL, pPgmArgs1);
+        eRc = Appl_SetupFromArgV((APPL_DATA *)pObj, cArgs1, ppArgs1, NULL);
         TestForSuccess("");
 
         fRc = Appl_IsMore((APPL_DATA *)pObj);
@@ -461,12 +463,14 @@ ERESULT         Test_Appl_Test03 (
     TestForNotNull(pObj, "Missing Test object");
     if (pObj) {
 
-        //obj_TraceSet(pObj, true);
+        obj_TraceSet(pObj, true);
         fRc = obj_IsKindOf(pObj, OBJ_IDENT_APPL);
         TestForTrue(fRc, "Failed Ident Test");
 #ifdef   APPL_MSGS
         Appl_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
 #endif
+
+        Appl_setArgDefs(pObj, pPgmArgs1);
 
         eRc = Appl_ParseProgramLine(pCmd, &pArgV);
         TestForSuccess("");
@@ -537,6 +541,8 @@ ERESULT         Test_Appl_Test04 (
         Appl_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
 #endif
 
+        Appl_setArgDefs(pObj, pPgmArgs1);
+
         eRc = Appl_ParseProgramLine(pCmd, &pArgV);
         TestForSuccess("");
         TestForNotNull(pArgV, "");
@@ -594,7 +600,95 @@ ERESULT         Test_Appl_Test05 (
 
         fRc = Appl_setArgDefs(pObj, pPgmArgs1);
         TestForTrue(fRc, "");
+
         Appl_UsageNoMsg(pObj);
+
+        obj_Release(pObj);
+        pObj = OBJ_NIL;
+    }
+
+    fprintf(stderr, "...%s completed.\n\n\n", pTestName);
+    return eRc;
+}
+
+
+
+ERESULT         Test_Appl_Test06 (
+    TEST_DATA       *this,
+    const
+    char            *pTestName
+)
+{
+    ERESULT         eRc = ERESULT_SUCCESS;
+    APPL_DATA       *pObj = OBJ_NIL;
+    bool            fRc;
+    int             iRc;
+    ASTR_DATA       *pStr = OBJ_NIL;
+    OBJ_ID          pProp;
+   
+    fprintf(stderr, "Performing: %s - Checking Properties\n", pTestName);
+
+    pObj = Appl_New( );
+    TestForNotNull(pObj, "Missing Test object");
+    if (pObj) {
+
+        obj_TraceSet(pObj, true);
+        fRc = obj_IsKindOf(pObj, OBJ_IDENT_APPL);
+        TestForTrue(fRc, "Failed Ident Test");
+#ifdef   APPL_MSGS
+        Appl_setMsg(pObj, (void *)Test_MsgInfo, (void *)Test_MsgWarn, this);
+#endif
+        Appl_setArgDefs(pObj, pPgmArgs1);
+
+        pStr = AStr_NewA("a");
+        TestForNotNull(pStr, "");
+        fRc = obj_IsKindOf(pStr, OBJ_IDENT_ASTR);
+        TestForTrue(fRc, "");
+        eRc = Appl_PropertyAddA(pObj, "1", pStr);
+        TestForSuccess("");
+        fRc = Appl_PropertyExistsA(pObj, "1");
+        TestForTrue(fRc, "");
+        pProp = Appl_PropertyFindA(pObj, "1");
+        TestForNotNull(pProp, "");
+        fRc = obj_IsKindOf(pProp, OBJ_IDENT_ASTR);
+        TestForTrue(fRc, "");
+        iRc = AStr_CompareA(pProp, "a");
+        TestForTrue((0 == iRc), "");
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        pStr = AStr_NewA("b");
+        TestForNotNull(pStr, "");
+        fRc = obj_IsKindOf(pStr, OBJ_IDENT_ASTR);
+        TestForTrue(fRc, "");
+        eRc = Appl_PropertyAddA(pObj, "2", pStr);
+        TestForSuccess("");
+        fRc = Appl_PropertyExistsA(pObj, "2");
+        TestForTrue(fRc, "");
+        pProp = Appl_PropertyFindA(pObj, "2");
+        TestForNotNull(pProp, "");
+        fRc = obj_IsKindOf(pProp, OBJ_IDENT_ASTR);
+        TestForTrue(fRc, "");
+        iRc = AStr_CompareA(pProp, "b");
+        TestForTrue((0 == iRc), "");
+        obj_Release(pStr);
+        pStr = OBJ_NIL;
+
+        eRc = Appl_PropertyAddA(pObj, "3", pStr);
+        TestForSuccess("");
+        pProp = Appl_PropertyFindA(pObj, "3");
+        TestForNull(pProp, "");
+        fRc = Appl_PropertyExistsA(pObj, "3");
+        TestForTrue(fRc, "");
+
+        {
+            ASTR_DATA       *pStr = Appl_ToDebugString(pObj, 4);
+            if (pStr) {
+                fprintf(stderr, "Debug: %s\n", AStr_getData(pStr));
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
 
         obj_Release(pObj);
         pObj = OBJ_NIL;
@@ -646,6 +740,7 @@ int     main (
     TestExec("Test03", Test_Appl_Test03, NULL, NULL);
     TestExec("Test04", Test_Appl_Test04, NULL, NULL);
     TestExec("Test05", Test_Appl_Test05, NULL, NULL);
+    TestExec("Test06", Test_Appl_Test06, NULL, NULL);
 
     obj_Release(pTest);
     pTest = OBJ_NIL;

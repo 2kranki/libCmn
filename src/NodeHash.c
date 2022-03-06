@@ -468,7 +468,7 @@ extern "C" {
         NODEHASH_DATA   *this,
         int32_t         cls,
         const
-        char            *pName,
+        char            *pNameA,
         OBJ_ID          pData
     )
     {
@@ -482,13 +482,13 @@ extern "C" {
             DEBUG_BREAK();
             return ERESULT_INVALID_OBJECT;
         }
-        if( NULL == pName ) {
+        if( NULL == pNameA ) {
             DEBUG_BREAK();
             return ERESULT_INVALID_PARAMETER;
         }
 #endif
 
-        pNode = Node_NewWithUTF8AndClass(cls, pName, pData);
+        pNode = Node_NewWithUTF8AndClass(cls, pNameA, pData);
         if (OBJ_NIL == pNode) {
             return ERESULT_OUT_OF_MEMORY;
         }

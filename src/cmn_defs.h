@@ -149,6 +149,8 @@ extern "C" {
         OBJ_IDENT_MAIN_CLASS,
         OBJ_IDENT_EXEC,                 // Exec Object               (Used in Programs)
         OBJ_IDENT_EXEC_CLASS,
+        OBJ_IDENT_ANSI,                 // Terminal ANSI Escape Sequences
+        OBJ_IDENT_ANSI_CLASS,
         OBJ_IDENT_APPL,                 // Application Base Object
         OBJ_IDENT_APPL_CLASS,
         OBJ_IDENT_ARRAY,                // Expandable Array
@@ -217,8 +219,6 @@ extern "C" {
         OBJ_IDENT_CB16_CLASS,
         OBJ_IDENT_CB32,                 /* Circular Buffer for 32-bit data */
         OBJ_IDENT_CB32_CLASS,
-        OBJ_IDENT_CFA,                  // C Fixed Array
-        OBJ_IDENT_CFA_CLASS,
         OBJ_IDENT_CHKSUMMD5,            // MD5 Check Sum Support
         OBJ_IDENT_CHKSUMMD5_CLASS,
         OBJ_IDENT_CMD,                  // Command Base

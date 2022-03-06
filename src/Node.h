@@ -308,9 +308,8 @@ extern "C" {
 
 
     /*!
-     Misc can optionally be used as needed. Be aware that
-     NodeTree_VisitBreadthFirst uses this field if it is
-     executed.
+     @property Misc can optionally be used as needed. Be aware that
+     NodeTree_VisitBreadthFirst uses this field if it is executed.
      */
     uint32_t        Node_getMisc (
         NODE_DATA       *this

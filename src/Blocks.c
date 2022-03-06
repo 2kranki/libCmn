@@ -1379,7 +1379,8 @@ extern "C" {
         BLOCKS_DATA     *this
     )
     {
-        //ERESULT         eRc;
+        ERESULT         eRc;
+        BLOCKS_NODE     *pNode = NULL;
 
         // Do initialization.
 #ifdef NDEBUG
@@ -1391,15 +1392,25 @@ extern "C" {
 #endif
 
         if (this->pIndex) {
-            return ERESULT_DATA_ALREADY_EXISTS;
+            obj_Release(this->pIndex);
+            this->pIndex = OBJ_NIL;
         }
-        if (0 == Blocks_getNumActive(this)) {
-            this->pIndex = U32Index_New();
-            if (OBJ_NIL == this->pIndex) {
-                return ERESULT_OUT_OF_MEMORY;
+        
+        this->pIndex = U32Index_New();
+        if (OBJ_NIL == this->pIndex) {
+            return ERESULT_OUT_OF_MEMORY;
+        }
+        
+        if (Blocks_getNumActive(this)) {
+            while ((pNode = listdl_Next(&this->activeList, pNode))) {
+                if (pNode->unique) {
+                    eRc = U32Index_Add(this->pIndex, pNode->unique, pNode, false);
+                    if (ERESULT_FAILED(eRc)) {
+                        DEBUG_BREAK();
+                    }
+                }
             }
-        } else
-            return ERESULT_DATA_ALREADY_EXISTS;
+        }
 
         // Return to caller.
         return ERESULT_SUCCESS;

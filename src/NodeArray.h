@@ -189,6 +189,10 @@ extern "C" {
     );
 
 
+    /*!
+     @property other to be used to associate some other object to
+     this array as needed.
+     */
     OBJ_ID          NodeArray_getOther (
         NODEARRAY_DATA  *this
     );

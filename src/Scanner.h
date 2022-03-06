@@ -199,6 +199,20 @@ extern "C" {
     );
 
 
+    /*!
+     @property other to be used to associate some other object to
+     this array as needed.
+     */
+    OBJ_ID          Scanner_getOther (
+        SCANNER_DATA    *this
+    );
+
+    bool            Scanner_setOther(
+        SCANNER_DATA    *this,
+        OBJ_ID          pValue
+    );
+
+
     /*! @property Separator is an optional seperator which if present
         will influence how strings are separated. For command line
         scanning, this should be set to '='.

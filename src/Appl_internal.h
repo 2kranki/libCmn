@@ -51,9 +51,6 @@
 
 
 
-#define     PROPERTY_STR_OWNED 1
-
-
 
 #ifdef	__cplusplus
 extern "C" {
@@ -109,9 +106,12 @@ struct Appl_data_s	{
     ERESULT         (*pParseArgsShort)(OBJ_ID, int *, const char ***);
     ERESULT         (*pParseArgsError)(OBJ_ID, int *, const char ***);
 
+    // 
     OBJ_ID          pObjProcess;
+    int             (*pProcess)(OBJ_ID);
     ERESULT         (*pProcessInit)(OBJ_ID);
     ERESULT         (*pProcessArg)(OBJ_ID, ASTR_DATA *);
+    ERESULT         (*pProcessTerm)(OBJ_ID); 
 
     OBJ_ID          pObjUsage;
     ERESULT         (*pUsageProgLine)(OBJ_ID, FILE *, PATH_DATA *, const char *);
@@ -265,6 +265,11 @@ struct Appl_data_s	{
         ASTR_DATA       *pStr
     );
 #endif
+
+
+    int             Appl_Process(
+        APPL_DATA       *this
+    );
 
 
     void *          Appl_QueryInfo (

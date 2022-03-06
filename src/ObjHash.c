@@ -2082,6 +2082,33 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                  S e t u p  I n d e x
+    //---------------------------------------------------------------
+
+    ERESULT         ObjHash_SetupIndex (
+        OBJHASH_DATA    *this
+    )
+    {
+        ERESULT         eRc;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!ObjHash_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+#endif
+
+        eRc = Blocks_SetupIndex((BLOCKS_DATA *)this);
+
+        // Return to caller.
+        return eRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //                       T o  S t r i n g
     //---------------------------------------------------------------
     

@@ -7,9 +7,9 @@
  * Program
  *			Symbol Table (Syms)
  * Purpose
- *			This object provides a simple single level Symbol
- *          Table of Sym objects.  The table utilizes a Red-Black
- *          Balanced Tree to scan the entries in name order.
+ *			This object provides a simple scoped Symbol Table
+ *          of Sym objects.  The table utilizes a closed hash
+ *          with scoping to find the entries in name order.
  *
  * Remarks
  *	1.      None

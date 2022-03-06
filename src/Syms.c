@@ -1005,6 +1005,7 @@ extern "C" {
             obj_Release(this);
             return OBJ_NIL;
         }
+        ObjHash_SetupIndex(this->pHash);
 
 #ifdef NDEBUG
 #else
