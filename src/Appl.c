@@ -2082,6 +2082,7 @@ extern "C" {
         ERESULT         eRc;
         
         // Do initialization.
+        TRC_OBJ(this, "%s: %s\n", __func__, pNameA);
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -2118,6 +2119,7 @@ extern "C" {
         ERESULT         eRc;
 
         // Do initialization.
+        TRC_OBJ(this, "%s: %s\n", __func__, pNameA);
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -2149,6 +2151,7 @@ extern "C" {
         ASTR_DATA       *pStr = OBJ_NIL;
 
         // Do initialization.
+        TRC_OBJ(this, "%s: %s\n", __func__, pNameA);
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -2184,6 +2187,7 @@ extern "C" {
         NODE_DATA       *pNode = OBJ_NIL;
 
         // Do initialization.
+        TRC_OBJ(this, "%s: %s\n", __func__, pNameA);
 #ifdef NDEBUG
 #else
         if( !Appl_Validate(this) ) {
@@ -2235,7 +2239,7 @@ extern "C" {
         NODE_DATA       *pNode = OBJ_NIL;
 
         // Do initialization.
-        TRC_OBJ(this, "%s:\n", __func__);
+        TRC_OBJ(this, "%s: %s\n", __func__, pNameA);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -2277,7 +2281,7 @@ extern "C" {
         NODE_DATA       *pNode = OBJ_NIL;
 
         // Do initialization.
-        TRC_OBJ(this, "%s:\n", __func__);
+        TRC_OBJ(this, "%s: %s\n", __func__, pNameA);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();
@@ -2319,7 +2323,7 @@ extern "C" {
         OBJ_ID          pProperty = OBJ_NIL;
 
         // Do initialization.
-        TRC_OBJ(this, "%s:\n", __func__);
+        TRC_OBJ(this, "%s: %s\n", __func__, pNameA);
 #ifdef  APPL_SINGLETON
         if (OBJ_NIL == this) {
             this = Appl_Shared();

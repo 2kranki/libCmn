@@ -53,8 +53,9 @@ struct psxExec_class_data_s    {
     // Common Data
 #ifdef  PSXEXEC_SINGLETON
     volatile
-    PSXEXEC_DATA       *pSingleton;
+    PSXEXEC_DATA    *pSingleton;
 #endif
+    bool            fDebug;
     //uint32_t        misc;
     //OBJ_ID          pObjCatalog;
 };
@@ -153,7 +154,7 @@ PSXEXEC_CLASS_DATA  psxExec_ClassObj = {
         1,                                      // cbRetainCount
         {0}                                     // cbMisc
     },
-    //0
+    false
 };
 
 
@@ -285,6 +286,12 @@ void *          psxExecClass_QueryInfo (
                 case 'C':
                     if (str_Compare("ClassInfo", (char *)pStr) == 0) {
                         return (void *)&psxExec_Info;
+                    }
+                    break;
+                    
+                case 'D':
+                    if (str_Compare("Debug", (char *)pStr) == 0) {
+                        return (void *)&psxExec_ClassObj.fDebug;
                     }
                     break;
                     
