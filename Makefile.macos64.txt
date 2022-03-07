@@ -1,5 +1,5 @@
 # Generated file - Edits will be discarded by next file generation!
-# ( 3/ 5/2022 17:31:35.000)
+# ( 3/ 7/2022  3:36:24.000)
 
 .DEFAULT_GOAL := all
 SHELL=/bin/sh
@@ -126,6 +126,11 @@ $(OBJDIR)/Ansi_object.o: $(SRCDIR)/Ansi_object.c $(SRCDIR)/Ansi.h $(SRCDIR)/Ansi
 OBJS += $(OBJDIR)/Appl.o
 
 $(OBJDIR)/Appl.o: $(SRCDIR)/Appl.c $(SRCDIR)/Appl.h $(SRCDIR)/Appl_internal.h $(SRCDIR)/CmdUtl.h $(SRCDIR)/cmn_defs.h 
+	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
+
+OBJS += $(OBJDIR)/Appl_json.o
+
+$(OBJDIR)/Appl_json.o: $(SRCDIR)/Appl_json.c $(SRCDIR)/Appl.h $(SRCDIR)/Appl_internal.h $(SRCDIR)/CmdUtl.h $(SRCDIR)/cmn_defs.h 
 	$(CC) $(CFLAGS) -c -o $(OBJDIR)/$(@F) -I$(SRCDIR) $<
 
 OBJS += $(OBJDIR)/Appl_object.o

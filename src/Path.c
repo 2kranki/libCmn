@@ -1571,6 +1571,62 @@ extern "C" {
 
 
     //---------------------------------------------------------------
+    //                       E x i s t s
+    //---------------------------------------------------------------
+
+    bool            Path_Exists (
+        PATH_DATA        *this
+    )
+    {
+        bool            fRc = false;
+        const
+        char            *pStrA = NULL;
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+        struct stat     statBuffer;
+        int             iRc;
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        DWORD           dwFileAttr;
+#endif
+        // ERESULT         eRc = ERESULT_PATH_NOT_FOUND;
+
+        // Do initialization.
+#ifdef NDEBUG
+#else
+        if (!Path_Validate(this)) {
+            DEBUG_BREAK();
+            //return ERESULT_INVALID_OBJECT;
+            return fRc;
+        }
+#endif
+
+        pStrA = (char *)Path_getData(this);
+#if defined(__MACOSX_ENV__) || defined(__MACOS64_ENV__)
+        iRc = stat(pStrA, &statBuffer);
+        if (0 == iRc) {
+            if ((statBuffer.st_mode & S_IFMT) == S_IFDIR) {
+                Path_AppendSep(this);
+            }
+            fRc = true;
+        }
+#endif
+#if defined(__WIN32_ENV__) || defined(__WIN64_ENV__)
+        dwFileAttr = GetFileAttributesA(pStrA);
+        if (dwFileAttr != INVALID_FILE_ATTRIBUTES) {
+            fRc = true;
+            if (dwFileAttr & FILE_ATTRIBUTE_DIRECTORY) {
+                Path_AppendSep(this);
+            }
+        }
+#endif
+
+        // Return to caller.
+        return fRc;
+    }
+
+
+
+    //---------------------------------------------------------------
     //     E x p a n d  E n v i r o n m e n t  V a r i a b l e s
     //---------------------------------------------------------------
 

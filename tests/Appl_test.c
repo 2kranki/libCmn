@@ -624,8 +624,11 @@ ERESULT         Test_Appl_Test06 (
     bool            fRc;
     int             iRc;
     ASTR_DATA       *pStr = OBJ_NIL;
+    PATH_DATA       *pPath = OBJ_NIL;
     OBJ_ID          pProp;
-   
+    const
+    char            *pPathA = TEST_FILES_DIR "/Appl_example.json.txt";
+
     fprintf(stderr, "Performing: %s - Checking Properties\n", pTestName);
 
     pObj = Appl_New( );
@@ -680,6 +683,57 @@ ERESULT         Test_Appl_Test06 (
         TestForNull(pProp, "");
         fRc = Appl_PropertyExistsA(pObj, "3");
         TestForTrue(fRc, "");
+
+        pPath = Path_NewA(pPathA);
+        TestForNotNull(pPath, "");
+        eRc = Path_Clean(pPath);
+        TestForSuccess("");
+        if (pPath && Path_Exists(pPath)) {
+            JSONIN_DATA     *pParser = OBJ_NIL;
+            pStr = AStr_NewFromUtf8File(pPath);
+            TestForNotNull(pStr, "");
+            if (pStr) {
+                pParser = JsonIn_New();
+                TestForNotNull(pParser, "");
+                if (pParser) {
+                    eRc = JsonIn_ParseAStr(pParser, pStr);
+                    TestForSuccess("");
+                    if (pParser) {
+                        eRc = Appl_ParseJsonFields(pParser, pObj);
+                        TestForSuccess("");
+                        obj_Release(pParser);
+                        pParser = OBJ_NIL;
+                    }
+                }
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            }
+        }
+        obj_Release(pPath);
+        pPath = OBJ_NIL;
+        
+        fRc = Appl_PropertyExistsA(pObj, "abc");
+        TestForTrue(fRc, "");
+        pProp = Appl_PropertyFindA(pObj, "abc");
+        TestForNotNull(pProp, "");
+        fRc = obj_IsKindOf(pProp, OBJ_IDENT_ASTR);
+        TestForTrue(fRc, "");
+        iRc = AStr_CompareA(pProp, "abc");
+        TestForTrue((0 == iRc), "");
+
+        fRc = Appl_PropertyExistsA(pObj, "def");
+        TestForTrue(fRc, "");
+        pProp = Appl_PropertyFindA(pObj, "def");
+        TestForNotNull(pProp, "");
+        fRc = obj_IsKindOf(pProp, OBJ_IDENT_ASTR);
+        TestForTrue(fRc, "");
+        iRc = AStr_CompareA(pProp, "44");
+        TestForTrue((0 == iRc), "");
+
+        fRc = Appl_PropertyExistsA(pObj, "ghi");
+        TestForTrue(fRc, "");
+        pProp = Appl_PropertyFindA(pObj, "ghi");
+        TestForNull(pProp, "");
 
         {
             ASTR_DATA       *pStr = Appl_ToDebugString(pObj, 4);

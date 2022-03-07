@@ -204,6 +204,7 @@
 		C46C1C1A26E1A5A700168E36 /* LexTri_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C46C1C1726E1A5A600168E36 /* LexTri_object.c */; };
 		C46C1C8926F67D2200168E36 /* BPTLeaf_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C46C1C8526F67D2100168E36 /* BPTLeaf_object.c */; };
 		C46C1C8A26F67D2200168E36 /* BPTLeaf.c in Sources */ = {isa = PBXBuildFile; fileRef = C46C1C8626F67D2200168E36 /* BPTLeaf.c */; };
+		C46F906027D4FF6700A4C8F9 /* Appl_json.c in Sources */ = {isa = PBXBuildFile; fileRef = C46F905F27D4FF6700A4C8F9 /* Appl_json.c */; };
 		C47048BE2121394D0026E795 /* u32Matrix.c in Sources */ = {isa = PBXBuildFile; fileRef = C47048BB2121394A0026E795 /* u32Matrix.c */; };
 		C47048BF2121394D0026E795 /* u32Matrix_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C47048BC2121394B0026E795 /* u32Matrix_object.c */; };
 		C4714375240CA7980073AADC /* ObjBT_object.c in Sources */ = {isa = PBXBuildFile; fileRef = C4714371240CA7960073AADC /* ObjBT_object.c */; };
@@ -838,6 +839,7 @@
 		C46C1C8626F67D2200168E36 /* BPTLeaf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = BPTLeaf.c; sourceTree = "<group>"; };
 		C46C1C8726F67D2200168E36 /* BPTLeaf_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BPTLeaf_internal.h; sourceTree = "<group>"; };
 		C46C1C8826F67D2200168E36 /* BPTLeaf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BPTLeaf.h; sourceTree = "<group>"; };
+		C46F905F27D4FF6700A4C8F9 /* Appl_json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Appl_json.c; sourceTree = "<group>"; };
 		C47048BA212139490026E795 /* u32Matrix_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = u32Matrix_internal.h; sourceTree = "<group>"; };
 		C47048BB2121394A0026E795 /* u32Matrix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = u32Matrix.c; sourceTree = "<group>"; };
 		C47048BC2121394B0026E795 /* u32Matrix_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = u32Matrix_object.c; sourceTree = "<group>"; };
@@ -1303,6 +1305,7 @@
 				C43DB62927C2F8B4001A5A54 /* Ansi.c */,
 				C43DB62727C2F8B3001A5A54 /* Ansi.h */,
 				C4B0464923E4A73600162B4F /* Appl_internal.h */,
+				C46F905F27D4FF6700A4C8F9 /* Appl_json.c */,
 				C4B0464723E4A73500162B4F /* Appl_object.c */,
 				C4B0464823E4A73600162B4F /* Appl.c */,
 				C4B0464A23E4A73700162B4F /* Appl.h */,
@@ -2472,6 +2475,7 @@
 				C49AA1F52627CA65008B6182 /* SqlRowData_json.c in Sources */,
 				C4A096772608B432005E97F0 /* RpgBase_object.c in Sources */,
 				C4E137E123BBE6F30095EABE /* Value_json.c in Sources */,
+				C46F906027D4FF6700A4C8F9 /* Appl_json.c in Sources */,
 				C49D986123A6CA61003A25FD /* Parser.c in Sources */,
 				C4E1383623BE91570095EABE /* TokenList_object.c in Sources */,
 				C4B75F5A23FD82E800701E77 /* I16Matrix_object.c in Sources */,

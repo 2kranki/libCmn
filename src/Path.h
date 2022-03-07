@@ -472,6 +472,11 @@ extern "C" {
     );
 
 
+    bool            Path_Exists (
+        PATH_DATA       *this
+    );
+
+
     /*!
      Substitute hash values or environment variables into the current string
      using a BASH-like syntax with the hash value having the highest priority.

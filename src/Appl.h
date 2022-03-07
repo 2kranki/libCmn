@@ -82,7 +82,7 @@
 
 
 //#define   APPL_IS_IMMUTABLE     1
-//#define   APPL_JSON_SUPPORT     1
+#define   APPL_JSON_SUPPORT     1
 #define   APPL_SINGLETON        1
 
 

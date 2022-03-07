@@ -1,0 +1,16 @@
+// vi:nu:et:sts=4 ts=4 sw=4
+
+{
+    objectType:Appl,
+    // The array of properties will be added to the Appl::Properties which is accessible
+    // to all the rest of the program, because Main is passed to all helper objects.
+    // The "name" field must be present and must be unique. The "data" field must be
+    // either a string, a numeric expression as defined in Common's HJSON input object 
+    // or "null". A NULL value effectively creates a boolean value because PrropertyEsists()
+    // can check for the name's existence, but no data is available. 
+    properties: [
+        {name:abc, data:"abc"},
+        {name:def, data:44}, 
+        {name:ghi, data:null}, 
+    ],
+}

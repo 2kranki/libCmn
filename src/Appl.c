@@ -1536,7 +1536,7 @@ extern "C" {
     )
     {
         ERESULT         eRc;
-        ASTR_DATA       *pStr;
+        //ASTR_DATA       *pStr;
         int             iRc;
 
         // Do initialization.
