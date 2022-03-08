@@ -861,16 +861,7 @@ extern "C" {
     bool            Appl_setParseArgs(
         APPL_DATA       *this,
         OBJ_ID          pObj,
-        ERESULT         (*pValueDefaults)(OBJ_ID),
-        int             (*pValueLong)(
-                                      OBJ_ID          this,
-                                      bool            fTrue,
-                                      ASTR_DATA       *pName,
-                                      ASTR_DATA       *pWrk,
-                                      uint32_t        index,
-                                      ASTRARRAY_DATA  *pArgs
-                        ),
-        int             (*pValueShort)(OBJ_ID, int *, const char ***)
+        ERESULT         (*pValueDefaults)(OBJ_ID)
     )
     {
 #ifdef NDEBUG
@@ -883,8 +874,6 @@ extern "C" {
 
         this->pObjPrs = pObj;
         this->pParseArgsDefaults = pValueDefaults;
-        this->pParseArgsLong = pValueLong;
-        this->pParseArgsShort = pValueShort;
 
         return true;
     }
@@ -1777,6 +1766,72 @@ extern "C" {
 
         // Return to caller.
         return fRc;
+    }
+
+
+
+    //---------------------------------------------------------------
+    //              L o a d  J S O N  D e f a u l t s
+    //---------------------------------------------------------------
+
+    /*!
+     Load propeerties from a JSON file.
+     @param     this    object pointer
+     @param     pPath   JSON Input File Path object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Appl_LoadJsonDefaults (
+        APPL_DATA       *this,
+        PATH_DATA       *pPath
+    )
+    {
+        ERESULT         eRc = ERESULT_SUCCESS;
+
+        // Do initialization.
+        TRC_OBJ(this, "%s:\n", __func__);
+#ifdef  APPL_SINGLETON
+        if (OBJ_NIL == this) {
+            this = Appl_Shared();
+        }
+#endif
+#ifdef NDEBUG
+#else
+        if (!Appl_Validate(this)) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_OBJECT;
+        }
+        if (OBJ_NIL == pPath) {
+            DEBUG_BREAK();
+            return ERESULT_INVALID_PARAMETER;
+        }
+#endif
+        
+        if (pPath && Path_Exists(pPath)) {
+            JSONIN_DATA     *pParser = OBJ_NIL;
+            ASTR_DATA       *pStr;
+            pStr = AStr_NewFromUtf8File(pPath);
+            if (pStr) {
+                pParser = JsonIn_New();
+                if (pParser) {
+                    eRc = JsonIn_ParseAStr(pParser, pStr);
+                    if (pParser && ERESULT_OK(eRc)) {
+                        eRc = Appl_ParseJsonFields(pParser, this);
+                        obj_Release(pParser);
+                        pParser = OBJ_NIL;
+                    }
+                } else {
+                    eRc = ERESULT_OUT_OF_MEMORY;
+                }
+                obj_Release(pStr);
+                pStr = OBJ_NIL;
+            } else {
+                eRc = ERESULT_DATA_MISSING;
+            }
+        }
+
+        // Return to caller.
+        return ERESULT_SUCCESS;
     }
 
 

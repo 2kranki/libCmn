@@ -78,8 +78,8 @@ extern "C" {
     //****************************************************************
 
 
-    typedef struct ${NAMEL}_data_s	${NAMEU}_DATA;          // Inherits from ${SUPERU}
-    typedef struct ${NAMEL}_class_data_s ${NAMEU}_CLASS_DATA;  // Inherits from OBJ
+    typedef struct ${NAMEL}_data_s	${NAMEU}_DATA;          // Inherits from ${SUPERL}
+    typedef struct ${NAMEL}_class_data_s ${NAMEU}_CLASS_DATA;  // Inherits from obj
 
     typedef struct ${NAMEL}_vtbl_s	{
         OBJ_IUNKNOWN    iVtbl;              // Inherited Vtbl.

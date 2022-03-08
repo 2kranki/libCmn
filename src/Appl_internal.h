@@ -89,22 +89,6 @@ struct Appl_data_s	{
 
     OBJ_ID          pObjPrs;
     ERESULT         (*pParseArgsDefaults)(OBJ_ID);
-    /*!
-     @return    If successful, ERESULT_SUCCESS_0, ERESULT_SUCCESS_1,
-                ERESULT_SUCCESS_2 or ERESULT_SUCCESS_3 to denote how
-                many parameters were used beyond the normal 1.  Otherwise,
-                an ERESULT_* error code
-     */
-    ERESULT         (*pParseArgsLong)(
-                            OBJ_ID          this,
-                            bool            fTrue,
-                            ASTR_DATA       *pName,
-                            ASTR_DATA       *pWrk,
-                            uint32_t        index,
-                            ASTRARRAY_DATA  *pArgs
-                    );
-    ERESULT         (*pParseArgsShort)(OBJ_ID, int *, const char ***);
-    ERESULT         (*pParseArgsError)(OBJ_ID, int *, const char ***);
 
     // 
     OBJ_ID          pObjProcess;

@@ -688,27 +688,8 @@ ERESULT         Test_Appl_Test06 (
         TestForNotNull(pPath, "");
         eRc = Path_Clean(pPath);
         TestForSuccess("");
-        if (pPath && Path_Exists(pPath)) {
-            JSONIN_DATA     *pParser = OBJ_NIL;
-            pStr = AStr_NewFromUtf8File(pPath);
-            TestForNotNull(pStr, "");
-            if (pStr) {
-                pParser = JsonIn_New();
-                TestForNotNull(pParser, "");
-                if (pParser) {
-                    eRc = JsonIn_ParseAStr(pParser, pStr);
-                    TestForSuccess("");
-                    if (pParser) {
-                        eRc = Appl_ParseJsonFields(pParser, pObj);
-                        TestForSuccess("");
-                        obj_Release(pParser);
-                        pParser = OBJ_NIL;
-                    }
-                }
-                obj_Release(pStr);
-                pStr = OBJ_NIL;
-            }
-        }
+        eRc = Appl_LoadJsonDefaults(pObj, pPath);
+        TestForSuccess("");
         obj_Release(pPath);
         pPath = OBJ_NIL;
         

@@ -333,16 +333,7 @@ extern "C" {
     bool            Appl_setParseArgs(
         APPL_DATA       *this,
         OBJ_ID          pObj,
-        ERESULT         (*pValueDefaults)(OBJ_ID),
-        int             (*pValueLong)(
-                                      OBJ_ID          this,
-                                      bool            fTrue,
-                                      ASTR_DATA       *pName,
-                                      ASTR_DATA       *pWrk,
-                                      uint32_t        index,
-                                      ASTRARRAY_DATA  *pArgs
-                        ),
-        int             (*pValueShort)(OBJ_ID, int *, const char ***)
+        ERESULT         (*pValueDefaults)(OBJ_ID)
     );
 
 
@@ -351,8 +342,9 @@ extern "C" {
      @param pValue          method to be called before processing any arguments or options
                             to set default values
      */
-    bool            Appl_setParseArgsDefaults(
+    bool            Appl_setParseArgs(
         APPL_DATA       *this,
+        OBJ_ID          pObjPrs,
         ERESULT         (*pValue)(OBJ_ID)
     );
 
@@ -457,6 +449,19 @@ extern "C" {
      */
     bool            Appl_IsMore (
         APPL_DATA       *this
+    );
+
+
+    /*!
+     Load propeerties from a JSON file.
+     @param     this    object pointer
+     @param     pPath   JSON Input File Path object pointer
+     @return    if successful, ERESULT_SUCCESS.  Otherwise, an ERESULT_*
+                error code.
+     */
+    ERESULT         Appl_LoadJsonDefaults (
+        APPL_DATA       *this,
+        PATH_DATA       *pPath
     );
 
 
